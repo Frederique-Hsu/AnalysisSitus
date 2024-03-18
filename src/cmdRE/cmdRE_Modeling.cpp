@@ -1945,19 +1945,34 @@ int RE_Topologize(const Handle(asiTcl_Interp)& interp,
                   const char**                 argv)
 {
 #if defined USE_MOBIUS
-  if ( argc != 1 && argc != 2 && argc != 3 )
+  TCollection_AsciiString imInput;
+  //
+  if ( !interp->GetKeyValue(argc, argv, "imInput", imInput) )
   {
-    return interp->ErrorOnWrongArgs(argv[0]);
+    interp->GetProgress().SendLogMessage(LogErr(Normal) <<
+      "Please, specify instant meshes input directory with -imInput key.\n"
+      "The file extension should be '.ply'.");
+    return TCL_ERROR;
+  }
+  //
+  TCollection_AsciiString imOutput;
+  //
+  if ( !interp->GetKeyValue(argc, argv, "imOutput", imOutput) )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) <<
+      "Please, specify instant meshes output directory with -imOutput key.\n"
+      "The file extension should be '.obj'.");
+    return TCL_ERROR;
   }
 
   // Number of faces to produce.
-  const int numFaces = ( (argc == 1) ? 10 : atoi( argv[1] ) );
+  const int numFaces = ( (argc == 5) ? 10 : atoi( argv[5] ) );
   //
   interp->GetProgress().SendLogMessage(LogInfo(Normal) << "Number of faces to produce is %1."
                                                        << numFaces);
 
   // Tolerance for projection.
-  const double projTol = ( (argc <= 2) ? 0.001 : atof( argv[2] ) );
+  const double projTol = ( (argc <= 6) ? 0.001 : atof( argv[6] ) );
 
   // Get triangulation.
   Handle(Poly_Triangulation)
@@ -1981,10 +1996,6 @@ int RE_Topologize(const Handle(asiTcl_Interp)& interp,
   //
   interp->GetProgress().SendLogMessage( LogInfo(Normal) << "Instant Meshes executable: '%1'."
                                                         << QStr2AsciiStr(qimEnv) );
-
-  // Save triangulation to feed Instant Meshes.
-  TCollection_AsciiString imInput  = "C:/users/user/desktop/imInput.ply";
-  TCollection_AsciiString imOutput = "C:/users/user/desktop/imOutput.obj";
   //
   if ( !asiAlgo_Utils::WritePly( tris, imInput, interp->GetProgress() ) )
   {
@@ -2530,9 +2541,14 @@ void cmdRE::Commands_Modeling(const Handle(asiTcl_Interp)&      interp,
   //-------------------------------------------------------------------------//
   interp->AddCommand("re-topologize",
     //
-    "re-topologize <numFaces> <projToler>\n"
+    "re-topologize -imInput imInput -imOutput imOutput <numFaces> <projToler>\n"
     "\t Attempts to topologize the active triangulation with the quads from\n"
-    "\t the active tessellation.",
+    "\t the active tessellation.\n\n"
+    "\t The '-imInput' is the key for the instant meshes input directory with\n"
+    "\t the file, extension '.ply'. The '-imOutput' is the key for the instant\n"
+    "\t meshes output directory with the file extension '.obj'. The 'numFaces'\n"
+    "\t is the number of faces that construct the mesh, the default value is 10.\n"
+    "\t The 'projToler' is the tolerance for projection, the default value is 0.001.",
     //
     __FILE__, group, RE_Topologize);
 
