@@ -38,7 +38,9 @@
 #include <Graphic3d_Vec3.hxx>
 #include <Graphic3d_Vec4.hxx>
 #include <OSD_OpenFile.hxx>
+#include <Poly_Array1OfTriangle.hxx>
 #include <Standard_CLocaleSentry.hxx>
+#include <TColgp_HArray1OfPnt.hxx>
 #include <TopExp_Explorer.hxx>
 #include <TopoDS.hxx>
 
@@ -215,7 +217,7 @@ bool asiAlgo_OBJ::Write(const TopoDS_Shape&            theShape,
     if ( T.IsNull() )
       continue;
     //
-    const int  aLower     = T->MapTriangleArray()->Lower();
+    const int  aLower     = T->Triangles().Lower();
     const bool isMirrored = L.Transformation().VectorialPart().Determinant() < 0.0;
 
     TCollection_AsciiString aRefName("unnamed");
@@ -226,11 +228,11 @@ bool asiAlgo_OBJ::Write(const TopoDS_Shape&            theShape,
     }
 
     // Write nodes
-    Handle(TColgp_HArray1OfPnt) aNodes = T->MapNodeArray();
+    const TColgp_Array1OfPnt& aNodes = T->Nodes();
     const gp_Trsf&            aTrsf  = L.Transformation();
-    for ( int aNodeIter = aNodes->Lower(); aNodeIter <= aNodes->Upper(); ++aNodeIter )
+    for ( int aNodeIter = aNodes.Lower(); aNodeIter <= aNodes.Upper(); ++aNodeIter )
     {
-      gp_Pnt aNode = aNodes->Value(aNodeIter).Transformed(aTrsf);
+      gp_Pnt aNode = aNodes.Value(aNodeIter).Transformed(aTrsf);
       //
       if ( !anObjFile.WriteVertex( objXyzToVec( aNode.XYZ() ) ) )
       {
@@ -240,16 +242,16 @@ bool asiAlgo_OBJ::Write(const TopoDS_Shape&            theShape,
     }
 
     // Write indices
-    Handle(Poly_HArray1OfTriangle) tris = T->MapTriangleArray();
-    for ( int tIter = tris->Lower(); tIter <= tris->Upper(); ++tIter )
+    const Poly_Array1OfTriangle& tris = T->Triangles();
+    for ( int tIter = tris.Lower(); tIter <= tris.Upper(); ++tIter )
     {
       if ( (F.Orientation() == TopAbs_REVERSED) ^ isMirrored )
       {
-        tris->Value(tIter).Get(aTriNodes[0], aTriNodes[2], aTriNodes[1]);
+        tris.Value(tIter).Get(aTriNodes[0], aTriNodes[2], aTriNodes[1]);
       }
       else
       {
-        tris->Value(tIter).Get(aTriNodes[0], aTriNodes[1], aTriNodes[2]);
+        tris.Value(tIter).Get(aTriNodes[0], aTriNodes[1], aTriNodes[2]);
       }
 
       aTriNodes[0] = aFirstNode + aTriNodes[0] - aLower;

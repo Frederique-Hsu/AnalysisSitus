@@ -711,6 +711,8 @@ bool
 
   return true;
 #else
+  (void)patch;
+  (void)region;
   m_progress.SendLogMessage(LogErr(Normal) << "Mobius is not available.");
   return false;
 #endif

@@ -33,6 +33,7 @@
 
 // OpenCascade includes
 #include <BRep_Tool.hxx>
+#include <TColgp_Array1OfPnt.hxx>
 #include <TColStd_PackedMapOfInteger.hxx>
 #include <TopExp.hxx>
 #include <TopExp_Explorer.hxx>
@@ -44,6 +45,7 @@
 #include <TopTools_IndexedDataMapOfShapeListOfShape.hxx>
 #include <TopTools_ListOfShape.hxx>
 #include <TopTools_ListIteratorOfListOfShape.hxx>
+#include <Poly_Array1OfTriangle.hxx>
 #include <Poly_Triangulation.hxx>
 #include <Poly_PolygonOnTriangulation.hxx>
 #include <Poly_Connect.hxx>
@@ -125,8 +127,8 @@ void asiAlgo_MeshCheckTopology::Perform()
       // check distances between corresponding points
       double aSqDefle = BRep_Tool::Tolerance(aEdge);
       aSqDefle *= aSqDefle;
-      Handle(TColgp_HArray1OfPnt) aPoints1 = aT1->MapNodeArray();
-      Handle(TColgp_HArray1OfPnt) aPoints2 = aT2->MapNodeArray();
+      const TColgp_Array1OfPnt& aPoints1 = aT1->Nodes();
+      const TColgp_Array1OfPnt& aPoints2 = aT2->Nodes();
       int iF1 = aMapF.FindIndex(aFace1);
       int iF2 = aMapF.FindIndex(aFace2);
       int i1 = aNodes1.Lower();
@@ -134,8 +136,8 @@ void asiAlgo_MeshCheckTopology::Perform()
       const gp_Trsf &aTrsf1 = aFace1.Location().Transformation();
       const gp_Trsf &aTrsf2 = aFace2.Location().Transformation();
       for (; i1 <= aNodes1.Upper(); i1++, i2++) {
-        const gp_Pnt aP1 = aPoints1->Value(aNodes1(i1)).Transformed(aTrsf1);
-        const gp_Pnt aP2 = aPoints2->Value(aNodes2(i2)).Transformed(aTrsf2);
+        const gp_Pnt aP1 = aPoints1.Value(aNodes1(i1)).Transformed(aTrsf1);
+        const gp_Pnt aP2 = aPoints2.Value(aNodes2(i2)).Transformed(aTrsf2);
         const double aSqDist = aP1.SquareDistance(aP2);
         if (aSqDist > aSqDefle)
         {
@@ -184,10 +186,10 @@ void asiAlgo_MeshCheckTopology::Perform()
 
     // check of free links and nodes
     Poly_Connect aConn(tris);
-    Handle(Poly_HArray1OfTriangle) aTriangles = tris->MapTriangleArray();
+    const Poly_Array1OfTriangle& aTriangles = tris->Triangles();
     int nbTri = tris->NbTriangles(), i, j, n[3], t[3];
     for (i = 1; i <= nbTri; i++) {
-      aTriangles->Value(i).Get(n[0], n[1], n[2]);
+      aTriangles.Value(i).Get(n[0], n[1], n[2]);
       
       aUsedNodes.Add (n[0]);
       aUsedNodes.Add (n[1]);

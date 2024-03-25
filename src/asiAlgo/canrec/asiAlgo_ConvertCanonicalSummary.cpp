@@ -280,6 +280,9 @@ void asiAlgo_ConvertCanonicalSummary::FromJSON(void*                            
       }
     }
   }
+#else
+  (void)pJsonGenericObj;
+  (void)ccSummary;
 #endif
 }
 

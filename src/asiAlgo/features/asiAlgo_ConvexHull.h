@@ -39,6 +39,9 @@
 #if defined USE_MOBIUS
   // Mobius includes
   #include <mobius/poly_Jacobian.h>
+
+// STL includes
+#include <algorithm>
 #endif
 
 //-----------------------------------------------------------------------------

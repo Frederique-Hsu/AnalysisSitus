@@ -44,7 +44,7 @@
 namespace aux
 {
   //! Calculates bounding cylinder for given points and direction.
-  void calculateCylinder(const Handle(TColgp_HArray1OfPnt)&     nodes,
+  void calculateCylinder(const TColgp_Array1OfPnt&              nodes,
                          const gp_Dir&                          orientation,
                          const Bnd_Box&                         aabb,
                          asiAlgo_BuildOptBoundingCyl::t_optBnd& result)
@@ -60,11 +60,11 @@ namespace aux
                       center.Z() * (1. - orientation.Z()));
     //
     result.radius = DBL_MIN;
-    for (int i = 1; i <= nodes->Size(); ++i)
+    for (int i = 1; i <= nodes.Size(); ++i)
     {
-      gp_Pnt projNode = gp_Pnt(nodes->Value(i).X() * (1. - orientation.X()),
-                               nodes->Value(i).Y() * (1. - orientation.Y()),
-                               nodes->Value(i).Z() * (1. - orientation.Z()));
+      gp_Pnt projNode = gp_Pnt(nodes.Value(i).X() * (1. - orientation.X()),
+                               nodes.Value(i).Y() * (1. - orientation.Y()),
+                               nodes.Value(i).Z() * (1. - orientation.Z()));
 
       double dist = projNode.Distance(projCenter);
       result.radius = Max(dist, result.radius);
@@ -167,19 +167,19 @@ bool asiAlgo_BuildOptBoundingCyl::Perform(const Handle(asiAlgo_AAG)& aag,
 
   // Calculates bounding cylinders for X, Y and Z directions.
   t_optBnd Xcyl;
-  aux::calculateCylinder(inputTris->MapNodeArray(),
+  aux::calculateCylinder(inputTris->Nodes(),
                          gp_Dir(1., 0., 0.),
                          aabb,
                          Xcyl);
 
   t_optBnd Ycyl;
-  aux::calculateCylinder(inputTris->MapNodeArray(),
+  aux::calculateCylinder(inputTris->Nodes(),
                          gp_Dir(0., 1., 0.),
                          aabb,
                          Ycyl);
 
   t_optBnd Zcyl;
-  aux::calculateCylinder(inputTris->MapNodeArray(),
+  aux::calculateCylinder(inputTris->Nodes(),
                          gp_Dir(0., 0., 1.),
                          aabb,
                          Zcyl);

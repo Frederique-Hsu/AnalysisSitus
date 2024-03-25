@@ -128,6 +128,9 @@ void glTFMaterialMap::addImage(glTFJsonSerializer*          writer,
   }
   writer->EndObject();
 #else
+  (void)writer;
+  (void)texture;
+  (void)isStarted;
   throw Standard_ProgramError("rapidjson is not available");
 #endif
 }
@@ -156,6 +159,9 @@ void glTFMaterialMap::AddMaterial(glTFJsonSerializer*       writer,
   AddMaterial(style);
   m_pWriter = NULL;
 #else
+  (void)writer;
+  (void)style;
+  (void)isStarted;
   throw Standard_ProgramError("rapidjson is not available");
 #endif
 }
@@ -214,6 +220,9 @@ void glTFMaterialMap::addTexture(glTFJsonSerializer*          writer,
   }
   writer->EndObject();
 #else
+  (void)writer;
+  (void)texture;
+  (void)isStarted;
   throw Standard_ProgramError("rapidjson is not available");
 #endif
 }
@@ -441,6 +450,8 @@ void glTFMaterialMap::DefineMaterial(const glTFXdeVisualStyle&      style,
   }
   m_pWriter->EndObject();
 #else
+  (void)style;
+  (void)name;
   throw Standard_ProgramError("rapidjson is not available");
 #endif
 }

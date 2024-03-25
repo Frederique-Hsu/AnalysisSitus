@@ -161,6 +161,8 @@ void asiData_ThicknessNode::SetMeshWithScalars(const asiAlgo_MeshWithFields& mes
     ActParamTool::AsIntArray( this->Parameter(PID_ThicknessFieldIds) )->SetArray(nullptr);
     ActParamTool::AsRealArray( this->Parameter(PID_ThicknessFieldValues) )->SetArray(nullptr);
   }
+#else
+  (void)mesh;
 #endif
 }
 

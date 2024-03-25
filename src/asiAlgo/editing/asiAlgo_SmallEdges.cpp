@@ -32,6 +32,7 @@
 #include <asiAlgo_SmallEdges.h>
 
 // OCCT includes
+#include <TopoDS_Edge.hxx>
 #include <ShapeFix_Wireframe.hxx>
 #include <ShapeUpgrade_UnifySameDomain.hxx>
 

@@ -164,6 +164,8 @@ int asiEngine_CheckThicknessFunc::execute(const Handle(ActAPI_HParameterList)& i
 
   return 0; // Success.
 #else
+  (void)inputs;
+  (void)outputs;
   m_progress.SendLogMessage(LogErr(Normal) << "Mobius is not available.");
   return 1;
 #endif

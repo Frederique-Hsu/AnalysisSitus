@@ -47,13 +47,14 @@
 #include <BRepTools.hxx>
 #include <GCPnts_AbscissaPoint.hxx>
 #include <Geom2d_Curve.hxx>
+#include <Geom2dAdaptor_HCurve.hxx>
 #include <Geom2dAdaptor_Curve.hxx>
 #include <Geom2dInt_GInter.hxx>
 #include <Geom_Curve.hxx>
 #include <Geom_Plane.hxx>
 #include <Geom_Surface.hxx>
 #include <GeomAdaptor_Curve.hxx>
-#include <GeomAdaptor_Surface.hxx>
+#include <Geom2dAdaptor_HCurve.hxx>
 #include <gp_Pnt2d.hxx>
 #include <GProp_GProps.hxx>
 #include <IntRes2d_Domain.hxx>
@@ -1059,8 +1060,8 @@ Standard_Boolean asiAlgo_AnalyzeWire::CheckDegenerated (const Standard_Integer n
     myStatus = ShapeExtend::EncodeStatus (ShapeExtend_FAIL1);
     return Standard_False;
   }
-  Handle(Geom2dAdaptor_Curve) AC = new Geom2dAdaptor_Curve(pc,pcuf,pcul);
-  Handle(GeomAdaptor_Surface) AS = new GeomAdaptor_Surface(mySurf->Surface());
+  Handle(Geom2dAdaptor_HCurve) AC = new Geom2dAdaptor_HCurve(pc, pcuf, pcul);
+  Handle(GeomAdaptor_HSurface) AS = new GeomAdaptor_HSurface(mySurf->Surface());
   Adaptor3d_CurveOnSurface ACS(AC,AS);
   gp_Pnt cpnt, pcpnt;
   Standard_Integer nbp = 45;
@@ -1676,12 +1677,12 @@ Standard_Boolean asiAlgo_AnalyzeWire::CheckNotchedEdges(const Standard_Integer n
   if ( Abs ( v2.Angle ( v1 ) ) > 0.1 || p2d1.Distance(p2d2) > Tolerance)
     return Standard_False;
 
-  Handle(Geom2dAdaptor_Curve) AC2d1  = new Geom2dAdaptor_Curve(c2d1,a1,b1);
-  Handle(GeomAdaptor_Surface) AdS1 = new GeomAdaptor_Surface(new Geom_Plane(gp_Pln()));
+  Handle(Geom2dAdaptor_HCurve) AC2d1 = new Geom2dAdaptor_HCurve(c2d1, a1, b1);
+  Handle(GeomAdaptor_HSurface) AdS1 = new GeomAdaptor_HSurface(new Geom_Plane(gp_Pln()));
   Adaptor3d_CurveOnSurface Ad1(AC2d1,AdS1);
 
-  Handle(Geom2dAdaptor_Curve) AC2d2  = new Geom2dAdaptor_Curve(c2d2,a2,b2);
-  Handle(GeomAdaptor_Surface) AdS2 = new GeomAdaptor_Surface(new Geom_Plane(gp_Pln()));
+  Handle(Geom2dAdaptor_HCurve) AC2d2 = new Geom2dAdaptor_HCurve(c2d2, a2, b2);
+  Handle(GeomAdaptor_HSurface) AdS2 = new GeomAdaptor_HSurface(new Geom_Plane(gp_Pln()));
   Adaptor3d_CurveOnSurface Ad2(AC2d2,AdS2);
 
   Adaptor3d_CurveOnSurface longAD, shortAD;

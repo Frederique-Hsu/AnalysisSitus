@@ -43,6 +43,8 @@
 #include <BRepBuilderAPI_MakeEdge.hxx>
 #include <BVH_BinnedBuilder.hxx>
 #include <BVH_LinearBuilder.hxx>
+#include <Poly_Array1OfTriangle.hxx>
+#include <TColgp_Array1OfPnt.hxx>
 #include <TopExp.hxx>
 #include <TopExp_Explorer.hxx>
 #include <TopoDS.hxx>
@@ -475,23 +477,23 @@ bool asiAlgo_BVHFacets::addTriangulation(const Handle(Poly_Triangulation)& trian
     return false;
 
   // Internal collections of triangles and nodes
-  Handle(Poly_HArray1OfTriangle) triangles = triangulation->MapTriangleArray();
-  Handle(TColgp_HArray1OfPnt)    nodes     = triangulation->MapNodeArray();
+  const Poly_Array1OfTriangle& triangles = triangulation->Triangles();
+  const TColgp_Array1OfPnt&    nodes     = triangulation->Nodes();
 
-  for ( int elemId = triangles->Lower(); elemId <= triangles->Upper(); ++elemId )
+  for ( int elemId = triangles.Lower(); elemId <= triangles.Upper(); ++elemId )
   {
-    const Poly_Triangle& tri = triangles->Value(elemId);
+    const Poly_Triangle& tri = triangles.Value(elemId);
 
     int n1, n2, n3;
     tri.Get(n1, n2, n3);
 
-    gp_Pnt P0 = nodes->Value(isReversed ? n3 : n1);
+    gp_Pnt P0 = nodes.Value(isReversed ? n3 : n1);
     P0.Transform(loc);
     //
-    gp_Pnt P1 = nodes->Value(n2);
+    gp_Pnt P1 = nodes.Value(n2);
     P1.Transform(loc);
     //
-    gp_Pnt P2 = nodes->Value(isReversed ? n1 : n3);
+    gp_Pnt P2 = nodes.Value(isReversed ? n1 : n3);
     P2.Transform(loc);
 
     // Create a new facet

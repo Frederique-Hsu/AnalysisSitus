@@ -165,7 +165,7 @@ void asiAlgo_MeshComputeShapeNorms::ComputeNormals (const TopoDS_Face& theFace,
   // take in face the surface location
   const TopoDS_Face    aZeroFace = TopoDS::Face (theFace.Located (TopLoc_Location()));
   Handle(Geom_Surface) aSurf     = BRep_Tool::Surface (aZeroFace);
-  Handle(Poly_HArray1OfTriangle) aTriangles = theTris->MapTriangleArray();
+  const Poly_Array1OfTriangle& aTriangles = theTris->Triangles();
   if (!theTris->HasUVNodes() || aSurf.IsNull())
   {
     // compute normals by averaging triangulation normals sharing the same vertex
@@ -174,17 +174,16 @@ void asiAlgo_MeshComputeShapeNorms::ComputeNormals (const TopoDS_Face& theFace,
   }
 
   const Standard_Real aTol = Precision::Confusion();
-  Handle(TColgp_HArray1OfPnt2d) aNodesUV = theTris->MapUVNodeArray();
-  Handle(TColgp_HArray1OfPnt)   aNodes   = theTris->MapNodeArray();
+  Handle(TShort_HArray1OfShortReal) aNormals = new TShort_HArray1OfShortReal(1, theTris->NbNodes() * 3);
+  const TColgp_Array1OfPnt2d& aNodesUV = theTris->UVNodes();
+  const TColgp_Array1OfPnt&   aNodes   = theTris->Nodes();
   Standard_Integer aTri[3];
   gp_Dir aNorm;
 
-  theTris->AddNormals();
-
-  for (Standard_Integer aNodeIter = aNodes->Lower(); aNodeIter <= aNodes->Upper(); ++aNodeIter)
+  for (Standard_Integer aNodeIter = aNodes.Lower(); aNodeIter <= aNodes.Upper(); ++aNodeIter)
   {
     // try to retrieve normal from real surface first, when UV coordinates are available
-    if (GeomLib::NormEstim (aSurf, aNodesUV->Value(aNodeIter), aTol, aNorm) > 1)
+    if (GeomLib::NormEstim (aSurf, aNodesUV.Value(aNodeIter), aTol, aNorm) > 1)
     {
       if (thePolyConnect.Triangulation() != theTris)
       {
@@ -195,9 +194,9 @@ void asiAlgo_MeshComputeShapeNorms::ComputeNormals (const TopoDS_Face& theFace,
       gp_XYZ eqPlan (0.0, 0.0, 0.0);
       for (thePolyConnect.Initialize (aNodeIter); thePolyConnect.More(); thePolyConnect.Next())
       {
-        aTriangles->Value(thePolyConnect.Value()).Get (aTri[0], aTri[1], aTri[2]);
-        const gp_XYZ v1 (aNodes->Value(aTri[1]).Coord() - aNodes->Value(aTri[0]).Coord());
-        const gp_XYZ v2 (aNodes->Value(aTri[2]).Coord() - aNodes->Value(aTri[1]).Coord());
+        aTriangles(thePolyConnect.Value()).Get(aTri[0], aTri[1], aTri[2]);
+        const gp_XYZ v1(aNodes(aTri[1]).Coord() - aNodes(aTri[0]).Coord());
+        const gp_XYZ v2(aNodes(aTri[2]).Coord() - aNodes(aTri[1]).Coord());
         const gp_XYZ vv = v1 ^ v2;
         const Standard_Real aMod = vv.Modulus();
         if (aMod >= aTol)
@@ -208,9 +207,12 @@ void asiAlgo_MeshComputeShapeNorms::ComputeNormals (const TopoDS_Face& theFace,
       const Standard_Real aModMax = eqPlan.Modulus();
       aNorm = (aModMax > aTol) ? gp_Dir (eqPlan) : gp::DZ();
     }
-
-    theTris->SetNormal( aNodeIter, aNorm );
+    const Standard_Integer anId = (aNodeIter - aNodes.Lower()) * 3;
+    aNormals->SetValue(anId + 1, (Standard_ShortReal)aNorm.X());
+    aNormals->SetValue(anId + 2, (Standard_ShortReal)aNorm.Y());
+    aNormals->SetValue(anId + 3, (Standard_ShortReal)aNorm.Z());
   }
+  theTris->SetNormals(aNormals);
 }
 
 //=======================================================================
@@ -227,12 +229,12 @@ void asiAlgo_MeshComputeShapeNorms::Normal (const TopoDS_Face&  theFace,
     ComputeNormals (theFace, aPolyTri, thePolyConnect);
   }
 
-  Handle(TColgp_HArray1OfPnt)       aNodes   = aPolyTri->MapNodeArray();
-  Handle(TShort_HArray1OfShortReal) aNormals = aPolyTri->MapNormalArray();
-  const Standard_ShortReal*         aNormArr = &aNormals->First();
-  for (Standard_Integer aNodeIter = aNodes->Lower(); aNodeIter <= aNodes->Upper(); ++aNodeIter)
+  const TColgp_Array1OfPnt&       aNodes = aPolyTri->Nodes();
+  const TShort_Array1OfShortReal& aNormals = aPolyTri->Normals();
+  const Standard_ShortReal*       aNormArr = &aNormals.First();
+  for (Standard_Integer aNodeIter = aNodes.Lower(); aNodeIter <= aNodes.Upper(); ++aNodeIter)
   {
-    const Standard_Integer anId = 3 * (aNodeIter - aNodes->Lower());
+    const Standard_Integer anId = 3 * (aNodeIter - aNodes.Lower());
     const gp_Dir aNorm (aNormArr[anId + 0],
                         aNormArr[anId + 1],
                         aNormArr[anId + 2]);
@@ -241,7 +243,7 @@ void asiAlgo_MeshComputeShapeNorms::Normal (const TopoDS_Face&  theFace,
 
   if (theFace.Orientation() == TopAbs_REVERSED)
   {
-    for (Standard_Integer aNodeIter = aNodes->Lower(); aNodeIter <= aNodes->Upper(); ++aNodeIter)
+    for (Standard_Integer aNodeIter = aNodes.Lower(); aNodeIter <= aNodes.Upper(); ++aNodeIter)
     {
       theNormals.ChangeValue (aNodeIter).Reverse();
     }

@@ -107,6 +107,7 @@ Handle(asiData_ClearanceNode)
 
   return node;
 #else
+  (void)owner;
   m_progress.SendLogMessage(LogErr(Normal) << "Mobius is not available.");
   return nullptr;
 #endif

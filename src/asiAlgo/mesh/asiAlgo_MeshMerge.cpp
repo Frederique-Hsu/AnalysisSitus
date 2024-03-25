@@ -228,7 +228,7 @@ namespace
       else
         xyz = LocalTri->Node(localNodeId).Transformed( Loc.Transformation() ).XYZ();
 
-      result->SetNode(localNodeId, xyz);
+      result->ChangeNode(localNodeId) = xyz;
     }
 
     // Add triangles taking into account face orientation.
@@ -244,7 +244,7 @@ namespace
         m[2] = n2;
       }
 
-      result->SetTriangle(i, Poly_Triangle(m[0], m[1], m[2]));
+      result->ChangeTriangle(i) = Poly_Triangle(m[0], m[1], m[2]);
     }
 
     // Build normals.
@@ -276,7 +276,7 @@ Handle(Poly_Triangulation)
   Handle(Poly_Triangulation)
     result = new Poly_Triangulation(nodeCount, triCount, false);
   //
-  result->AddNormals();
+  result->SetNormals(new TShort_HArray1OfShortReal(1, 3 * nodeCount));
 
   // The second pass is to compose the united triangulation.
   int globalNodeIdx = 1;
@@ -287,11 +287,11 @@ Handle(Poly_Triangulation)
     NCollection_DataMap<int, int> nodeMapping;
 
     // Pass nodes.
-    Handle(TColgp_HArray1OfPnt) nodes = T->MapNodeArray();
+    const TColgp_Array1OfPnt& nodes = T->Nodes();
     //
-    for ( int pidx = nodes->Lower(); pidx <= nodes->Upper(); ++pidx )
+    for ( int pidx = nodes.Lower(); pidx <= nodes.Upper(); ++pidx )
     {
-      result->SetNode(globalNodeIdx, nodes->Value(pidx));
+      result->ChangeNode(globalNodeIdx) = nodes(pidx);
 
       if ( T->HasNormals() )
         result->SetNormal( globalNodeIdx, T->Normal(pidx) );
@@ -300,15 +300,15 @@ Handle(Poly_Triangulation)
     }
 
     // Pass triangles.
-    Handle(Poly_HArray1OfTriangle) TT = T->MapTriangleArray();
+    const Poly_Array1OfTriangle& TT = T->Triangles();
     //
-    for ( int tidx = TT->Lower(); tidx <= TT->Upper(); ++tidx )
+    for ( int tidx = TT.Lower(); tidx <= TT.Upper(); ++tidx )
     {
       int nids[3];
-      TT->Value(tidx).Get(nids[0], nids[1], nids[2]);
+      TT(tidx).Get(nids[0], nids[1], nids[2]);
       int nnids[3] = {nodeMapping(nids[0]), nodeMapping(nids[1]), nodeMapping(nids[2])};
 
-      result->SetTriangle(globalTriangleIdx++, Poly_Triangle(nnids[0], nnids[1], nnids[2]));
+      result->ChangeTriangle(globalTriangleIdx++) = Poly_Triangle(nnids[0], nnids[1], nnids[2]);
     }
   }
 
@@ -449,6 +449,8 @@ void asiAlgo_MeshMerge::build(const TopoDS_Shape& body,
       }
     }
     // [END] Iterate over the faces
+#else
+    (void)storeFaceIds;
 #endif
   }
   /* OpenCascade-based data structures */

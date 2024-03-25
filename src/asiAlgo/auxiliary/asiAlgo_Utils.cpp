@@ -133,6 +133,7 @@ typedef rapidjson::Document::Object    t_jsonObject;
 #include <Geom2d_Line.hxx>
 #include <Geom2d_TrimmedCurve.hxx>
 #include <GeomAdaptor_Curve.hxx>
+#include <GeomAdaptor_HCurve.hxx>
 #include <GeomAPI_PointsToBSpline.hxx>
 #include <GeomConvert.hxx>
 #include <GeomFill_ConstrainedFilling.hxx>
@@ -974,6 +975,9 @@ void asiAlgo_Utils::Json::ReadPair(void*                                pJsonBlo
     else
       break;
   }
+#else
+  (void)pair;
+  (void)pJsonBlock;
 #endif
 }
 
@@ -992,6 +996,9 @@ void asiAlgo_Utils::Json::ReadCoords(void*   pJsonBlock,
   {
     coords.SetCoord( i++, it->GetDouble() );
   }
+#else
+  (void)coords;
+  (void)pJsonBlock;
 #endif
 }
 
@@ -2826,8 +2833,7 @@ bool asiAlgo_Utils::ReadIGES(const TCollection_AsciiString& filename,
 bool asiAlgo_Utils::WriteBRep(const TopoDS_Shape&            shape,
                               const TCollection_AsciiString& filename)
 {
-  return BRepTools::Write(shape, filename.ToCString(), false, false,
-                          TopTools_FormatVersion_VERSION_2);
+  return BRepTools::Write(shape, filename.ToCString());
 }
 
 //-----------------------------------------------------------------------------
@@ -3654,10 +3660,10 @@ bool asiAlgo_Utils::Fill4Contour(const std::vector<Handle(Geom_BSplineCurve)>& c
   if ( curves.size() != 4 )
     return false;
 
-  Handle(GeomFill_SimpleBound) b1 = new GeomFill_SimpleBound(new GeomAdaptor_Curve(curves[0]), 1e-3, 1e-2);
-  Handle(GeomFill_SimpleBound) b2 = new GeomFill_SimpleBound(new GeomAdaptor_Curve(curves[1]), 1e-3, 1e-2);
-  Handle(GeomFill_SimpleBound) b3 = new GeomFill_SimpleBound(new GeomAdaptor_Curve(curves[2]), 1e-3, 1e-2);
-  Handle(GeomFill_SimpleBound) b4 = new GeomFill_SimpleBound(new GeomAdaptor_Curve(curves[3]), 1e-3, 1e-2);
+  Handle(GeomFill_SimpleBound) b1 = new GeomFill_SimpleBound(new GeomAdaptor_HCurve(curves[0]), 1e-3, 1e-2);
+  Handle(GeomFill_SimpleBound) b2 = new GeomFill_SimpleBound(new GeomAdaptor_HCurve(curves[1]), 1e-3, 1e-2);
+  Handle(GeomFill_SimpleBound) b3 = new GeomFill_SimpleBound(new GeomAdaptor_HCurve(curves[2]), 1e-3, 1e-2);
+  Handle(GeomFill_SimpleBound) b4 = new GeomFill_SimpleBound(new GeomAdaptor_HCurve(curves[3]), 1e-3, 1e-2);
 
   GeomFill_ConstrainedFilling filling(3, 100);
   filling.Init(b1, b2, b3, b4);
@@ -3715,8 +3721,8 @@ bool asiAlgo_Utils::FillContourPlate(const std::vector<Handle(Geom_BSplineCurve)
     tang->SetValue(i, GeomAbs_C0);
     nbPtsCur->SetValue(i, 50); // Number of discretization points
 
-    Handle(GeomAdaptor_Curve)
-      curveAdt = new GeomAdaptor_Curve(curves[cidx]);
+    Handle(GeomAdaptor_HCurve)
+      curveAdt = new GeomAdaptor_HCurve(curves[cidx]);
 
     fronts->SetValue(i, curveAdt);
   }

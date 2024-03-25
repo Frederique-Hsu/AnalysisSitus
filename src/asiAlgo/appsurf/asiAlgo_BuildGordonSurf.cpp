@@ -63,6 +63,9 @@
 #include <CTiglCurveNetworkSorter.h>
 
 #ifdef USE_MOBIUS
+// STL includes
+#include <algorithm>
+
 using namespace mobius;
 #endif
 
@@ -379,6 +382,14 @@ void
 
   plotter.REDRAW_POINT("bndMaxDevPt",   bndMaxDevPt,   Color_Red);
   plotter.REDRAW_POINT("innerMaxDevPt", innerMaxDevPt, Color_Violet);
+#else
+  (void)surf;
+  (void)uEdges;
+  (void)vEdges;
+  (void)bndDev;
+  (void)innerDev;
+  (void)maxDev;
+  (void)plotter;
 #endif
 }
 

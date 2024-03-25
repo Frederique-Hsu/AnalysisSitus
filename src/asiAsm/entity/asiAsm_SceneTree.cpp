@@ -39,9 +39,11 @@
 // Standard includes
 #include <algorithm>
 
+#if defined USE_RAPIDJSON
 // Rapidjson includes
 #include <rapidjson/document.h>
 #include <rapidjson/istreamwrapper.h>
+#endif
 
 // OpenCascade include
 #include <BRepBuilderAPI_Transform.hxx>
@@ -49,9 +51,10 @@
 
 //-----------------------------------------------------------------------------
 
+#if defined USE_RAPIDJSON
 typedef rapidjson::Document::Array     t_jsonArray;
 typedef rapidjson::Document::ValueType t_jsonValue;
-
+#endif
 
 //! Base assembly tree child item.
 class asiAsm_SceneTree_Child : public Standard_Transient
@@ -93,6 +96,7 @@ class asiAsm_SceneTree_Child : public Standard_Transient
     static void FromJSON(void*                                 pJsonBlock,
                          const Handle(asiAsm_SceneTree_Child)& value)
     {
+#if defined USE_RAPIDJSON
       t_jsonValue*
         pJsonObj = reinterpret_cast< t_jsonValue* >( pJsonBlock );
 
@@ -125,6 +129,10 @@ class asiAsm_SceneTree_Child : public Standard_Transient
           value->fromJSON( prop, &mit->value );
         }
       }
+#else
+      (void)value;
+      (void)pJsonBlock;
+#endif
     }
 
   //! Converts the passed data structure to JSON (the passed `out` stream).
@@ -192,6 +200,7 @@ class asiAsm_SceneTree_Part : public asiAsm_SceneTree_Child
     virtual void fromJSON(const std::string& prop,
                           void*              pJsonBlock) override
     {
+#if defined USE_RAPIDJSON
       t_jsonValue*
         pJsonObj = reinterpret_cast< t_jsonValue* >( pJsonBlock );
 
@@ -204,6 +213,10 @@ class asiAsm_SceneTree_Part : public asiAsm_SceneTree_Child
       {
         this->shape = pJsonObj->GetString();
       }
+#else
+      (void)prop;
+      (void)pJsonBlock;
+#endif
     }
 
     //! Dumps this part data structure to JSON (the passed `out` stream).
@@ -259,6 +272,7 @@ class asiAsm_SceneTree_Assembly : public asiAsm_SceneTree_Child
     virtual void fromJSON(const std::string& prop,
                           void*              pJsonBlock) override
     {
+#if defined USE_RAPIDJSON
       t_jsonValue*
         pJsonObj = reinterpret_cast< t_jsonValue* >( pJsonBlock );
 
@@ -269,6 +283,10 @@ class asiAsm_SceneTree_Assembly : public asiAsm_SceneTree_Child
 
         asiAlgo_Utils::Json::ReadVector( &arr, children );
       }
+#else
+      (void)prop;
+      (void)pJsonBlock;
+#endif
     }
 
     //! Dumps this assembly data structure to JSON (the passed `out` stream).
@@ -341,6 +359,7 @@ class asiAsm_SceneTree_Instance : public asiAsm_SceneTree_Child
     virtual void fromJSON(const std::string& prop,
                           void*              pJsonBlock) override
     {
+#if defined USE_RAPIDJSON
       t_jsonValue*
         pJsonObj = reinterpret_cast< t_jsonValue* >( pJsonBlock );
 
@@ -374,6 +393,10 @@ class asiAsm_SceneTree_Instance : public asiAsm_SceneTree_Child
         if (coords.Modulus() > RealEpsilon())
           this->translation = coords;
       }
+#else
+      (void)prop;
+      (void)pJsonBlock;
+#endif
     }
 
     //! Dumps this assembly data structure to JSON (the passed `out` stream).
@@ -835,6 +858,7 @@ const std::vector<int>&
 void asiAsm_SceneTree::FromJSON(std::ifstream&    in,
                                 asiAsm_SceneTree& info)
 {
+#if defined USE_RAPIDJSON
   // Populate JSON document.
   rapidjson::Document doc;
   rapidjson::IStreamWrapper streamWrapper(in);
@@ -845,6 +869,10 @@ void asiAsm_SceneTree::FromJSON(std::ifstream&    in,
     return;
 
   asiAsm_SceneTree::FromJSON(&it->value, info);
+#else
+  (void)in;
+  (void)info;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -852,6 +880,7 @@ void asiAsm_SceneTree::FromJSON(std::ifstream&    in,
 void asiAsm_SceneTree::FromJSON(void*             pJsonGenericObj,
                                 asiAsm_SceneTree& info)
 {
+#if defined USE_RAPIDJSON
   t_jsonValue*
     pJsonObj = reinterpret_cast< t_jsonValue* >( pJsonGenericObj );
 
@@ -904,6 +933,10 @@ void asiAsm_SceneTree::FromJSON(void*             pJsonGenericObj,
       readChildren< asiAsm_SceneTree_Instance >( &arr, info.m_instances );
     }
   }
+#else
+  (void)pJsonGenericObj;
+  (void)info;
+#endif
 }
 
 //-----------------------------------------------------------------------------

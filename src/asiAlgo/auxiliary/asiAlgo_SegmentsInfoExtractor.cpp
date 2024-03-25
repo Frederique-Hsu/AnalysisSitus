@@ -38,6 +38,7 @@
 #include <BRep_Tool.hxx>
 #include <BRepGProp.hxx>
 #include <Geom_Curve.hxx>
+#include <gp_Circ.hxx>
 #include <GProp_GProps.hxx>
 #include <ShapeExtend_WireData.hxx>
 #include <TopExp_Explorer.hxx>

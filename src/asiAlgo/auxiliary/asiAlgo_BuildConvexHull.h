@@ -40,6 +40,7 @@
 // OCCT includes
 #include <gp_Pnt.hxx>
 #include <Poly_Triangulation.hxx>
+#include <TColgp_Array1OfPnt.hxx>
 
 // STL includes
 #include <vector>
@@ -94,8 +95,8 @@ public:
   //! \param[out] hull the resulting convex hull.
   //! \return true in the case of success, false -- otherwise.
   asiAlgo_EXPORT bool
-    Perform(const Handle(TColgp_HArray1OfPnt)& data,
-            Handle(Poly_Triangulation)&        hull);
+    Perform(const TColgp_Array1OfPnt&   data,
+            Handle(Poly_Triangulation)& hull);
 
 };
 

@@ -323,8 +323,8 @@ Handle(Geom_Surface)
 
   ShapeAnalysis_Surface sas(newSurf); // For general-case projection.
 
-  Handle(GeomAdaptor_Surface)
-    SurfAdapt = new GeomAdaptor_Surface(newSurf);
+  Handle(GeomAdaptor_HSurface)
+    SurfAdapt = new GeomAdaptor_HSurface(newSurf);
 
   const int              NP = 21;
   double                 S = 0., T = 0.;

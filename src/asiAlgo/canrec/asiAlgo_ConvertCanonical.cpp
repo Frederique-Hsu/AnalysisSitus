@@ -103,7 +103,7 @@ namespace
           locModified = true;
         }
 
-        res.Location(L, false);
+        res.Location(L);
         B.Add(C, res);
       }
 

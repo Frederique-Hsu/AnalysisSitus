@@ -149,6 +149,8 @@ void asiData_ClearanceNode::SetMeshWithScalars(const asiAlgo_MeshWithFields& mes
     ActParamTool::AsIntArray( this->Parameter(PID_ClearanceFieldIds) )->SetArray(nullptr);
     ActParamTool::AsRealArray( this->Parameter(PID_ClearanceFieldValues) )->SetArray(nullptr);
   }
+#else
+  (void)mesh;
 #endif
 }
 
