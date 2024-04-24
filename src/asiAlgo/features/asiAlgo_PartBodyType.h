@@ -46,16 +46,19 @@
 //! exploded to the primitive bodies, such as solids.
 enum asiAlgo_PartBodyType
 {
-  PartBodyType_Unrecognized = 0, //!< Pending for recognition.
-  PartBodyType_FlatShape,        //!< Sheet metal body without folds.
-  PartBodyType_FoldedSheetMetal, //!< Folded sheet metal body.
-  PartBodyType_RectTube,         //!< Rectangular tube body.
-  PartBodyType_CylTube,          //!< Cylindrical tube body.
-  PartBodyType_OtherTube,        //!< Other type of tube.
-  PartBodyType_Profile,          //!< Sheet metal profile.
-  PartBodyType_CncMilling,       //!< CNC milled body.
-  PartBodyType_CncLathe,         //!< CNC lathed body.
-  PartBodyType_CncLatheMilling   //!< CNC lathed body, (optionally) combined with milling.
+  PartBodyType_Unrecognized = 0,    //!< Pending for recognition.
+  PartBodyType_FlatShape,           //!< Sheet metal body without folds.
+  PartBodyType_FoldedSheetMetal,    //!< Folded sheet metal body.
+  PartBodyType_RectTube,            //!< Rectangular tube body.
+  PartBodyType_CylTube,             //!< Cylindrical tube body.
+  PartBodyType_RoundBentTube,       //!< Round bent tube body.
+  PartBodyType_RectangularBentTube, //!< Rectangular bent tube body.
+  PartBodyType_BentWire,            //!< Bent wire body.
+  PartBodyType_OtherTube,           //!< Other type of tube.
+  PartBodyType_Profile,             //!< Sheet metal profile.
+  PartBodyType_CncMilling,          //!< CNC milled body.
+  PartBodyType_CncLathe,            //!< CNC lathed body.
+  PartBodyType_CncLatheMilling      //!< CNC lathed body, (optionally) combined with milling.
 };
 
 //-----------------------------------------------------------------------------
@@ -76,6 +79,9 @@ namespace asiAlgo_PartBodyTypeUtils
       case PartBodyType_FoldedSheetMetal:
       case PartBodyType_RectTube:
       case PartBodyType_CylTube:
+      case PartBodyType_RoundBentTube:
+      case PartBodyType_RectangularBentTube:
+      case PartBodyType_BentWire:
       case PartBodyType_OtherTube:
       case PartBodyType_Profile:
         return true;
@@ -101,6 +107,9 @@ namespace asiAlgo_PartBodyTypeUtils
       case PartBodyType_FoldedSheetMetal:
       case PartBodyType_RectTube:
       case PartBodyType_CylTube:
+      case PartBodyType_RoundBentTube:
+      case PartBodyType_RectangularBentTube:
+      case PartBodyType_BentWire:
       case PartBodyType_OtherTube:
       case PartBodyType_Profile:
       case PartBodyType_Unrecognized:
@@ -127,6 +136,9 @@ namespace asiAlgo_PartBodyTypeUtils
         return true;
       case PartBodyType_RectTube:
       case PartBodyType_CylTube:
+      case PartBodyType_RoundBentTube:
+      case PartBodyType_RectangularBentTube:
+      case PartBodyType_BentWire:
       case PartBodyType_Unrecognized:
       case PartBodyType_OtherTube:
       case PartBodyType_Profile:
@@ -155,6 +167,9 @@ namespace asiAlgo_PartBodyTypeUtils
       case PartBodyType_Unrecognized:
       case PartBodyType_FlatShape:
       case PartBodyType_FoldedSheetMetal:
+      case PartBodyType_RoundBentTube:
+      case PartBodyType_RectangularBentTube:
+      case PartBodyType_BentWire:
       case PartBodyType_CncMilling:
       case PartBodyType_CncLathe:
       case PartBodyType_CncLatheMilling:
@@ -172,16 +187,19 @@ namespace asiAlgo_PartBodyTypeUtils
   {
     switch ( type )
     {
-      case PartBodyType_Unrecognized:     return asiPropVal_Type_Unrecognized;
-      case PartBodyType_FlatShape:        return asiPropVal_Type_FlatShape;
-      case PartBodyType_FoldedSheetMetal: return asiPropVal_Type_FoldedSheetMetal;
-      case PartBodyType_RectTube:         return asiPropVal_Type_RectTube;
-      case PartBodyType_CylTube:          return asiPropVal_Type_CylTube;
-      case PartBodyType_OtherTube:        return asiPropVal_Type_OtherTube;
-      case PartBodyType_Profile:          return asiPropVal_Type_Profile;
-      case PartBodyType_CncMilling:       return asiPropVal_Type_CncMilling;
-      case PartBodyType_CncLathe:         return asiPropVal_Type_CncLathe;
-      case PartBodyType_CncLatheMilling:  return asiPropVal_Type_CncLatheMilling;
+      case PartBodyType_Unrecognized:        return asiPropVal_Type_Unrecognized;
+      case PartBodyType_FlatShape:           return asiPropVal_Type_FlatShape;
+      case PartBodyType_FoldedSheetMetal:    return asiPropVal_Type_FoldedSheetMetal;
+      case PartBodyType_RectTube:            return asiPropVal_Type_RectTube;
+      case PartBodyType_CylTube:             return asiPropVal_Type_CylTube;
+      case PartBodyType_RoundBentTube:       return asiPropVal_Type_RoundBentTube;
+      case PartBodyType_RectangularBentTube: return asiPropVal_Type_RectangularBentTube;
+      case PartBodyType_BentWire:            return asiPropVal_Type_BentWire;
+      case PartBodyType_OtherTube:           return asiPropVal_Type_OtherTube;
+      case PartBodyType_Profile:             return asiPropVal_Type_Profile;
+      case PartBodyType_CncMilling:          return asiPropVal_Type_CncMilling;
+      case PartBodyType_CncLathe:            return asiPropVal_Type_CncLathe;
+      case PartBodyType_CncLatheMilling:     return asiPropVal_Type_CncLatheMilling;
       default: break;
     }
 
@@ -203,6 +221,12 @@ namespace asiAlgo_PartBodyTypeUtils
       return PartBodyType_RectTube;
     if ( name == asiPropVal_Type_CylTube )
       return PartBodyType_CylTube;
+    if (name == asiPropVal_Type_RoundBentTube)
+      return PartBodyType_RoundBentTube;
+    if (name == asiPropVal_Type_RectangularBentTube)
+      return PartBodyType_RectangularBentTube;
+    if (name == asiPropVal_Type_BentWire)
+      return PartBodyType_BentWire;
     if ( name == asiPropVal_Type_OtherTube )
       return PartBodyType_OtherTube;
     if ( name == asiPropVal_Type_Profile )
@@ -224,16 +248,19 @@ namespace asiAlgo_PartBodyTypeUtils
   {
     switch ( type )
     {
-      case PartBodyType_Unrecognized:     return ActAPI_Color(255./255, 130./255, 130./255, Quantity_TOC_RGB);
-      case PartBodyType_FlatShape:        return ActAPI_Color(165./255, 222./255, 230./255, Quantity_TOC_RGB);
-      case PartBodyType_FoldedSheetMetal: return ActAPI_Color(190./255, 230./255, 140./255, Quantity_TOC_RGB);
-      case PartBodyType_RectTube:         return ActAPI_Color(160./255, 130./255, 250./255, Quantity_TOC_RGB);
-      case PartBodyType_CylTube:          return ActAPI_Color(230./255, 180./255, 250./255, Quantity_TOC_RGB);
-      case PartBodyType_OtherTube:        return ActAPI_Color(255./255, 190./255, 117./255, Quantity_TOC_RGB);
-      case PartBodyType_Profile:          return ActAPI_Color(170./255, 190./255, 200./255, Quantity_TOC_RGB);
-      case PartBodyType_CncMilling:       return ActAPI_Color(  0./255, 228./255,   0./255, Quantity_TOC_RGB);
-      case PartBodyType_CncLathe:         return ActAPI_Color(  0./255, 228./255, 100./255, Quantity_TOC_RGB);
-      case PartBodyType_CncLatheMilling:  return ActAPI_Color(  0./255, 228./255, 228./255, Quantity_TOC_RGB);
+      case PartBodyType_Unrecognized:        return ActAPI_Color(255./255, 130./255, 130./255, Quantity_TOC_RGB);
+      case PartBodyType_FlatShape:           return ActAPI_Color(165./255, 222./255, 230./255, Quantity_TOC_RGB);
+      case PartBodyType_FoldedSheetMetal:    return ActAPI_Color(190./255, 230./255, 140./255, Quantity_TOC_RGB);
+      case PartBodyType_RectTube:            return ActAPI_Color(160./255, 130./255, 250./255, Quantity_TOC_RGB);
+      case PartBodyType_CylTube:             return ActAPI_Color(230./255, 180./255, 250./255, Quantity_TOC_RGB);
+      case PartBodyType_RoundBentTube:       return ActAPI_Color(200./255, 180./255, 250./255, Quantity_TOC_RGB);
+      case PartBodyType_RectangularBentTube: return ActAPI_Color(160./255, 180./255, 250./255, Quantity_TOC_RGB);
+      case PartBodyType_BentWire:            return ActAPI_Color(180./255, 180./255, 250./255, Quantity_TOC_RGB);
+      case PartBodyType_OtherTube:           return ActAPI_Color(255./255, 190./255, 117./255, Quantity_TOC_RGB);
+      case PartBodyType_Profile:             return ActAPI_Color(170./255, 190./255, 200./255, Quantity_TOC_RGB);
+      case PartBodyType_CncMilling:          return ActAPI_Color(  0./255, 228./255,   0./255, Quantity_TOC_RGB);
+      case PartBodyType_CncLathe:            return ActAPI_Color(  0./255, 228./255, 100./255, Quantity_TOC_RGB);
+      case PartBodyType_CncLatheMilling:     return ActAPI_Color(  0./255, 228./255, 228./255, Quantity_TOC_RGB);
       default: break;
     }
 
