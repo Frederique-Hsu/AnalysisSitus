@@ -94,6 +94,7 @@ set (aux_H_FILES
   auxiliary/asiAlgo_CSG.h
   auxiliary/asiAlgo_DesignLaw.h
   auxiliary/asiAlgo_DivideByContinuity.h
+  auxiliary/asiAlgo_FaceGrid.h
   auxiliary/asiAlgo_FaceProbe.h
   auxiliary/asiAlgo_FindVisibleFaces.h
   auxiliary/asiAlgo_FuncUnivariate.h

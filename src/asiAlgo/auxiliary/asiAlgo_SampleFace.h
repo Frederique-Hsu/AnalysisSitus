@@ -35,9 +35,8 @@
 #include <asiAlgo_BaseCloud.h>
 #include <asiAlgo_DiscrClassifier2d.h>
 #include <asiAlgo_DiscrModel.h>
-#include <asiAlgo_FaceProbe.h>
+#include <asiAlgo_FaceGrid.h>
 #include <asiAlgo_Membership.h>
-#include <asiAlgo_UniformGrid.h>
 
 // Active Data includes
 #include <ActAPI_IAlgorithm.h>
@@ -46,8 +45,6 @@
 #include <IntTools_FClass2d.hxx>
 #include <TopoDS_Face.hxx>
 #include <TopoDS_Wire.hxx>
-
-typedef asiAlgo_UniformGrid<float, asiAlgo_FaceProbe> asiAlgo_FaceGrid;
 
 //-----------------------------------------------------------------------------
 
