@@ -78,6 +78,16 @@
 #define ZAXIS_G 150./255.
 #define ZAXIS_B 255./255.
 
+#define UNDEFINED_R 100./255.
+#define UNDEFINED_G 100./255.
+#define UNDEFINED_B 100./255.
+#define CONVEX_R    140./255.
+#define CONVEX_G    220./255.
+#define CONVEX_B    40./255.
+#define CONCAVE_R   250./255.
+#define CONCAVE_G   60./255.
+#define CONCAVE_B   15./255.
+
 //-----------------------------------------------------------------------------
 
 //! Pointer to Node allocation routine.
@@ -152,6 +162,17 @@ enum asiVisu_CurviAxis
   VisuCurviAxis_U         =  0,
   VisuCurviAxis_V         =  1,
   VisuCurviAxis_Last
+};
+
+//-----------------------------------------------------------------------------
+
+//! Vexity.
+enum asiVisu_Vexity
+{
+  VisuVexity_Undefined = 0,
+  VisuVexity_Concave   = 1,
+  VisuVexity_Convex    = 2,
+  VisuVexity_Last
 };
 
 //-----------------------------------------------------------------------------
@@ -331,6 +352,9 @@ public:
 
   asiVisu_EXPORT static vtkSmartPointer<vtkLookupTable>
     InitCurviAxesLookupTable();
+
+  asiVisu_EXPORT static vtkSmartPointer<vtkLookupTable>
+    InitVexityLookupTable();
 
   asiVisu_EXPORT static void
     InitMapper(vtkMapper*      theMapper,

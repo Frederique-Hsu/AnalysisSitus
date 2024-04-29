@@ -45,6 +45,7 @@ set (filters_CPP_FILES
 #------------------------------------------------------------------------------
 
 set (pipelines_H_FILES
+  pipelines/asiVisu_AdjGraphPipeline.h
   pipelines/asiVisu_AxesPipeline.h
   pipelines/asiVisu_BCurveHandlesPipeline.h
   pipelines/asiVisu_BCurveKnotsPipeline.h
@@ -93,6 +94,7 @@ set (pipelines_H_FILES
   pipelines/asiVisu_VectorsPipeline.h
 )
 set (pipelines_CPP_FILES 
+  pipelines/asiVisu_AdjGraphPipeline.cpp
   pipelines/asiVisu_AxesPipeline.cpp
   pipelines/asiVisu_BCurveHandlesPipeline.cpp
   pipelines/asiVisu_BCurveKnotsPipeline.cpp
@@ -233,6 +235,7 @@ set (presentations_CPP_FILES
 #------------------------------------------------------------------------------
 
 set (providers_H_FILES
+  providers/asiVisu_AdjGraphDataProvider.h
   providers/asiVisu_AxesDataProvider.h
   providers/asiVisu_ClearanceDataProvider.h
   providers/asiVisu_ContourDataProvider.h
@@ -283,6 +286,7 @@ set (providers_H_FILES
   providers/asiVisu_VectorsDataProvider.h
 )
 set (providers_CPP_FILES
+  providers/asiVisu_AdjGraphDataProvider.cpp
   providers/asiVisu_AxesDataProvider.cpp
   providers/asiVisu_ClearanceDataProvider.cpp
   providers/asiVisu_ContourDataProvider.cpp
@@ -352,6 +356,7 @@ set (selection_CPP_FILES
 #------------------------------------------------------------------------------
 
 set (sources_H_FILES
+  sources/asiVisu_AdjGraphSource.h
   sources/asiVisu_AxesSource.h
   sources/asiVisu_BCurveHandlesSource.h
   sources/asiVisu_BCurveKnotsSource.h
@@ -386,6 +391,7 @@ set (sources_H_FILES
   sources/asiVisu_TriangleSource.h
 )
 set (sources_CPP_FILES 
+  sources/asiVisu_AdjGraphSource.cpp
   sources/asiVisu_AxesSource.cpp
   sources/asiVisu_BCurveHandlesSource.cpp
   sources/asiVisu_BCurveKnotsSource.cpp

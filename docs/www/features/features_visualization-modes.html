@@ -139,6 +139,48 @@
 
 <div align="center"><img src="../imgs/bbox-hlr.gif"/></div>
 
+<h2 id="toc-modes-aag">AAG</h2>
+
+<h3 id="toc-modes-aag-formal">Graph view</h3>
+
+<p>
+  To explore AAG of the current part, click one of the "Show AAG..." buttons from the "Analysis" tab in the UI. Clicking these buttons opens a dialog window in which AAG is represented as an undirected graph, with nodes representing CAD faces and arcs representing their adjacency relationships.
+</p>
+
+<div align="center"><a href="../imgs/aag-parameter-editor.png"><img src="../imgs/aag-parameter-editor.png" width="60%"/></a></div>
+
+<p>
+  Each graph arc is colored to report the dihedral angle type according to the following color codes:
+</p>
+
+<table>
+  <tr>
+    <td class="code-cell" style="background-color: #ff5136; color: black;">Concave</td>
+  </tr>
+  <tr>
+    <td class="code-cell" style="background-color: #68C800; color: black;">Convex</td>
+  </tr>
+  <tr>
+    <td class="code-cell" style="background-color: #bcbcbc; color: black;">Undefined</td>
+  </tr>
+</table>
+
+<p>
+  The graph nodes are selectable: picking a node in the graph view highlights the corresponding face in the active part.
+</p>
+
+<h3 id="toc-modes-aag-embedded">Embedded view</h3>
+
+<p>
+  Turning on the "Render AAG" checkbox in the Part Node allows you to see AAG in the 3D scene alongside the active part.
+</p>
+
+<div align="center"><a href="../imgs/aag_embedded.png"><img src="../imgs/aag_embedded.png" width="60%"/></a></div>
+
+<p>
+  This option does not allow you to interactively select the graph nodes or change the graph layout anyhow.
+</p>
+
 <!-- [END] contents -->
 </div>
 <br/>

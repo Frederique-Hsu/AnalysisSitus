@@ -5762,6 +5762,28 @@ bool asiAlgo_Utils::GetLocalFrame(const TopoDS_Face& face,
 
 //-----------------------------------------------------------------------------
 
+bool asiAlgo_Utils::GetFaceNorm(const TopoDS_Face& face,
+                                const double       u,
+                                const double       v,
+                                gp_Ax1&            axis)
+{
+  // Evaluate surface.
+  gp_Pnt P;
+  gp_Vec Du, Dv;
+  BRepAdaptor_Surface bas(face, false);
+  bas.D1(u, v, P, Du, Dv);
+
+  // Compute oriented norm.
+  gp_Dir ON = (face.Orientation() == TopAbs_REVERSED ? Dv^Du : Du^Dv);
+
+  // Prepare axes.
+  axis = gp_Ax1(P, ON);
+
+  return true;
+}
+
+//-----------------------------------------------------------------------------
+
 bool asiAlgo_Utils::ComputeBorderTrihedron(const TopoDS_Face&       face,
                                            const TopoDS_Edge&       edge,
                                            const double             t,

@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
-// Created on: 29 January 2018
+// Created on: 27 April 2024
 //-----------------------------------------------------------------------------
-// Copyright (c) 2017-2018, Sergey Slyadnev
+// Copyright (c) 2024-present, Sergey Slyadnev
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -29,11 +29,11 @@
 //-----------------------------------------------------------------------------
 
 // Own include
-#include <asiVisu_CurvatureCombsPipeline.h>
+#include <asiVisu_AdjGraphPipeline.h>
 
 // asiVisu includes
-#include <asiVisu_CurvatureCombsDataProvider.h>
-#include <asiVisu_CurvatureCombsSource.h>
+#include <asiVisu_AdjGraphDataProvider.h>
+#include <asiVisu_AdjGraphSource.h>
 
 // VTK includes
 #include <vtkActor.h>
@@ -42,7 +42,7 @@
 #include <vtkProperty.h>
 
 //! Creates new Pipeline initialized by default VTK mapper and actor.
-asiVisu_CurvatureCombsPipeline::asiVisu_CurvatureCombsPipeline()
+asiVisu_AdjGraphPipeline::asiVisu_AdjGraphPipeline()
 //
 : asiVisu_Pipeline   ( vtkSmartPointer<vtkPolyDataMapper>::New(), vtkSmartPointer<vtkActor>::New() ),
   m_bMapperColorsSet ( false )
@@ -52,18 +52,19 @@ asiVisu_CurvatureCombsPipeline::asiVisu_CurvatureCombsPipeline()
 
 //! Sets input data for the pipeline.
 //! \param[in] DP Data Provider.
-void asiVisu_CurvatureCombsPipeline::SetInput(const Handle(asiVisu_DataProvider)& DP)
+void asiVisu_AdjGraphPipeline::SetInput(const Handle(asiVisu_DataProvider)& DP)
 {
-  Handle(asiVisu_CurvatureCombsDataProvider)
-    dp = Handle(asiVisu_CurvatureCombsDataProvider)::DownCast(DP);
+  Handle(asiVisu_AdjGraphDataProvider)
+    dp = Handle(asiVisu_AdjGraphDataProvider)::DownCast(DP);
 
   /* ===========================
    *  Validate input Parameters
    * =========================== */
 
-  Handle(Standard_Type) curve_type = dp->GetCurveType();
+  Handle(asiAlgo_AAG) aag      = dp->GetAAG();
+  const bool          renderOn = dp->IsRenderAAG();
   //
-  if ( curve_type.IsNull() )
+  if ( aag.IsNull() || !renderOn )
   {
     // Pass empty data set in order to have valid pipeline
     vtkSmartPointer<vtkPolyData> dummyDS = vtkSmartPointer<vtkPolyData>::New();
@@ -78,33 +79,11 @@ void asiVisu_CurvatureCombsPipeline::SetInput(const Handle(asiVisu_DataProvider)
 
   if ( dp->MustExecute( this->GetMTime() ) )
   {
-    std::vector<gp_Pnt> points;
-    std::vector<bool>   pointsOk;
-    std::vector<double> params;
-    std::vector<double> curvatures;
-    std::vector<gp_Vec> combs;
+    // Graph source.
+    vtkSmartPointer<asiVisu_AdjGraphSource>
+      src = vtkSmartPointer<asiVisu_AdjGraphSource>::New();
     //
-    dp->GetPoints         (points);
-    dp->GetPointsStatuses (pointsOk);
-    dp->GetParameters     (params);
-    dp->GetCurvatures     (curvatures);
-    dp->GetCombs          (combs);
-
-    // Curvature combs source
-    double f, l;
-    vtkSmartPointer<asiVisu_CurvatureCombsSource>
-      src = vtkSmartPointer<asiVisu_CurvatureCombsSource>::New();
-    //
-    src->SetCombScaleFactor ( dp->GetScaleFactor() );
-    src->SetCurvatureField  ( points, pointsOk, params, curvatures, combs );
-    //
-    if ( curve_type->SubType( STANDARD_TYPE(Geom_Curve) ) )
-    {
-      Handle(Geom_Curve) curve = dp->GetCurve(f, l);
-      src->SetInputCurve(curve, f, l);
-    }
-    else
-      Standard_ProgramError::Raise("Not yet implemented");
+    src->SetInputGraph(aag);
 
     // Initialize pipeline
     this->SetInputConnection( src->GetOutputPort() );
@@ -118,20 +97,20 @@ void asiVisu_CurvatureCombsPipeline::SetInput(const Handle(asiVisu_DataProvider)
 
 //! Callback for AddToRenderer() routine. Good place to adjust visualization
 //! properties of the pipeline's actor.
-void asiVisu_CurvatureCombsPipeline::callback_add_to_renderer(vtkRenderer*)
+void asiVisu_AdjGraphPipeline::callback_add_to_renderer(vtkRenderer*)
 {}
 
 //! Callback for RemoveFromRenderer() routine.
-void asiVisu_CurvatureCombsPipeline::callback_remove_from_renderer(vtkRenderer*)
+void asiVisu_AdjGraphPipeline::callback_remove_from_renderer(vtkRenderer*)
 {}
 
 //! Callback for Update() routine.
-void asiVisu_CurvatureCombsPipeline::callback_update()
+void asiVisu_AdjGraphPipeline::callback_update()
 {
   if ( !m_bMapperColorsSet )
   {
-    vtkSmartPointer<vtkLookupTable> lookup = asiVisu_Utils::InitCurvatureCombsLookupTable();
-    asiVisu_Utils::InitMapper(m_mapper, lookup, ARRNAME_CURVCOMBS_SCALARS);
+    vtkSmartPointer<vtkLookupTable> lookup = asiVisu_Utils::InitVexityLookupTable();
+    asiVisu_Utils::InitMapper(m_mapper, lookup, ARRNAME_VEXITY_SCALARS);
     m_bMapperColorsSet = true;
   }
 }

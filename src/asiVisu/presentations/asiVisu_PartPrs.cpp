@@ -32,6 +32,8 @@
 #include <asiVisu_PartPrs.h>
 
 // asiVisu includes
+#include <asiVisu_AdjGraphDataProvider.h>
+#include <asiVisu_AdjGraphPipeline.h>
 #include <asiVisu_PartDataProvider.h>
 #include <asiVisu_PartEdgesPipeline.h>
 #include <asiVisu_PartPipeline.h>
@@ -118,6 +120,29 @@ asiVisu_PartPrs::asiVisu_PartPrs(const Handle(ActAPI_INode)& N) : asiVisu_Prs(N)
   //
   this->addPipeline        ( Pipeline_Contour, contour_pl );
   this->assignDataProvider ( Pipeline_Contour, dp );
+
+  /* ==============================
+   *  Pipeline for adjacency graph.
+   * ============================== */
+
+  // Create Data Provider.
+  Handle(asiVisu_AdjGraphDataProvider)
+    aag_dp = new asiVisu_AdjGraphDataProvider(partNode);
+
+  // Create pipeline for graph.
+  Handle(asiVisu_AdjGraphPipeline)
+    aag_pl = new asiVisu_AdjGraphPipeline();
+
+  // Adjust props. Notice that for the edges we disable lightning as we
+  // do not want to allow color blending (colors are too meaningful to be
+  // changed).
+  aag_pl->Actor()->GetProperty()->SetPointSize(8.0f);
+  aag_pl->Actor()->GetProperty()->SetLineWidth(2.25f);
+  aag_pl->Actor()->SetPickable(0);
+  aag_pl->Actor()->GetProperty()->LightingOff();
+  //
+  this->addPipeline        ( Pipeline_AAG, aag_pl );
+  this->assignDataProvider ( Pipeline_AAG, aag_dp );
 }
 
 //-----------------------------------------------------------------------------

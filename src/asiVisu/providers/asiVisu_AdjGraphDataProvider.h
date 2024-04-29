@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-// Created on: 25 April 2024
+// Created on: 27 April 2024
 //-----------------------------------------------------------------------------
 // Copyright (c) 2024-present, Sergey Slyadnev
 // All rights reserved.
@@ -28,27 +28,66 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-----------------------------------------------------------------------------
 
-#ifndef asiAlgo_FaceProbe_h
-#define asiAlgo_FaceProbe_h
+#ifndef asiVisu_AdjGraphDataProvider_h
+#define asiVisu_AdjGraphDataProvider_h
 
-// asiAlgo includes
-#include <asiAlgo.h>
+// asiVisu includes
+#include <asiVisu_DataProvider.h>
 
-// OpenCascade includes
-#include <gp_Vec.hxx>
+// asiData includes
+#include <asiData_PartNode.h>
 
-//-----------------------------------------------------------------------------
+// VTK includes
+#include <vtkSmartPointer.h>
+#include <vtkTransform.h>
 
-//! \ingroup ASI_MODELING
-//!
-//! Point data probed at a face.
-struct asiAlgo_FaceProbe
+//! Data provider for AAG from the Part Node.
+class asiVisu_AdjGraphDataProvider : public asiVisu_DataProvider
 {
-  float  s; //!< Scalar.
-  gp_Pnt P; //!< Face point.
-  gp_Vec N; //!< Face normal at a point.
+  // OCCT RTTI
+  DEFINE_STANDARD_RTTI_INLINE(asiVisu_AdjGraphDataProvider, asiVisu_DataProvider)
 
-  asiAlgo_FaceProbe() : s(0.) {} //!< Default ctor.
+public:
+
+  //! Ctor.
+  asiVisu_EXPORT
+    asiVisu_AdjGraphDataProvider(const Handle(asiData_PartNode)& partNode);
+
+protected:
+
+  //! Protected ctor.
+  asiVisu_EXPORT
+    asiVisu_AdjGraphDataProvider();
+
+public:
+
+  //! Returns ID of the Data Node which is being sourced by the visualization
+  //! pipeline.
+  //! \return Node ID.
+  asiVisu_EXPORT virtual ActAPI_DataObjectId
+    GetNodeID() const;
+
+  //! \return the active Part's AAG.
+  asiVisu_EXPORT virtual Handle(asiAlgo_AAG)
+    GetAAG() const;
+
+  //! \return the Boolean flag activating/deactivating the AAG rendering mode.
+  asiVisu_EXPORT virtual bool
+    IsRenderAAG() const;
+
+protected:
+
+  //! Enumerates Data Parameters playing as sources for DOMAIN -> VTK
+  //! translation process.
+  //! \return source Parameters.
+  virtual Handle(ActAPI_HParameterList)
+    translationSources() const;
+
+protected:
+
+  //! Source Node.
+  Handle(asiData_PartNode) m_node;
+
 };
 
 #endif

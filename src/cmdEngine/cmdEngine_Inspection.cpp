@@ -4142,14 +4142,14 @@ int ENGINE_BuildFaceGrid(const Handle(asiTcl_Interp)& interp,
     sampleFace.SetSquare  ( interp->HasKeyword(argc, argv, "square") );
     sampleFace.SetPmcAlgo ( pmcAlgo );
     //
-    if ( !sampleFace.Perform(numBins, numBins) )
+    if ( !sampleFace.Perform( numBins, numBins, true, interp->HasKeyword(argc, argv, "norms") ) )
     {
       interp->GetProgress().SendLogMessage(LogErr(Normal) << "Failed to sample the face.");
       return TCL_ERROR;
     }
     //
-    const opencascade::handle< asiAlgo_UniformGrid<float, asiAlgo_FaceProbe> >& grid       = sampleFace.GetResult();
-    const Handle(asiAlgo::discr::Model)&                                        discrModel = sampleFace.GetDiscrModel();
+    const Handle(asiAlgo_FaceGrid)&      grid       = sampleFace.GetResult();
+    const Handle(asiAlgo::discr::Model)& discrModel = sampleFace.GetDiscrModel();
 
     TIMER_FINISH
     TIMER_COUT_RESULT_NOTIFIER(interp->GetProgress(), "Build face grid")
@@ -4210,7 +4210,17 @@ int ENGINE_BuildFaceGrid(const Handle(asiTcl_Interp)& interp,
       cmdEngine::cf->ViewerPart->PrsMgr()->Actualize(discrFaceNode);
 
     // Draw the sampled points in 3D.
-    interp->GetPlotter().REDRAW_POINTS("grid 3D", sampleFace.GetResult3d()->GetCoordsArray(), Color_Red);
+    interp->GetPlotter().REDRAW_POINTS("grid 3D",
+                                       sampleFace.GetPoints3d()->GetCoordsArray(),
+                                       Color_Red);
+    //
+    if ( interp->HasKeyword(argc, argv, "norms") )
+    {
+      interp->GetPlotter().REDRAW_VECTORS("norms 3D",
+                                          sampleFace.GetPoints3d()->GetCoordsArray(),
+                                          sampleFace.GetNormals3d()->GetCoordsArray(),
+                                          Color_Red);
+    }
   }
   else
   {
@@ -5459,7 +5469,7 @@ void cmdEngine::Commands_Inspection(const Handle(asiTcl_Interp)&      interp,
   //-------------------------------------------------------------------------//
   interp->AddCommand("build-face-grid",
     //
-    "build-face-grid [-num <numBins>] [-filename <filename>] [-fid <faceID>] [-square] [-haines|-discr]\n"
+    "build-face-grid [-num <numBins>] [-filename <filename>] [-fid <faceID>] [-square] [-haines|-discr] [-norms]\n"
     "\n"
     "\t Builds a uniform UV grid for the interactively selected face.\n"
     "\t Pass the number of bins to control how fine sampling is going to be.\n"
@@ -5469,7 +5479,9 @@ void cmdEngine::Commands_Inspection(const Handle(asiTcl_Interp)&      interp,
     "\n"
     "\t For efficient computation, pass the '-discr' keyword. This option turns the\n"
     "\t face of interest into a discrete representation and uses extremely fast\n"
-    "\t two-dimensional classifier.",
+    "\t two-dimensional classifier.\n"
+    "\n"
+    "\t Pass '-norms' keyword to evaluate face normals at the probe points.",
     //
     __FILE__, group, ENGINE_BuildFaceGrid);
 

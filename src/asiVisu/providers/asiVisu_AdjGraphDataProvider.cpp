@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-// Created on: 25 April 2024
+// Created on: 27 April 2024
 //-----------------------------------------------------------------------------
 // Copyright (c) 2024-present, Sergey Slyadnev
 // All rights reserved.
@@ -28,27 +28,64 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-----------------------------------------------------------------------------
 
-#ifndef asiAlgo_FaceProbe_h
-#define asiAlgo_FaceProbe_h
+// Own include
+#include <asiVisu_AdjGraphDataProvider.h>
 
-// asiAlgo includes
-#include <asiAlgo.h>
+// asiData includes
+#include <asiData_RootNode.h>
+
+// Active Data includes
+#include <ActData_ParameterFactory.h>
 
 // OpenCascade includes
-#include <gp_Vec.hxx>
+#include <gp_Quaternion.hxx>
 
 //-----------------------------------------------------------------------------
 
-//! \ingroup ASI_MODELING
-//!
-//! Point data probed at a face.
-struct asiAlgo_FaceProbe
+asiVisu_AdjGraphDataProvider::asiVisu_AdjGraphDataProvider()
+: asiVisu_DataProvider()
+{}
+
+//-----------------------------------------------------------------------------
+
+asiVisu_AdjGraphDataProvider::asiVisu_AdjGraphDataProvider(const Handle(asiData_PartNode)& partNode)
+: asiVisu_DataProvider(), m_node(partNode)
+{}
+
+//-----------------------------------------------------------------------------
+
+ActAPI_DataObjectId asiVisu_AdjGraphDataProvider::GetNodeID() const
 {
-  float  s; //!< Scalar.
-  gp_Pnt P; //!< Face point.
-  gp_Vec N; //!< Face normal at a point.
+  return m_node->GetId();
+}
 
-  asiAlgo_FaceProbe() : s(0.) {} //!< Default ctor.
-};
+//-----------------------------------------------------------------------------
 
-#endif
+Handle(asiAlgo_AAG) asiVisu_AdjGraphDataProvider::GetAAG() const
+{
+  return m_node->GetAAG();
+}
+
+//-----------------------------------------------------------------------------
+
+bool asiVisu_AdjGraphDataProvider::IsRenderAAG() const
+{
+  return m_node->GetRenderAAG();
+}
+
+//-----------------------------------------------------------------------------
+
+Handle(ActAPI_HParameterList) asiVisu_AdjGraphDataProvider::translationSources() const
+{
+  ActParamStream params;
+
+  Handle(asiData_RootNode) rootNode =
+    Handle(asiData_RootNode)::DownCast(m_node->GetParentNode());
+
+  params << m_node->Parameter(asiData_PartNode::PID_Geometry)
+         << m_node->Parameter(asiData_PartNode::PID_AAG)
+         << m_node->Parameter(asiData_PartNode::PID_RenderAAG)
+         ;
+
+  return params.List;
+}

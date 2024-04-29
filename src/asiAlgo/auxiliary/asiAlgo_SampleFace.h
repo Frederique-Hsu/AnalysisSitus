@@ -96,12 +96,16 @@ public:
     SetPmcAlgo(const PmcAlgo algo);
 
   //! Performs face sampling.
-  //! \param[in] numBinsU the number of discretization steps in U.
-  //! \param[in] numBinsV the number of discretization steps in V.
+  //! \param[in] numBinsU   the number of discretization steps in U.
+  //! \param[in] numBinsV   the number of discretization steps in V.
+  //! \param[in] withPoints the Boolean flag indicating whether to evaluate 3D points.
+  //! \param[in] withNorms  the Boolean flag indicating whether to evaluate face norms.
   //! \return true in case of success, false -- otherwise.
   asiAlgo_EXPORT bool
-    Perform(const int numBinsU,
-            const int numBinsV);
+    Perform(const int  numBinsU,
+            const int  numBinsV,
+            const bool withPoints,
+            const bool withNorms);
 
   //! \return resulting grid.
   asiAlgo_EXPORT const Handle(asiAlgo_FaceGrid)&
@@ -109,7 +113,11 @@ public:
 
   //! \return the sampled points in the modeling space.
   asiAlgo_EXPORT Handle(asiAlgo_BaseCloud<double>)
-    GetResult3d() const;
+    GetPoints3d() const;
+
+  //! \return the sampled normals in the modeling space.
+  asiAlgo_EXPORT Handle(asiAlgo_BaseCloud<double>)
+    GetNormals3d() const;
 
   //! \return discrete model.
   asiAlgo_EXPORT const Handle(asiAlgo::discr::Model)&

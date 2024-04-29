@@ -76,6 +76,7 @@ asiData_PartNode::asiData_PartNode() : ActData_BaseNode()
   REGISTER_PARAMETER(Bool,          PID_HasBackface);
   REGISTER_PARAMETER(Bool,          PID_ShowFaultyFaces);
   REGISTER_PARAMETER(Bool,          PID_RenderEdgesAsTubes);
+  REGISTER_PARAMETER(Bool,          PID_RenderAAG);
   //
   REGISTER_PARAMETER(ReferenceList, PID_Features);
 
@@ -119,6 +120,7 @@ void asiData_PartNode::ResetToDefault(const bool resetNaming)
   this->SetShowFaultyFaces       (true);
   this->SetRenderEdgesAsTubes    (true);
   this->SetOriginalUnits         ("mm"); // Default.
+  this->SetRenderAAG             (false);
 
   // Set identity transformation.
   ActParamTool::AsRealArray( this->Parameter(PID_TrsfMx) )->SetArray( new HRealArray(0, 11, 0.) );
@@ -161,6 +163,7 @@ void asiData_PartNode::Init(const bool resetNaming)
   this->InitParameter(PID_HasBackface,        "Show backface",      "",               ParameterFlag_IsVisible, true);
   this->InitParameter(PID_ShowFaultyFaces,    "Show faulty faces",  "",               ParameterFlag_IsVisible, true);
   this->InitParameter(PID_RenderEdgesAsTubes, "Edges as tubes",     "",               ParameterFlag_IsVisible, true);
+  this->InitParameter(PID_RenderAAG,          "Render AAG",         "",               ParameterFlag_IsVisible, true);
 }
 
 //-----------------------------------------------------------------------------
@@ -590,6 +593,19 @@ void asiData_PartNode::SetRenderEdgesAsTubes(const bool on)
 bool asiData_PartNode::GetRenderEdgesAsTubes() const
 {
   return ActParamTool::AsBool( this->Parameter(PID_RenderEdgesAsTubes) )->GetValue();
+}
+
+//! Sets a Boolean flag indicating whether to use render AAG in 3D space.
+//! \param[in] on value to set.
+void asiData_PartNode::SetRenderAAG(const bool on)
+{
+  ActParamTool::AsBool( this->Parameter(PID_RenderAAG) )->SetValue(on);
+}
+
+//! \return Boolean flag indicating whether to use shaders for rendering CAD edges.
+bool asiData_PartNode::GetRenderAAG() const
+{
+  return ActParamTool::AsBool( this->Parameter(PID_RenderAAG) )->GetValue();
 }
 
 //-----------------------------------------------------------------------------

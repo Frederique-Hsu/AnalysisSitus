@@ -2337,6 +2337,18 @@ namespace asiAlgo_Utils
                   const bool         alongEdges,
                   gp_Ax3&            axes);
 
+  //! Computes local norm for the passed face taking into account its orientation.
+  //! \param[in]  face the target face.
+  //! \param[in]  u    the U coordinate of the probe point.
+  //! \param[in]  v    the V coordinate of the probe point.
+  //! \param[out] axis the computed norm at a point.
+  //! \return true in case of success, false -- otherwise.
+  asiAlgo_EXPORT bool
+    GetFaceNorm(const TopoDS_Face& face,
+                const double       u,
+                const double       v,
+                gp_Ax1&            axis);
+
   //! Calculates border trihedron for the given face.
   //! \param[in]  face     the face to analyze.
   //! \param[in]  edge     the border edge lying on the `face` to calculate

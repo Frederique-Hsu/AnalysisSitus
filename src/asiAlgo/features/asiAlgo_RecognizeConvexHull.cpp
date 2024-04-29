@@ -247,10 +247,10 @@ bool asiAlgo_RecognizeConvexHull::Perform()
                                      : asiAlgo_SampleFace::PmcAlgo_Precise);
     sampleFace.SetSquare  (true);
     //
-    if ( !sampleFace.Perform(m_iGridPts, m_iGridPts) )
+    if ( !sampleFace.Perform(m_iGridPts, m_iGridPts, true, false) )
       continue;
 
-    Handle(asiAlgo_BaseCloud<double>) pts3d = sampleFace.GetResult3d();
+    Handle(asiAlgo_BaseCloud<double>) pts3d = sampleFace.GetPoints3d();
 
     // Add feature points complementary to the overlay grid.
     this->addFeaturePts(face, pts3d);

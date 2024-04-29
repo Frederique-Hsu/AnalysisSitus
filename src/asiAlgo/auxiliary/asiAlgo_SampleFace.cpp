@@ -210,8 +210,10 @@ void asiAlgo_SampleFace::SetPmcAlgo(const PmcAlgo algo)
 
 //-----------------------------------------------------------------------------
 
-bool asiAlgo_SampleFace::Perform(const int numBinsU,
-                                 const int numBinsV)
+bool asiAlgo_SampleFace::Perform(const int  numBinsU,
+                                 const int  numBinsV,
+                                 const bool withPoints,
+                                 const bool withNorms)
 {
   if ( m_face.IsNull() )
     return false;
@@ -331,6 +333,24 @@ bool asiAlgo_SampleFace::Perform(const int numBinsU,
 
       // Put scalar into the grid.
       m_grid->pArray[i][j][0].s = (float) ( (s & Membership_In) ? 1. : 0. );
+
+      // Add optional 3D properties.
+      if ( withNorms )
+      {
+        gp_Ax1 FN;
+        asiAlgo_Utils::GetFaceNorm(m_face, x, y, FN);
+
+        if ( withPoints )
+          m_grid->pArray[i][j][0].P = FN.Location();
+        //
+        m_grid->pArray[i][j][0].N = FN.Direction();
+      }
+      else if ( withPoints )
+      {
+        BRepAdaptor_Surface bas(m_face, false);
+        //
+        m_grid->pArray[i][j][0].P = bas.Value(x, y);
+      }
     }
   }
 
@@ -339,18 +359,15 @@ bool asiAlgo_SampleFace::Perform(const int numBinsU,
 
 //-----------------------------------------------------------------------------
 
-const Handle(asiAlgo_FaceGrid)&
-  asiAlgo_SampleFace::GetResult() const
+const Handle(asiAlgo_FaceGrid)& asiAlgo_SampleFace::GetResult() const
 {
   return m_grid;
 }
 
 //-----------------------------------------------------------------------------
 
-Handle(asiAlgo_BaseCloud<double>) asiAlgo_SampleFace::GetResult3d() const
+Handle(asiAlgo_BaseCloud<double>) asiAlgo_SampleFace::GetPoints3d() const
 {
-  BRepAdaptor_Surface bas(m_face, false);
-
   Handle(asiAlgo_BaseCloud<double>) sampledPts = new asiAlgo_BaseCloud<double>;
   //
   for ( int i = 0; i <= m_grid->Nx; ++i )
@@ -362,11 +379,33 @@ Handle(asiAlgo_BaseCloud<double>) asiAlgo_SampleFace::GetResult3d() const
       const double y = m_grid->YMin + m_grid->CellSize*j;
 
       if ( m_grid->pArray[i][j][0].s ) // If non-zero...
-        sampledPts->AddElement( bas.Value(x, y) );
+        sampledPts->AddElement( m_grid->pArray[i][j][0].P );
     }
   }
 
   return sampledPts;
+}
+
+//-----------------------------------------------------------------------------
+
+Handle(asiAlgo_BaseCloud<double>) asiAlgo_SampleFace::GetNormals3d() const
+{
+  Handle(asiAlgo_BaseCloud<double>) sampledNorms = new asiAlgo_BaseCloud<double>;
+  //
+  for ( int i = 0; i <= m_grid->Nx; ++i )
+  {
+    const double x = m_grid->XMin + m_grid->CellSize*i;
+    //
+    for ( int j = 0; j <= m_grid->Ny; ++j )
+    {
+      const double y = m_grid->YMin + m_grid->CellSize*j;
+
+      if ( m_grid->pArray[i][j][0].s ) // If non-zero...
+        sampledNorms->AddElement( m_grid->pArray[i][j][0].N.XYZ() );
+    }
+  }
+
+  return sampledNorms;
 }
 
 //-----------------------------------------------------------------------------

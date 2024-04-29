@@ -865,18 +865,18 @@ vtkSmartPointer<vtkLookupTable> asiVisu_Utils::InitCurvatureCombsLookupTable()
 //! \return VTK lookup table.
 vtkSmartPointer<vtkLookupTable> asiVisu_Utils::InitKnotsIsosLookupTable()
 {
-  vtkSmartPointer<vtkLookupTable> aLookup = vtkSmartPointer<vtkLookupTable>::New();
+  vtkSmartPointer<vtkLookupTable> lookup = vtkSmartPointer<vtkLookupTable>::New();
 
-  double aRange[2] = {VisuIsosCont_C0, VisuIsosCont_CN};
-  aLookup->SetRange(aRange);
-  aLookup->SetNumberOfColors(VisuIsosCont_Last);
+  double range[2] = {VisuIsosCont_C0, VisuIsosCont_CN};
+  lookup->SetRange(range);
+  lookup->SetNumberOfColors(VisuIsosCont_Last);
 
-  aLookup->SetTableValue(VisuIsosCont_C0, 1.0,       0.0,       0.0);
-  aLookup->SetTableValue(VisuIsosCont_C1, 1.0,       1.0,       0.0);
-  aLookup->SetTableValue(VisuIsosCont_C2, 153./255., 217./255., 1.0);
-  aLookup->SetTableValue(VisuIsosCont_CN, 1.0,       1.0,       1.0);
+  lookup->SetTableValue(VisuIsosCont_C0, 1.0,       0.0,       0.0);
+  lookup->SetTableValue(VisuIsosCont_C1, 1.0,       1.0,       0.0);
+  lookup->SetTableValue(VisuIsosCont_C2, 153./255., 217./255., 1.0);
+  lookup->SetTableValue(VisuIsosCont_CN, 1.0,       1.0,       1.0);
 
-  return aLookup;
+  return lookup;
 }
 
 //-----------------------------------------------------------------------------
@@ -895,6 +895,26 @@ vtkSmartPointer<vtkLookupTable> asiVisu_Utils::InitAxesLookupTable()
   lookup->SetTableValue(VisuAxis_X, XAXIS_R, XAXIS_G, XAXIS_B);
   lookup->SetTableValue(VisuAxis_Y, YAXIS_R, YAXIS_G, YAXIS_B);
   lookup->SetTableValue(VisuAxis_Z, ZAXIS_R, ZAXIS_G, ZAXIS_B);
+
+  return lookup;
+}
+
+//-----------------------------------------------------------------------------
+
+//! Initializes VTK lookup table charged with a color scheme for
+//! vexity codes (green for convex, red for concave).
+//! \return VTK lookup table.
+vtkSmartPointer<vtkLookupTable> asiVisu_Utils::InitVexityLookupTable()
+{
+  vtkSmartPointer<vtkLookupTable> lookup = vtkSmartPointer<vtkLookupTable>::New();
+
+  double range[2] = {VisuVexity_Undefined, VisuVexity_Convex};
+  lookup->SetRange(range);
+  lookup->SetNumberOfColors(VisuVexity_Last);
+
+  lookup->SetTableValue(VisuVexity_Undefined, UNDEFINED_R, UNDEFINED_G, UNDEFINED_B);
+  lookup->SetTableValue(VisuVexity_Concave,   CONCAVE_R,   CONCAVE_G,   CONCAVE_B);
+  lookup->SetTableValue(VisuVexity_Convex,    CONVEX_R,    CONVEX_G,    CONVEX_B);
 
   return lookup;
 }

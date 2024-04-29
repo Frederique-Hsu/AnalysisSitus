@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-// Created on: 25 April 2024
+// Created on: 27 April 2024
 //-----------------------------------------------------------------------------
 // Copyright (c) 2024-present, Sergey Slyadnev
 // All rights reserved.
@@ -28,27 +28,54 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-----------------------------------------------------------------------------
 
-#ifndef asiAlgo_FaceProbe_h
-#define asiAlgo_FaceProbe_h
+#ifndef asiVisu_AdjGraphPipeline_h
+#define asiVisu_AdjGraphPipeline_h
 
-// asiAlgo includes
-#include <asiAlgo.h>
+// asiVisu includes
+#include <asiVisu_DataProvider.h>
+#include <asiVisu_Pipeline.h>
 
-// OpenCascade includes
-#include <gp_Vec.hxx>
+// VTK includes
+#include <vtkPolyDataAlgorithm.h>
 
 //-----------------------------------------------------------------------------
 
-//! \ingroup ASI_MODELING
-//!
-//! Point data probed at a face.
-struct asiAlgo_FaceProbe
+//! Adjacency graph visualization pipeline.
+class asiVisu_AdjGraphPipeline : public asiVisu_Pipeline
 {
-  float  s; //!< Scalar.
-  gp_Pnt P; //!< Face point.
-  gp_Vec N; //!< Face normal at a point.
+public:
 
-  asiAlgo_FaceProbe() : s(0.) {} //!< Default ctor.
+  // OCCT RTTI
+  DEFINE_STANDARD_RTTI_INLINE(asiVisu_AdjGraphPipeline, asiVisu_Pipeline)
+
+public:
+
+  asiVisu_EXPORT
+    asiVisu_AdjGraphPipeline();
+
+public:
+
+  asiVisu_EXPORT virtual void
+    SetInput(const Handle(asiVisu_DataProvider)& DP);
+
+private:
+
+  virtual void callback_add_to_renderer      (vtkRenderer* renderer);
+  virtual void callback_remove_from_renderer (vtkRenderer* renderer);
+  virtual void callback_update               ();
+
+private:
+
+  //! Copying prohibited.
+  asiVisu_AdjGraphPipeline(const asiVisu_AdjGraphPipeline&);
+
+  //! Assignment prohibited.
+  asiVisu_AdjGraphPipeline& operator=(const asiVisu_AdjGraphPipeline&);
+
+protected:
+
+  bool m_bMapperColorsSet; //!< Indicates whether scalars are set.
+
 };
 
 #endif

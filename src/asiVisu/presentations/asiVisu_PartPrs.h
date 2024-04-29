@@ -65,7 +65,8 @@ public:
     Pipeline_Backside, // Use separate actor for backface as VTK's backface mode
                        // does not work for mappers with enabled scalars (at least
                        // for VTK 8.2).
-    Pipeline_Contour
+    Pipeline_Contour,
+    Pipeline_AAG
   };
 
 public:

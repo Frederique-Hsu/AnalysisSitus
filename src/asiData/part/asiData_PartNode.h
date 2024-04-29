@@ -123,6 +123,7 @@ public:
     PID_HasBackface,        //!< Indicates whether backface coloring is enabled.
     PID_ShowFaultyFaces,    //!< Indicates whether to visualize faulty faces.
     PID_RenderEdgesAsTubes, //!< Indicates whether to render edges as tubes (using shaders).
+    PID_RenderAAG,          //!< In-place rendering of adjacency graph.
   //------------------------//
   // References             //
   //------------------------//
@@ -296,6 +297,12 @@ public:
 
   asiData_EXPORT bool
     GetRenderEdgesAsTubes() const;
+
+  asiData_EXPORT void
+    SetRenderAAG(const bool);
+
+  asiData_EXPORT bool
+    GetRenderAAG() const;
 
   //-------------------------------------------------------------------------//
 
