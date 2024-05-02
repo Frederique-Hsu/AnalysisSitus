@@ -71,6 +71,16 @@ public:
                  const TopoDS_Face&  face,
                  std::vector<gp_XY>& polygon);
 
+  //! \param[in] grid the face grid to turn into a point cloud.
+  //! \return the sampled points in the modeling space.
+  asiAlgo_EXPORT static Handle(asiAlgo_BaseCloud<double>)
+    GetPoints3d(const Handle(asiAlgo_FaceGrid)& grid);
+
+  //! \param[in] grid the face grid to turn into a normal field.
+  //! \return the sampled normals in the modeling space.
+  asiAlgo_EXPORT static Handle(asiAlgo_BaseCloud<double>)
+    GetNormals3d(const Handle(asiAlgo_FaceGrid)& grid);
+
 public:
 
   //! Ctor.

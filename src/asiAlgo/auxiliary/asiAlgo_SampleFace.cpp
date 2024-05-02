@@ -176,6 +176,52 @@ bool asiAlgo_SampleFace::Wire2Polygon(const TopoDS_Wire&  wire,
 
 //-----------------------------------------------------------------------------
 
+Handle(asiAlgo_BaseCloud<double>)
+  asiAlgo_SampleFace::GetPoints3d(const Handle(asiAlgo_FaceGrid)& grid)
+{
+  Handle(asiAlgo_BaseCloud<double>) sampledPts = new asiAlgo_BaseCloud<double>;
+  //
+  for ( int i = 0; i <= grid->Nx; ++i )
+  {
+    const double x = grid->XMin + grid->CellSize*i;
+    //
+    for ( int j = 0; j <= grid->Ny; ++j )
+    {
+      const double y = grid->YMin + grid->CellSize*j;
+
+      if ( grid->pArray[i][j][0].s ) // If non-zero...
+        sampledPts->AddElement( grid->pArray[i][j][0].P );
+    }
+  }
+
+  return sampledPts;
+}
+
+//-----------------------------------------------------------------------------
+
+Handle(asiAlgo_BaseCloud<double>)
+  asiAlgo_SampleFace::GetNormals3d(const Handle(asiAlgo_FaceGrid)& grid)
+{
+  Handle(asiAlgo_BaseCloud<double>) sampledNorms = new asiAlgo_BaseCloud<double>;
+  //
+  for ( int i = 0; i <= grid->Nx; ++i )
+  {
+    const double x = grid->XMin + grid->CellSize*i;
+    //
+    for ( int j = 0; j <= grid->Ny; ++j )
+    {
+      const double y = grid->YMin + grid->CellSize*j;
+
+      if ( grid->pArray[i][j][0].s ) // If non-zero...
+        sampledNorms->AddElement( grid->pArray[i][j][0].N.XYZ() );
+    }
+  }
+
+  return sampledNorms;
+}
+
+//-----------------------------------------------------------------------------
+
 asiAlgo_SampleFace::asiAlgo_SampleFace(const TopoDS_Face&   face,
                                        ActAPI_ProgressEntry progress,
                                        ActAPI_PlotterEntry  plotter)
@@ -368,44 +414,14 @@ const Handle(asiAlgo_FaceGrid)& asiAlgo_SampleFace::GetResult() const
 
 Handle(asiAlgo_BaseCloud<double>) asiAlgo_SampleFace::GetPoints3d() const
 {
-  Handle(asiAlgo_BaseCloud<double>) sampledPts = new asiAlgo_BaseCloud<double>;
-  //
-  for ( int i = 0; i <= m_grid->Nx; ++i )
-  {
-    const double x = m_grid->XMin + m_grid->CellSize*i;
-    //
-    for ( int j = 0; j <= m_grid->Ny; ++j )
-    {
-      const double y = m_grid->YMin + m_grid->CellSize*j;
-
-      if ( m_grid->pArray[i][j][0].s ) // If non-zero...
-        sampledPts->AddElement( m_grid->pArray[i][j][0].P );
-    }
-  }
-
-  return sampledPts;
+  return GetPoints3d(m_grid);
 }
 
 //-----------------------------------------------------------------------------
 
 Handle(asiAlgo_BaseCloud<double>) asiAlgo_SampleFace::GetNormals3d() const
 {
-  Handle(asiAlgo_BaseCloud<double>) sampledNorms = new asiAlgo_BaseCloud<double>;
-  //
-  for ( int i = 0; i <= m_grid->Nx; ++i )
-  {
-    const double x = m_grid->XMin + m_grid->CellSize*i;
-    //
-    for ( int j = 0; j <= m_grid->Ny; ++j )
-    {
-      const double y = m_grid->YMin + m_grid->CellSize*j;
-
-      if ( m_grid->pArray[i][j][0].s ) // If non-zero...
-        sampledNorms->AddElement( m_grid->pArray[i][j][0].N.XYZ() );
-    }
-  }
-
-  return sampledNorms;
+  return GetNormals3d(m_grid);
 }
 
 //-----------------------------------------------------------------------------
