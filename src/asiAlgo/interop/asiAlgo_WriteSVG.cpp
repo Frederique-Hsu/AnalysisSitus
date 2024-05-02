@@ -362,13 +362,21 @@ bool asiAlgo_WriteSVG::Write(const TopoDS_Shape&            shape,
   // Get results.
   std::stringstream result;
   //
-  svg::printEdges(shape,
-                  scaledLineWidth,
-                  style.DiscrCurveAngDefl,
-                  style.DiscrCurveLinDefl,
-                  scaleCoeff,
-                  result,
-                  plotter);
+  try
+  {
+    svg::printEdges(shape,
+                    scaledLineWidth,
+                    style.DiscrCurveAngDefl,
+                    style.DiscrCurveLinDefl,
+                    scaleCoeff,
+                    result,
+                    plotter);
+  }
+  catch ( ... )
+  {
+    std::cout << "Error: cannot print edges to SVG." << std::endl;
+    return false;
+  }
 
   // Save results to file.
   std::ofstream FILE;
