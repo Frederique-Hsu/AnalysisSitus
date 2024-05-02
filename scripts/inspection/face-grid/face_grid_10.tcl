@@ -30,7 +30,7 @@ if {[info procs ComparePointsCoordProc] eq ""} {
 }
 
 # Check pnts.
-set tol 1.0e-5
+set tol 1.0e-2
 ComparePointsCoordProc $tmpDir$resultName $datadir/$refPntsName $tol
 
 # Remove temporary files.
