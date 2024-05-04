@@ -1,0 +1,9 @@
+source $env(ASI_TEST_SCRIPTS)/inspection/find-isomorphisms/__begin
+
+# Set working variables.
+set datafile    cad/sheet-metal/grabcad_EnclosureBody.stp
+set maxSize     0
+set patternFids { 255 256 257 258 259 260 261 262 263 264 265 266 267 }
+set matchedFids { 255 256 257 258 259 260 261 262 263 264 265 266 267 269 270 271 272 273 274 275 276 277 278 279 280 281 283 284 285 286 287 288 289 290 291 292 293 294 295 297 298 299 300 301 302 303 304 305 306 307 308 309 311 312 313 314 315 316 317 318 319 320 321 322 323 325 326 327 328 329 330 331 332 333 334 335 336 337 }
+
+__find-isomorphisms

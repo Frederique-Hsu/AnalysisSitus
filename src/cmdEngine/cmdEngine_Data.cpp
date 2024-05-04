@@ -47,6 +47,7 @@
 
 // asiUI includes
 #include <asiUI_DialogOCAFDump.h>
+#include <asiUI_IV.h>
 
 // asiVisu includes
 #include <asiVisu_PartPipeline.h>
@@ -358,20 +359,59 @@ int ENGINE_SetAsVar(const Handle(asiTcl_Interp)& interp,
                     int                          argc,
                     const char**                 argv)
 {
-  if ( argc != 2 )
+  if ( argc < 2 )
   {
     return interp->ErrorOnWrongArgs(argv[0]);
   }
 
+  // Access the selected faces (if any and if UI facilities are available).
+  asiAlgo_Feature selected;
+  //
+  if ( interp->HasKeyword(argc, argv, "fids") )
+  {
+    std::vector<int> values;
+    if ( interp->CollectValues(argc, argv, "fids", values) )
+    {
+      std::vector<int>::const_iterator itV = values.cbegin();
+      for ( ; itV != values.cend(); ++itV )
+      {
+        selected.Add(*itV);
+      }
+    }
+  }
+  else if ( !cmdEngine::cf.IsNull() )
+  {
+    Handle(asiUI_IV) iv = Handle(asiUI_IV)::DownCast( interp->GetPlotter().Access() );
+
+    if ( !iv.IsNull() )
+    {
+      asiEngine_Part( iv->GetModel(),
+                      iv->GetPrsMgr3d() ).GetHighlightedFaces(selected);
+    }
+  }
+
+  if ( selected.IsEmpty() )
+  {
+    interp->GetProgress().SendLogMessage(LogNotice(Normal) << "No faces selected: the entire part is used.");
+  }
+
   // Get Part Node.
   Handle(asiData_PartNode) part_n = cmdEngine::model->GetPartNode();
+
+  // Take a shape to store as a variable.
+  TopoDS_Shape varShape;
+  //
+  if ( selected.IsEmpty() )
+    varShape = part_n->GetShape(true);
+  else
+    varShape = asiAlgo_Utils::AssembleShape( selected, part_n->GetAAG() );
 
   // Erase Part Node for convenience.
   if ( cmdEngine::cf && cmdEngine::cf->ViewerPart )
     cmdEngine::cf->ViewerPart->PrsMgr()->DeRenderPresentation(part_n);
 
   // Draw.
-  interp->GetPlotter().REDRAW_SHAPE( argv[1], part_n->GetShape(true), Color_Default, 1. );
+  interp->GetPlotter().REDRAW_SHAPE( argv[1], varShape, Color_Default, 1. );
 
   return TCL_OK;
 }
@@ -1819,8 +1859,8 @@ void cmdEngine::Commands_Data(const Handle(asiTcl_Interp)&      interp,
   //-------------------------------------------------------------------------//
   interp->AddCommand("set-as-var",
     //
-    "set-as-var <varName>\n"
-    "\t Copies part shape to a topological variable.",
+    "set-as-var <varName> [-fids <fid1> [<fid2> [...]]]\n"
+    "\t Copies part shape or its specified boundary elements to a topological variable.",
     //
     __FILE__, group, ENGINE_SetAsVar);
 

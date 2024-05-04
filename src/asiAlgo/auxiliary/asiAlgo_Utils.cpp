@@ -2428,59 +2428,91 @@ TopoDS_Shape
 
 //-----------------------------------------------------------------------------
 
-TopoDS_Shape
-  asiAlgo_Utils::AssembleShapes(const TopTools_ListOfShape& shapes)
+//! Prepares one shape out of the passed collection of subshapes. Is there
+//! is only one subshape passed, it will be returned without any changes.
+//! For multiple subshapes, a compound is constructed and returned. This
+//! function also tries to guess if the user wanted to keep subshapes in
+//! meaningful groups, e.g., faces in a shell. If so, instead of a compound,
+//! this function might return a more appropriate shape type.
+//!
+//! \param[in] subshapes the subshapes to collect into a single shape.
+//! \return one shape.
+TopoDS_Shape asiAlgo_Utils::AssembleShape(const TopTools_IndexedMapOfShape& subshapes)
 {
-  TopoDS_Shape result, singleShape;
-  int numShapes = 0;
-
-  for ( TopTools_ListIteratorOfListOfShape it(shapes); it.More(); it.Next() )
+  TopoDS_Shape oneShape;
+  //
+  if ( subshapes.Extent() == 1 )
   {
-    if ( !it.Value().IsNull() )
+    return subshapes(1);
+  }
+
+  // Check if all passed subshapes are of the same type.
+  std::unordered_set<TopAbs_ShapeEnum> types;
+  //
+  for ( int k = 1; k <= subshapes.Extent(); ++k )
+  {
+    types.insert( { subshapes(k).ShapeType() } );
+  }
+  //
+  const bool isSameType   = (types.size() == 1);
+  const bool isFaceSet    = isSameType && ( types.find(TopAbs_FACE) != types.end() );
+  bool       makeCompound = true;
+
+  // Special case for face sets.
+  if ( isFaceSet )
+  {
+    // Put faces in a shell.
+    TopoDS_Shell shell;
+    BRep_Builder().MakeShell(shell);
+    //
+    for ( int k = 1; k <= subshapes.Extent(); ++k )
+      BRep_Builder().Add( shell, subshapes(k) );
+
+    // Check if the shell is valid by checking how many connected components it's going to yield.
+    Handle(asiAlgo_AAG) shell_G = new asiAlgo_AAG(shell, true);
+    //
+    const int numCC = shell_G->GetConnectedComponentsNb();
+
+    // If there's no single connected component, let's drop everything into a compound.
+    if ( numCC == 1 )
     {
-      ++numShapes;
-      singleShape = it.Value();
+      makeCompound = false;
+      oneShape     = shell;
     }
   }
 
-  if ( numShapes > 1)
+  // Common case.
+  if ( makeCompound )
   {
-    TopoDS_Compound compound;
-    BRep_Builder B;
-    B.MakeCompound(compound);
-
-    for ( TopTools_ListIteratorOfListOfShape it(shapes); it.More(); it.Next() )
-    {
-      const TopoDS_Shape& shape = it.Value();
-      //
-      if ( shape.IsNull() )
-        continue;
-
-      ++numShapes;
-      B.Add(compound, shape);
-    }
-
-    result = compound;
+    // Put subshapes in a compound.
+    TopoDS_Compound comp;
+    BRep_Builder().MakeCompound(comp);
+    //
+    for ( int k = 1; k <= subshapes.Extent(); ++k )
+      BRep_Builder().Add( comp, subshapes(k) );
+    //
+    oneShape = comp;
   }
-  else
-    result = singleShape;
 
-  return result;
+  return oneShape;
 }
 
 //-----------------------------------------------------------------------------
 
 TopoDS_Shape
-  asiAlgo_Utils::AssembleShapes(const Handle(TopTools_HSequenceOfShape)& shapes)
+  asiAlgo_Utils::AssembleShape(const asiAlgo_Feature&     fids,
+                               const Handle(asiAlgo_AAG)& aag)
 {
-  TopTools_ListOfShape shapeList;
-
-  // Repack as list for unification.
-  if ( !shapes.IsNull() )
-    for ( TopTools_SequenceOfShape::Iterator it(*shapes); it.More(); it.Next() )
-      shapeList.Append( it.Value() );
-
-  return AssembleShapes(shapeList);
+  TopTools_IndexedMapOfShape faces;
+  //
+  for ( asiAlgo_Feature::Iterator fit(fids); fit.More(); fit.Next() )
+  {
+    const int fid = fit.Key();
+    //
+    faces.Add( aag->GetFace(fid) );
+  }
+  //
+  return AssembleShape(faces);
 }
 
 //-----------------------------------------------------------------------------

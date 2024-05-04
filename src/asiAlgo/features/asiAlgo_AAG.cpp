@@ -750,7 +750,7 @@ bool asiAlgo_AAG::HasArc(const t_arc& arc) const
 
 //-----------------------------------------------------------------------------
 
-bool asiAlgo_AAG::HasArcAttribute(const t_arc& arc) const
+bool asiAlgo_AAG::HasArcAttributes(const t_arc& arc) const
 {
   return m_arcAttributes.IsBound(arc);
 }
@@ -758,12 +758,12 @@ bool asiAlgo_AAG::HasArcAttribute(const t_arc& arc) const
 //-----------------------------------------------------------------------------
 
 bool asiAlgo_AAG::HasArcAttribute(const t_arc&                 arc,
-                                  Handle(asiAlgo_FeatureAttr)& attr) const
+                                  Handle(asiAlgo_FeatureAttr)& attrAdj) const
 {
-  if ( !this->HasArcAttribute(arc) )
+  if ( !this->HasArcAttributes(arc) )
     return false;
 
-  attr = this->GetArcAttribute(arc);
+  attrAdj = this->GetArcAttribute(arc);
   return true;
 }
 
@@ -780,7 +780,50 @@ const asiAlgo_AAG::t_arc_attributes&
 const Handle(asiAlgo_FeatureAttr)&
   asiAlgo_AAG::GetArcAttribute(const t_arc& arc) const
 {
-  return m_arcAttributes.Find(arc);
+  return this->GetArcAttribute( arc, asiAlgo_FeatureAttrAngle::GUID() );
+}
+
+//-----------------------------------------------------------------------------
+
+const Handle(asiAlgo_FeatureAttr)&
+  asiAlgo_AAG::GetArcAttribute(const t_arc&         arc,
+                               const Standard_GUID& attr_id) const
+{
+  const t_attr_set* attrSetPtr = m_arcAttributes.Seek(arc);
+  if ( attrSetPtr == nullptr )
+    return nullptr;
+
+  const Handle(asiAlgo_FeatureAttr)* attrPtr = (*attrSetPtr).Seek(attr_id);
+  if ( attrPtr == nullptr )
+    return nullptr;
+
+  return (*attrPtr);
+}
+
+//-----------------------------------------------------------------------------
+
+bool asiAlgo_AAG::SetArcAttribute(const t_arc&                       arc,
+                                  const Handle(asiAlgo_FeatureAttr)& attr)
+{
+  if ( attr.IsNull() )
+    return false;
+
+  Handle(asiAlgo_FeatureAttr) existing = this->GetArcAttribute( arc, attr->GetGUID() );
+  //
+  if ( !existing.IsNull() )
+    return false; // Already there
+
+  // Set owner AAG.
+  attr->setAAG(this);
+
+  // Add attribute to the set.
+  t_attr_set* attrSetPtr = m_arcAttributes.ChangeSeek(arc);
+  if ( attrSetPtr == nullptr )
+    m_arcAttributes.Bind( arc, t_attr_set(attr) );
+  else
+    (*attrSetPtr).Add(attr);
+
+  return true;
 }
 
 //-----------------------------------------------------------------------------
@@ -1353,7 +1396,7 @@ void asiAlgo_AAG::Collapse(const asiAlgo_Feature& faceIndices)
     // Create attribute. If there was already a link between F1 and F2, then
     // we do not override it, because the remaining link corresponds to the
     // common edge between two faces, which should still be Ok after collapse.
-    Handle(asiAlgo_FeatureAttr)* pArcAttr = m_arcAttributes.ChangeSeek(arc);
+    Handle(asiAlgo_FeatureAttr) pArcAttr = this->GetArcAttribute(arc);
     //
     if ( !pArcAttr )
     {

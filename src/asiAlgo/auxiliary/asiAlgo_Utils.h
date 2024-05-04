@@ -1277,20 +1277,27 @@ namespace asiAlgo_Utils
                         const gp_Trsf&      theTransform,
                         const bool          doCopy);
 
-  //! Creates a compound from the given list of shapes. If the list contains
-  //! only one not-null shape, this single shape is returned as-is.
-  //! \param[in] shapes source shapes.
-  //! \return resulting compound.
+  //! Prepares one shape out of the passed collection of subshapes. Is there
+  //! is only one subshape passed, it will be returned without any changes.
+  //! For multiple subshapes, a compound is constructed and returned. This
+  //! function also tries to guess if the user wanted to keep subshapes in
+  //! meaningful groups, e.g., faces in a shell. If so, instead of a compound,
+  //! this function might return a more appropriate shape type.
+  //!
+  //! \param[in] subshapes the subshapes to collect into a single shape.
+  //! \return one shape.
   asiAlgo_EXPORT TopoDS_Shape
-    AssembleShapes(const TopTools_ListOfShape& shapes);
+    AssembleShape(const TopTools_IndexedMapOfShape& subshapes);
 
-  //! Creates a compound from the given sequence of shapes. If the sequence
-  //! contains only one not-null shape, this single shape is returned as-is.
-  //! If the sequence is NULL or empty, then null shape is returned.
-  //! \param[in] shapes source shapes.
-  //! \return resulting compound.
+  //! This function is identical to `AssembleShape()` above but allows
+  //! to pass face IDs as an input.
+  //!
+  //! \param[in] fids the faces to collect into a single shape.
+  //! \param[in] aag  the AAG instance.
+  //! \return one shape.
   asiAlgo_EXPORT TopoDS_Shape
-    AssembleShapes(const Handle(TopTools_HSequenceOfShape)& shapes);
+    AssembleShape(const asiAlgo_Feature&     fids,
+                  const Handle(asiAlgo_AAG)& aag);
 
   //! Calculates bounding box for the given shape.
   //! \param shape     [in]  input shape.

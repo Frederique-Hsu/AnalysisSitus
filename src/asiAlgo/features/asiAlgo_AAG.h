@@ -281,7 +281,7 @@ public:
   //---------------------------------------------------------------------------
 
   //! Arc attributes.
-  typedef NCollection_DataMap<t_arc, Handle(asiAlgo_FeatureAttr), t_arc> t_arc_attributes;
+  typedef NCollection_DataMap<t_arc, t_attr_set, t_arc> t_arc_attributes;
 
   //! Node attributes.
   typedef NCollection_DataMap<t_topoId, t_attr_set> t_node_attributes;
@@ -674,26 +674,47 @@ public:
   //! \param[in] arc the arc to check.
   //! \return true/false.
   asiAlgo_EXPORT bool
-    HasArcAttribute(const t_arc& arc) const;
+    HasArcAttributes(const t_arc& arc) const;
 
   //! Checks whether the given arc has any attributes or not. If yes, an
   //! arc attribute is returned.
-  //! \param[in]  arc  the arc to check.
-  //! \param[out] attr the returned attribute.
+  //! \param[in]  arc     the arc to check.
+  //! \param[out] attrAdj the returned adjacency attribute.
   //! \return true/false.
   asiAlgo_EXPORT bool
     HasArcAttribute(const t_arc&                 arc,
-                    Handle(asiAlgo_FeatureAttr)& attr) const;
+                    Handle(asiAlgo_FeatureAttr)& attrAdj) const;
 
   //! \return attributes associated with graph arcs.
   asiAlgo_EXPORT const t_arc_attributes&
     GetArcAttributes() const;
 
-  //! Accessor for an arc attribute.
-  //! \param[in] arc graph arc in question.
+  //! Accessor for the default arc attribute, which holds adjacency
+  //! properties between two faces, such as the dihedral angle,
+  //! type (convex or concave), and edges that define face adjacency
+  //! at the B-rep topological structure level.
+  //!
+  //! \param[in] arc the graph arc in question.
   //! \return attribute associated with the given arc.
   asiAlgo_EXPORT const Handle(asiAlgo_FeatureAttr)&
     GetArcAttribute(const t_arc& arc) const;
+
+  //! Accessor for the arc attribute having the specified GUID.
+  //! \param[in] arc     the graph arc in question.
+  //! \param[in] attr_id the GUID of the attribute to access.
+  //! \return attribute associated with the given arc.
+  asiAlgo_EXPORT const Handle(asiAlgo_FeatureAttr)&
+    GetArcAttribute(const t_arc&         arc,
+                    const Standard_GUID& attr_id) const;
+
+  //! Sets the given attribute for the passed arc in the AAG. If an attribute
+  //! of this type already exists, this method does nothing and returns false.
+  //! \param[in] arc  the graph arc of interest.
+  //! \param[in] attr the attribute to set.
+  //! \return true if the attribute has been set, false -- otherwise.
+  asiAlgo_EXPORT bool
+    SetArcAttribute(const t_arc&                       arc,
+                    const Handle(asiAlgo_FeatureAttr)& attr);
 
   //! Checks whether the given node has any attributes or not.
   //! \param[in] node ID of the graph node to check.
@@ -771,6 +792,7 @@ public:
   //! is already there, this method does nothing and returns false.
   //! \param[in] node ID of the graph node of interest.
   //! \param[in] attr attribute to set.
+  //! \return true if the attribute has been set, false -- otherwise.
   asiAlgo_EXPORT bool
     SetNodeAttribute(const t_topoId                     node,
                      const Handle(asiAlgo_FeatureAttr)& attr);

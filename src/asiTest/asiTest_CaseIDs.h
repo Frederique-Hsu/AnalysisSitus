@@ -67,6 +67,7 @@ enum asiTest_CaseID
   CaseID_RecognizeCavities,
   CaseID_RecognizeConvexHull,
   CaseID_RecognizeHoles,
+  CaseID_FindIsomorphisms,
   CaseID_AppSurf,
   CaseID_BuildGordonSurf,
   CaseID_UntrimSurf,

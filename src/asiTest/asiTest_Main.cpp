@@ -47,6 +47,7 @@
 #include <asiTest_ExchangeMesh.h>
 #include <asiTest_ExchangeShape.h>
 #include <asiTest_FaceGrid.h>
+#include <asiTest_FindIsomorphisms.h>
 #include <asiTest_InvertShells.h>
 #include <asiTest_IsContourClosed.h>
 #include <asiTest_JoinSurf.h>
@@ -177,6 +178,7 @@ int main(int argc, char* argv[])
   CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<asiTest_ComputeNegativeVolume> );
   CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<asiTest_BuildQuickHull>        );
   CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<asiTest_ReapproxContour>       );
+  CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<asiTest_FindIsomorphisms>      );
 
   // Data exchange tests.
   CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<asiTest_Exchange>      );

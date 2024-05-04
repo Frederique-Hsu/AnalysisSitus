@@ -1,0 +1,47 @@
+set datadir $env(ASI_TEST_DATA)
+
+# This procedure is used to perform recognition job and this way avoid
+# code duplication in Tcl scripts that are supposed to run this procedure
+# for specific shapes.
+proc __find-isomorphisms {} {
+  global datadir
+  global patternFids
+  global matchedFids
+  global datafile
+
+  clear
+
+  puts "Loading '$datadir/$datafile'..."
+
+  # Read input geometry.
+  load-part $datadir/$datafile
+  fit
+  #
+  print-summary
+
+  # Create a pattern variable.
+  select-faces {*}$patternFids
+  set-as-var P -fids {*}$patternFids
+  donly
+
+  # Find isomorphisms.
+  set fids [find-isomorphisms P]
+  #
+  puts "Recognized face IDs: $fids"
+  select-faces {*}$fids
+  #
+  if { [llength $fids] != [llength $matchedFids] } {
+    error "Unexpected number of matched faces."
+  }
+
+  set i 0
+  foreach item $fids {
+    set refItem [lindex $matchedFids $i]
+    set index [lsearch $item $refItem]
+
+    if { $index == -1 } {
+      error "Expected ${refItem} not found in the result list \{${fids}\}"
+    }
+    incr i
+  }
+}
