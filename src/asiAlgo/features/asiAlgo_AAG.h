@@ -696,14 +696,14 @@ public:
   //!
   //! \param[in] arc the graph arc in question.
   //! \return attribute associated with the given arc.
-  asiAlgo_EXPORT const Handle(asiAlgo_FeatureAttr)&
+  asiAlgo_EXPORT Handle(asiAlgo_FeatureAttr)
     GetArcAttribute(const t_arc& arc) const;
 
   //! Accessor for the arc attribute having the specified GUID.
   //! \param[in] arc     the graph arc in question.
   //! \param[in] attr_id the GUID of the attribute to access.
   //! \return attribute associated with the given arc.
-  asiAlgo_EXPORT const Handle(asiAlgo_FeatureAttr)&
+  asiAlgo_EXPORT Handle(asiAlgo_FeatureAttr)
     GetArcAttribute(const t_arc&         arc,
                     const Standard_GUID& attr_id) const;
 

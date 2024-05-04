@@ -777,7 +777,7 @@ const asiAlgo_AAG::t_arc_attributes&
 
 //-----------------------------------------------------------------------------
 
-const Handle(asiAlgo_FeatureAttr)&
+Handle(asiAlgo_FeatureAttr)
   asiAlgo_AAG::GetArcAttribute(const t_arc& arc) const
 {
   return this->GetArcAttribute( arc, asiAlgo_FeatureAttrAngle::GUID() );
@@ -785,7 +785,7 @@ const Handle(asiAlgo_FeatureAttr)&
 
 //-----------------------------------------------------------------------------
 
-const Handle(asiAlgo_FeatureAttr)&
+Handle(asiAlgo_FeatureAttr)
   asiAlgo_AAG::GetArcAttribute(const t_arc&         arc,
                                const Standard_GUID& attr_id) const
 {
