@@ -183,12 +183,8 @@ Handle(asiAlgo_BaseCloud<double>)
   //
   for ( int i = 0; i <= grid->Nx; ++i )
   {
-    const double x = grid->XMin + grid->CellSize*i;
-    //
     for ( int j = 0; j <= grid->Ny; ++j )
     {
-      const double y = grid->YMin + grid->CellSize*j;
-
       if ( grid->pArray[i][j][0].s ) // If non-zero...
         sampledPts->AddElement( grid->pArray[i][j][0].P );
     }
@@ -206,12 +202,8 @@ Handle(asiAlgo_BaseCloud<double>)
   //
   for ( int i = 0; i <= grid->Nx; ++i )
   {
-    const double x = grid->XMin + grid->CellSize*i;
-    //
     for ( int j = 0; j <= grid->Ny; ++j )
     {
-      const double y = grid->YMin + grid->CellSize*j;
-
       if ( grid->pArray[i][j][0].s ) // If non-zero...
         sampledNorms->AddElement( grid->pArray[i][j][0].N.XYZ() );
     }
