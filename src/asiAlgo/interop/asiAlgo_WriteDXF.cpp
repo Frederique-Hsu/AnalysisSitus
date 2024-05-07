@@ -186,7 +186,11 @@ bool asiAlgo_WriteDXF::exportShape(const TopoDS_Shape& shape)
       if ( asiAlgo_Utils::IsPlanar(face, plane) )
       {
         isPlaneFound = true;
-        fpAx3        = plane->Position();
+
+        // Get local axes independent from parameterization.
+        gp_Ax3 fpAx3;
+        asiAlgo_Utils::GetLocalFrame(TopoDS::Face(input), true, fpAx3);
+
         break;
       }
     }
