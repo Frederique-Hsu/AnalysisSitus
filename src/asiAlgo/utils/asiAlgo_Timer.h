@@ -100,25 +100,32 @@
     std::cout << "=============================================\n" << std::endl; \
   }
 
-#define TIMER_COUT_RESULT_NOTIFIER(Notifier, Msg) \
+// Conditional print: the diagnostics will only be printed if `BarrierSec` is exceeded.
+#define TIMER_COUT_RESULT_NOTIFIER_IF(Notifier, Msg, BarrierSec) \
   { \
     const int __aux_memcheck_delta = __aux_debug_memcheck_after - __aux_debug_memcheck_before; \
     TCollection_AsciiString __aux_memcheck_delta_str; \
     if ( __aux_memcheck_delta > 0 ) __aux_memcheck_delta_str = "+"; \
     __aux_memcheck_delta_str += __aux_memcheck_delta; \
-    Notifier.SendLogMessage(LogInfo(Normal) << "============================================="); \
-    Notifier.SendLogMessage(LogInfo(Normal) << "%1" << Msg); \
-    Notifier.SendLogMessage(LogInfo(Normal) << "---------------------------------------------"); \
-    Notifier.SendLogMessage(LogInfo(Normal) << "\tElapsed time (seconds):  %1"     << __aux_debug_Seconds); \
-    Notifier.SendLogMessage(LogInfo(Normal) << "\tElapsed time (minutes):  %1"     << __aux_debug_Minutes); \
-    Notifier.SendLogMessage(LogInfo(Normal) << "\tElapsed time (hours):    %1"     << __aux_debug_Hours); \
-    Notifier.SendLogMessage(LogInfo(Normal) << "\tElapsed time (CPU time): %1"     << __aux_debug_CPUTime); \
-    Notifier.SendLogMessage(LogInfo(Normal) << "\tMemory before:           %1 MiB" << __aux_debug_memcheck_before); \
-    Notifier.SendLogMessage(LogInfo(Normal) << "\tMemory after [delta]:    %1 MiB [%2]" \
-                                            << __aux_debug_memcheck_after \
-                                            << __aux_memcheck_delta_str); \
-    Notifier.SendLogMessage(LogInfo(Normal) << "... Finished."); \
+    const double __wallTimeSec = __aux_debug_Seconds + __aux_debug_Minutes*60 + __aux_debug_Hours*60*60; \
+    if ( __wallTimeSec > BarrierSec ) \
+    { \
+      Notifier.SendLogMessage(LogInfo(Normal) << "============================================="); \
+      Notifier.SendLogMessage(LogInfo(Normal) << "%1" << Msg); \
+      Notifier.SendLogMessage(LogInfo(Normal) << "---------------------------------------------"); \
+      Notifier.SendLogMessage(LogInfo(Normal) << "\tElapsed time (seconds):  %1"     << __aux_debug_Seconds); \
+      Notifier.SendLogMessage(LogInfo(Normal) << "\tElapsed time (minutes):  %1"     << __aux_debug_Minutes); \
+      Notifier.SendLogMessage(LogInfo(Normal) << "\tElapsed time (hours):    %1"     << __aux_debug_Hours); \
+      Notifier.SendLogMessage(LogInfo(Normal) << "\tElapsed time (CPU time): %1"     << __aux_debug_CPUTime); \
+      Notifier.SendLogMessage(LogInfo(Normal) << "\tMemory before:           %1 MiB" << __aux_debug_memcheck_before); \
+      Notifier.SendLogMessage(LogInfo(Normal) << "\tMemory after [delta]:    %1 MiB [%2]" \
+                                              << __aux_debug_memcheck_after \
+                                              << __aux_memcheck_delta_str); \
+      Notifier.SendLogMessage(LogInfo(Normal) << "... Finished."); \
+    } \
   }
+
+#define TIMER_COUT_RESULT_NOTIFIER(Notifier, Msg) TIMER_COUT_RESULT_NOTIFIER_IF(Notifier, Msg, -1)
 
 #define TIMER_COUT_RESULT_NOTIFIER_MOBIUS(Notifier, Msg) \
   { \
