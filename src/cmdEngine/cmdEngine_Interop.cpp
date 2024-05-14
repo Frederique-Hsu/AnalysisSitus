@@ -81,6 +81,7 @@
 // OpenCascade includes
 #include <BRep_Builder.hxx>
 #include <BRepTools.hxx>
+#include <OSD_FileSystem.hxx>
 #include <XCAFDoc_ShapeTool.hxx>
 #include <UnitsMethods.hxx>
 
@@ -1178,6 +1179,69 @@ int ENGINE_DumpAAGJSON(const Handle(asiTcl_Interp)& interp,
 
 //-----------------------------------------------------------------------------
 
+int ENGINE_SerializeAAG(const Handle(asiTcl_Interp)& interp,
+                        int                          argc,
+                        const char**                 argv)
+{
+  if ( argc != 2 )
+  {
+    return interp->ErrorOnWrongArgs(argv[0]);
+  }
+
+  // Get Part Node and its AAG.
+  Handle(asiData_PartNode) partNode = cmdEngine::model->GetPartNode();
+  //
+  if ( partNode.IsNull() || !partNode->IsWellFormed() )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Part is not initialized.");
+    return TCL_ERROR;
+  }
+  //
+  Handle(asiAlgo_AAG) aag = partNode->GetAAG();
+  //
+  if ( aag.IsNull() )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "AAG is null.");
+    return TCL_ERROR;
+  }
+
+  // Write.
+  if ( !asiAlgo_AAG::Serialize( aag, argv[1], interp->GetProgress() ) )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Cannot save the serialized data to '%1'."
+                                                        << argv[1]);
+    return TCL_ERROR;
+  }
+
+  return TCL_OK;
+}
+
+//-----------------------------------------------------------------------------
+
+int ENGINE_DeserializeAAG(const Handle(asiTcl_Interp)& interp,
+                          int                          argc,
+                          const char**                 argv)
+{
+  if ( argc != 2 )
+  {
+    return interp->ErrorOnWrongArgs(argv[0]);
+  }
+
+  // Translate.
+  Handle(asiAlgo_AAG) aag;
+  //
+  if ( !asiAlgo_AAG::Deserialize(argv[1], aag) )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Cannot deserialize data from '%1'."
+                                                        << argv[1]);
+    return TCL_ERROR;
+  }
+
+  return TCL_OK;
+}
+
+//-----------------------------------------------------------------------------
+
 int ENGINE_LoadPoints(const Handle(asiTcl_Interp)& interp,
                       int                          argc,
                       const char**                 argv)
@@ -1872,6 +1936,22 @@ void cmdEngine::Commands_Interop(const Handle(asiTcl_Interp)&      interp,
     __FILE__, group, ENGINE_DumpAAGJSON);
 
   //-------------------------------------------------------------------------//
+  interp->AddCommand("serialize-aag",
+    //
+    "serialize-aag <filename>\n"
+    "\t Serializes AAG of the active part to a binary file.",
+    //
+    __FILE__, group, ENGINE_SerializeAAG);
+
+    //-------------------------------------------------------------------------//
+  interp->AddCommand("deserialize-aag",
+    //
+    "deserialize-aag <filename>\n"
+    "\t Deserializes AAG from a binary file.",
+    //
+    __FILE__, group, ENGINE_DeserializeAAG);
+
+  //-------------------------------------------------------------------------//
   interp->AddCommand("load-points",
     //
     "load-points <name> <filename>\n"
@@ -1942,5 +2022,4 @@ void cmdEngine::Commands_Interop(const Handle(asiTcl_Interp)&      interp,
     "\t Prints information about OpenGL.\n",
     //
     __FILE__, group, ENGINE_GlInfo);
-
 }

@@ -116,6 +116,12 @@ namespace asiAlgo_Utils
   //! Functions to work with strings.
   namespace Str
   {
+    //! Fortranizes the passed integer value.
+    //! \param[in] val the value to fortranize.
+    //! \return the fortran-ish string representation.
+    asiAlgo_EXPORT std::string
+      Fortranize(const int val);
+
     //! Derives filename and extension out of the passed full path.
     //! \param[in]  fullPath  the input full path.
     //! \param[out] name      the output filename.
