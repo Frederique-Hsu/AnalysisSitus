@@ -356,6 +356,37 @@ public:
 
 public:
 
+  /** @name Serialization
+   *  Methods to serialize and deserialize AAG.
+   */
+  //@{
+
+  //! Serializes the given AAG data structure to a binary file with the name
+  //! passed as an argument.
+  //! \param[in] aag       the AAG to serialize.
+  //! \param[in] pFilename the filename of the target binary file to serialize to.
+  //! \param[in] progress  the progress notifier.
+  //! \return true in case of successful serialization, otherwise -- false.
+  asiAlgo_EXPORT static bool
+    Serialize(const Handle(asiAlgo_AAG)& aag,
+              const char*                pFilename,
+              ActAPI_ProgressEntry       progress = nullptr);
+
+  //! Deserializes AAG data structure from a binary file with the name passed as
+  //! an argument.
+  //! \param[in]  pFilename the filename of the target binary file to deserialize from.
+  //! \param[out] aag       the deserialized AAG.
+  //! \param[in]  progress  the progress notifier.
+  //! \return true in case of successful deserialization, otherwise -- false.
+  asiAlgo_EXPORT static bool
+    Deserialize(const char*          pFilename,
+                Handle(asiAlgo_AAG)& aag,
+                ActAPI_ProgressEntry progress = nullptr);
+
+  //@}
+
+public:
+
   /** @name Derived graphs
    *  Methods to construct derived graphs and sub-graphs from AAG.
    */

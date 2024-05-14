@@ -53,8 +53,6 @@ class asiAlgo_FeatureAttr : public Standard_Transient
 {
 friend class asiAlgo_AAG;
 
-public:
-
   // OCCT RTTI
   DEFINE_STANDARD_RTTI_INLINE(asiAlgo_FeatureAttr, Standard_Transient)
 
@@ -69,6 +67,26 @@ public:
 
   virtual const char*
     GetName() const = 0;
+
+public:
+
+  /** @name Serialization
+   *  Methods to serialize and deserialize the AAG attribute.
+   */
+  //@{
+
+  //! Serializes this attribute to the binary format. The file handler `pFile`
+  //! should be opened and prepared for writing.
+  //! \param[in] pFile the C file handler.
+  //! \return false if writing is impossible or not done.
+  virtual bool
+    Serialize(FILE* pFile) const
+  {
+    (void) pFile;
+    return false;
+  }
+
+  //@}
 
 public:
 

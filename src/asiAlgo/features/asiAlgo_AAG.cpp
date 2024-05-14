@@ -39,11 +39,21 @@
 #include <asiAlgo_JSON.h>
 
 // OCCT includes
+#include <OSD_FileSystem.hxx>
+#include <OSD_OpenFile.hxx>
 #include <ShapeAnalysis_Edge.hxx>
+#include <Standard_ReadLineBuffer.hxx>
 #include <TopExp.hxx>
 #include <TopExp_Explorer.hxx>
 #include <TopoDS.hxx>
 #include <TopTools_IndexedDataMapOfShapeListOfShape.hxx>
+
+//-----------------------------------------------------------------------------
+
+#define NODE_ATTR_BEGIN "NODE_ATTR_BEGIN"
+#define ARC_ATTR_BEGIN  "ARC_ATTR_BEGIN"
+
+//-----------------------------------------------------------------------------
 
 namespace
 {
@@ -68,6 +78,56 @@ namespace
     }
 
     return fxnAngle;
+  }
+}
+
+namespace serialize
+{
+  static const size_t HEADER_SIZE       = 80;
+  static const size_t ATTR_SECTION_SIZE = 16;
+  static const size_t ATTR_NAME_SIZE    = 64;
+
+  //! Writes a Little Endian 32 bits integer
+  void convertInteger(const int value,
+                      char*     pResult)
+  {
+    union
+    {
+      int  i;
+      char c[4];
+    } U;
+    //
+    U.i = value;
+
+    pResult[0] = U.c[0];
+    pResult[1] = U.c[1];
+    pResult[2] = U.c[2];
+    pResult[3] = U.c[3];
+  }
+
+  //! Writes a Little Endian 32 bits float
+  void convertDouble(const double value,
+                     char*        pResult)
+  {
+    union
+    {
+      float i;
+      char  c[4];
+    } U;
+    //
+    U.i = (float) value;
+
+    pResult[0] = U.c[0];
+    pResult[1] = U.c[1];
+    pResult[2] = U.c[2];
+    pResult[3] = U.c[3];
+  }
+
+  //! Read a Little Endian 32 bits integer.
+  static int readInteger(const char* pData)
+  {
+    // on little-endian platform, use plain cast
+    return *reinterpret_cast<const int*>(pData);
   }
 }
 
@@ -104,6 +164,318 @@ asiAlgo_AAG::asiAlgo_AAG(const TopoDS_Shape& masterCAD,
 
 asiAlgo_AAG::~asiAlgo_AAG()
 {}
+
+//-----------------------------------------------------------------------------
+
+bool asiAlgo_AAG::Serialize(const Handle(asiAlgo_AAG)& aag,
+                            const char*                pFilename,
+                            ActAPI_ProgressEntry       progress)
+{
+  FILE* pFile = OSD_OpenFile(pFilename, "wb");
+  //
+  if ( pFile == NULL )
+  {
+    progress.SendLogMessage(LogErr(Normal) << "Cannot open file for writing.");
+    return false;
+  }
+
+  /* =============
+   *  Header info.
+   * ============= */
+
+  // Serialize header.
+  char header[serialize::HEADER_SIZE] = "AAG exported by Analysis Situs";
+  if ( fwrite(header, 1, serialize::HEADER_SIZE, pFile) != serialize::HEADER_SIZE )
+  {
+    progress.SendLogMessage(LogErr(Normal) << "Cannot open file for writing.");
+    return false;
+  }
+
+  /* ==================================
+   *  Adjacency matrix (graph as such).
+   * ================================== */
+
+  // Write N as the number of nodes.
+  const int N = aag->GetNumberOfNodes();
+  //
+  {
+    char conv[4];
+    serialize::convertInteger(N, conv);
+    //
+    if ( fwrite(conv, 1, 4, pFile) != 4 )
+    {
+      fclose(pFile);
+      return false;
+    }
+  }
+
+  // Write N times the rows of adjacency matrix.
+  //
+  // ... <f_k> <j_k - i_k> <a_{k,i_k}> ... <a_{k,j_k}> ...
+  //
+  // Here <f_k> is the face ID in the k-th row, and a_{k,i} are
+  // the adjacency elements, whose number is variable and equal
+  // to <j_k - i_k>.
+  //
+  // E.g.:
+  // ... 10 3 1 2 4 ...
+  // means that the face `10` has `3` adjacent elements: `1`, `2` and `4`.
+  //
+  // Each number is a 4-bytes integer.
+  const asiAlgo_AdjacencyMx& mx = aag->GetNeighborhood();
+  //
+  for ( asiAlgo_AdjacencyMx::t_mx::Iterator rowIt(mx.mx);
+        rowIt.More(); rowIt.Next() )
+  {
+    const t_topoId         f_k  = rowIt.Key();
+    const asiAlgo_Feature& nids = rowIt.Value();
+
+    // <f_k>: the next face ID whose adjacency row is serialized.
+    {
+      char conv[4];
+      serialize::convertInteger(f_k, conv);
+      //
+      if ( fwrite(conv, 1, 4, pFile) != 4 )
+      {
+        fclose(pFile);
+        return false;
+      }
+    }
+
+    // <j_k - i_k>: how many elements are in the adjacency row.
+    const int numAdj = nids.Extent();
+    //
+    {
+      char conv[4];
+      serialize::convertInteger(numAdj, conv);
+      //
+      if ( fwrite(conv, 1, 4, pFile) != 4 )
+      {
+        fclose(pFile);
+        return false;
+      }
+    }
+
+    // Write each of <a_{k,i_k}> elements.
+    for ( asiAlgo_Feature::Iterator nit(nids); nit.More(); nit.Next() )
+    {
+      const int nid = nit.Key();
+
+      char conv[4];
+      serialize::convertInteger(nid, conv);
+      //
+      if ( fwrite(conv, 1, 4, pFile) != 4 )
+      {
+        fclose(pFile);
+        return false;
+      }
+    }
+  }
+
+  /* ==============================
+   *  Serializable node attributes.
+   * ============================== */
+
+  const t_node_attributes& nodeAttrs = aag->GetNodeAttributes();
+  //
+  for ( t_node_attributes::Iterator naIt(nodeAttrs); naIt.More(); naIt.Next() )
+  {
+    const int         fid     = naIt.Key();
+    const t_attr_set& attrSet = naIt.Value();
+    //
+    for ( t_attr_set::Iterator asIt(attrSet); asIt.More(); asIt.Next() )
+    {
+      const Handle(asiAlgo_FeatureAttr)& A        = asIt.GetAttr();
+      const Standard_GUID&               guid     = asIt.GetGUID();
+      std::string                        attrName = A->DynamicType()->Name();
+
+      if ( strlen( attrName.c_str() ) > serialize::ATTR_NAME_SIZE )
+      {
+        progress.SendLogMessage( LogWarn(Normal) << "Skipping AAG attribute '%1' as its name is too long."
+                                                 << attrName );
+        continue;
+      }
+
+      // Node attribute section.
+      char secHeader[serialize::ATTR_SECTION_SIZE] = NODE_ATTR_BEGIN;
+      if ( fwrite(secHeader, 1, serialize::ATTR_SECTION_SIZE, pFile) != serialize::ATTR_SECTION_SIZE )
+      {
+        fclose(pFile);
+        return false;
+      }
+
+      // Node ID.
+      {
+        char conv[4];
+        serialize::convertInteger(fid, conv);
+        //
+        if ( fwrite(conv, 1, 4, pFile) != 4 )
+        {
+          fclose(pFile);
+          return false;
+        }
+      }
+
+      // Attribute type (class name).
+      char attrType[serialize::ATTR_NAME_SIZE];
+      //
+      strncpy(attrType, attrName.c_str(), serialize::ATTR_NAME_SIZE);
+      //
+      if ( fwrite(attrType, 1, serialize::ATTR_NAME_SIZE, pFile) != serialize::ATTR_NAME_SIZE )
+      {
+        fclose(pFile);
+        return false;
+      }
+
+      // Serialize the attribute.
+      if ( !A->Serialize(pFile) )
+      {
+        progress.SendLogMessage( LogWarn(Normal) << "AAG attribute '%1' cannot be serialized."
+                                                 << attrName );
+
+        // Put zero size of the buffer.
+        {
+          char conv[4];
+          serialize::convertInteger(0, conv);
+          //
+          if ( fwrite(conv, 1, 4, pFile) != 4 )
+          {
+            fclose(pFile);
+            return false;
+          }
+        }
+        continue;
+      }
+    }
+  }
+
+  /* =============================
+   *  Serializable arc attributes.
+   * ============================= */
+
+  // TODO NYI
+
+  fclose(pFile);
+  return true;
+}
+
+//-----------------------------------------------------------------------------
+
+bool asiAlgo_AAG::Deserialize(const char*          pFilename,
+                              Handle(asiAlgo_AAG)& aag,
+                              ActAPI_ProgressEntry progress)
+{
+  FILE* pFile = OSD_OpenFile(pFilename, "rb");
+  //
+  if ( pFile == NULL )
+  {
+    progress.SendLogMessage(LogErr(Normal) << "Cannot open file for reading.");
+    return false;
+  }
+
+  /* =============
+   *  Header info.
+   * ============= */
+
+  // Read file header.
+  char header[serialize::HEADER_SIZE];
+  //
+  if ( !fread(header, 1, serialize::HEADER_SIZE, pFile) )
+  {
+    progress.SendLogMessage(LogErr(Normal) << "Corrupted binary file.");
+    return false;
+  }
+
+  /* ==================================
+   *  Adjacency matrix (graph as such).
+   * ================================== */
+
+  // Read 4 bytes for the number of nodes.
+  char intbuff[4];
+  if ( !fread(intbuff, 1, 4, pFile) )
+  {
+    progress.SendLogMessage(LogErr(Normal) << "Corrupted binary file.");
+    return false;
+  }
+  //
+  const int N = serialize::readInteger(intbuff);
+  //
+  progress.SendLogMessage(LogInfo(Normal) << "AAG has %1 nodes." << N);
+
+  // Read N times the rows of adjacency matrix.
+  asiAlgo_AdjacencyMx mx;
+  //
+  for ( int n = 1; n <= N; ++n )
+  {
+    // `fid`
+    int fid = 0;
+    {
+      if ( !fread(intbuff, 1, 4, pFile) )
+      {
+        progress.SendLogMessage(LogErr(Normal) << "Corrupted binary file: `fid`.");
+        return false;
+      }
+      //
+      fid = serialize::readInteger(intbuff);
+    }
+
+    // `num. adjacent`
+    int numAdj = 0;
+    {
+      if ( !fread(intbuff, 1, 4, pFile) )
+      {
+        progress.SendLogMessage(LogErr(Normal) << "Corrupted binary file: `num. adjacent`.");
+        return false;
+      }
+      //
+      numAdj = serialize::readInteger(intbuff);
+    }
+
+    // Read `nids`
+    asiAlgo_Feature nids;
+    //
+    for ( int k = 0; k < numAdj; ++k )
+    {
+      // `nid`
+      int nid = 0;
+      {
+        if ( !fread(intbuff, 1, 4, pFile) )
+        {
+          progress.SendLogMessage(LogErr(Normal) << "Corrupted binary file: `nid`.");
+          return false;
+        }
+        //
+        nid = serialize::readInteger(intbuff);
+      }
+      //
+      nids.Add(nid);
+    }
+
+    // Fill the adjacency matrix.
+    mx.mx.Bind(fid, nids);
+  }
+
+  // Dump M.
+  {
+    std::stringstream __debBuff;
+    mx.Dump(__debBuff);
+    std::cout << "FAG (Face Adjacency Graph): \n" << __debBuff.str();
+  }
+
+  /* ==============================
+   *  Serializable node attributes.
+   * ============================== */
+
+  // TODO
+
+  /* =============================
+   *  Serializable arc attributes.
+   * ============================= */
+
+  /*int numNodes = 0;
+  in >> numNodes;*/
+  return true;
+}
 
 //-----------------------------------------------------------------------------
 

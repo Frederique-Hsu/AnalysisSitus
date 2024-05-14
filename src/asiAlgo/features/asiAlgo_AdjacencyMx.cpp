@@ -31,8 +31,32 @@
 // Own include
 #include <asiAlgo_AdjacencyMx.h>
 
+// asiAlgo includes
+#include <asiAlgo_Utils.h>
+
 // OpenCascade includes
 #include <TColStd_MapIteratorOfPackedMapOfInteger.hxx>
+
+//-----------------------------------------------------------------------------
+
+void asiAlgo_AdjacencyMx::Dump(Standard_OStream& out) const
+{
+  for ( t_mx::Iterator rowIt(this->mx); rowIt.More(); rowIt.Next() )
+  {
+    const t_topoId         fid  = rowIt.Key();
+    const asiAlgo_Feature& nids = rowIt.Value();
+
+    out << fid << " |";
+
+    for ( asiAlgo_Feature::Iterator nit(nids); nit.More(); nit.Next() )
+    {
+      const int nid = nit.Key();
+
+      out << " " << nid;
+    }
+    out << "\n";
+  }
+}
 
 //-----------------------------------------------------------------------------
 

@@ -89,6 +89,12 @@ public:
 
 public:
 
+  //! Dumps this adjacency matrix to the passed output stream.
+  asiAlgo_EXPORT void
+    Dump(Standard_OStream& out) const;
+
+public:
+
   t_mx mx; //!< Adjacency rows.
 
 public:

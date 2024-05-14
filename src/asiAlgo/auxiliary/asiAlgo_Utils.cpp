@@ -472,6 +472,16 @@ namespace
 
 //-----------------------------------------------------------------------------
 
+std::string asiAlgo_Utils::Str::Fortranize(const int val)
+{
+  char buff[ASI_FORTRAN_BUFSIZE];
+  std::string str = ::fortranize(val, buff);
+
+  return str;
+}
+
+//-----------------------------------------------------------------------------
+
 void asiAlgo_Utils::Str::FileNameAndExtension(const TCollection_AsciiString& fullPath,
                                               TCollection_AsciiString&       name,
                                               TCollection_AsciiString&       extension)
