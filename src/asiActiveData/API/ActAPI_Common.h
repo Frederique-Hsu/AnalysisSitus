@@ -274,20 +274,20 @@ namespace ActiveData
     //! \param theGuid [in] GUID to calculate a hash code for.
     //! \param theUpper [in] upper index.
     //! \return hash code.
-    static Standard_Integer HashCode(const Standard_GUID& theGuid,
-                                     const Standard_Integer theUpper)
+    size_t operator()(const Standard_GUID& theGuid) const noexcept
     {
-      return Standard_GUID::HashCode(theGuid, theUpper);
+      std::hash<Standard_GUID> hash;
+      return hash(theGuid);
     }
 
     //! Check equality of the two passed GUIDs.
     //! \param[in] theGuid1 GUID 1.
     //! \param[in] theGuid2 GUID 2.
     //! \return true in case of equality.
-    static Standard_Boolean IsEqual(const Standard_GUID& theGuid1,
-                                    const Standard_GUID& theGuid2)
+    bool operator()(const Standard_GUID& theGuid1,
+                    const Standard_GUID& theGuid2) const noexcept
     {
-      return Standard_GUID::IsEqual(theGuid1, theGuid2);
+      return theGuid1.IsSame(theGuid2);
     }
   };
 } // ActiveData namespace.

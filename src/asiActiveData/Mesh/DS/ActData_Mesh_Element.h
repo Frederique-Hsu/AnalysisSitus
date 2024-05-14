@@ -76,15 +76,15 @@ public:
 
     //! Returns a HasCode value  for  the  Key <K>  in the
     //! range 0..Upper.
-    inline static int HashCode(const Handle(ActData_Mesh_Element)& ME, const int Upper)
+    size_t operator()(const Handle(ActData_Mesh_Element)& ME) const noexcept
     {
-      return ME->HashCode(Upper);
+      return ME->HashCode(1000);
     }
 
     //! Returns True  when the two  keys are the same. Two
     //! same  keys  must   have  the  same  hashcode,  the
     //! contrary is not necessary.
-    inline static unsigned IsEqual(const Handle(ActData_Mesh_Element)& ME1, const Handle(ActData_Mesh_Element)& ME2)
+    bool operator()(const Handle(ActData_Mesh_Element)& ME1, const Handle(ActData_Mesh_Element)& ME2) const noexcept
     {
       return ME1->IsSame(ME2);
     }
@@ -97,15 +97,15 @@ public:
 
     //! Returns a HasCode value  for  the  Key <K>  in the
     //! range 0..Upper.
-    inline static int HashCode(const Handle(ActData_Mesh_Element)& ME, const int Upper)
+    size_t operator()(const Handle(ActData_Mesh_Element)& ME) const noexcept
     {
-      return ME->HashCode(Upper);
+      return ME->HashCode(1000);
     }
 
     //! Returns True  when the two  keys are the same. Two
     //! same  keys  must   have  the  same  hashcode,  the
     //! contrary is not necessary.
-    inline static unsigned IsEqual(const Handle(ActData_Mesh_Element)& ME1, const Handle(ActData_Mesh_Element)& ME2)
+    bool operator()(const Handle(ActData_Mesh_Element)& ME1, const Handle(ActData_Mesh_Element)& ME2) const noexcept
     {
       return ME1->IsEqual(ME2);
     }

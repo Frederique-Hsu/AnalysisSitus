@@ -95,7 +95,8 @@ public:
 //! \ingroup ASI_CORE
 //!
 typedef NCollection_Sequence<Handle(DDS_DicGroup)> DDS_BaseCollectionOfDicGroups;
-DEFINE_INDEXEDDATAMAP(DDS_IndexedDataMapOfDicGroups, DDS_BaseCollectionOfDicGroups,
-                      TCollection_AsciiString, Handle(DDS_DicGroup))
+
+typedef NCollection_IndexedDataMap<TCollection_AsciiString,
+                                   Handle(DDS_DicGroup)> DDS_IndexedDataMapOfDicGroups;
 
 #endif

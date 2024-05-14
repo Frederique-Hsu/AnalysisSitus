@@ -112,9 +112,10 @@ class SegAddress
 inline int HashCode(const SegAddress& theSegmentAddress,
                     const int       theUpperBound)
 {
-  return ::HashCode (((theSegmentAddress.WireIndex()    & 255)  + 1) *
-                     ((theSegmentAddress.EdgeIndex()    & 255)  + 1) *
-                     ((theSegmentAddress.SegmentIndex() & 1023) + 1) / 5, theUpperBound);
+  std::hash<Standard_Integer> hash;
+  return hash(((theSegmentAddress.WireIndex()    & 255)  + 1) *
+              ((theSegmentAddress.EdgeIndex()    & 255)  + 1) *
+              ((theSegmentAddress.SegmentIndex() & 1023) + 1) / 5);
 }
 
 //=======================================================================

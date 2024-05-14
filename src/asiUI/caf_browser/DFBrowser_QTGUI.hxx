@@ -20,7 +20,6 @@
 
 #include <asiUI.h>
 
-#include <Standard_Address.hxx>
 #include <TCollection_AsciiString.hxx>
 #include <DFBrowser_PtrGUI.hxx>
 #include <DFBrowser_Picture.hxx>

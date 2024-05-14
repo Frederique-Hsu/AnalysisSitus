@@ -36,6 +36,8 @@
 
 // OCCT includes
 #include <TopoDS_Shape.hxx>
+#include <Standard.hxx>
+#include <Standard_DefineAlloc.hxx>
 
 //-----------------------------------------------------------------------------
 
@@ -47,15 +49,18 @@ class asiAlgo_ShapePartnerHasher
 {
 public:
 
-  static int HashCode(const TopoDS_Shape& S, const int Upper)
+  DEFINE_STANDARD_ALLOC
+
+  size_t operator()(const TopoDS_Shape& S) const noexcept
   {
     const int I  = (int) ptrdiff_t( S.TShape().operator->() );
-    const int HS = ::HashCode(I, Upper);
+    std::hash<Standard_Integer> hash;
+    const int HS = hash(I);
     //
     return HS;
   }
 
-  static bool IsEqual(const TopoDS_Shape& S1, const TopoDS_Shape& S2)
+  bool operator()(const TopoDS_Shape& S1, const TopoDS_Shape& S2) const noexcept
   {
     return S1.IsPartner(S2);
   }

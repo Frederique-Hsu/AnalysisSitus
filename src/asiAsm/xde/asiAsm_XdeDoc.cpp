@@ -961,7 +961,7 @@ void Doc::GetOriginals(const Handle(HAssemblyItemIdsMap)& anyItems,
 {
   // Loop over the items of interest and collect originals as labels into
   // a map, so that no duplications will be stored.
-  NCollection_IndexedMap<TDF_Label, TDF_LabelMapHasher> originals;
+  NCollection_IndexedMap<TDF_Label> originals;
   //
   for ( HAssemblyItemIdsMap::Iterator iter(*anyItems); iter.More(); iter.Next() )
   {
@@ -982,7 +982,7 @@ void Doc::GetOriginals(const AssemblyItemIds& anyItems,
 {
   // Loop over the items of interest and collect originals as labels into
   // a map, so that no duplications will be stored.
-  NCollection_IndexedMap<TDF_Label, TDF_LabelMapHasher> originals;
+  NCollection_IndexedMap<TDF_Label> originals;
   //
   for ( AssemblyItemIds::Iterator iter(anyItems); iter.More(); iter.Next() )
   {

@@ -132,14 +132,14 @@ struct asiAlgo_SemanticCode
     //! \param[in] c     the diagnostic code to compute a hash code for.
     //! \param[in] upper the upper bound to cap a hash code with.
     //! \return the computed hash code.
-    static int HashCode(const asiAlgo_SemanticCode& c, const int upper)
+    size_t operator()(const asiAlgo_SemanticCode& c) const noexcept
     {
       int key = c.featureId + c.code;
       key += (key << 10);
       key ^= (key >> 6);
       key += (key << 3);
       key ^= (key >> 11);
-      return (key & 0x7fffffff) % upper;
+      return (key & 0x7fffffff) % 1000;
     }
 
     //! Checks the passed diagnostic codes for equality to be used
@@ -149,8 +149,8 @@ struct asiAlgo_SemanticCode
     //! \param[in] c1 the first code.
     //! \param[in] c2 the second code.
     //! \return true in case of equality, false -- otherwise.
-    static bool IsEqual(const asiAlgo_SemanticCode& c1,
-                        const asiAlgo_SemanticCode& c2)
+    bool operator()(const asiAlgo_SemanticCode& c1,
+                    const asiAlgo_SemanticCode& c2) const noexcept
     {
       if ( c1.featureId != c2.featureId )
         return false;

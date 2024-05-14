@@ -83,7 +83,8 @@ public:
     //! \return true/false.
     Standard_Boolean IsEqual(const Record& theRec) const
     {
-      return ActAPI_ParameterGID::Hasher::IsEqual(GID, theRec.GID);
+      ActAPI_ParameterGID::Hasher hasher;
+      return hasher(GID, theRec.GID);
     }
   };
 

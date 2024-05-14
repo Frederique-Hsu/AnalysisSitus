@@ -99,10 +99,9 @@ protected:
 protected:
 
   glTFJsonSerializer* m_pWriter;
-  NCollection_DoubleMap<Handle(Image_Texture), TCollection_AsciiString,
-                        Image_Texture, TCollection_AsciiString> m_imageMap;
+  NCollection_DoubleMap<Handle(Image_Texture), TCollection_AsciiString> m_imageMap;
 
-  NCollection_Map<Handle(Image_Texture), Image_Texture> m_textureMap;
+  NCollection_Map<Handle(Image_Texture)> m_textureMap;
 
   int m_iDefSamplerId;
   int m_iNbImages;

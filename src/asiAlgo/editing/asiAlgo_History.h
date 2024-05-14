@@ -150,15 +150,18 @@ public:
     //! Hasher for using history items in OCCT data maps.
     struct Hasher
     {
-      static int HashCode(const t_item* pItem, const int Upper)
+      DEFINE_STANDARD_ALLOC
+
+      size_t operator()(const t_item* pItem) const noexcept
       {
         const int I  = (int) ptrdiff_t(pItem);
-        const int HS = ::HashCode(I, Upper);
+        std::hash<Standard_Integer> hash;
+        const int HS = hash(I);
         //
         return HS;
       }
 
-      static bool IsEqual(const t_item* pItem1, const t_item* pItem2)
+      bool operator()(const t_item* pItem1, const t_item* pItem2) const noexcept
       {
         return pItem1 == pItem2;
       }

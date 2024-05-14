@@ -53,6 +53,25 @@ class asiAlgo_AAGRandomIterator;
 
 //-----------------------------------------------------------------------------
 
+class guidHasher
+  {
+  public:
+
+    size_t operator()(const Standard_GUID& guid) const noexcept
+    {
+      std::hash<Standard_GUID> hash;
+      return hash(guid);
+    }
+
+    //! \return true if two links are equal.
+    bool operator()(const Standard_GUID& guid1, const Standard_GUID& guid2) const noexcept
+    {
+      return guid1.IsSame(guid2);
+    }
+  };
+
+//-----------------------------------------------------------------------------
+
 //! \ingroup ASI_AFR
 //!
 //! \brief Attributed Adjacency Graph for faces of a CAD model.
@@ -112,7 +131,7 @@ public:
   //! Type definition for map of attributes.
   typedef NCollection_DataMap<Standard_GUID,
                               Handle(asiAlgo_FeatureAttr),
-                              Standard_GUID> t_attrMap;
+                              guidHasher> t_attrMap;
 
   //---------------------------------------------------------------------------
 
@@ -130,18 +149,18 @@ public:
     t_arc(const t_topoId _F1, const t_topoId _F2) : F1(_F1), F2(_F2) {}
 
     //! \return hash code for the arc.
-    static int HashCode(const t_arc& arc, const int upper)
+    size_t operator()(const t_arc& arc) const noexcept
     {
       int key = arc.F1 + arc.F2;
       key += (key << 10);
       key ^= (key >> 6);
       key += (key << 3);
       key ^= (key >> 11);
-      return (key & 0x7fffffff) % upper;
+      return (key & 0x7fffffff) % 1000;
     }
 
     //! \return true if two links are equal.
-    static int IsEqual(const t_arc& arc1, const t_arc& arc2)
+    bool operator()(const t_arc& arc1, const t_arc& arc2) const noexcept
     {
       return ( (arc1.F1 == arc2.F1) && (arc1.F2 == arc2.F2) ) ||
              ( (arc1.F2 == arc2.F1) && (arc1.F1 == arc2.F2) );
@@ -781,7 +800,7 @@ public:
   //! the ones having the GUIDs from the passed `keep` collection.
   //! \param[in] keep the attribute types to keep alive on removal.
   asiAlgo_EXPORT void
-    RemoveNodeAttributes(const NCollection_Map<Standard_GUID, Standard_GUID>& keep);
+    RemoveNodeAttributes(const NCollection_Map<Standard_GUID, guidHasher>& keep);
 
   //! Sets the entire collection of nodal attributes.
   //! \param[in] attrs attributes to set.

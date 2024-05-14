@@ -41,10 +41,8 @@ set (OCCT_LIB_FILES
   TKXCAF
   TKService
   TKXSBase
-  TKSTEP
-  TKIGES
-  TKXDESTEP
-  TKXDEIGES
+  TKDESTEP
+  TKDEIGES
 )
 #------------------------------------------------------------------------------
 set (VTK_LIB_FILES

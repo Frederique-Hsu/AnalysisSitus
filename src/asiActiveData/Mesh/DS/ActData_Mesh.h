@@ -61,19 +61,18 @@ struct ActData_Mesh_Link
 
   struct Hasher
   {
-    inline static int HashCode(const ActData_Mesh_Link& link,
-                               const int        upper)
+    int operator()(const ActData_Mesh_Link& link) const noexcept
     {
       int key = link.n1 + link.n2;
       key += (key << 10);
       key ^= (key >> 6);
       key += (key << 3);
       key ^= (key >> 11);
-      return (key & 0x7fffffff) % upper;
+      return (key & 0x7fffffff) % 1000;
     }
 
-    inline static unsigned IsEqual(const ActData_Mesh_Link& l1,
-                                   const ActData_Mesh_Link& l2)
+    bool operator()(const ActData_Mesh_Link& l1,
+                    const ActData_Mesh_Link& l2) const noexcept
     {
       return (l1.n1 == l2.n1 && l1.n2 == l2.n2) || (l1.n1 == l2.n2 && l1.n2 == l2.n1);
     }

@@ -257,32 +257,32 @@ bool
                        void*&    theResult)
 {
   // check that thread handle is not null
-  theResult = 0;
+  /*theResult = 0;
   if ( !myThread )
   {
     return false;
-  }
+  }*/
 
 #ifdef _WIN32
-  // On Windows, wait for the thread handle to be signaled
-  DWORD ret = WaitForSingleObject(myThread, theTimeMs);
-  if ( ret == WAIT_OBJECT_0 )
-  {
-    DWORD anExitCode;
-    if ( GetExitCodeThread(myThread, &anExitCode) )
-    {
-      theResult = ULongToPtr(anExitCode);
-    }
+  //// On Windows, wait for the thread handle to be signaled
+  //DWORD ret = WaitForSingleObject(myThread, theTimeMs);
+  //if ( ret == WAIT_OBJECT_0 )
+  //{
+  //  DWORD anExitCode;
+  //  if ( GetExitCodeThread(myThread, &anExitCode) )
+  //  {
+  //    theResult = ULongToPtr(anExitCode);
+  //  }
 
-    CloseHandle(myThread);
-    myThread   = 0;
-    myThreadId = 0;
-    return true;
-  }
-  else if ( ret == WAIT_TIMEOUT )
-  {
-    return false;
-  }
+  //  CloseHandle(myThread);
+  //  myThread   = 0;
+  //  myThreadId = 0;
+  //  return true;
+  //}
+  //else if ( ret == WAIT_TIMEOUT )
+  //{
+  //  return false;
+  //}
 
   return false;
 #else

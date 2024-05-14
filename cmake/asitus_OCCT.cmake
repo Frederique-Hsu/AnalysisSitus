@@ -58,18 +58,14 @@ set (LIBS
   TKOffset
   TKPrim
   TKShHealing
-  TKSTEP
-  TKSTEP209
-  TKSTEPAttr
-  TKSTEPBase
+  TKDESTEP
+  TKDESTEP209
   TKTopAlgo
   TKXSBase
   TKHLR
   TKFillet
-  TKSTL
+  TKDESTL
   TKXCAF
-  TKXDESTEP
-  TKXDEIGES
   TKVCAF
   TKV3d
   TKOpenGl

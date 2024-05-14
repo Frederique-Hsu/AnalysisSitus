@@ -157,20 +157,37 @@ public:
     t_arc(const int _iParent, const int _iChild) : iParent(_iParent), iChild(_iChild) {}
 
     //! \return hash code for the arc.
-    static int HashCode(const t_arc& arc, const int upper)
+    size_t operator()(const t_arc& arc) const noexcept
     {
       int key = arc.iParent + arc.iChild;
       key += (key << 10);
       key ^= (key >> 6);
       key += (key << 3);
       key ^= (key >> 11);
-      return (key & 0x7fffffff) % upper;
+      return (key & 0x7fffffff) % 1000;
     }
 
     //! \return true if two links are equal.
-    static int IsEqual(const t_arc& arc1, const t_arc& arc2)
+    bool operator()(const t_arc& arc1, const t_arc& arc2) const noexcept
     {
       return arc1.iParent == arc2.iParent && arc1.iChild == arc2.iChild;
+    }
+  };
+
+  class guidHasher
+  {
+  public:
+
+    size_t operator()(const Standard_GUID& guid) const noexcept
+    {
+      std::hash<Standard_GUID> hash;
+      return hash(guid);
+    }
+
+    //! \return true if two links are equal.
+    bool operator()(const Standard_GUID& guid1, const Standard_GUID& guid2) const noexcept
+    {
+      return guid1.IsSame(guid2);
     }
   };
 
@@ -208,7 +225,7 @@ public:
     }
 
     //! \return internal collection.
-    const NCollection_DataMap<Standard_GUID, Handle(asiAlgo_TopoAttr), Standard_GUID>& GetMap() const
+    const NCollection_DataMap<Standard_GUID, Handle(asiAlgo_TopoAttr), guidHasher>& GetMap() const
     {
       return m_set;
     }
@@ -225,7 +242,7 @@ public:
   private:
 
     //! Internal set storing attributes in association with their global IDs.
-    NCollection_DataMap<Standard_GUID, Handle(asiAlgo_TopoAttr), Standard_GUID> m_set;
+    NCollection_DataMap<Standard_GUID, Handle(asiAlgo_TopoAttr), guidHasher> m_set;
 
   };
 

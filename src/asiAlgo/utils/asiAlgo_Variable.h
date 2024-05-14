@@ -72,18 +72,18 @@ public:
     //! \param var   [in] variable to calculate a hash code for.
     //! \param upper [in] upper index.
     //! \return hash code.
-    static int HashCode(const asiAlgo_Variable& var,
-                        const int               upper)
+    size_t operator()(const asiAlgo_Variable& var) const noexcept
     {
-      return ::HashCode(var.Name, upper);
+      std::hash<TCollection_AsciiString> hash;
+      return hash(var.Name);
     }
 
     //! IsEqual() function for variables to be used in OCCT Data Maps.
     //! \param var1 [in] first variable.
     //! \param var2 [in] second variable.
     //! \return true in case of equality, false -- otherwise.
-    static int IsEqual(const asiAlgo_Variable& var1,
-                       const asiAlgo_Variable& var2)
+    bool operator()(const asiAlgo_Variable& var1,
+                    const asiAlgo_Variable& var2) const noexcept
     {
       return ::IsEqual(var1.Name, var2.Name);
     }

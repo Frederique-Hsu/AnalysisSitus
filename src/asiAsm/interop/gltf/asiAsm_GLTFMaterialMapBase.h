@@ -111,9 +111,9 @@ protected:
   TCollection_AsciiString m_shortFileNameBase; //!< output glTF file name without extension
   TCollection_AsciiString m_keyPrefix;         //!< prefix for generated keys
   NCollection_DoubleMap<glTFXdeVisualStyle, TCollection_AsciiString,
-                        glTFXdeVisualStyle::Hasher, TCollection_AsciiString>
+                        glTFXdeVisualStyle::Hasher>
                           m_styles;            //!< map of processed styles
-  NCollection_Map<Handle(Image_Texture), Image_Texture>
+  NCollection_Map<Handle(Image_Texture)>
                           m_imageFailMap;      //!< map of images failed to be copied
   glTFXdeVisualStyle      m_defaultStyle;      //!< default material definition to be used for nodes with only color defined
   int                     m_nbMaterials;       //!< number of registered materials

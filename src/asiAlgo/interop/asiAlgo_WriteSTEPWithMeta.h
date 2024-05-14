@@ -38,6 +38,9 @@
 #include <ActAPI_IAlgorithm.h>
 
 // OCCT includes
+#include <StepData_StepModel.hxx>
+#include <XSControl_TransferWriter.hxx>
+#include <Transfer_FinderProcess.hxx>
 #include <MoniTool_DataMapOfShapeTransient.hxx>
 #include <STEPConstruct_Styles.hxx>
 #include <STEPControl_Writer.hxx>

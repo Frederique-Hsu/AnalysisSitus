@@ -9,12 +9,12 @@
 #include <asiAlgo.h>
 
 // OpenCascade includes
+#include <Standard_TypeDef.hxx>
 #include <OSD_ThreadFunction.hxx>
 #include <OSD_PThread.hxx>
 #include <Standard_ThreadId.hxx>
 #include <Standard_Integer.hxx>
 #include <Standard_Boolean.hxx>
-#include <Standard_Address.hxx>
 
 //-----------------------------------------------------------------------------
 

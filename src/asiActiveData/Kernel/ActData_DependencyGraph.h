@@ -40,7 +40,6 @@
 #include <ActData_ParameterFactory.h>
 
 // OCCT includes
-#include <TDF_LabelMapHasher.hxx>
 #include <TFunction_DoubleMapIteratorOfDoubleMapOfIntegerLabel.hxx>
 #include <TFunction_DoubleMapOfIntegerLabel.hxx>
 #include <TFunction_Driver.hxx>
@@ -112,24 +111,22 @@ public:
       //! \param theLink [in] oriented link to compute hash code for.
       //! \param theNbBuckets [in] number of buckets.
       //! \return calculated hash code.
-      static Standard_Integer HashCode(const OriEdge& theLink,
-                                       const Standard_Integer theNbBuckets = 100)
+      size_t operator()(const OriEdge& theLink) const noexcept
       {
         Standard_Integer aKey = theLink.V1 + theLink.V2;
         aKey += (aKey << 10);
         aKey ^= (aKey >> 6);
         aKey += (aKey << 3);
         aKey ^= (aKey >> 11);
-        return (aKey & 0x7fffffff) % theNbBuckets;
+        return (aKey & 0x7fffffff) % 100;
       }
 
       //! Checks whether two oriented links are the same.
       //! \param theLink1 [in] first link.
       //! \param theLink2 [in] second link.
       //! \return true in case of equality, false -- otherwise.
-      static Standard_Boolean
-        IsEqual(const OriEdge& theLink1,
-                const OriEdge& theLink2)
+      bool operator()(const OriEdge& theLink1,
+                      const OriEdge& theLink2) const noexcept
       {
         return theLink1.V1 == theLink2.V1 && theLink1.V2 == theLink2.V2;
       }
@@ -166,7 +163,7 @@ public:
   };
 
   //! Type short-cut for correspondence between OCAF Labels & vertices.
-  typedef NCollection_DataMap<TDF_Label, Standard_Integer, TDF_LabelMapHasher> LabelVertexMap;
+  typedef NCollection_DataMap<TDF_Label, Standard_Integer> LabelVertexMap;
 
   //! Type short-cut for the involved graph vertices.
   typedef NCollection_DataMap<Standard_Integer, VertexData> VertexDataMap;

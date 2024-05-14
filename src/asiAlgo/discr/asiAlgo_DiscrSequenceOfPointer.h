@@ -50,20 +50,29 @@ class Edge;
 
 typedef std::pair<Edge*, bool> PairOfPEdgeBoolean;
 
-//! Computes a hash code for the given pair of the pointer to an edge and a boolean value of the face boundary,
-//! in the range [1, upper].
-//! \param val   the given pair of the edge pointer and a Boolean value.
-//! \param upper the upper bound of the range for the hash code to compute.
-//! \return the computed hash code, in the range [1, upper].
-inline int HashCode(const PairOfPEdgeBoolean& val,
-                    const int                 upper)
+class PairOfEdgeBooleanHasher
 {
-  return ::HashCode(val.first, upper);
-}
+public:
 
-typedef NCollection_Sequence<void*>                SequenceOfPointer;
-typedef NCollection_List<void*>                    ListOfPointer;
-typedef NCollection_IndexedMap<PairOfPEdgeBoolean> IMapOfPointerBoolean;
+  //! Computes a hash code for the given pair of the pointer to an edge and a boolean value of the face boundary.
+  //! \param val   the given pair of the edge pointer and a Boolean value.
+  //! \return the computed hash code.
+  size_t operator()(const PairOfPEdgeBoolean& val) const noexcept
+  {
+    std::hash<Edge*> hash;
+    return hash(val.first);
+  }
+
+  bool operator()(const PairOfPEdgeBoolean& val1,
+                  const PairOfPEdgeBoolean& val2) const noexcept
+  {
+    return &(*val1.first) == &(*val2.first);
+  }
+};
+
+typedef NCollection_Sequence<void*>                                         SequenceOfPointer;
+typedef NCollection_List<void*>                                             ListOfPointer;
+typedef NCollection_IndexedMap<PairOfPEdgeBoolean, PairOfEdgeBooleanHasher> IMapOfPointerBoolean;
 
 }
 }

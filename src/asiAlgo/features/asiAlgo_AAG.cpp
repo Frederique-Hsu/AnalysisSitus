@@ -912,7 +912,7 @@ void asiAlgo_AAG::RemoveNodeAttributes()
 
 //-----------------------------------------------------------------------------
 
-void asiAlgo_AAG::RemoveNodeAttributes(const NCollection_Map<Standard_GUID, Standard_GUID>& keep)
+void asiAlgo_AAG::RemoveNodeAttributes(const NCollection_Map<Standard_GUID, guidHasher>& keep)
 {
   for ( t_node_attributes::Iterator it(m_nodeAttributes); it.More(); it.Next() )
   {

@@ -65,14 +65,14 @@ public:
 
     struct Hasher
     {
-      static Standard_Integer HashCode(const t_parameterRef&  theObject,
-                                       const Standard_Integer theNbBuckets = 100)
+      size_t operator()(const t_parameterRef&  theObject) const noexcept
       {
-        return ::HashCode(theObject.id, theNbBuckets);
+        std::hash<ActAPI_DataObjectId> hash;
+        return hash(theObject.id);
       }
 
-      static Standard_Boolean IsEqual(const t_parameterRef& theObject1,
-                                      const t_parameterRef& theObject2)
+      bool operator()(const t_parameterRef& theObject1,
+                      const t_parameterRef& theObject2) const noexcept
       {
         return ::IsEqual(theObject1.id, theObject2.id);
       }

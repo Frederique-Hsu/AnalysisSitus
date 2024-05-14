@@ -45,9 +45,10 @@ const Handle(ActData_Mesh_Element)& ActData_Mesh_MapOfMeshElement::Find(const Ha
   }
 //  Standard_NoSuchObject_Raise_if(IsEmpty(),"ActData_Mesh_MapOfMeshElement::Find");
   ActData_Mesh_MapOfElements::MapNode** data = (ActData_Mesh_MapOfElements::MapNode**) myData1;
-  ActData_Mesh_MapOfElements::MapNode* p = data[ActData_Mesh_Element::Hasher::HashCode(K,NbBuckets())];
+  ActData_Mesh_Element::Hasher hasher;
+  ActData_Mesh_MapOfElements::MapNode* p = data[hasher(K)];
   while (p) {
-    if (ActData_Mesh_Element::Hasher::IsEqual(p->Key(),K))
+    if (hasher(p->Key(),K))
       return p->ChangeValue();
     p = (ActData_Mesh_MapOfElements::MapNode*) p->Next();
   }
@@ -67,9 +68,10 @@ Handle(ActData_Mesh_Element)& ActData_Mesh_MapOfMeshElement::ChangeFind(const Ha
   }
 //Standard_NoSuchObject_Raise_if(IsEmpty(),"ActData_Mesh_MapOfMeshElement::ChangeFind");
   ActData_Mesh_MapOfElements::MapNode** data = (ActData_Mesh_MapOfElements::MapNode**) myData1;
-  ActData_Mesh_MapOfElements::MapNode* p = data[ActData_Mesh_Element::Hasher::HashCode(K,NbBuckets())];
+  ActData_Mesh_Element::Hasher hasher;
+  ActData_Mesh_MapOfElements::MapNode* p = data[hasher(K)];
   while (p) {
-    if (ActData_Mesh_Element::Hasher::IsEqual(p->Key(),K))
+    if (hasher(p->Key(),K))
       return p->ChangeValue();
     p = (ActData_Mesh_MapOfElements::MapNode*)  p->Next();
   }

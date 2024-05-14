@@ -65,12 +65,13 @@
 
 struct TriangleHasher
 {
-  static int HashCode(const Poly_CoherentTriangle* object, const int upper)
+  size_t operator()(const Poly_CoherentTriangle* object) const noexcept
   {
-    return ::HashCode((Standard_Address*) object, upper);
+    std::hash<Standard_Address*> hash;
+    return hash((Standard_Address*) object);
   }
 
-  static bool IsEqual(const Poly_CoherentTriangle* object1, const Poly_CoherentTriangle* object2)
+  bool operator()(const Poly_CoherentTriangle* object1, const Poly_CoherentTriangle* object2) const noexcept
   {
     return object1 == object2;
   }

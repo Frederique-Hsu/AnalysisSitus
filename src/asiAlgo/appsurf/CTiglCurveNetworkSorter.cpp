@@ -21,6 +21,8 @@
 #include <utility>
 #include <cassert>
 
+#include <Standard_ProgramError.hxx>
+
 namespace
 {
 

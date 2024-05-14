@@ -481,21 +481,21 @@ struct ActAPI_ParameterGID
     //! Calculates hash code for Parameter GID.
     //! \param theNbBuckets [in] number of buckets.
     //! \return hash code.
-    static Standard_Integer HashCode(const ActAPI_ParameterGID& theGID,
-                                     const Standard_Integer     theNbBuckets = 100)
+    size_t operator()(const ActAPI_ParameterGID& theGID) const noexcept
     {
       TCollection_AsciiString
         aUniqueName = TCollection_AsciiString(theGID.NID).Cat("_").Cat(theGID.PID);
 
-      return ::HashCode(aUniqueName, theNbBuckets);
+      std::hash<TCollection_AsciiString> hash;
+      return hash(aUniqueName);
     }
 
     //! Checks whether two GIDs are equal.
     //! \param theGID1 [in] first GID to compare.
     //! \param theGID2 [in] second GID to compare.
     //! \return true/false.
-    static Standard_Boolean IsEqual(const ActAPI_ParameterGID& theGID1,
-                                    const ActAPI_ParameterGID& theGID2)
+    bool operator()(const ActAPI_ParameterGID& theGID1,
+                    const ActAPI_ParameterGID& theGID2) const noexcept
     {
       if ( theGID1.PID == -1 || theGID2.PID == -1 )
         return Standard_False;
