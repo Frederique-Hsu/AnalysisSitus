@@ -643,6 +643,54 @@ namespace asiAlgo_Utils
 
   } // Range namespace.
 
+  //! Functions for working with binary formats.
+  namespace Binary
+  {
+    //! Writes a little-endian 32 bits integer to the `pResult` byte buffer.
+    //! \param[in]      value   the number to write.
+    //! \param[in, out] pResult the byte buffer to represent the passed number.
+    asiAlgo_EXPORT void
+      WriteInt(const int value,
+               char*     pResult);
+
+    //! Writes a little-endian 32 bits integer to the binary file passed by
+    //! its opened file handler.
+    //! \param[in] value the number to write.
+    //! \param[in] pFile the opened file handler.
+    //! \param[in] close the Boolean flag indicating whether to close the file
+    //!                  handler if write operation fails.
+    //! \return false if `fwrite()` is impossible.
+    asiAlgo_EXPORT bool
+      WriteInt(const int  value,
+               FILE*      pFile,
+               const bool close = false);
+
+    //! Writes a little-endian 32 bits float to the `pResult` byte buffer.
+    //! \param[in]      value   the number to write.
+    //! \param[in, out] pResult the byte buffer to represent the passed number.
+    asiAlgo_EXPORT void
+      WriteFloat(const double value,
+                 char*        pResult);
+
+    //! Writes a little-endian 32 bits float to the binary file passed by
+    //! its opened file handler.
+    //! \param[in] value the number to write.
+    //! \param[in] pFile the opened file handler.
+    //! \param[in] close the Boolean flag indicating whether to close the file
+    //!                  handler if write operation fails.
+    //! \return false if `fwrite()` is impossible.
+    asiAlgo_EXPORT bool
+      WriteFloat(const double value,
+                 FILE*        pFile,
+                 const bool   close = false);
+
+    //! Read a little-endian 32 bits integer from the passed byte buffer.
+    //! \param[in] pData the buffer to read.
+    //! \return the obtained integer value.
+    asiAlgo_EXPORT int
+      ReadInt(const char* pData);
+  } // Binary namespace.
+
   //! Returns a human-readable name of the passed direction.
   //! \param[in] dir the direction to get a string name for.
   //! \return label.

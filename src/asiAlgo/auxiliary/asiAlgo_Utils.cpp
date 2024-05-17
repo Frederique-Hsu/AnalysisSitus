@@ -6756,6 +6756,90 @@ bool asiAlgo_Utils::Range::AreEqual(const t_rangesByFaces& ranges1,
 
 //-----------------------------------------------------------------------------
 
+void asiAlgo_Utils::Binary::WriteInt(const int value,
+                                     char*     pResult)
+{
+  union
+  {
+    int  i;
+    char c[4];
+  } U;
+  //
+  U.i = value;
+
+  pResult[0] = U.c[0];
+  pResult[1] = U.c[1];
+  pResult[2] = U.c[2];
+  pResult[3] = U.c[3];
+}
+
+//-----------------------------------------------------------------------------
+
+bool asiAlgo_Utils::Binary::WriteInt(const int  value,
+                                     FILE*      pFile,
+                                     const bool close)
+{
+  char conv[4];
+  WriteInt(value, conv);
+  //
+  if ( fwrite(conv, 1, 4, pFile) != 4 )
+  {
+    if ( close )
+      fclose(pFile);
+
+    return false;
+  }
+  return true;
+}
+
+//-----------------------------------------------------------------------------
+
+void asiAlgo_Utils::Binary::WriteFloat(const double value,
+                                       char*        pResult)
+{
+  union
+  {
+    float i;
+    char  c[4];
+  } U;
+  //
+  U.i = (float) value;
+
+  pResult[0] = U.c[0];
+  pResult[1] = U.c[1];
+  pResult[2] = U.c[2];
+  pResult[3] = U.c[3];
+}
+
+//-----------------------------------------------------------------------------
+
+bool asiAlgo_Utils::Binary::WriteFloat(const double value,
+                                       FILE*        pFile,
+                                       const bool   close)
+{
+  char conv[4];
+  WriteFloat(value, conv);
+  //
+  if ( fwrite(conv, 1, 4, pFile) != 4 )
+  {
+    if ( close )
+      fclose(pFile);
+
+    return false;
+  }
+  return true;
+}
+
+//-----------------------------------------------------------------------------
+
+int asiAlgo_Utils::Binary::ReadInt(const char* pData)
+{
+  // on little-endian platform, use plain cast
+  return *reinterpret_cast<const int*>(pData);
+}
+
+//-----------------------------------------------------------------------------
+
 bool asiAlgo_Utils::ProjectPointOnPlane(const Handle(Geom_Plane)& plane,
                                         const gp_Dir&             dir,
                                         const gp_Pnt&             point,
