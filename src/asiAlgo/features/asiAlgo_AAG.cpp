@@ -86,49 +86,6 @@ namespace serialize
   static const size_t HEADER_SIZE       = 80;
   static const size_t ATTR_SECTION_SIZE = 16;
   static const size_t ATTR_NAME_SIZE    = 64;
-
-  //! Writes a Little Endian 32 bits integer
-  void convertInteger(const int value,
-                      char*     pResult)
-  {
-    union
-    {
-      int  i;
-      char c[4];
-    } U;
-    //
-    U.i = value;
-
-    pResult[0] = U.c[0];
-    pResult[1] = U.c[1];
-    pResult[2] = U.c[2];
-    pResult[3] = U.c[3];
-  }
-
-  //! Writes a Little Endian 32 bits float
-  void convertDouble(const double value,
-                     char*        pResult)
-  {
-    union
-    {
-      float i;
-      char  c[4];
-    } U;
-    //
-    U.i = (float) value;
-
-    pResult[0] = U.c[0];
-    pResult[1] = U.c[1];
-    pResult[2] = U.c[2];
-    pResult[3] = U.c[3];
-  }
-
-  //! Read a Little Endian 32 bits integer.
-  static int readInteger(const char* pData)
-  {
-    // on little-endian platform, use plain cast
-    return *reinterpret_cast<const int*>(pData);
-  }
 }
 
 //-----------------------------------------------------------------------------
@@ -198,15 +155,9 @@ bool asiAlgo_AAG::Serialize(const Handle(asiAlgo_AAG)& aag,
   // Write N as the number of nodes.
   const int N = aag->GetNumberOfNodes();
   //
+  if ( !asiAlgo_Utils::Binary::WriteInt(N, pFile, true) )
   {
-    char conv[4];
-    serialize::convertInteger(N, conv);
-    //
-    if ( fwrite(conv, 1, 4, pFile) != 4 )
-    {
-      fclose(pFile);
-      return false;
-    }
+    return false;
   }
 
   // Write N times the rows of adjacency matrix.
@@ -231,29 +182,17 @@ bool asiAlgo_AAG::Serialize(const Handle(asiAlgo_AAG)& aag,
     const asiAlgo_Feature& nids = rowIt.Value();
 
     // <f_k>: the next face ID whose adjacency row is serialized.
+    if ( !asiAlgo_Utils::Binary::WriteInt(f_k, pFile, true) )
     {
-      char conv[4];
-      serialize::convertInteger(f_k, conv);
-      //
-      if ( fwrite(conv, 1, 4, pFile) != 4 )
-      {
-        fclose(pFile);
-        return false;
-      }
+      return false;
     }
 
     // <j_k - i_k>: how many elements are in the adjacency row.
     const int numAdj = nids.Extent();
     //
+    if ( !asiAlgo_Utils::Binary::WriteInt(numAdj, pFile, true) )
     {
-      char conv[4];
-      serialize::convertInteger(numAdj, conv);
-      //
-      if ( fwrite(conv, 1, 4, pFile) != 4 )
-      {
-        fclose(pFile);
-        return false;
-      }
+      return false;
     }
 
     // Write each of <a_{k,i_k}> elements.
@@ -261,12 +200,8 @@ bool asiAlgo_AAG::Serialize(const Handle(asiAlgo_AAG)& aag,
     {
       const int nid = nit.Key();
 
-      char conv[4];
-      serialize::convertInteger(nid, conv);
-      //
-      if ( fwrite(conv, 1, 4, pFile) != 4 )
+      if ( !asiAlgo_Utils::Binary::WriteInt(nid, pFile, true) )
       {
-        fclose(pFile);
         return false;
       }
     }
@@ -278,15 +213,16 @@ bool asiAlgo_AAG::Serialize(const Handle(asiAlgo_AAG)& aag,
 
   const t_node_attributes& nodeAttrs = aag->GetNodeAttributes();
   //
-  for ( t_node_attributes::Iterator naIt(nodeAttrs); naIt.More(); naIt.Next() )
+  for ( t_node_attributes::Iterator nodeIt(nodeAttrs);
+        nodeIt.More(); nodeIt.Next() )
   {
-    const int         fid     = naIt.Key();
-    const t_attr_set& attrSet = naIt.Value();
+    const int         fid     = nodeIt.Key();
+    const t_attr_set& attrSet = nodeIt.Value();
     //
-    for ( t_attr_set::Iterator asIt(attrSet); asIt.More(); asIt.Next() )
+    for ( t_attr_set::Iterator attrIt(attrSet);
+          attrIt.More(); attrIt.Next() )
     {
-      const Handle(asiAlgo_FeatureAttr)& A        = asIt.GetAttr();
-      const Standard_GUID&               guid     = asIt.GetGUID();
+      const Handle(asiAlgo_FeatureAttr)& A        = attrIt.GetAttr();
       std::string                        attrName = A->DynamicType()->Name();
 
       if ( strlen( attrName.c_str() ) > serialize::ATTR_NAME_SIZE )
@@ -305,15 +241,9 @@ bool asiAlgo_AAG::Serialize(const Handle(asiAlgo_AAG)& aag,
       }
 
       // Node ID.
+      if ( !asiAlgo_Utils::Binary::WriteInt(fid, pFile, true) )
       {
-        char conv[4];
-        serialize::convertInteger(fid, conv);
-        //
-        if ( fwrite(conv, 1, 4, pFile) != 4 )
-        {
-          fclose(pFile);
-          return false;
-        }
+        return false;
       }
 
       // Attribute type (class name).
@@ -334,16 +264,11 @@ bool asiAlgo_AAG::Serialize(const Handle(asiAlgo_AAG)& aag,
                                                  << attrName );
 
         // Put zero size of the buffer.
+        if ( !asiAlgo_Utils::Binary::WriteInt(0, pFile, true) )
         {
-          char conv[4];
-          serialize::convertInteger(0, conv);
-          //
-          if ( fwrite(conv, 1, 4, pFile) != 4 )
-          {
-            fclose(pFile);
-            return false;
-          }
+          return false;
         }
+        //
         continue;
       }
     }
@@ -353,7 +278,74 @@ bool asiAlgo_AAG::Serialize(const Handle(asiAlgo_AAG)& aag,
    *  Serializable arc attributes.
    * ============================= */
 
-  // TODO NYI
+  const auto& arcAttrs = aag->GetArcAttributes();
+  //
+  for ( t_arc_attributes::Iterator arcIt(arcAttrs);
+        arcIt.More(); arcIt.Next() )
+  {
+    const t_arc&      arc     = arcIt.Key();
+    const t_attr_set& attrSet = arcIt.Value();
+
+    for ( t_attr_set::Iterator attrIt(attrSet);
+          attrIt.More(); attrIt.Next() )
+    {
+      const Handle(asiAlgo_FeatureAttr)& A        = attrIt.GetAttr();
+      std::string                        attrName = A->DynamicType()->Name();
+
+      if ( strlen( attrName.c_str() ) > serialize::ATTR_NAME_SIZE )
+      {
+        progress.SendLogMessage( LogWarn(Normal) << "Skipping AAG attribute '%1' as its name is too long."
+                                                 << attrName );
+        continue;
+      }
+
+      // Node attribute section.
+      char secHeader[serialize::ATTR_SECTION_SIZE] = ARC_ATTR_BEGIN;
+      if ( fwrite(secHeader, 1, serialize::ATTR_SECTION_SIZE, pFile) != serialize::ATTR_SECTION_SIZE )
+      {
+        fclose(pFile);
+        return false;
+      }
+
+      // 1-st node ID.
+      if ( !asiAlgo_Utils::Binary::WriteInt(arc.F1, pFile, true) )
+      {
+        return false;
+      }
+
+      // 2-nd node ID.
+      if ( !asiAlgo_Utils::Binary::WriteInt(arc.F2, pFile, true) )
+      {
+        return false;
+      }
+
+      // Attribute type (class name).
+      char attrType[serialize::ATTR_NAME_SIZE];
+      //
+      strncpy(attrType, attrName.c_str(), serialize::ATTR_NAME_SIZE);
+      //
+      if ( fwrite(attrType, 1, serialize::ATTR_NAME_SIZE, pFile) != serialize::ATTR_NAME_SIZE )
+      {
+        fclose(pFile);
+        return false;
+      }
+
+      // Serialize the attribute.
+      if ( !A->Serialize(pFile) )
+      {
+        progress.SendLogMessage( LogWarn(Normal) << "AAG attribute '%1' cannot be serialized."
+                                                 << attrName );
+
+        // Put zero size of the buffer.
+        if ( !asiAlgo_Utils::Binary::WriteInt(0, pFile, true) )
+        {
+          return false;
+        }
+        //
+        continue;
+      }
+    }
+  }
 
   fclose(pFile);
   return true;
@@ -398,7 +390,7 @@ bool asiAlgo_AAG::Deserialize(const char*          pFilename,
     return false;
   }
   //
-  const int N = serialize::readInteger(intbuff);
+  const int N = asiAlgo_Utils::Binary::ReadInt(intbuff);
   //
   progress.SendLogMessage(LogInfo(Normal) << "AAG has %1 nodes." << N);
 
@@ -416,7 +408,7 @@ bool asiAlgo_AAG::Deserialize(const char*          pFilename,
         return false;
       }
       //
-      fid = serialize::readInteger(intbuff);
+      fid = asiAlgo_Utils::Binary::ReadInt(intbuff);
     }
 
     // `num. adjacent`
@@ -428,7 +420,7 @@ bool asiAlgo_AAG::Deserialize(const char*          pFilename,
         return false;
       }
       //
-      numAdj = serialize::readInteger(intbuff);
+      numAdj = asiAlgo_Utils::Binary::ReadInt(intbuff);
     }
 
     // Read `nids`
@@ -445,7 +437,7 @@ bool asiAlgo_AAG::Deserialize(const char*          pFilename,
           return false;
         }
         //
-        nid = serialize::readInteger(intbuff);
+        nid = asiAlgo_Utils::Binary::ReadInt(intbuff);
       }
       //
       nids.Add(nid);
