@@ -109,6 +109,14 @@ public:
 
   //---------------------------------------------------------------------------
 
+  //! Format version for the serialized AAG.
+  enum BinFormat
+  {
+    BinFormat_V1 = 0x001
+  };
+
+  //---------------------------------------------------------------------------
+
   //! Type definition for map of attributes.
   typedef NCollection_DataMap<Standard_GUID,
                               Handle(asiAlgo_FeatureAttr),

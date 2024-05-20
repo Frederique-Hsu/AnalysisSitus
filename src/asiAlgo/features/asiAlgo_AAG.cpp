@@ -148,6 +148,12 @@ bool asiAlgo_AAG::Serialize(const Handle(asiAlgo_AAG)& aag,
     return false;
   }
 
+  // Format version byte.
+  if ( !asiAlgo_Utils::Binary::WriteInt(BinFormat_V1, pFile, true) )
+  {
+    return false;
+  }
+
   /* ==================================
    *  Adjacency matrix (graph as such).
    * ================================== */
@@ -354,7 +360,7 @@ bool asiAlgo_AAG::Serialize(const Handle(asiAlgo_AAG)& aag,
 //-----------------------------------------------------------------------------
 
 bool asiAlgo_AAG::Deserialize(const char*          pFilename,
-                              Handle(asiAlgo_AAG)& aag,
+                              Handle(asiAlgo_AAG)& /*aag*/,
                               ActAPI_ProgressEntry progress)
 {
   FILE* pFile = OSD_OpenFile(pFilename, "rb");

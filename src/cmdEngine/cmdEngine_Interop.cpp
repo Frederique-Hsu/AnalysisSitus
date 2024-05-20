@@ -1209,7 +1209,7 @@ int ENGINE_SerializeAAG(const Handle(asiTcl_Interp)& interp,
   TIMER_GO
 
   // Write.
-  if ( !asiAlgo_AAG::Serialize( aag, argv[1], interp->GetProgress() ) )
+  if ( !asiAlgo_AAG::Serialize( aag, argv[1]/*, interp->GetProgress()*/ ) )
   {
     interp->GetProgress().SendLogMessage(LogErr(Normal) << "Cannot save the serialized data to '%1'."
                                                         << argv[1]);

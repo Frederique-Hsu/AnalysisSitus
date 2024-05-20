@@ -4,8 +4,10 @@ import sys
 def readAdjGraph(inputFilename):
     graph = nx.DiGraph()
     f = open(inputFilename, mode="rb")
-    header = f.read(80)
+    header = f.read(80) # Read to skip
+    version = int.from_bytes( f.read(4), 'little' )
     numNodes = int.from_bytes( f.read(4), 'little' )
+    print("AAG binary format V%s" %version)
 
     # Create FAG without attributes
     nodeCounter = 0
@@ -27,4 +29,4 @@ def readAdjGraph(inputFilename):
     print('We have %d edges in the FAG.' % graph.number_of_edges())
     return graph
 
-G = readAdjGraph(sys.argv[1]) # E.g. C:/Users/serge/Desktop/aag-fra.bin
+G = readAdjGraph(sys.argv[1]) # E.g. C:/Users/serge/Desktop/aag.bin
