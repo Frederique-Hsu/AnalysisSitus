@@ -1205,6 +1205,9 @@ int ENGINE_SerializeAAG(const Handle(asiTcl_Interp)& interp,
     return TCL_ERROR;
   }
 
+  TIMER_NEW
+  TIMER_GO
+
   // Write.
   if ( !asiAlgo_AAG::Serialize( aag, argv[1], interp->GetProgress() ) )
   {
@@ -1212,6 +1215,9 @@ int ENGINE_SerializeAAG(const Handle(asiTcl_Interp)& interp,
                                                         << argv[1]);
     return TCL_ERROR;
   }
+
+  TIMER_FINISH
+  TIMER_COUT_RESULT_NOTIFIER(interp->GetProgress(), "Serialize AAG")
 
   return TCL_OK;
 }
