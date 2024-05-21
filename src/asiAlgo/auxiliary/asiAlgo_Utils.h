@@ -2402,13 +2402,15 @@ namespace asiAlgo_Utils
   //! \param[in]  face the target face.
   //! \param[in]  u    the U coordinate of the probe point.
   //! \param[in]  v    the V coordinate of the probe point.
-  //! \param[out] axis the computed norm at a point.
-  //! \return true in case of success, false -- otherwise.
+  //! \param[out] P    the point of `S(u,v)`, where `S` is the face's host surface.
+  //! \param[out] N    the evaluated normal vector or `(0,0,0)` in irregular points.
+  //! \return true if the norm is defined, false -- otherwise.
   asiAlgo_EXPORT bool
     GetFaceNorm(const TopoDS_Face& face,
                 const double       u,
                 const double       v,
-                gp_Ax1&            axis);
+                gp_Pnt&            P,
+                gp_Vec&            N);
 
   //! Calculates border trihedron for the given face.
   //! \param[in]  face     the face to analyze.

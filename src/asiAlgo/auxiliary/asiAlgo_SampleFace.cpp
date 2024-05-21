@@ -375,13 +375,15 @@ bool asiAlgo_SampleFace::Perform(const int  numBinsU,
       // Add optional 3D properties.
       if ( withNorms )
       {
-        gp_Ax1 FN;
-        asiAlgo_Utils::GetFaceNorm(m_face, x, y, FN);
+        gp_Pnt FP;
+        gp_Vec FN;
+        //
+        asiAlgo_Utils::GetFaceNorm(m_face, x, y, FP, FN);
 
         if ( withPoints )
-          m_grid->pArray[i][j][0].P = FN.Location();
+          m_grid->pArray[i][j][0].P = FP;
         //
-        m_grid->pArray[i][j][0].N = FN.Direction();
+        m_grid->pArray[i][j][0].N = FN;
       }
       else if ( withPoints )
       {

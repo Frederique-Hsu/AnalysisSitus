@@ -5807,20 +5807,24 @@ bool asiAlgo_Utils::GetLocalFrame(const TopoDS_Face& face,
 bool asiAlgo_Utils::GetFaceNorm(const TopoDS_Face& face,
                                 const double       u,
                                 const double       v,
-                                gp_Ax1&            axis)
+                                gp_Pnt&            P,
+                                gp_Vec&            N)
 {
   // Evaluate surface.
-  gp_Pnt P;
-  gp_Vec Du, Dv;
+  gp_Vec S_Du, S_Dv;
   BRepAdaptor_Surface bas(face, false);
-  bas.D1(u, v, P, Du, Dv);
+  bas.D1(u, v, P, S_Du, S_Dv);
+
+  if ( S_Dv.IsParallel( S_Dv, Precision::Angular() ) ||
+       S_Dv.Magnitude() < gp::Resolution() ||
+       S_Du.Magnitude() < gp::Resolution() )
+  {
+    N = gp_Vec(0., 0., 0.);
+    return false;
+  }
 
   // Compute oriented norm.
-  gp_Dir ON = (face.Orientation() == TopAbs_REVERSED ? Dv^Du : Du^Dv);
-
-  // Prepare axes.
-  axis = gp_Ax1(P, ON);
-
+  N = (face.Orientation() == TopAbs_REVERSED ? S_Dv^S_Du : S_Du^S_Dv);
   return true;
 }
 
