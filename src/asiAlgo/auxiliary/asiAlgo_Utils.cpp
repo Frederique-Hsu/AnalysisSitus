@@ -456,8 +456,10 @@ namespace
     int exponent = 0;
     for (; fabs(number) > 1.0; exponent++) number /= 10;
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-overflow"
     sprintf( result, "%.*fE%+03d", 7, number, exponent );
-
+#pragma GCC diagnostic pop
     fixprint(result, width);
 
     return result;

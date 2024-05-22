@@ -494,7 +494,7 @@ gp_Pnt GetCentralFacePoint(const TopoDS_Face& face)
 //            shapeList.push_back(shape);
 //            return shapeList;
 //        }
-//        
+//
 //        for (int iface = 1; iface <= faceMap.Extent(); ++iface) {
 //            TopoDS_Face face = TopoDS::Face(faceMap(iface));
 //            PNamedShape origin = shape->GetFaceTraits(iface-1).Origin();
@@ -546,7 +546,7 @@ gp_Pnt GetCentralFacePoint(const TopoDS_Face& face)
 //            shapeList.push_back(shape);
 //            return shapeList;
 //        }
-//        
+//
 //        for (int iface = 1; iface <= faceMap.Extent(); ++iface) {
 //            TopoDS_Face face = TopoDS::Face(faceMap(iface));
 //            const CFaceTraits& traits = shape->GetFaceTraits(iface-1);
@@ -563,7 +563,7 @@ gp_Pnt GetCentralFacePoint(const TopoDS_Face& face)
 //            faceShape->SetFaceTraits(0, shape->GetFaceTraits(iface-1));
 //            shapeList.push_back(faceShape);
 //        }
-//        
+//
 //    }
 //    return shapeList;
 //}
@@ -626,7 +626,7 @@ void GetShapeExtension(const TopoDS_Shape& shape,
 TopoDS_Edge EdgeSplineFromPoints(const std::vector<gp_Pnt>& points)
 {
     unsigned int pointCount = static_cast<int>(points.size());
-    
+
     Handle(TColgp_HArray1OfPnt) hpoints = new TColgp_HArray1OfPnt(1, pointCount);
     for (unsigned int j = 0; j < pointCount; j++) {
         hpoints->SetValue(j + 1, points[j]);
@@ -635,7 +635,7 @@ TopoDS_Edge EdgeSplineFromPoints(const std::vector<gp_Pnt>& points)
     GeomAPI_Interpolate interPol(hpoints, Standard_False, Precision::Confusion());
     interPol.Perform();
     Handle(Geom_BSplineCurve) hcurve = interPol.Curve();
-    
+
     return BRepBuilderAPI_MakeEdge(hcurve);
 }
 
@@ -643,7 +643,7 @@ TopoDS_Edge GetEdge(const TopoDS_Shape &shape, int iEdge)
 {
     TopTools_IndexedMapOfShape edgeMap;
     TopExp::MapShapes(shape, TopAbs_EDGE, edgeMap);
-    
+
     if (iEdge < 0 || iEdge >= edgeMap.Extent()) {
         return TopoDS_Edge();
     }
@@ -670,7 +670,7 @@ Handle(Geom_BSplineCurve) GetBSplineCurve(const TopoDS_Edge& e)
     double u1, u2;
     Handle(Geom_Curve) curve = BRep_Tool::Curve(e, u1, u2);
     curve = new Geom_TrimmedCurve(curve, u1, u2);
-    
+
     // convert to bspline
     Handle(Geom_BSplineCurve) bspl =  GeomConvert::CurveToBSplineCurve(curve);
     return bspl;
@@ -1094,7 +1094,7 @@ TopoDS_Face BuildFace(const TopoDS_Wire& wire)
 //    TopoDS_Wire sortedWire1 = TopoDS::Wire(orderedWireSequence.First());
 //    TopoDS_Wire sortedWire2 = TopoDS::Wire(orderedWireSequence.Last());
 //
-//    // build curve adaptor, second parameter defines that the length of the single edges is used as u coordinate, 
+//    // build curve adaptor, second parameter defines that the length of the single edges is used as u coordinate,
 //    // instead normalization of the u coordinates of the single edges of the wire (each edge would have u-coords
 //    // range from 0 to 1 independent of their length otherwise)
 //    BRepAdaptor_CompCurve compCurve1(sortedWire1, Standard_True);
@@ -1622,7 +1622,7 @@ TopoDS_Shape RemoveDuplicateEdges(const TopoDS_Shape& shape)
                 // get midpoint of checkEdge
                 curve = BRep_Tool::Curve(checkEdge, uStart, uEnd);
                 curve->D0((uStart + uEnd) / 2.0, p2Mid);
-                 
+
                 if (p1Mid.Distance(p2Mid) < 1E-5) {
                     duplicate = true;
                     break;
@@ -1714,7 +1714,7 @@ std::vector<double> LinspaceWithBreaks(double umin, double umax, size_t n_values
     double du = (umax - umin) / static_cast<double>(n_values - 1);
 
     std::vector<double> result(n_values);
-    for (int i = 0; i < n_values; ++i) {
+    for (int i = 0; i < (int) n_values; ++i) {
         result[i] = i * du + umin;
     }
 
@@ -1751,7 +1751,7 @@ T Clamp(T val, T min, T max)
     if (min > max) {
         throw Standard_ProgramError("Minimum may not be larger than maximum in clamp!");
     }
-    
+
     return std::max(min, std::min(val, max));
 }
 
@@ -1796,12 +1796,12 @@ size_t Clamp(size_t val, size_t min, size_t max)
 //            faces.push_back(GetFace(shape->Shape(), i));
 //        }
 //    }
-//    
+//
 //    if (faces.empty())
 //        throw Standard_ProgramError("Could not find faces named " + name);
 //    if (faces.size() == 1)
 //        return faces[0];
-//    
+//
 //    TopoDS_Compound c;
 //    TopoDS_Builder b;
 //    b.MakeCompound(c);
@@ -1839,7 +1839,7 @@ Handle(TColStd_HArray1OfReal) OccFArray(const std::vector<double>& vector)
         array->SetValue(ipos, value);
         ipos++;
     }
-    
+
     return array;
 }
 
@@ -1850,7 +1850,7 @@ Handle(TColStd_HArray1OfInteger) OccIArray(const std::vector<int>& vector)
     for (const auto& value : vector) {
         array->SetValue(ipos++, value);
     }
-    
+
     return array;
 }
 

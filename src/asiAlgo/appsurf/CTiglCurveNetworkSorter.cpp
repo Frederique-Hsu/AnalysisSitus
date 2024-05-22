@@ -108,19 +108,19 @@ CTiglCurveNetworkSorter::CTiglCurveNetworkSorter(const std::vector<Handle (Geom_
     size_t n_profiles = profiles.size();
     size_t n_guides = guides.size();
 
-    if (n_profiles != m_parmsIntersProfiles.RowNumber()) {
+    if (n_profiles != (size_t) (m_parmsIntersProfiles.RowNumber())) {
         throw Standard_ProgramError("Invalid row size of parmsIntersProfiles matrix.");
     }
 
-    if (n_profiles != m_parmsIntersGuides.RowNumber()) {
+    if (n_profiles != (size_t) (m_parmsIntersGuides.RowNumber())) {
         throw Standard_ProgramError("Invalid row size of parmsIntersGuides matrix.");
     }
 
-    if (n_guides != m_parmsIntersProfiles.ColNumber()) {
+    if (n_guides != (size_t) (m_parmsIntersProfiles.ColNumber())) {
         throw Standard_ProgramError("Invalid col size of parmsIntersProfiles matrix.");
     }
 
-    if (n_guides != m_parmsIntersGuides.ColNumber()) {
+    if (n_guides != (size_t) (m_parmsIntersGuides.ColNumber())) {
         throw Standard_ProgramError("Invalid col size of parmsIntersGuides matrix.");
     }
 

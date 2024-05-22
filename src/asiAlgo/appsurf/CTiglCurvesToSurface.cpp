@@ -141,8 +141,8 @@ asiAlgo_EXPORT void CTiglCurvesToSurface::Perform()
     Handle(TColgp_HArray1OfPnt) interpPointsVDir = new TColgp_HArray1OfPnt(1, static_cast<Standard_Integer>(nCurves));
 
     // now continue to create new control points by interpolating the remaining columns of controlPoints in Skinning direction (here v-direction) by B-splines
-    for (int cpUIdx = 1; cpUIdx <= numControlPointsU; ++cpUIdx) {
-        for (int cpVIdx = 1; cpVIdx <= nCurves; ++cpVIdx) {
+    for (int cpUIdx = 1; cpUIdx <= (int) numControlPointsU; ++cpUIdx) {
+        for (int cpVIdx = 1; cpVIdx <= (int) nCurves; ++cpVIdx) {
             interpPointsVDir->SetValue(cpVIdx, _compatibleSplines[cpVIdx - 1]->Pole(cpUIdx));
         }
 

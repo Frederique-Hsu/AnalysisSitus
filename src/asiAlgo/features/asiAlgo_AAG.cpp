@@ -255,7 +255,10 @@ bool asiAlgo_AAG::Serialize(const Handle(asiAlgo_AAG)& aag,
       // Attribute type (class name).
       char attrType[serialize::ATTR_NAME_SIZE];
       //
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstringop-truncation"
       strncpy(attrType, attrName.c_str(), serialize::ATTR_NAME_SIZE);
+#pragma GCC diagnostic pop
       //
       if ( fwrite(attrType, 1, serialize::ATTR_NAME_SIZE, pFile) != serialize::ATTR_NAME_SIZE )
       {
@@ -328,7 +331,10 @@ bool asiAlgo_AAG::Serialize(const Handle(asiAlgo_AAG)& aag,
       // Attribute type (class name).
       char attrType[serialize::ATTR_NAME_SIZE];
       //
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstringop-truncation"
       strncpy(attrType, attrName.c_str(), serialize::ATTR_NAME_SIZE);
+#pragma GCC diagnostic pop
       //
       if ( fwrite(attrType, 1, serialize::ATTR_NAME_SIZE, pFile) != serialize::ATTR_NAME_SIZE )
       {

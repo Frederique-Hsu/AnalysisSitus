@@ -164,8 +164,6 @@ int asiVisu_Utils::ComputeVisiblePropBounds(vtkRenderer*       theRenderer,
 //! \param renderer [in] renderer instance.
 void asiVisu_Utils::ResetCamera(vtkRenderer* renderer)
 {
-  static double RESET_COEFF = 3.0;
-
   vtkCamera* pActiveCamera = renderer->GetActiveCamera();
   pActiveCamera->SetPosition   (1, -1, 1);
   pActiveCamera->SetViewUp     (0, 0, 1);

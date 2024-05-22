@@ -79,6 +79,7 @@ namespace
     return res;
   }
 
+#if defined USE_MOBIUS
   //! Decreases the formal continuity of the passed surface by knot insertion
   //! down to C1 continuity.
   Handle(Geom_BSplineSurface)
@@ -105,7 +106,9 @@ namespace
 
     return res;
   }
+#endif
 
+#if defined USE_MOBIUS
   //! Improves continuity of the passed surface by knot removal.
   static void SimplifySurface(Handle(Geom_BSplineSurface)& BS,
                               const double                 Tol,
@@ -127,6 +130,7 @@ namespace
       BS->RemoveVKnot(ii, MultMinV, Tol);
     }
   }
+#endif
 }
 
 //-----------------------------------------------------------------------------
