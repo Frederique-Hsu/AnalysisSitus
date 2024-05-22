@@ -384,12 +384,29 @@ bool asiAlgo_AAG::Deserialize(const char*          pFilename,
     return false;
   }
 
+  // Read 4 bytes for the version number.
+  char intbuff[4];
+  if ( !fread(intbuff, 1, 4, pFile) )
+  {
+    progress.SendLogMessage(LogErr(Normal) << "Corrupted binary file.");
+    return false;
+  }
+  //
+  const auto version = (BinFormat) asiAlgo_Utils::Binary::ReadInt(intbuff);
+  //
+  progress.SendLogMessage(LogInfo(Normal) << "Version of the AAG binary file: V%1." << version);
+  //
+  if ( version != BinFormat_V1 )
+  {
+    progress.SendLogMessage(LogErr(Normal) << "Unsupported version of the AAG binary file: V%1." << version);
+    return false;
+  }
+
   /* ==================================
    *  Adjacency matrix (graph as such).
    * ================================== */
 
   // Read 4 bytes for the number of nodes.
-  char intbuff[4];
   if ( !fread(intbuff, 1, 4, pFile) )
   {
     progress.SendLogMessage(LogErr(Normal) << "Corrupted binary file.");

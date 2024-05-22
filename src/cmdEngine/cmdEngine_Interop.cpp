@@ -1236,7 +1236,7 @@ int ENGINE_DeserializeAAG(const Handle(asiTcl_Interp)& interp,
   // Translate.
   Handle(asiAlgo_AAG) aag;
   //
-  if ( !asiAlgo_AAG::Deserialize(argv[1], aag) )
+  if ( !asiAlgo_AAG::Deserialize( argv[1], aag, interp->GetProgress() ) )
   {
     interp->GetProgress().SendLogMessage(LogErr(Normal) << "Cannot deserialize data from '%1'."
                                                         << argv[1]);
