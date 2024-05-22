@@ -50,6 +50,7 @@
 #include <TopTools_ListOfShape.hxx>
 
 class asiAlgo_AAGRandomIterator;
+class asiAlgo_FeatureAttrAngle;
 
 //-----------------------------------------------------------------------------
 
@@ -288,8 +289,34 @@ public:
 
   //---------------------------------------------------------------------------
 
+  //! This attribute set collection is specialized to ensure the angle attribute
+  //! is separated from the hash map. Because the angle attribute is the most
+  //! "popular" type of attribute for graph edges, we do not want to search
+  //! for its GUID in any sort of a hash-table, as this search tends to be slow
+  //! in heavy calculations (hasher for GUIDs is not super fast).
+  class t_arc_attr_set : public t_attr_set
+  {
+  public:
+
+    t_arc_attr_set() {} //!< Default ctor.
+
+    //! Constructor accepting a single attribute to populate the internal set or
+    //! initialize a separate member field in the case when the passed attribute
+    //! corresponds to the dihedral angle.
+    //! \param[in] A the attribute to populate the set with.
+    asiAlgo_EXPORT
+      t_arc_attr_set(const Handle(asiAlgo_FeatureAttr)& A);
+
+  public:
+
+    Handle(asiAlgo_FeatureAttrAngle) AngleAttr;
+  };
+
+
+  //---------------------------------------------------------------------------
+
   //! Arc attributes.
-  typedef NCollection_DataMap<t_arc, t_attr_set, t_arc> t_arc_attributes;
+  typedef NCollection_DataMap<t_arc, t_arc_attr_set, t_arc> t_arc_attributes;
 
   //! Node attributes.
   typedef NCollection_DataMap<t_topoId, t_attr_set> t_node_attributes;

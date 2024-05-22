@@ -81,11 +81,22 @@ namespace
   }
 }
 
+//! Some constants we need for binary buffering.
 namespace serialize
 {
   static const size_t HEADER_SIZE       = 80;
   static const size_t ATTR_SECTION_SIZE = 16;
   static const size_t ATTR_NAME_SIZE    = 64;
+}
+
+//-----------------------------------------------------------------------------
+
+asiAlgo_AAG::t_arc_attr_set::t_arc_attr_set(const Handle(asiAlgo_FeatureAttr)& A)
+{
+  if ( A->IsKind( STANDARD_TYPE(asiAlgo_FeatureAttrAngle) ) )
+    this->AngleAttr = Handle(asiAlgo_FeatureAttrAngle)::DownCast(A);
+  else
+    this->Add(A); // For user-defined attributes.
 }
 
 //-----------------------------------------------------------------------------
@@ -255,10 +266,14 @@ bool asiAlgo_AAG::Serialize(const Handle(asiAlgo_AAG)& aag,
       // Attribute type (class name).
       char attrType[serialize::ATTR_NAME_SIZE];
       //
+#ifndef WIN32
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wstringop-truncation"
+#endif
       strncpy(attrType, attrName.c_str(), serialize::ATTR_NAME_SIZE);
+#ifndef WIN32
 #pragma GCC diagnostic pop
+#endif
       //
       if ( fwrite(attrType, 1, serialize::ATTR_NAME_SIZE, pFile) != serialize::ATTR_NAME_SIZE )
       {
@@ -331,10 +346,14 @@ bool asiAlgo_AAG::Serialize(const Handle(asiAlgo_AAG)& aag,
       // Attribute type (class name).
       char attrType[serialize::ATTR_NAME_SIZE];
       //
+#ifndef WIN32
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wstringop-truncation"
+#endif
       strncpy(attrType, attrName.c_str(), serialize::ATTR_NAME_SIZE);
+#ifndef WIN32
 #pragma GCC diagnostic pop
+#endif
       //
       if ( fwrite(attrType, 1, serialize::ATTR_NAME_SIZE, pFile) != serialize::ATTR_NAME_SIZE )
       {
@@ -651,12 +670,12 @@ void asiAlgo_AAG::AddVertexAdjacencyArcs(const asiAlgo_Feature& domain)
           // Create attribute.
           if ( !m_arcAttributes.IsBound(arc) )
           {
-            Handle(asiAlgo_FeatureAttr)
+            Handle(asiAlgo_FeatureAttrAngle)
               attrAngle = new asiAlgo_FeatureAttrAngle(FeatureAngleType_NonManifold, 0.);
             //
             attrAngle->setAAG(this);
             //
-            m_arcAttributes.Bind(arc, attrAngle);
+            m_arcAttributes.Bind(arc, t_arc_attr_set(attrAngle) );
           }
         }
       }
@@ -1173,7 +1192,11 @@ const asiAlgo_AAG::t_arc_attributes&
 Handle(asiAlgo_FeatureAttr)
   asiAlgo_AAG::GetArcAttribute(const t_arc& arc) const
 {
-  return this->GetArcAttribute( arc, asiAlgo_FeatureAttrAngle::GUID() );
+  const t_arc_attr_set* attrSetPtr = m_arcAttributes.Seek(arc);
+  if ( attrSetPtr == nullptr )
+    return nullptr;
+
+  return attrSetPtr->AngleAttr;
 }
 
 //-----------------------------------------------------------------------------
@@ -1182,9 +1205,12 @@ Handle(asiAlgo_FeatureAttr)
   asiAlgo_AAG::GetArcAttribute(const t_arc&         arc,
                                const Standard_GUID& attr_id) const
 {
-  const t_attr_set* attrSetPtr = m_arcAttributes.Seek(arc);
+  const t_arc_attr_set* attrSetPtr = m_arcAttributes.Seek(arc);
   if ( attrSetPtr == nullptr )
     return nullptr;
+
+  if ( attr_id == asiAlgo_FeatureAttrAngle::GUID() )
+    return attrSetPtr->AngleAttr;
 
   const Handle(asiAlgo_FeatureAttr)* attrPtr = (*attrSetPtr).Seek(attr_id);
   if ( attrPtr == nullptr )
@@ -1212,7 +1238,7 @@ bool asiAlgo_AAG::SetArcAttribute(const t_arc&                       arc,
   // Add attribute to the set.
   t_attr_set* attrSetPtr = m_arcAttributes.ChangeSeek(arc);
   if ( attrSetPtr == nullptr )
-    m_arcAttributes.Bind( arc, t_attr_set(attr) );
+    m_arcAttributes.Bind( arc, t_arc_attr_set(attr) );
   else
     (*attrSetPtr).Add(attr);
 
