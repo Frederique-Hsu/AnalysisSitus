@@ -50,7 +50,6 @@
 #include <TopTools_ListOfShape.hxx>
 
 class asiAlgo_AAGRandomIterator;
-class asiAlgo_FeatureAttrAngle;
 
 //-----------------------------------------------------------------------------
 
@@ -309,7 +308,7 @@ public:
 
   public:
 
-    Handle(asiAlgo_FeatureAttrAngle) AngleAttr;
+    Handle(asiAlgo_FeatureAttr) AngleAttr;
   };
 
 

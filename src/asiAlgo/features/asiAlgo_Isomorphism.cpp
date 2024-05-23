@@ -659,7 +659,8 @@ void asiAlgo_Isomorphism::collectFeatures()
       const asiAlgo_AAG::t_arc_attr_set& P_arcAttrSet = ait.Value();
 
       // Get the adjacency attribute.
-      Handle(asiAlgo_FeatureAttrAngle) P_angleAttr = P_arcAttrSet.AngleAttr;
+      const Handle(asiAlgo_FeatureAttrAngle)
+        P_angleAttr = Handle(asiAlgo_FeatureAttrAngle)::DownCast(P_arcAttrSet.AngleAttr);
 
       const t_topoId imF1 = this->getDomainImage(m_P_eigenMapping.Find2(P_arc.F1), m_Ms[i]);
       const t_topoId imF2 = this->getDomainImage(m_P_eigenMapping.Find2(P_arc.F2), m_Ms[i]);
