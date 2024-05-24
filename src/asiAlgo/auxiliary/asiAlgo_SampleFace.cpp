@@ -262,7 +262,7 @@ bool asiAlgo_SampleFace::Perform(const int  numBinsU,
   // Prepare for Haines.
   if ( (m_algo == PmcAlgo_Haines) && m_polygon.empty() )
   {
-    TopoDS_Wire wire = asiAlgo_Utils::OuterWire(m_face);
+    TopoDS_Wire wire = asiAlgo_Utils::ComputeOuterWire(m_face);
 
     m_polygon.clear();
     Wire2Polygon(wire, m_face, m_polygon);

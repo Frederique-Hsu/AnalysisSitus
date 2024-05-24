@@ -82,7 +82,7 @@ bool asiAlgo_RecognizeCavitiesRule::recognize(TopTools_IndexedMapOfShape& featur
 
   const TopoDS_Wire* wirePtr   = m_mapFaceOuterWire.Seek(seedFace);
   const TopoDS_Wire  outerWire = ( wirePtr ) ? (*wirePtr)
-                                             : asiAlgo_Utils::OuterWire(seedFace);
+                                             : asiAlgo_Utils::CacheOuterWire( sid, m_it->GetGraph() );
 
   // Explore inner wires.
   for ( TopExp_Explorer wit(seedFace, TopAbs_WIRE); wit.More(); wit.Next() )
@@ -156,7 +156,7 @@ void asiAlgo_RecognizeCavitiesRule::init()
   {
     const int          faceId    = it->GetFaceId();
     const TopoDS_Face& face      = m_it->GetGraph()->GetFace(faceId);
-    TopoDS_Wire        outerWire = asiAlgo_Utils::OuterWire(face);
+    TopoDS_Wire        outerWire = asiAlgo_Utils::CacheOuterWire( faceId, m_it->GetGraph() );
 
     m_mapFaceOuterWire.Bind(face, outerWire);
   }
@@ -208,7 +208,7 @@ void asiAlgo_RecognizeCavitiesRule::propagate(const int                   startI
 
       const TopoDS_Wire* wirePtr   = m_mapFaceOuterWire.Seek(nFace);
       const TopoDS_Wire  outerWire = ( wirePtr ) ? (*wirePtr)
-                                                 : asiAlgo_Utils::OuterWire(nFace);
+                                                 : asiAlgo_Utils::CacheOuterWire( nid, m_it->GetGraph() );
 
       TopTools_IndexedMapOfShape edgesOW; // Edges on outer wire.
       TopExp::MapShapes(outerWire, TopAbs_EDGE, edgesOW);

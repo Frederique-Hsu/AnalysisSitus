@@ -219,7 +219,7 @@ namespace {
   {
     const TopoDS_Face& F = aag->GetFace(fid);
 
-    TopoDS_Wire owire = asiAlgo_Utils::OuterWire(F);
+    TopoDS_Wire owire = asiAlgo_Utils::CacheOuterWire(fid, aag);
 
     // Iterate over the internal contours.
     for ( TopExp_Explorer fexp(F, TopAbs_WIRE); fexp.More(); fexp.Next() )
@@ -428,10 +428,9 @@ bool asiAlgo_RecognizeDrillHolesRule::recognize(TopTools_IndexedMapOfShape& feat
   // so we add additional test for the outer wire.
   for ( asiAlgo_Feature::Iterator sit(suspected_endings); sit.More(); sit.Next() )
   {
-    const int          sid   = sit.Key();
-    const TopoDS_Face& sface = m_it->GetGraph()->GetFace(sid);
+    const int sid = sit.Key();
 
-    TopoDS_Wire owire = asiAlgo_Utils::OuterWire(sface);
+    TopoDS_Wire owire = asiAlgo_Utils::CacheOuterWire( sid, m_it->GetGraph() );
 
     std::set<asiAlgo_FeatureAngleType>
       outerVexities = {FeatureAngleType_Concave,

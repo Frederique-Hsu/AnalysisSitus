@@ -196,7 +196,7 @@ void asiAlgo_RecognizeCavities::findSeeds(asiAlgo_Feature& seeds)
     const TopoDS_Face& face = m_aag->GetFace(fid);
 
     // Loop over the inner wires.
-    const TopoDS_Wire& outerWire = asiAlgo_Utils::OuterWire(face);
+    TopoDS_Wire outerWire = asiAlgo_Utils::CacheOuterWire(fid, m_aag);
     //
     for( TopExp_Explorer wexp(face, TopAbs_WIRE); wexp.More(); wexp.Next() )
     {

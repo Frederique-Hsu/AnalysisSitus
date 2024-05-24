@@ -66,6 +66,7 @@ typedef rapidjson::Document::Object    t_jsonObject;
 #include <asiAlgo_FeatureAttrAngle.h>
 #include <asiAlgo_FeatureAttrArea.h>
 #include <asiAlgo_FeatureAttrAxialRange.h>
+#include <asiAlgo_FeatureAttrOuterWire.h>
 #include <asiAlgo_FeatureAttrUVBounds.h>
 #include <asiAlgo_FeatureFaces.h>
 #include <asiAlgo_PLY.h>
@@ -5614,7 +5615,7 @@ gp_XYZ asiAlgo_Utils::ComputeAveragePoint(const std::vector<gp_XYZ>& pts)
 
 //-----------------------------------------------------------------------------
 
-TopoDS_Wire asiAlgo_Utils::OuterWire(const TopoDS_Face& face)
+TopoDS_Wire asiAlgo_Utils::ComputeOuterWire(const TopoDS_Face& face)
 {
   const double prec = Precision::PConfusion();
 
@@ -5652,6 +5653,34 @@ TopoDS_Wire asiAlgo_Utils::OuterWire(const TopoDS_Face& face)
     }
   }
   return Wres;
+}
+
+//-----------------------------------------------------------------------------
+
+TopoDS_Wire asiAlgo_Utils::CacheOuterWire(const int                  fid,
+                                          const Handle(asiAlgo_AAG)& aag)
+{
+  // Access the AAG attribute.
+  Handle(asiAlgo_FeatureAttrOuterWire)
+    owAttr = aag->ATTR_NODE<asiAlgo_FeatureAttrOuterWire>(fid);
+
+  // Compute or use the cached value.
+  TopoDS_Wire owire;
+  //
+  if ( owAttr.IsNull() )
+  {
+    owire = ComputeOuterWire( aag->GetFace(fid) );
+    aag->SetNodeAttribute( fid, new asiAlgo_FeatureAttrOuterWire(owire) );
+  }
+  else
+  {
+    if ( owAttr->wire.IsNull() )
+    {
+      owAttr->wire = ComputeOuterWire( aag->GetFace(fid) );
+    }
+    owire = owAttr->wire;
+  }
+  return owire;
 }
 
 //-----------------------------------------------------------------------------

@@ -2373,7 +2373,16 @@ namespace asiAlgo_Utils
   //! \param[in] face face in question.
   //! \return outer wire.
   asiAlgo_EXPORT TopoDS_Wire
-    OuterWire(const TopoDS_Face& face);
+    ComputeOuterWire(const TopoDS_Face& face);
+
+  //! Computes and caches the outer wire for the passed face. If the outer wire
+  //! is already computed, it is returned from the corresponding attribute.
+  //! \param[in] fid the ID of the face in question.
+  //! \param[in] aag the attribute adjacency graph.
+  //! \return the computed or cached outer wire.
+  asiAlgo_EXPORT TopoDS_Wire
+    CacheOuterWire(const int                  fid,
+                   const Handle(asiAlgo_AAG)& aag);
 
   //! Computes random inner point on a face.
   //! \param[in]     face the face of interest.

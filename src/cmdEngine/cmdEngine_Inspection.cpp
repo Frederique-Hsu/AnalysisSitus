@@ -4105,7 +4105,7 @@ int ENGINE_BuildFaceGrid(const Handle(asiTcl_Interp)& interp,
 
     /* Experiment with discrete classifier */
 
-    TopoDS_Wire wire = asiAlgo_Utils::OuterWire(face);
+    TopoDS_Wire wire = asiAlgo_Utils::ComputeOuterWire(face);
 
     std::vector<gp_XY> polygon;
     asiAlgo_SampleFace::Wire2Polygon(wire, face, polygon);

@@ -293,7 +293,7 @@ bool asiAlgo_RecognizeDrillHoles::performInternal(const double radius)
         // and we do not want to have it in the recognition result.
 
         TColStd_PackedMapOfInteger eids;
-        TopoDS_Wire                W = asiAlgo_Utils::OuterWire(currentFace);
+        TopoDS_Wire                W = asiAlgo_Utils::CacheOuterWire(currentFid, m_aag);
         //
         for ( TopExp_Explorer eexp(W, TopAbs_EDGE); eexp.More(); eexp.Next() )
         {
