@@ -180,6 +180,26 @@ void asiUI_ParameterEditorListenerDefault::afterParameterChanged(const Handle(Ac
     }
   }
 
+  /* ======================================
+   *  Customization for Triangulation Node
+   * ====================================== */
+
+  else if ( N->IsKind( STANDARD_TYPE(asiData_TriangulationNode) ) )
+  {
+    Handle(asiData_TriangulationNode)
+      tris_n = Handle(asiData_TriangulationNode)::DownCast(N);
+
+    if ( pid == asiData_TriangulationNode::PID_TrsfTx ||
+         pid == asiData_TriangulationNode::PID_TrsfTy ||
+         pid == asiData_TriangulationNode::PID_TrsfTz ||
+         pid == asiData_TriangulationNode::PID_TrsfRx ||
+         pid == asiData_TriangulationNode::PID_TrsfRy ||
+         pid == asiData_TriangulationNode::PID_TrsfRz )
+    {
+      tris_n->UpdateTransformationMx();
+    }
+  }
+
   /* =============================
    *  Customization for Root Node
    * ============================= */

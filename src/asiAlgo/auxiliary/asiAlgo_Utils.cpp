@@ -5860,6 +5860,8 @@ bool asiAlgo_Utils::GetFaceNorm(const TopoDS_Face& face,
 
   // Compute oriented norm.
   N = (face.Orientation() == TopAbs_REVERSED ? S_Dv^S_Du : S_Du^S_Dv);
+  N.Normalize();
+  //
   return true;
 }
 

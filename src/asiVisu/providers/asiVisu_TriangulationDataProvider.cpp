@@ -34,6 +34,9 @@
 // asiVisu includes
 #include <asiVisu_Utils.h>
 
+// asiData includes
+#include <asiData_TriangulationNode.h>
+
 // Active Data includes
 #include <ActData_ParameterFactory.h>
 
@@ -76,6 +79,14 @@ ActAPI_DataObjectId
 t_ptr<t_mesh>
   asiVisu_TriangulationDataProvider::GetTriangulation() const
 {
+  Handle(asiData_TriangulationNode)
+    TN = Handle(asiData_TriangulationNode)::DownCast(m_node);
+  //
+  if ( !TN.IsNull() )
+  {
+    return TN->GetTriangulation();
+  }
+
   return static_cast<t_mesh*>( m_triangulationParam->GetMesh() );
 }
 
@@ -140,8 +151,21 @@ Handle(ActAPI_HParameterList)
   if ( !m_colorParam.IsNull() )
     params << m_colorParam;
 
-  if (!m_edgeColorParam.IsNull())
+  if ( !m_edgeColorParam.IsNull() )
     params << m_edgeColorParam;
+
+  Handle(asiData_TriangulationNode)
+    TN = Handle(asiData_TriangulationNode)::DownCast(m_node);
+  //
+  if ( !TN.IsNull() )
+  {
+    params << TN->Parameter(asiData_TriangulationNode::PID_TrsfTx)
+           << TN->Parameter(asiData_TriangulationNode::PID_TrsfTy)
+           << TN->Parameter(asiData_TriangulationNode::PID_TrsfTz)
+           << TN->Parameter(asiData_TriangulationNode::PID_TrsfRx)
+           << TN->Parameter(asiData_TriangulationNode::PID_TrsfRy)
+           << TN->Parameter(asiData_TriangulationNode::PID_TrsfRz);
+  }
 
   return params.List;
 }

@@ -77,6 +77,17 @@ public:
   //-------------------//
     PID_Options,       //!< Array of options (application-specific).
   //-------------------//
+  // Transformation    //
+  //-------------------//
+    PID_GroupTrsf,     //!< Transformation group.
+    PID_TrsfTx,        //!< OX displacement.
+    PID_TrsfTy,        //!< OY displacement.
+    PID_TrsfTz,        //!< OZ displacement.
+    PID_TrsfRx,        //!< Rotation around OX.
+    PID_TrsfRy,        //!< Rotation around OY.
+    PID_TrsfRz,        //!< Rotation around OZ.
+    PID_TrsfMx,        //!< Matrix of transformation.
+  //-------------------//
   // Presentation      //
   //-------------------//
     PID_GroupPrs,      //!< Presentation group.
@@ -112,7 +123,7 @@ public:
 #if defined USE_MOBIUS
 
   asiData_EXPORT mobius::t_ptr<mobius::t_mesh>
-    GetTriangulation() const;
+    GetTriangulation(const bool applyTransform = true) const;
 
   asiData_EXPORT void
     SetTriangulation(const mobius::t_ptr<mobius::t_mesh>& triangulation);
@@ -130,6 +141,56 @@ public:
 
   asiData_EXPORT void
     SetOptions(const Handle(TColStd_HArray1OfReal)& options);
+
+  asiData_EXPORT void
+    SetTransformation(const double tx,
+                      const double ty,
+                      const double tz,
+                      const double rxDeg,
+                      const double ryDeg,
+                      const double rzDeg);
+
+  asiData_EXPORT void
+    GetTransformation(double& tx,
+                      double& ty,
+                      double& tz,
+                      double& rxDeg,
+                      double& ryDeg,
+                      double& rzDeg) const;
+
+  asiData_EXPORT void
+    SetTransformationMx(const double a11,
+                        const double a12,
+                        const double a13,
+                        const double a14,
+                        const double a21,
+                        const double a22,
+                        const double a23,
+                        const double a24,
+                        const double a31,
+                        const double a32,
+                        const double a33,
+                        const double a34);
+
+  asiData_EXPORT void
+    GetTransformationMx(double& a11,
+                        double& a12,
+                        double& a13,
+                        double& a14,
+                        double& a21,
+                        double& a22,
+                        double& a23,
+                        double& a24,
+                        double& a31,
+                        double& a32,
+                        double& a33,
+                        double& a34) const;
+
+  asiData_EXPORT gp_Trsf
+    GetTransformationMx() const;
+
+  asiData_EXPORT void
+    UpdateTransformationMx();
 
   asiData_EXPORT void
     SetUseScalars(const bool);
