@@ -270,6 +270,8 @@ endif()
 # Sub-projects
 #-------------------------------------------------------------------------------
 
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/asiActiveData)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/asiAlgo)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/asiAsm)
@@ -384,8 +386,6 @@ endif()
 #-------------------------------------------------------------------------------
 # Installation
 #-------------------------------------------------------------------------------
-
-#install (DIRECTORY data DESTINATION bin)
 
 if (NOT BUILD_ALGO_ONLY)
   if (EXISTS "${3RDPARTY_DIR}/Redistributable/msvcp120.dll")
