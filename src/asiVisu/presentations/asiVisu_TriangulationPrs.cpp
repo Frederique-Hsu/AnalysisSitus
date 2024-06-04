@@ -105,6 +105,7 @@ asiVisu_TriangulationPrs::asiVisu_TriangulationPrs(const Handle(ActAPI_INode)& N
   contour_pl->Actor()->GetProperty()->SetLineWidth(1.0f);
   contour_pl->Actor()->GetProperty()->RenderLinesAsTubesOn();
   contour_pl->Actor()->SetPickable(0);
+  contour_pl->Actor()->SetVisibility(0);
   //
   this->addPipeline        ( Pipeline_TriangulationLinks, contour_pl );
   this->assignDataProvider ( Pipeline_TriangulationLinks, dp );
