@@ -29,7 +29,6 @@
 //-----------------------------------------------------------------------------
 
 // asiUI includes
-#include <asiUI_Common.h>
 #include <asiUI_DatumViewBase.h>
 #include <asiUI_DatumViewItem.h>
 #include <asiUI_ItemRoles.h>

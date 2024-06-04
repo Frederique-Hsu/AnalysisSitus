@@ -37,7 +37,6 @@
 #include <asiVisu_BSurfPolesPipeline.h>
 #include <asiVisu_IVSurfacePipeline.h>
 #include <asiVisu_IVSurfaceDataProvider.h>
-#include <asiVisu_Utils.h>
 
 // VTK includes
 #pragma warning(push, 0)
@@ -168,7 +167,7 @@ void asiVisu_IVSurfacePrs::afterUpdatePipelines() const
 
   if ( N->HasColor() )
   {
-    ActAPI_Color color = asiVisu_Utils::IntToColor( N->GetColor() );
+    ActAPI_Color color = ActAPI_Color::IntToColor( N->GetColor() );
     this->Colorize(color);
   }
   else

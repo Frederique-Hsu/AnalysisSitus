@@ -34,7 +34,6 @@
 // asiVisu includes
 #include <asiVisu_ShapeDataProvider.h>
 #include <asiVisu_ShapePipeline.h>
-#include <asiVisu_Utils.h>
 
 // VTK includes
 #include <vtkMapper.h>
@@ -150,7 +149,7 @@ void asiVisu_IVTopoItemPrs::afterUpdatePipelines() const
 
   if ( N->HasColor() )
   {
-    ActAPI_Color color = asiVisu_Utils::IntToColor( N->GetColor() );
+    ActAPI_Color color = ActAPI_Color::IntToColor( N->GetColor() );
     this->Colorize(color);
   }
 

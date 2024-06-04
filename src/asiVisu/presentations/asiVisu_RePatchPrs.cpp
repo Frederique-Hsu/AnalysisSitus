@@ -37,7 +37,6 @@
 #include <asiVisu_BSurfPolesPipeline.h>
 #include <asiVisu_RePatchPipeline.h>
 #include <asiVisu_RePatchDataProvider.h>
-#include <asiVisu_Utils.h>
 
 // VTK includes
 #include <vtkMapper.h>
@@ -124,7 +123,7 @@ void asiVisu_RePatchPrs::afterUpdatePipelines() const
 
   if ( N->HasColor() )
   {
-    ActAPI_Color color = asiVisu_Utils::IntToColor( N->GetColor() );
+    ActAPI_Color color = ActAPI_Color::IntToColor( N->GetColor() );
     this->Colorize(color);
   }
   else

@@ -435,57 +435,6 @@ public:
   asiVisu_EXPORT static ActAPI_Color
     StringToColor(const std::string& string);
 
-  //! Converts RGB color to integer.
-  //! \param[in] r red component.
-  //! \param[in] g green component.
-  //! \param[in] b blue component.
-  //! \return converted value.
-  static int ColorToInt(unsigned int r, unsigned int g, unsigned int b)
-  {
-    return r << 16 | g << 8 | b;
-  }
-
-  //! Converts RGB color to integer.
-  //! \param[in] rgb color.
-  //! \return converted value.
-  static int ColorToInt(unsigned int rgb[3])
-  {
-    return ColorToInt(rgb[0], rgb[1], rgb[2]);
-  }
-
-  //! Converts RGB color to integer.
-  //! \param[in] r red component of the color.
-  //! \param[in] g green component of the color.
-  //! \param[in] b blue component of the color.
-  //! \return converted value.
-  static int ColorToInt(const double r, const double g, const double b)
-  {
-    unsigned char red   = (unsigned char) ( floor(r >= 1.0 ? 255 : r * 256.0) );
-    unsigned char green = (unsigned char) ( floor(g >= 1.0 ? 255 : g * 256.0) );
-    unsigned char blue  = (unsigned char) ( floor(b >= 1.0 ? 255 : b * 256.0) );
-    //
-    return red << 16 | green << 8 | blue;
-  }
-
-  //! Converts color value to an integer representation.
-  //! \param[in] color Qt color.
-  //! \return converted value
-  static int ColorToInt(const ActAPI_Color& color)
-  {
-    return ColorToInt( color.Red(), color.Green(), color.Blue() );
-  }
-
-  //! Converts integer value to a color.
-  //! \param[in] icolor integer color code.
-  //! \return converted value
-  static ActAPI_Color IntToColor(const int icolor)
-  {
-    unsigned char uRed   = ( icolor >> 16 ) & 0xFF;
-    unsigned char uGreen = ( icolor >>  8 ) & 0xFF;
-    unsigned char uBlue  =   icolor         & 0xFF;
-    return ActAPI_Color(uRed/MAX_COLOR_SCALE, uGreen/MAX_COLOR_SCALE, uBlue/MAX_COLOR_SCALE, Quantity_TOC_RGB);
-  }
-
 private:
 
   static TPrsAllocMap m_allocMap; //!< Presentation factory.

@@ -36,7 +36,6 @@
 #include <asiVisu_TriangulationDataProvider.h>
 #include <asiVisu_TriangulationLinksPipeline.h>
 #include <asiVisu_TriangulationPipeline.h>
-#include <asiVisu_Utils.h>
 
 // OCCT includes
 #include <TColStd_MapIteratorOfPackedMapOfInteger.hxx>
@@ -305,10 +304,10 @@ void asiVisu_TriangulationPrs::afterUpdatePipelines() const
 
   /* Actualize color */
 
-  ActAPI_Color color = asiVisu_Utils::IntToColor( N->GetColor() );
+  ActAPI_Color color = ActAPI_Color::IntToColor( N->GetColor() );
   this->Colorize(color);
 
-  ActAPI_Color colorE = asiVisu_Utils::IntToColor(N->GetEdgesColor());
+  ActAPI_Color colorE = ActAPI_Color::IntToColor(N->GetEdgesColor());
   this->ColorizeEdges(colorE);
 }
 

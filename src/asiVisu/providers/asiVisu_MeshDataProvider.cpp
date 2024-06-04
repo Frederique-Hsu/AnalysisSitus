@@ -33,10 +33,10 @@
 
 // Active Data includes
 #include <ActData_ParameterFactory.h>
+#include <ActAPI_IPlotter.h>
 
 // asiVisu includes
 #include <asiVisu_MeshUtils.h>
-#include <asiVisu_Utils.h>
 
 //! Default constructor.
 asiVisu_MeshDataProvider::asiVisu_MeshDataProvider() : asiVisu_DataProvider() {}
@@ -86,7 +86,7 @@ void asiVisu_MeshDataProvider::GetColor(double& r, double& g, double& b) const
 
   const int icolor = m_colorParam->GetValue();
 
-  ActAPI_Color color = asiVisu_Utils::IntToColor(icolor);
+  ActAPI_Color color = ActAPI_Color::IntToColor(icolor);
 
   r = color.Red();
   g = color.Green();
@@ -108,7 +108,7 @@ void asiVisu_MeshDataProvider::GetEdgesColor(double& r, double& g, double& b) co
 
   const int icolor = m_edgeColorParam->GetValue();
 
-  ActAPI_Color color = asiVisu_Utils::IntToColor(icolor);
+  ActAPI_Color color = ActAPI_Color::IntToColor(icolor);
 
   r = color.Red();
   g = color.Green();

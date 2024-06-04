@@ -34,7 +34,6 @@
 // asiVisu includes
 #include <asiVisu_ShapeDataProvider.h>
 #include <asiVisu_ShapePipeline.h>
-#include <asiVisu_Utils.h>
 
 // VTK includes
 #pragma warning(push, 0)
@@ -71,7 +70,7 @@ asiVisu_TolerantRangePrs::asiVisu_TolerantRangePrs(const Handle(ActAPI_INode)& N
   const int colorNum = rangeNode->GetColor();
 
   // Convert color to QColor.
-  ActAPI_Color color = asiVisu_Utils::IntToColor(colorNum);
+  ActAPI_Color color = ActAPI_Color::IntToColor(colorNum);
 
   // Set color for the main actor.
   pl->Actor()->GetProperty()->SetColor( color.Red(), color.Green(), color.Blue() );

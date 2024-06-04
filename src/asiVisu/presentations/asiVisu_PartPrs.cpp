@@ -402,8 +402,8 @@ void asiVisu_PartPrs::afterUpdatePipelines() const
 
   /* Actualize color */
 
-  ActAPI_Color color     = asiVisu_Utils::IntToColor( N->GetColor() );
-  ActAPI_Color edgeColor = asiVisu_Utils::IntToColor( N->GetEdgeColor() );
+  ActAPI_Color color     = ActAPI_Color::IntToColor( N->GetColor() );
+  ActAPI_Color edgeColor = ActAPI_Color::IntToColor( N->GetEdgeColor() );
   //
   this->Colorize(color, edgeColor);
 
