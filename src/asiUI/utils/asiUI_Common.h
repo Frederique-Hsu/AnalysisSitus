@@ -215,6 +215,33 @@ public:
     return ActAux_TimeStampTool::FromChunked(dateArr);
   }
 
+  //! Converts string to color.
+  //! \param[in] string string to convert.
+  //! \return color.
+  static ActAPI_Color StringToColor(const std::string& string)
+  {
+    QString qstr(string.c_str());
+
+    bool isOk;
+    int value = (int)qstr.toInt(&isOk);
+    if (!isOk)
+    {
+      QRegExp rx("^\\#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$");
+      //
+      if (rx.indexIn(qstr) != -1)
+      {
+        QString match = rx.cap(1);
+        value = (int)match.toInt(&isOk, 16);
+      }
+    }
+
+    if (isOk)
+      return ActAPI_Color::IntToColor(value);
+
+    return ActAPI_Color(Quantity_NOC_WHITE); // Default color for undefined case.
+  }
+
+
 public:
 
   asiUI_EXPORT static QString

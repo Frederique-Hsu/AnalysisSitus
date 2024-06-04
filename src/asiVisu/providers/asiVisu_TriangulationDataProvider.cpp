@@ -31,14 +31,9 @@
 // Own include
 #include <asiVisu_TriangulationDataProvider.h>
 
-// asiVisu includes
-#include <asiVisu_Utils.h>
-
-// asiData includes
-#include <asiData_TriangulationNode.h>
-
 // Active Data includes
 #include <ActData_ParameterFactory.h>
+#include <ActAPI_IPlotter.h>
 
 #if defined USE_MOBIUS
   using namespace mobius;
@@ -105,7 +100,7 @@ void asiVisu_TriangulationDataProvider::GetColor(double& r, double& g, double& b
 {
   const int icolor = m_colorParam->GetValue();
 
-  ActAPI_Color color = asiVisu_Utils::IntToColor(icolor);
+  ActAPI_Color color = ActAPI_Color::IntToColor(icolor);
 
   r = color.Red();
   g = color.Green();
@@ -118,7 +113,7 @@ void asiVisu_TriangulationDataProvider::GetEdgesColor(double& r, double& g, doub
 {
   const int icolor = m_edgeColorParam->GetValue();
 
-  ActAPI_Color color = asiVisu_Utils::IntToColor(icolor);
+  ActAPI_Color color = ActAPI_Color::IntToColor(icolor);
 
   r = color.Red();
   g = color.Green();

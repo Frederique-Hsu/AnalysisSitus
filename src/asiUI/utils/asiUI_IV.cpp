@@ -47,7 +47,6 @@
 #include <asiVisu_IVTopoItemPrs.h>
 #include <asiVisu_PointsPipeline.h>
 #include <asiVisu_ShapePipeline.h>
-#include <asiVisu_Utils.h>
 
 // asiAlgo includes
 #include <asiAlgo_PointCloudUtils.h>
@@ -1486,7 +1485,7 @@ void asiUI_IV::draw_points(const Handle(HRealArray)& coords,
 
   // Update persistent color.
   points_n->SetHasColor(true);
-  points_n->SetColor( asiVisu_Utils::ColorToInt( color.Red(), color.Green(), color.Blue() ) );
+  points_n->SetColor(ActAPI_Color::ColorToInt( color.Red(), color.Green(), color.Blue() ) );
   points_n->SetPointSize(8);
 
   // Commit transaction.
@@ -1569,7 +1568,7 @@ void asiUI_IV::draw_vectors(const Handle(HRealArray)& points,
 
   // Update persistent color.
   vf_n->SetHasColor         ( true );
-  vf_n->SetColor            ( asiVisu_Utils::ColorToInt( color.Red(), color.Green(), color.Blue() ) );
+  vf_n->SetColor            ( ActAPI_Color::ColorToInt( color.Red(), color.Green(), color.Blue() ) );
   vf_n->SetDrawTip          ( tips );
   vf_n->SetRescaleByLongest ( rescale );
 
@@ -1626,7 +1625,7 @@ void asiUI_IV::draw_curve(const Handle(Geom_Curve)& curve,
 
   // Update persistent color.
   curve_n->SetHasColor(true);
-  curve_n->SetColor( asiVisu_Utils::ColorToInt( color.Red(), color.Green(), color.Blue() ) );
+  curve_n->SetColor( ActAPI_Color::ColorToInt( color.Red(), color.Green(), color.Blue() ) );
 
   // Commit transaction
   if ( isTx )
@@ -1683,7 +1682,7 @@ void asiUI_IV::draw_curve2d(const Handle(Geom2d_Curve)& curve,
 
   // Update persistent color.
   curve_n->SetHasColor(true);
-  curve_n->SetColor( asiVisu_Utils::ColorToInt( color.Red(), color.Green(), color.Blue() ) );
+  curve_n->SetColor( ActAPI_Color::ColorToInt( color.Red(), color.Green(), color.Blue() ) );
 
   // Commit transaction
   if ( isTx )
@@ -1745,7 +1744,7 @@ void asiUI_IV::draw_surface(const Handle(Geom_Surface)& surface,
 
   // Update persistent color.
   surface_n->SetHasColor(true);
-  surface_n->SetColor( asiVisu_Utils::ColorToInt( color.Red(), color.Green(), color.Blue() ) );
+  surface_n->SetColor( ActAPI_Color::ColorToInt( color.Red(), color.Green(), color.Blue() ) );
 
   // Commit transaction
   if ( isTx )
@@ -1811,7 +1810,7 @@ void asiUI_IV::draw_shape(const TopoDS_Shape& shape,
     Handle(asiData_IVTopoItemNode) topo_n = Handle(asiData_IVTopoItemNode)::DownCast(shape_n);
     //
     topo_n->SetHasColor(hasColor);
-    topo_n->SetColor( asiVisu_Utils::ColorToInt( color.Red(), color.Green(), color.Blue() ) );
+    topo_n->SetColor( ActAPI_Color::ColorToInt( color.Red(), color.Green(), color.Blue() ) );
   }
 
   // Commit transaction.
@@ -2021,7 +2020,9 @@ void asiUI_IV::draw_triangulation(const Handle(Poly_Triangulation)& tris,
 
   if ( !item_n.IsNull() && item_n->IsWellFormed() )
   {
-    item_n->SetColor(asiVisu_Utils::ColorToInt(color));
+    item_n->SetColor(ActAPI_Color::ColorToInt(color.Red(),
+                                              color.Green(),
+                                              color.Blue()));
   }
 
   // Commit transaction
@@ -2068,7 +2069,7 @@ void asiUI_IV::draw_mesh(const Handle(ActData_Mesh)& mesh,
   {
     item_n = asiEngine_IV(m_model).Create_TessItem(mesh, name, newPrimitive);
     //
-    item_n->SetColor( asiVisu_Utils::ColorToInt( color.Red(), color.Green(), color.Blue() ) );
+    item_n->SetColor( ActAPI_Color::ColorToInt( color.Red(), color.Green(), color.Blue() ) );
 
     // Update the last created object
     m_lastObj = item_n;

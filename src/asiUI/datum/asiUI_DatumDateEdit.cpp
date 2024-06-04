@@ -31,9 +31,6 @@
 // Own include
 #include <asiUI_DatumDateEdit.h>
 
-// asiUI includes
-#include <asiUI_Common.h>
-
 // Qt includes
 #pragma warning(push, 0)
 #include <QDateTimeEdit>
@@ -46,8 +43,8 @@
 //! \param theParent [in] parent widget for subwidget controls.
 //! \param theDatumFlags [in] datum subwidget and option flags.
 asiUI_DatumDateEdit::asiUI_DatumDateEdit(const QString& theDicID, 
-                                           QWidget* theParent,
-                                           const int theDatumFlags)
+                                         QWidget* theParent,
+                                         const int theDatumFlags)
 : asiUI_Datum(theParent)
 {
   m_pEditor = new Editor(theDicID, theParent, convertFlags(theDatumFlags));

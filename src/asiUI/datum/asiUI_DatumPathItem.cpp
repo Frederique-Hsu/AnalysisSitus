@@ -32,7 +32,6 @@
 #include <asiUI_DatumPathItem.h>
 
 // asiUI includes
-#include <asiUI_Common.h>
 #include <asiUI_OverrideCursor.h>
 
 // asiAlgo includes

@@ -737,7 +737,7 @@ vtkSmartPointer<vtkLookupTable>
     const int scalar  = it.Value();
 
     // Convert color.
-    ActAPI_Color color = IntToColor(colorId);
+    ActAPI_Color color = ActAPI_Color::IntToColor(colorId);
     const double r     = color.Red();
     const double g     = color.Green();
     const double b     = color.Blue();
@@ -999,7 +999,7 @@ ActAPI_Color asiVisu_Utils::StringToColor(const std::string& string)
   }
 
   if ( isOk )
-    return IntToColor(value);
+    return ActAPI_Color::IntToColor(value);
 
   return ActAPI_Color(Quantity_NOC_WHITE); // Default color for undefined case.
 }

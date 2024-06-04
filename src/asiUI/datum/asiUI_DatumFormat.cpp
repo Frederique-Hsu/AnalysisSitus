@@ -31,9 +31,6 @@
 // Own include
 #include <asiUI_DatumFormat.h>
 
-// asiUI includes
-#include <asiUI_Common.h>
-
 // Qt includes
 #pragma warning(push, 0)
 #include <QRegExp>

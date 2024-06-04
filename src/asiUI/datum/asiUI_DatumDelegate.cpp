@@ -36,10 +36,6 @@
 #include <asiUI_DatumItemEditor.h>
 #include <asiUI_DatumCustomSelector.h>
 #include <asiUI_DatumViewItem.h>
-#include <asiUI_Common.h>
-
-// asiVisu includes
-#include <asiVisu_Utils.h>
 
 // SUIT includes
 //#pragma warning(push, 0)
@@ -279,7 +275,7 @@ void asiUI_DatumDelegate::paint(QPainter* thePainter,
 
     int aColorCode = theIndex.data(aValueRole).toInt();
 
-    ActAPI_Color bgColor = asiVisu_Utils::IntToColor(aColorCode);
+    ActAPI_Color bgColor = ActAPI_Color::IntToColor(aColorCode);
     QColor qcolor = QColor::fromRgbF( bgColor.Red(), bgColor.Green(), bgColor.Blue() );
 
     thePainter->fillRect(aSmallRect, qcolor);

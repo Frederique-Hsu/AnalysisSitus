@@ -119,13 +119,11 @@ public:
   //! \return value of string type.
   virtual QString getString() const
   {
-    QColor       qcolor = colorButton()->color();
-    ActAPI_Color color(qcolor.redF(),
-                       qcolor.greenF(),
-                       qcolor.blueF(),
-                       Quantity_TOC_RGB);
+    QColor qcolor = colorButton()->color();
 
-    return QString::number( asiVisu_Utils::ColorToInt(color) );
+    return QString::number(ActAPI_Color::ColorToInt(qcolor.redF(),
+                                                    qcolor.greenF(),
+                                                    qcolor.blueF()) );
   }
 
 signals:
@@ -159,9 +157,9 @@ private slots:
 
   void onColorChanged(QColor qcolor)
   {
-    ActAPI_Color color(qcolor.redF(), qcolor.greenF(), qcolor.blueF(), Quantity_TOC_RGB);
-
-    int value = asiVisu_Utils::ColorToInt(color);
+    int value = ActAPI_Color::ColorToInt(qcolor.redF(),
+                                         qcolor.greenF(),
+                                         qcolor.blueF());
     setIntegerValue(value);
 
     emit ColorChanged(value);

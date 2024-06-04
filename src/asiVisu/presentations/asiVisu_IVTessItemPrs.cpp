@@ -35,7 +35,6 @@
 #include <asiVisu_MeshContourPipeline.h>
 #include <asiVisu_MeshDataProvider.h>
 #include <asiVisu_MeshPipeline.h>
-#include <asiVisu_Utils.h>
 
 // VTK includes
 #include <vtkMapper.h>
@@ -111,9 +110,9 @@ void asiVisu_IVTessItemPrs::afterUpdatePipelines() const
 
   /* Actualize color */
 
-  ActAPI_Color color = asiVisu_Utils::IntToColor( N->GetColor() );
+  ActAPI_Color color = ActAPI_Color::IntToColor( N->GetColor() );
   this->Colorize(color);
 
-  ActAPI_Color colorE = asiVisu_Utils::IntToColor(N->GetEdgesColor());
+  ActAPI_Color colorE = ActAPI_Color::IntToColor(N->GetEdgesColor());
   this->ColorizeEdges(colorE);
 }

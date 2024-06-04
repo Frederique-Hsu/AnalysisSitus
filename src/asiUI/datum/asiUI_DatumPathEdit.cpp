@@ -31,9 +31,6 @@
 // Own include
 #include <asiUI_DatumPathEdit.h>
 
-// asiUI includes
-#include <asiUI_Common.h>
-
 // asiAlgo includes
 #include <asiAlgo_DictionaryItem.h>
 

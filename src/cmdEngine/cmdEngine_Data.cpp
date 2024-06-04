@@ -52,7 +52,6 @@
 // asiVisu includes
 #include <asiVisu_PartPipeline.h>
 #include <asiVisu_PartPrs.h>
-#include <asiVisu_Utils.h>
 
 // asiTcl includes
 #include <asiTcl_PluginMacro.h>
@@ -950,9 +949,9 @@ int ENGINE_SetFaceColor(const Handle(asiTcl_Interp)& interp,
     {
       TopoDS_Shape shape = partApi.GetFace( fit.Key() );
       //
-      const int icolor = asiVisu_Utils::ColorToInt(colorComponents[0],
-                                                   colorComponents[1],
-                                                   colorComponents[2]);
+      const int icolor = ActAPI_Color::ColorToInt(colorComponents[0],
+                                                  colorComponents[1],
+                                                  colorComponents[2]);
       //
       interp->GetProgress().SendLogMessage(LogInfo(Normal) << "Setting face color to %1." << icolor);
       //
@@ -1017,7 +1016,7 @@ int ENGINE_GetFaceColor(const Handle(asiTcl_Interp)& interp,
     isFound  = true;
   }
 
-  ActAPI_Color color = asiVisu_Utils::IntToColor(colorInt);
+  ActAPI_Color color = ActAPI_Color::IntToColor(colorInt);
   int red   = color.Red()   * MAX_COLOR_SCALE;
   int green = color.Green() * MAX_COLOR_SCALE;
   int blue  = color.Blue()  * MAX_COLOR_SCALE;
@@ -1103,7 +1102,7 @@ int ENGINE_CheckFaceColor(const Handle(asiTcl_Interp)& interp,
     isFound = true;
   }
 
-  ActAPI_Color color = asiVisu_Utils::IntToColor(colorInt);
+  ActAPI_Color color = ActAPI_Color::IntToColor(colorInt);
   int red   = color.Red()   * MAX_COLOR_SCALE;
   int green = color.Green() * MAX_COLOR_SCALE;
   int blue  = color.Blue()  * MAX_COLOR_SCALE;
@@ -1169,9 +1168,9 @@ int ENGINE_SetPartColor(const Handle(asiTcl_Interp)& interp,
 
   cmdEngine::model->OpenCommand();
   {
-    const int icolor = asiVisu_Utils::ColorToInt(colorComponents[0],
-                                                 colorComponents[1],
-                                                 colorComponents[2]);
+    const int icolor = ActAPI_Color::ColorToInt(colorComponents[0],
+                                                colorComponents[1],
+                                                colorComponents[2]);
     cmdEngine::model->GetPartNode()->SetColor(icolor);
   }
   cmdEngine::model->CommitCommand();
@@ -1203,7 +1202,7 @@ int ENGINE_GetPartColor(const Handle(asiTcl_Interp)& interp,
 
   int colorInt = cmdEngine::model->GetPartNode()->GetColor();
 
-  ActAPI_Color color = asiVisu_Utils::IntToColor(colorInt);
+  ActAPI_Color color = ActAPI_Color::IntToColor(colorInt);
   int red   = color.Red()   * MAX_COLOR_SCALE;
   int green = color.Green() * MAX_COLOR_SCALE;
   int blue  = color.Blue()  * MAX_COLOR_SCALE;
@@ -1257,7 +1256,7 @@ int ENGINE_CheckPartColor(const Handle(asiTcl_Interp)& interp,
 
   int colorInt = cmdEngine::model->GetPartNode()->GetColor();
 
-  ActAPI_Color color = asiVisu_Utils::IntToColor(colorInt);
+  ActAPI_Color color = ActAPI_Color::IntToColor(colorInt);
   int red   = color.Red()   * MAX_COLOR_SCALE;
   int green = color.Green() * MAX_COLOR_SCALE;
   int blue  = color.Blue()  * MAX_COLOR_SCALE;
@@ -1338,9 +1337,9 @@ int ENGINE_SetTopoItemColor(const Handle(asiTcl_Interp)& interp,
 
   cmdEngine::model->OpenCommand();
   {
-    const int icolor = asiVisu_Utils::ColorToInt(colorComponents[0],
-                                                 colorComponents[1],
-                                                 colorComponents[2]);
+    const int icolor = ActAPI_Color::ColorToInt(colorComponents[0],
+                                                colorComponents[1],
+                                                colorComponents[2]);
     topoItem->SetHasColor(true);
     topoItem->SetColor(icolor);
   }
@@ -1393,10 +1392,10 @@ int ENGINE_GetTopoItemColor(const Handle(asiTcl_Interp)& interp,
 
   int colorInt = topoItem->GetColor();
 
-  ActAPI_Color color = asiVisu_Utils::IntToColor(colorInt);
+  ActAPI_Color color = ActAPI_Color::IntToColor(colorInt);
   int red   = color.Red()   * MAX_COLOR_SCALE;
   int green = color.Green() * MAX_COLOR_SCALE;
-  int blue  = color.Blue()   * MAX_COLOR_SCALE;
+  int blue  = color.Blue()  * MAX_COLOR_SCALE;
   interp->GetProgress().SendLogMessage(LogInfo(Normal) << "Color: (%1, %2, %3)." << red << green << blue);
 
   return TCL_OK;
@@ -1468,7 +1467,7 @@ int ENGINE_CheckTopoItemColor(const Handle(asiTcl_Interp)& interp,
 
   int colorInt = topoItem->GetColor();
 
-  ActAPI_Color color = asiVisu_Utils::IntToColor(colorInt);
+  ActAPI_Color color = ActAPI_Color::IntToColor(colorInt);
   int red   = color.Red()   * MAX_COLOR_SCALE;
   int green = color.Green() * MAX_COLOR_SCALE;
   int blue  = color.Blue()  * MAX_COLOR_SCALE;
@@ -1557,9 +1556,9 @@ int ENGINE_SetEdgeColor(const Handle(asiTcl_Interp)& interp,
     {
       TopoDS_Shape edge = partApi.GetEdge( eit.Key() );
 
-      const int icolor = asiVisu_Utils::ColorToInt(colorComponents[0],
-                                                   colorComponents[1],
-                                                   colorComponents[2]);
+      const int icolor = ActAPI_Color::ColorToInt(colorComponents[0],
+                                                  colorComponents[1],
+                                                  colorComponents[2]);
       //
       interp->GetProgress().SendLogMessage(LogInfo(Normal) << "Setting edge color to %1." << icolor);
       //

@@ -531,7 +531,7 @@ int ENGINE_SaveGLTF(const Handle(asiTcl_Interp)& interp,
   xdeDoc->GetShapeTool()->FindShape(partShape, label);
   //
   auto colorInt = partNode->GetColor();
-  auto color = asiVisu_Utils::IntToColor(colorInt);
+  auto color = ActAPI_Color::IntToColor(colorInt);
   auto colorRGB = Quantity_Color(color.Red(), color.Green(), color.Blue(), Quantity_TOC_RGB);
   xdeDoc->SetColor(label, colorRGB);
 
@@ -552,7 +552,7 @@ int ENGINE_SaveGLTF(const Handle(asiTcl_Interp)& interp,
           xdeDoc->GetShapeTool()->AddShape(shape);
           xdeDoc->GetShapeTool()->FindShape(shape, label);
       }
-      color = asiVisu_Utils::IntToColor(colorInt);
+      color = ActAPI_Color::IntToColor(colorInt);
       colorRGB = Quantity_Color(color.Red(), color.Green(), color.Blue(), Quantity_TOC_RGB);
       xdeDoc->SetColor(label, colorRGB);
   }

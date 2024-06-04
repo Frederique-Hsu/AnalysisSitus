@@ -34,7 +34,6 @@
 // asiVisu includes
 #include <asiVisu_IVPointSetDataProvider.h>
 #include <asiVisu_PointsPipeline.h>
-#include <asiVisu_Utils.h>
 
 // VTK includes
 #include <vtkMapper.h>
@@ -322,7 +321,7 @@ void asiVisu_IVPointSetPrs::afterUpdatePipelines() const
 
   if ( N->HasColor() )
   {
-    ActAPI_Color color = asiVisu_Utils::IntToColor( N->GetColor() );
+    ActAPI_Color color = ActAPI_Color::IntToColor( N->GetColor() );
     this->Colorize(color);
   }
   else

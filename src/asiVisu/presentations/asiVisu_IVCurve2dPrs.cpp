@@ -34,7 +34,6 @@
 // asiVisu includes
 #include <asiVisu_CurvePipeline.h>
 #include <asiVisu_IVCurve2dDataProvider.h>
-#include <asiVisu_Utils.h>
 
 // VTK includes
 #include <vtkMapper.h>
@@ -105,7 +104,7 @@ void asiVisu_IVCurve2dPrs::afterUpdatePipelines() const
 
   if ( N->HasColor() )
   {
-    ActAPI_Color color = asiVisu_Utils::IntToColor(N->GetColor());
+    ActAPI_Color color = ActAPI_Color::IntToColor(N->GetColor());
     this->Colorize(color);
   }
   else

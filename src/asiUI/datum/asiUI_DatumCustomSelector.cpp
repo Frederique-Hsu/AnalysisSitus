@@ -30,9 +30,6 @@
 // Own include
 #include <asiUI_DatumCustomSelector.h>
 
-// asiUI includes
-#include <asiUI_Common.h>
-
 // asiAlgo includes
 #include <asiAlgo_DictionaryItem.h>
 #include <asiAlgo_Dictionary.h>

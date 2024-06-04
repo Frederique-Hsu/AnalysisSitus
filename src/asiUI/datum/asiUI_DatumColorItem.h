@@ -115,12 +115,10 @@ public:
   //! \return value of string type.
   virtual QString getString() const
   {
-    ActAPI_Color color(m_EditColor.redF(),
-                       m_EditColor.greenF(),
-                       m_EditColor.blueF(),
-                       Quantity_TOC_RGB);
 
-    return QString::number( asiVisu_Utils::ColorToInt(color) );
+    return QString::number( ActAPI_Color::ColorToInt(m_EditColor.redF(),
+                                                     m_EditColor.greenF(),
+                                                     m_EditColor.blueF()) );
   }
 
 signals:
@@ -150,8 +148,9 @@ protected:
   //! \return qcolor value.
   virtual QVariant value() const
   {
-    ActAPI_Color color(m_EditColor.redF(), m_EditColor.greenF(), m_EditColor.blueF(), Quantity_TOC_RGB);
-    int value = asiVisu_Utils::ColorToInt(color);
+    int value = ActAPI_Color::ColorToInt(m_EditColor.redF(),
+                                         m_EditColor.greenF(),    
+                                         m_EditColor.blueF());
     return value;
   }
 
@@ -163,8 +162,9 @@ private slots:
   {
     m_EditColor = qcolor;
 
-    ActAPI_Color color(m_EditColor.redF(), m_EditColor.greenF(), m_EditColor.blueF(), Quantity_TOC_RGB);
-    int value = asiVisu_Utils::ColorToInt(color);
+    int value = ActAPI_Color::ColorToInt(m_EditColor.redF(),  
+                                         m_EditColor.greenF(),
+                                         m_EditColor.blueF());
 
     emit ColorChanged(value);
   }

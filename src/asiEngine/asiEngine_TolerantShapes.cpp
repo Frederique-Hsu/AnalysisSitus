@@ -39,7 +39,6 @@
 #if !defined BUILD_ALGO_ONLY
   // asiVisu includes
   #include <asiVisu_MeshResultUtils.h>
-  #include <asiVisu_Utils.h>
 #endif
 
 //-----------------------------------------------------------------------------
@@ -102,9 +101,9 @@ void asiEngine_TolerantShapes::Populate(const TopoDS_Shape& shape,
   }
 
   float     colorOutOfRangeRGB[3] = {0.25, 0.25, 0.25};
-  const int colorOutOfRange       = asiVisu_Utils::ColorToInt(colorOutOfRangeRGB[0],
-                                                              colorOutOfRangeRGB[1],
-                                                              colorOutOfRangeRGB[2]);
+  const int colorOutOfRange       = ActAPI_Color::ColorToInt(colorOutOfRangeRGB[0],
+                                                             colorOutOfRangeRGB[1],
+                                                             colorOutOfRangeRGB[2]);
 
   // Create Node for out-of-range shape.
   if ( !outOfRangeMin.IsNull() )
@@ -143,7 +142,7 @@ void asiEngine_TolerantShapes::Populate(const TopoDS_Shape& shape,
     double colorRGB[3] = {0.0, 0.0, 0.0};
     lookupTable->GetColor(rangeMid, colorRGB);
     //
-    const int color = asiVisu_Utils::ColorToInt(colorRGB[0], colorRGB[1], colorRGB[2]);
+    const int color = ActAPI_Color::ColorToInt(colorRGB[0], colorRGB[1], colorRGB[2]);
 
     // Create Data Node.
     Handle(asiData_TolerantRangeNode)

@@ -41,7 +41,6 @@
   #include <asiVisu_PartPrs.h>
   #include <asiVisu_PartNodeInfo.h>
   #include <asiVisu_PrsManager.h>
-  #include <asiVisu_Utils.h>
 #endif
 
 // asiData includes
@@ -1315,7 +1314,7 @@ void asiEngine_Part::TransferMetadata(const asiAsm::xde::PartId&      pid,
     const TopoDS_Shape& shape  = shapeColorMap.FindKey(k);
     const int           icolor = shapeColorMap.FindFromIndex(k);
 
-    ActAPI_Color color = asiVisu_Utils::IntToColor(icolor);
+    ActAPI_Color color = ActAPI_Color::IntToColor(icolor);
 
     // Pass to the XDE document.
     TDF_Label ssLab = xdeDoc->AddSubShape(pid, shape);
