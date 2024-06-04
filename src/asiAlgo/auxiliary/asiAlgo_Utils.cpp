@@ -2885,29 +2885,7 @@ bool asiAlgo_Utils::ReadStl(const TCollection_AsciiString& filename,
                             Handle(Poly_Triangulation)&    triangulation,
                             ActAPI_ProgressEntry           progress)
 {
-#if defined USE_MOBIUS
-  progress.SendLogMessage(LogInfo(Normal) << "Use Mobius STL reader.");
-
-  // Prepare reader.
-  poly_ReadSTL reader;
-
-  // Read STL.
-  if ( !reader.Perform( filename.ToCString() ) )
-    return false;
-
-  // Get the constructed mesh.
-  const t_ptr<t_mesh>& mesh = reader.GetResult();
-
-  // Convert to OpenCascade's mesh.
-  cascade_Triangulation<> converter(mesh);
-  converter.DirectConvert();
-  //
-  triangulation = converter.GetOpenCascadeTriangulation();
-#else
-  progress.SendLogMessage(LogInfo(Normal) << "Use OpenCascade STL reader.");
-
   triangulation = RWStl::ReadFile(filename);
-#endif
 
   if ( triangulation.IsNull() )
     return false;

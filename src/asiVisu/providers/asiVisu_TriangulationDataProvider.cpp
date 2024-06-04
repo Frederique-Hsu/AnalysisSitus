@@ -31,6 +31,9 @@
 // Own include
 #include <asiVisu_TriangulationDataProvider.h>
 
+// asiData includes
+#include <asiData_TriangulationNode.h>
+
 // Active Data includes
 #include <ActData_ParameterFactory.h>
 #include <ActAPI_IPlotter.h>
