@@ -110,3 +110,5 @@ install-occt760/
 build-occt-760-sdk/
 
 install-occt-760-sdk/
+
+.idea/
