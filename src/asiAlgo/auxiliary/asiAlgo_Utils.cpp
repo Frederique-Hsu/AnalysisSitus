@@ -5850,9 +5850,9 @@ bool asiAlgo_Utils::GetFaceNorm(const TopoDS_Face& face,
   BRepAdaptor_Surface bas(face, false);
   bas.D1(u, v, P, S_Du, S_Dv);
 
-  if ( S_Dv.IsParallel( S_Du, Precision::Angular() ) ||
+  if ( S_Du.Magnitude() < gp::Resolution() ||
        S_Dv.Magnitude() < gp::Resolution() ||
-       S_Du.Magnitude() < gp::Resolution() )
+       S_Dv.IsParallel( S_Du, Precision::Angular() ) )
   {
     N = gp_Vec(0., 0., 0.);
     return false;
