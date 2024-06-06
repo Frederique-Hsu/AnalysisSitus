@@ -1855,11 +1855,72 @@ int asiAlgo_AAG::GetConnectedComponentsNb()
 
 //-----------------------------------------------------------------------------
 
-int asiAlgo_AAG::GetConnectedComponentsNb(const asiAlgo_Feature& excludedFaceIndices)
+int asiAlgo_AAG::GetConnectedComponentsNb(const asiAlgo_Feature& excluded)
 {
-  Handle(asiAlgo_AAG) aagCopy = this->Copy();
-  aagCopy->Remove(excludedFaceIndices);
-  return aagCopy->GetConnectedComponentsNb();
+  // Gather all non-exluded face indices into a single map.
+  asiAlgo_Feature seeds;
+  for ( asiAlgo_AdjacencyMx::t_mx::Iterator it( m_neighborsStack.top().mx );
+        it.More(); it.Next() )
+  {
+    const t_topoId fid = it.Key();
+    //
+    if ( !excluded.Contains(fid) )
+      seeds.Add(fid);
+  }
+
+  // Collect connected components.
+  std::vector<asiAlgo_Feature> ccomps;
+  asiAlgo_Feature              traversed;
+  //
+  Handle(asiAlgo_AAGSetIterator) seed_it = new asiAlgo_AAGSetIterator(this, seeds);
+  //
+  for ( ; seed_it->More() ; seed_it->Next() )
+  {
+    // Get seed face.
+    const t_topoId seed_face_id = seed_it->GetFaceId();
+    //
+    if ( traversed.Contains(seed_face_id) )
+      continue; // Skip checked nodes.
+
+    traversed.Add(seed_face_id);
+    ccomps.push_back( asiAlgo_Feature() );
+    ccomps.back().Add(seed_face_id);
+
+    // Width-first search excluding unwanted faces.
+    asiAlgo_Feature seed_neighbor_ids = this->GetNeighbors(seed_face_id);
+    seed_neighbor_ids.Subtract(excluded);
+    //
+    asiAlgo_Feature seed_neighbor_next_iter;
+
+    do
+    {
+      seed_neighbor_next_iter.Clear();
+
+      for ( asiAlgo_Feature::Iterator nit(seed_neighbor_ids); nit.More(); nit.Next() )
+      {
+        const t_topoId  seed_face_id_new       = nit.Key();
+        asiAlgo_Feature seed_neighbor_ids_cand = this->GetNeighbors(seed_face_id_new);
+        //
+        seed_neighbor_ids_cand.Subtract(excluded);
+
+        if ( !seeds.Contains(seed_face_id_new) )
+          continue; // Skip
+
+        traversed.Add(seed_face_id_new);
+
+        // Set faces for the next iteration
+        seed_neighbor_ids_cand.Subtract(traversed);
+        seed_neighbor_ids_cand.Intersect(seeds);
+        seed_neighbor_next_iter.Unite(seed_neighbor_ids_cand);
+        ccomps.back().Add(seed_face_id_new);
+      }
+
+      seed_neighbor_ids = seed_neighbor_next_iter;
+    }
+    while ( seed_neighbor_ids.Extent() != 0 );
+  }
+
+  return (int) ccomps.size();
 }
 
 //-----------------------------------------------------------------------------
