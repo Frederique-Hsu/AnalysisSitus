@@ -38,6 +38,10 @@
 #include <QStringList>
 #pragma warning(pop)
 
+// Standard includes
+#include <cfloat>
+#include <cmath>
+
 #define MAX_NB_SIGNIFICANT_DIGITS 16
 
 bool asiUI_DatumFormat::isFormatX(const QString& theFormat)
