@@ -38,6 +38,9 @@ asiAlgo_BVHIterator::asiAlgo_BVHIterator(const opencascade::handle<BVH_Tree<doub
   m_stackHead   (-1),
   m_currentNode (0) // First index.
 {
+  if ( m_bvh->NodeInfoBuffer().empty() )
+    Standard_ProgramError::Raise("invalid BVH");
+
   for ( int i = 0; i < STACK_DEPTH; ++i )
     m_stack[i] = 0;
 
