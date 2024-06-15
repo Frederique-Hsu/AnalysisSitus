@@ -168,6 +168,7 @@ set (aux_CPP_FILES
   auxiliary/asiAlgo_SampleFace.cpp
   auxiliary/asiAlgo_SegmentsInfo.cpp
   auxiliary/asiAlgo_SegmentsInfoExtractor.cpp
+  auxiliary/asiAlgo_SemanticCode.cpp
   auxiliary/asiAlgo_ShapeSerializer.cpp
   auxiliary/asiAlgo_UnifySameDomain.cpp
   auxiliary/asiAlgo_Utils.cpp

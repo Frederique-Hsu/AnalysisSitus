@@ -76,6 +76,8 @@
 #define asiPropName_Segments                              "segments"
 #define asiPropName_FaceId                                "faceId"
 #define asiPropName_FaceIds                               "faceIds"
+#define asiPropName_EdgeIds                               "edgeIds"
+#define asiPropName_VertexIds                             "vertexIds"
 #define asiPropName_Hmin                                  "hmin"
 #define asiPropName_Hmax                                  "hmax"
 #define asiPropName_Umin                                  "umin"
@@ -86,6 +88,9 @@
 #define asiPropName_AABBDy                                "aabbDy"
 #define asiPropName_AABBDz                                "aabbDz"
 #define asiPropName_AAG                                   "aag"
+#define asiPropName_Code                                  "code"
+#define asiPropName_Label                                 "label"
+#define asiPropName_Warnings                              "warnings"
 
 // JSON properties
 #define asiPropName_ExtrasCanRecSummary                   "canrecSummary"

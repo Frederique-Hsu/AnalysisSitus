@@ -63,14 +63,17 @@ enum class asiAlgo_SemanticCodeType
 //! code enriched with geometric semantics.
 //!
 //! Each code is a tuple having an ID corresponding to a group
-//! of faces to report together. This way we get diagnostics
-//! resolution by features and not by the codes themselves.
+//! of faces/edges/vertices to report together. This way we get
+//! diagnostics resolution by features and not by the codes themselves.
 struct asiAlgo_SemanticCode
 {
   int                      featureId; //!< Feature ID.
   int                      code;      //!< Diagnostic code.
-  asiAlgo_Feature          fids;      //!< Feature faces.
+  asiAlgo_Feature          faceIds;   //!< Face IDs.
+  asiAlgo_Feature          edgeIds;   //!< Edge IDs.
+  asiAlgo_Feature          vertexIds; //!< Vertex IDs.
   asiAlgo_SemanticCodeType type;      //!< Code type.
+  std::string              label;     //!< Code label.
 
   //! Default ctor.
   asiAlgo_SemanticCode()
@@ -88,17 +91,48 @@ struct asiAlgo_SemanticCode
     code      (_code),
     type      (_type)
   {
-    fids.Add(_fid);
+    faceIds.Add(_fid);
   }
 
-  //! Complete ctor.
+  //! Ctor with a feature ID, code and element IDs.
+  asiAlgo_SemanticCode(const int                      _featId,
+                       const int                      _code,
+                       const int                      _fid,
+                       const int                      _eid,
+                       const int                      _vid,
+                       const asiAlgo_SemanticCodeType _type)
+  : featureId (_featId),
+    code      (_code),
+    type      (_type)
+  {
+    faceIds   .Add(_fid);
+    edgeIds   .Add(_eid);
+    vertexIds .Add(_vid);
+  }
+
+  //! Ctor with the collection of face IDs.
   asiAlgo_SemanticCode(const int                      _featId,
                        const int                      _code,
                        const asiAlgo_Feature&         _fids,
                        const asiAlgo_SemanticCodeType _type)
   : featureId (_featId),
     code      (_code),
-    fids      (_fids),
+    faceIds   (_fids),
+    type      (_type)
+  {}
+
+  //! Complete ctor.
+  asiAlgo_SemanticCode(const int                      _featId,
+                       const int                      _code,
+                       const asiAlgo_Feature&         _fids,
+                       const asiAlgo_Feature&         _eids,
+                       const asiAlgo_Feature&         _vids,
+                       const asiAlgo_SemanticCodeType _type)
+  : featureId (_featId),
+    code      (_code),
+    faceIds   (_fids),
+    edgeIds   (_eids),
+    vertexIds (_vids),
     type      (_type)
   {}
 
@@ -116,7 +150,13 @@ struct asiAlgo_SemanticCode
     if ( this->code != other.code )
       return false;
 
-    if ( !this->fids.IsEqual(other.fids) )
+    if ( !this->faceIds.IsEqual(other.faceIds) )
+      return false;
+
+    if ( !this->edgeIds.IsEqual(other.edgeIds) )
+      return false;
+
+    if ( !this->vertexIds.IsEqual(other.vertexIds) )
       return false;
 
     if ( this->type != other.type )
@@ -124,6 +164,24 @@ struct asiAlgo_SemanticCode
 
     return true;
   }
+
+public:
+
+  //! Constructs the semantic code data structure from a JSON object.
+  //! \param[in]  pJsonGenericObj the JSON object to construct the code from.
+  //! \param[out] code            the outcome semantic code structure.
+  asiAlgo_EXPORT static void
+    FromJSON(void*                 pJsonGenericObj,
+             asiAlgo_SemanticCode& code);
+
+  //! Converts the passed semantic code to JSON (the passed `out` stream).
+  //! \param[in]     code   the semantic code to serialize.
+  //! \param[in]     indent the pretty indentation shift.
+  //! \param[in,out] out    the output JSON string stream.
+  asiAlgo_EXPORT static void
+    ToJSON(const asiAlgo_SemanticCode& code,
+           const int                   indent,
+           std::ostream&               out);
 
   //! Hasher for maps.
   struct Hasher
@@ -190,14 +248,14 @@ public:
     }
   }
 
-  //! Takes care to merge the collection of face IDs whenever the same code
+  //! Takes care to merge the collection of element IDs whenever the same code
   //! is being added several times under the same feature ID. Such merging
   //! would not happen if we used the base `NCollection_IndexedMap` collection
   //! as it is.
   //! \param[in] code the semantic code to add.
   //! \return the 1-based index of the code in the map. If such a code already
   //!         exists, it will be substituted with an extended collection of
-  //!         face IDs under the same index.
+  //!         element IDs under the same index.
   int Add(const asiAlgo_SemanticCode& code)
   {
     const int idx = this->FindIndex(code);
@@ -209,9 +267,12 @@ public:
                                     asiAlgo_SemanticCode::Hasher>::Add(code);
     }
 
-    // Merge face IDs.
+    // Merge element IDs.
     asiAlgo_SemanticCode existingCode = this->FindKey(idx);
-    existingCode.fids.Unite(code.fids);
+    //
+    existingCode.faceIds   .Unite(code.faceIds);
+    existingCode.edgeIds   .Unite(code.edgeIds);
+    existingCode.vertexIds .Unite(code.vertexIds);
 
     // Change the existing element and return its index.
     this->Substitute(idx, existingCode);

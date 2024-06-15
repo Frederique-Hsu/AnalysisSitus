@@ -41,8 +41,7 @@
 
 //! \ingroup ASI_CORE
 //!
-//! Base class for all classes accumulating diagnostic and semantic
-//! codes.
+//! Base class for all classes accumulating diagnostic and semantic codes.
 class asiAlgo_CodeReporter
 {
 /* Status codes */
