@@ -165,7 +165,7 @@ t_ptr<t_mesh>
 
   t_ptr<t_mesh> mesh = static_cast<t_mesh*>( param->GetMesh() );
 
-  if ( !applyTransform )
+  if ( !applyTransform || mesh.IsNull())
     return mesh;
 
   // Apply transformation.
