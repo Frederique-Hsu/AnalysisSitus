@@ -91,7 +91,8 @@ struct asiAlgo_SemanticCode
     code      (_code),
     type      (_type)
   {
-    faceIds.Add(_fid);
+    if ( _fid )
+      faceIds.Add(_fid);
   }
 
   //! Ctor with a feature ID, code and element IDs.
@@ -105,9 +106,14 @@ struct asiAlgo_SemanticCode
     code      (_code),
     type      (_type)
   {
-    faceIds   .Add(_fid);
-    edgeIds   .Add(_eid);
-    vertexIds .Add(_vid);
+    if ( _fid )
+      faceIds.Add(_fid);
+
+    if ( _eid )
+      edgeIds.Add(_eid);
+
+    if ( _vid )
+      vertexIds.Add(_vid);
   }
 
   //! Ctor with the collection of face IDs.

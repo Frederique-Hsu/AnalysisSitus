@@ -121,6 +121,31 @@ public:
 
   //! Adds the passed semantic code to the stored collection. If the passed
   //! `featId` index and `code` number are identical, the corresponding
+  //! element IDs will be grouped into a single diagnostic code. Such a technique
+  //! allows merging the diagnostic codes not only by their types, but also
+  //! by the involved features.
+  //!
+  //! \param[in] featId the feature of interest.
+  //! \param[in] code   the code to add.
+  //! \param[in] fid    the sole face ID to associate with the
+  //!                   passed semantic code.
+  //! \param[in] eid    the sole edge ID to associate with the
+  //!                   passed semantic code.
+  //! \param[in] vid    the sole vertex ID to associate with the
+  //!                   passed semantic code.
+  //! \param[in] type   the type of semantic code to report.
+  void AddSemanticCode(const int                      featId,
+                       const int                      code,
+                       const int                      fid,
+                       const int                      eid,
+                       const int                      vid,
+                       const asiAlgo_SemanticCodeType type)
+  {
+    m_semanticCodes.Add( asiAlgo_SemanticCode(featId, code, fid, eid, vid, type) );
+  }
+
+  //! Adds the passed semantic code to the stored collection. If the passed
+  //! `featId` index and `code` number are identical, the corresponding
   //! face IDs will be grouped into a single diagnostic code. Such a technique
   //! allows merging the diagnostic codes not only by their types, but also
   //! by the involved features.

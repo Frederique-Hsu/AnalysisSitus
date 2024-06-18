@@ -91,6 +91,8 @@
 #define asiPropName_Code                                  "code"
 #define asiPropName_Label                                 "label"
 #define asiPropName_Warnings                              "warnings"
+#define asiPropName_StatusCodes                           "codes"
+#define asiPropName_SemanticCodes                         "semanticCodes"
 
 // JSON properties
 #define asiPropName_ExtrasCanRecSummary                   "canrecSummary"
