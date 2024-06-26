@@ -3793,7 +3793,14 @@ int MISC_ConvertCurvesPoly(const Handle(asiTcl_Interp)& interp,
         const TopoDS_Vertex& V = wexp.CurrentVertex();
         gp_Pnt               P = BRep_Tool::Pnt(V);
 
-        FILE << P.X() << " " << P.Y() << " " << P.Z();
+        FILE << P.X() << " " << P.Y();
+        //
+        if ( !interp->HasKeyword(argc, argv, "2d") )
+        {
+          FILE << " " << P.Z();
+        }
+        //
+        FILE << "\n";
       }
     }
 
