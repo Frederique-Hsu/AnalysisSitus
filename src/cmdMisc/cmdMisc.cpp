@@ -81,6 +81,7 @@
 #include <BRepPrimAPI_MakeCylinder.hxx>
 #include <BRepPrimAPI_MakePrism.hxx>
 #include <BRepTools.hxx>
+#include <BRepTools_WireExplorer.hxx>
 #include <ElCLib.hxx>
 #include <GCE2d_MakeSegment.hxx>
 #include <GCPnts_QuasiUniformAbscissa.hxx>
@@ -3731,6 +3732,79 @@ int MISC_ConvertCurves(const Handle(asiTcl_Interp)& interp,
 
 //-----------------------------------------------------------------------------
 
+int MISC_ConvertCurvesPoly(const Handle(asiTcl_Interp)& interp,
+                           int                          argc,
+                           const char**                 argv)
+{
+  Handle(asiEngine_Model)
+    M = Handle(asiEngine_Model)::DownCast( interp->GetModel() );
+
+  Handle(asiData_PartNode) partNode = M->GetPartNode();
+
+  // Get shape.
+  TopoDS_Shape partShape = partNode->GetShape();
+  //
+  if ( partShape.IsNull() )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Shape is null.");
+    return TCL_ERROR;
+  }
+
+  TIMER_NEW
+  TIMER_GO
+
+  asiAlgo_ConvertCurve::Convert2Polyline(partShape);
+
+  TIMER_FINISH
+  TIMER_COUT_RESULT_NOTIFIER(interp->GetProgress(), "Convert curves")
+
+  // Modify shape.
+  M->OpenCommand();
+  {
+    asiEngine_Part(M).Update(partShape);
+  }
+  M->CommitCommand();
+
+  // Update UI.
+  if ( cmdMisc::cf && cmdMisc::cf->ViewerPart )
+    cmdMisc::cf->ViewerPart->PrsMgr()->Actualize(partNode);
+
+  // Export to the filesystem if requested.
+  std::string filename;
+  //
+  if ( interp->GetKeyValue(argc, argv, "filename", filename) )
+  {
+    std::ofstream FILE;
+    FILE.open(filename, std::ios::out | std::ios::trunc);
+    //
+    if ( !FILE.is_open() )
+    {
+      interp->GetProgress().SendLogMessage(LogErr(Normal) << "Cannot open file '%1' for dumping."
+                                                          << filename);
+      return TCL_ERROR;
+    }
+
+    for ( TopExp_Explorer exp(partShape, TopAbs_WIRE); exp.More(); exp.Next() )
+    {
+      const TopoDS_Wire& wire = TopoDS::Wire( exp.Current() );
+      //
+      for ( BRepTools_WireExplorer wexp(wire); wexp.More(); wexp.Next() )
+      {
+        const TopoDS_Vertex& V = wexp.CurrentVertex();
+        gp_Pnt               P = BRep_Tool::Pnt(V);
+
+        FILE << P.X() << " " << P.Y() << " " << P.Z();
+      }
+    }
+
+    FILE.close();
+  }
+
+  return TCL_OK;
+}
+
+//-----------------------------------------------------------------------------
+
 int MISC_CheckGaps(const Handle(asiTcl_Interp)& interp,
                    int                          /*argc*/,
                    const char**                 /*argv*/)
@@ -4112,6 +4186,16 @@ void cmdMisc::Factory(const Handle(asiTcl_Interp)&      interp,
     "\t Converts all wires of the active part to a series of arcs and lines.",
     //
     __FILE__, group, MISC_ConvertCurves);
+
+  //-------------------------------------------------------------------------//
+  interp->AddCommand("misc-convert-curves-poly",
+    //
+    "misc-convert-curves-poly [-filename <filename> [-2d]]\n"
+    "\t Converts all wires of the active part to polygons.\n"
+    "\t If the filename is passed, the converted polygons are\n"
+    "\t serialized to the filesystem.",
+    //
+    __FILE__, group, MISC_ConvertCurvesPoly);
 
   //-------------------------------------------------------------------------//
   interp->AddCommand("misc-check-gaps",
