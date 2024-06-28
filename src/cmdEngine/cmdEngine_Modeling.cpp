@@ -757,6 +757,8 @@ int ENGINE_AddSubShape(const Handle(asiTcl_Interp)& interp,
 
   // Get parent shape.
   TopoDS_Shape parentShape = parentNode->GetShape();
+  //
+  parentShape.TShape()->Free(true);
 
   // Get child shape.
   TopoDS_Shape childShape = childNode->GetShape();
