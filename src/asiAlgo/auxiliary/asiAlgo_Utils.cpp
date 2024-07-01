@@ -1600,6 +1600,9 @@ TCollection_AsciiString
 
 std::string asiAlgo_Utils::CurveName(const Handle(Geom_Curve)& curve)
 {
+  if( curve.IsNull() ) {
+    return "unknown";
+  }
   if ( curve->IsInstance( STANDARD_TYPE(Geom_Line) ) )
     return "line";
   //
@@ -1640,6 +1643,9 @@ std::string asiAlgo_Utils::CurveName(const Handle(Geom_Curve)& curve)
 
 std::string asiAlgo_Utils::SurfaceName(const Handle(Geom_Surface)& surf)
 {
+  if( surf.IsNull() ) {
+    return "unknown";
+  }
   if ( surf->IsInstance( STANDARD_TYPE(Geom_Plane) ) )
     return "plane";
   //
@@ -1771,7 +1777,13 @@ bool asiAlgo_Utils::IsPlanar(const TopoDS_Face&  face,
   if ( !IsTypeOf<Geom_Plane>(face) )
     return false;
 
-  plane = Handle(Geom_Plane)::DownCast( BRep_Tool::Surface(face) );
+  Handle(Geom_Surface) surf = BRep_Tool::Surface(face);
+
+  if( surf.IsNull() ) {
+    return false;
+  }
+
+  plane = Handle(Geom_Plane)::DownCast(surf);
   return true;
 }
 
@@ -1848,6 +1860,11 @@ bool asiAlgo_Utils::IsCylindrical(const TopoDS_Face& face,
   bool isCylindrical = false;
   Handle(Geom_Surface) surf = BRep_Tool::Surface(face);
   Handle(Geom_CylindricalSurface) cylsurf;
+
+  if( surf.IsNull() ) {
+    return false;
+  }
+
   //
   if ( surf->IsInstance( STANDARD_TYPE(Geom_CylindricalSurface) ) )
   {
@@ -1920,6 +1937,11 @@ bool asiAlgo_Utils::IsConical(const TopoDS_Face& face,
   bool isConical = false;
   Handle(Geom_Surface) surf = BRep_Tool::Surface(face);
   Handle(Geom_ConicalSurface) conesurf;
+
+  if( surf.IsNull() ) {
+    return false;
+  }
+
   //
   if ( surf->IsInstance( STANDARD_TYPE(Geom_ConicalSurface) ) )
   {
@@ -2026,7 +2048,11 @@ bool asiAlgo_Utils::IsToroidal(const TopoDS_Face& face,
 
   bool isToroidal = false;
   Handle(Geom_Surface) surf = BRep_Tool::Surface(face);
-  Handle(Geom_ToroidalSurface) torsurf;
+  Handle(Geom_ToroidalSurface) torsurf;  
+
+  if( surf.IsNull() ) {
+    return false;
+  }
 
   if ( surf->IsInstance( STANDARD_TYPE(Geom_ToroidalSurface) ) )
   {
@@ -2093,6 +2119,10 @@ bool asiAlgo_Utils::IsCircular(const Handle(Geom_Curve)& curve)
 bool asiAlgo_Utils::IsCircular(const Handle(Geom_Curve)& curve,
                                gp_Circ&                  circ)
 {
+  if( curve.IsNull() ) {
+    return false;
+  }
+
   if ( curve->IsKind( STANDARD_TYPE(Geom_Circle) ) )
   {
     circ = Handle(Geom_Circle)::DownCast(curve)->Circ();
@@ -2358,6 +2388,10 @@ bool asiAlgo_Utils::IsIdentity(const TopLoc_Location& loc)
 
 bool asiAlgo_Utils::IsBasisCircular(const Handle(Geom_Curve)& curve)
 {
+  if( curve.IsNull() ) {
+    return false;
+  }
+
   if ( curve->IsKind( STANDARD_TYPE(Geom_Circle) ) )
     return true;
 

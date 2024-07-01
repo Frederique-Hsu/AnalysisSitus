@@ -815,6 +815,10 @@ namespace asiAlgo_Utils
   bool IsTypeOf(const Handle(Geom2d_Curve)& curve,
                 Handle(TCurve)&             basecurve)
   {
+    if( curve.IsNull() ) {
+      return false;
+    }
+
     if ( curve->IsInstance( STANDARD_TYPE(TCurve) ) )
     {
       basecurve = Handle(TCurve)::DownCast(curve);
@@ -825,6 +829,10 @@ namespace asiAlgo_Utils
     {
       Handle(Geom2d_TrimmedCurve) trimmed =
         Handle(Geom2d_TrimmedCurve)::DownCast(curve);
+
+      if( trimmed.IsNull() ) {
+        return false;
+      }
 
       Handle(Geom2d_Curve) basis = trimmed->BasisCurve();
 
@@ -846,6 +854,10 @@ namespace asiAlgo_Utils
   bool IsTypeOf(const Handle(Geom_Curve)& curve,
                 Handle(TCurve)&           basecurve)
   {
+    if( curve.IsNull() ) {
+      return false;
+    }
+
     if ( curve->IsInstance( STANDARD_TYPE(TCurve) ) )
     {
       basecurve = Handle(TCurve)::DownCast(curve);
@@ -856,6 +868,10 @@ namespace asiAlgo_Utils
     {
       Handle(Geom_TrimmedCurve) trimmed =
         Handle(Geom_TrimmedCurve)::DownCast(curve);
+
+      if( trimmed.IsNull() ) {
+        return false;
+      }
 
       Handle(Geom_Curve) basis = trimmed->BasisCurve();
 
@@ -908,6 +924,10 @@ namespace asiAlgo_Utils
       Handle(Geom_TrimmedCurve)
         TC = Handle(Geom_TrimmedCurve)::DownCast(curve);
 
+      if( TC.IsNull() ) {
+        return false;
+      }
+
       // Check basis curve.
       basecurve = Handle(TCurve)::DownCast( TC->BasisCurve() );
       //
@@ -941,6 +961,10 @@ namespace asiAlgo_Utils
 
     Handle(Geom_Surface) surf = BRep_Tool::Surface(face);
 
+    if( surf.IsNull() ) {
+      return false;
+    }
+
     // Check host surface directly.
     if ( surf->IsInstance( STANDARD_TYPE(TSurf) ) )
     {
@@ -954,6 +978,9 @@ namespace asiAlgo_Utils
       Handle(Geom_RectangularTrimmedSurface)
         RT = Handle(Geom_RectangularTrimmedSurface)::DownCast(surf);
 
+      if( RT.IsNull() ) {
+        return false;
+      }
       // Check basis surface.
       basesurf = Handle(TSurf)::DownCast( RT->BasisSurface() );
       //
@@ -980,6 +1007,10 @@ namespace asiAlgo_Utils
   template<typename TSurf>
   static bool IsTypeOf(const Handle(Geom_Surface)& surf)
   {
+    if( surf.IsNull() ) {
+      return false;
+    }
+
     Handle(TSurf) basesurf;
 
     // Check host surface directly.
@@ -993,6 +1024,10 @@ namespace asiAlgo_Utils
     {
       Handle(Geom_RectangularTrimmedSurface)
         RT = Handle(Geom_RectangularTrimmedSurface)::DownCast(surf);
+
+      if( RT.IsNull() ) {
+        return false;
+      }
 
       // Check basis surface.
       basesurf = Handle(TSurf)::DownCast( RT->BasisSurface() );
