@@ -63,7 +63,7 @@ QCheckBox
 
 QCheckBox:disabled
 {
-    color: #76797C;
+    color: #c8cbcf;
 }
 
 QCheckBox::indicator,
@@ -144,7 +144,7 @@ QRadioButton
 
 QRadioButton:disabled
 {
-    color: #76797C;
+    color: #c8cbcf;
 }
 QRadioButton::indicator
 {
@@ -299,7 +299,7 @@ QMenu::right-arrow {
 
 QWidget:disabled
 {
-    color: #454545;
+    color: #c8cbcf;
     background-color: #31363b;
 }
 
@@ -601,7 +601,7 @@ QPushButton
 
 QPushButton:disabled
 {
-    background-color: #31363b;
+    background-color: #c8cbcf;
     border-width: 1px;
     border-color: #454545;
     border-style: solid;
