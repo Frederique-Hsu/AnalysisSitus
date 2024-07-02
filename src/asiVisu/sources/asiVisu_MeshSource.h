@@ -59,16 +59,16 @@ public:
 // Kernel:
 public:
 
-  void
+  asiVisu_EXPORT void
     EmptyGroupForAllModeOn();
 
-  void
+  asiVisu_EXPORT void
     EmptyGroupForAllModeOff();
 
   asiVisu_EXPORT void
     SetInputMesh(const Handle(ActData_Mesh)& theMesh);
 
-  void
+  asiVisu_EXPORT void
     SetInputElemGroup(const Handle(ActData_Mesh_Group)& theGroup);
 
   asiVisu_EXPORT const Handle(ActData_Mesh)&

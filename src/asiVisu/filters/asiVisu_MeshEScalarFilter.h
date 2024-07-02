@@ -60,7 +60,8 @@ public:
 
 public:
 
-  static asiVisu_MeshEScalarFilter* New();
+  asiVisu_EXPORT static
+    asiVisu_MeshEScalarFilter* New();
 
   //! Sets elemental scalars.
   //! \param elemIDs  [in] involved mesh element IDs.
@@ -110,17 +111,21 @@ public:
 
 private:
 
-  asiVisu_MeshEScalarFilter();
+  asiVisu_EXPORT
+    asiVisu_MeshEScalarFilter();
 
-  ~asiVisu_MeshEScalarFilter();
+  asiVisu_EXPORT
+    ~asiVisu_MeshEScalarFilter();
 
 public:
 
-  virtual int FillInputPortInformation(int thePort, vtkInformation* theInfo);
+  asiVisu_EXPORT virtual int
+    FillInputPortInformation(int thePort, vtkInformation* theInfo);
 
-  virtual int RequestData(vtkInformation*        theInfo,
-                          vtkInformationVector** theInput,
-                          vtkInformationVector*  theOutput);
+  asiVisu_EXPORT virtual int
+    RequestData(vtkInformation*        theInfo,
+                vtkInformationVector** theInput,
+                vtkInformationVector*  theOutput);
 
 private:
 

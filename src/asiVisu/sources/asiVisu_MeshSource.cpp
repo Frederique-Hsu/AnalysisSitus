@@ -167,19 +167,21 @@ int asiVisu_MeshSource::RequestData(vtkInformation*        theRequest,
    * ================================== */
 
   // Array for mesh item types
-  vtkSmartPointer<vtkIntArray>
-    aTypeArr = asiVisu_Utils::InitIntArray(ARRNAME_MESH_ITEM_TYPE);
-  CD->AddArray(aTypeArr);
+  vtkSmartPointer<vtkIdTypeArray> typeArr = vtkSmartPointer<vtkIdTypeArray>::New();
+  typeArr->SetName(ARRNAME_MESH_ITEM_TYPE);
+  typeArr->SetNumberOfComponents(1);
+  CD->AddArray(typeArr);
 
   // Array for mesh node IDs
   vtkSmartPointer<vtkIntArray>
     aNodeIDsArr = asiVisu_Utils::InitIntArray(ARRNAME_MESH_NODE_IDS);
   PD->AddArray(aNodeIDsArr);
 
-  // Array for mesh element IDs
-  vtkSmartPointer<vtkIntArray>
-    aFaceIDsArr = asiVisu_Utils::InitIntArray(ARRNAME_MESH_ELEM_IDS);
-  CD->AddArray(aFaceIDsArr);
+  // Add array for mesh element IDs.
+  vtkSmartPointer<vtkIdTypeArray> faceIDsArr = vtkSmartPointer<vtkIdTypeArray>::New();
+  faceIDsArr->SetName(ARRNAME_MESH_ELEM_IDS);
+  faceIDsArr->SetNumberOfComponents(1);
+  CD->SetPedigreeIds(faceIDsArr);
 
   /* ==============================================================
    *  Take care of free nodes by collecting them into a dedicated
@@ -331,14 +333,14 @@ vtkIdType
     polyData->InsertNextCell( VTK_LINE, (int) pids.size(), &pids[0] );
 
   // Set type of the mesh element
-  vtkIntArray*
-    typeArr = vtkIntArray::SafeDownCast( polyData->GetCellData()->GetArray(ARRNAME_MESH_ITEM_TYPE) );
+  vtkIdTypeArray*
+    typeArr = vtkIdTypeArray::SafeDownCast( polyData->GetCellData()->GetArray(ARRNAME_MESH_ITEM_TYPE) );
   //
   typeArr->InsertNextValue(type);
 
   // Store element ID
-  vtkIntArray*
-    elemIDsArr = vtkIntArray::SafeDownCast( polyData->GetCellData()->GetArray(ARRNAME_MESH_ELEM_IDS) );
+  vtkIdTypeArray*
+    elemIDsArr = vtkIdTypeArray::SafeDownCast( polyData->GetCellData()->GetArray(ARRNAME_MESH_ELEM_IDS) );
   //
   elemIDsArr->InsertNextValue(VTK_BAD_ID);
 
@@ -391,8 +393,8 @@ vtkIdType asiVisu_MeshSource::registerMeshFace(const int    theFaceID,
    *  Associate the newly added cell with element type
    * ================================================== */
 
-  vtkIntArray* aTypeArr =
-    vtkIntArray::SafeDownCast( thePolyData->GetCellData()->GetArray(ARRNAME_MESH_ITEM_TYPE) );
+  vtkIdTypeArray* aTypeArr =
+    vtkIdTypeArray::SafeDownCast( thePolyData->GetCellData()->GetArray(ARRNAME_MESH_ITEM_TYPE) );
   int aType = (aCellType == VTK_TRIANGLE ? MeshPrimitive_CellTriangle : MeshPrimitive_CellQuad);
   aTypeArr->InsertNextValue(aType);
 
@@ -400,8 +402,8 @@ vtkIdType asiVisu_MeshSource::registerMeshFace(const int    theFaceID,
    *  Associate the newly added cell with original element ID
    * ========================================================= */
 
-  vtkIntArray* aFaceIDsArr =
-    vtkIntArray::SafeDownCast( thePolyData->GetCellData()->GetArray(ARRNAME_MESH_ELEM_IDS) );
+  vtkIdTypeArray* aFaceIDsArr =
+    vtkIdTypeArray::SafeDownCast( thePolyData->GetCellData()->GetArray(ARRNAME_MESH_ELEM_IDS) );
   aFaceIDsArr->InsertNextValue(theFaceID);
 
   return aCellID;
@@ -432,8 +434,8 @@ vtkIdType
   vtkIdType aCellID =
     thePolyData->InsertNextCell( VTK_POLY_VERTEX, (int) aPids.size(), &aPids[0] );
 
-  vtkIntArray* aTypeArr =
-    vtkIntArray::SafeDownCast( thePolyData->GetCellData()->GetArray(ARRNAME_MESH_ITEM_TYPE) );
+  vtkIdTypeArray* aTypeArr =
+    vtkIdTypeArray::SafeDownCast( thePolyData->GetCellData()->GetArray(ARRNAME_MESH_ITEM_TYPE) );
   aTypeArr->InsertNextValue(MeshPrimitive_FreeNode);
 
   return aCellID;
