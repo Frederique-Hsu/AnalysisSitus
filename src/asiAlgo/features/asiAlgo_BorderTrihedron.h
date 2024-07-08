@@ -65,7 +65,7 @@ public:
 
   //! Converts this border trihedron to local axes frame.
   //! \return OpenCascade axes.
-  operator gp_Ax3()
+  operator gp_Ax3() const
   {
     return gp_Ax3(V_origin, V_z, V_x);
   }
