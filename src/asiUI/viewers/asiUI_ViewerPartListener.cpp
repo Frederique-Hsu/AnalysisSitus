@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-// Created on: 07 November 2016 (99 years of October Revolution)
+// Created on: 07 November 2016
 //-----------------------------------------------------------------------------
 // Copyright (c) 2017, Sergey Slyadnev
 // All rights reserved.

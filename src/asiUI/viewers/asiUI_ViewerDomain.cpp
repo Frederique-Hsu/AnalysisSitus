@@ -500,7 +500,12 @@ void asiUI_ViewerDomain::GetSelectedEdges(std::map<int, TopoDS_Edge>& edges)
   //
   TopoDS_Face F;
   if ( (fid > 0) && ( fid <= subShapesMap.Extent() ) )
-    F = TopoDS::Face( subShapesMap.FindKey(fid) );
+  {
+    TopoDS_Shape sshape = subShapesMap.FindKey(fid);
+    //
+    if ( sshape.ShapeType() == TopAbs_FACE )
+      F = TopoDS::Face(sshape);
+  }
   //
   if ( F.IsNull() )
   {
