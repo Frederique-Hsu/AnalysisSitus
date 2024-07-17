@@ -38,7 +38,7 @@
 #include <asiAlgo_Utils.h>
 
 // STL includes
-#include <stack>
+#include <vector>
 
 // OCCT includes
 #include <NCollection_IncAllocator.hxx>
@@ -562,16 +562,24 @@ public:
     HasNeighbors(const t_topoId face_idx) const;
 
   //! Returns neighbors for the face having the given internal index.
-  //! \param[in] face_idx face index.
+  //! \param[in] face_idx  face index.
+  //! \param[in] stackTail indicates whether to take neighbors from the
+  //!                      tail of the adjacency matrix stack (the default
+  //!                      is to use the stack head).
   //! \return indices of the neighbor faces.
   asiAlgo_EXPORT const asiAlgo_Feature&
-    GetNeighbors(const t_topoId face_idx) const;
+    GetNeighbors(const t_topoId face_idx,
+                 const bool     stackTail = false) const;
 
   //! Returns neighbors for all the faces from the passed collection.
-  //! \param[in] fids face indices to return neighbors for.
+  //! \param[in] fids      face indices to return neighbors for.
+  //! \param[in] stackTail indicates whether to take neighbors from the
+  //!                      tail of the adjacency matrix stack (the default
+  //!                      is to use the stack head).
   //! \return indices of the neighbor faces.
   asiAlgo_EXPORT asiAlgo_Feature
-    GetNeighbors(const asiAlgo_Feature& fids) const;
+    GetNeighbors(const asiAlgo_Feature& fids,
+                 const bool             stackTail = false) const;
 
   //! Returns only those neighbor faces which share the given edge with the
   //! passed face of interest.
@@ -1138,7 +1146,7 @@ protected:
 
   //! The data maps stored in this stack represent adjacency matrices. The
   //! stack is used to keep sub-graphs.
-  std::stack<asiAlgo_AdjacencyMx> m_neighborsStack;
+  std::vector<asiAlgo_AdjacencyMx> m_neighborsStack;
 
   //! Stores attributes associated with each arc.
   t_arc_attributes m_arcAttributes;

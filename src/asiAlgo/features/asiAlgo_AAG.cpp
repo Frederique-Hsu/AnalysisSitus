@@ -559,7 +559,7 @@ void asiAlgo_AAG::PushSubgraph()
 
 void asiAlgo_AAG::PushSubgraph(const asiAlgo_Feature& faces2Keep)
 {
-  asiAlgo_AdjacencyMx& currentMx = m_neighborsStack.top();
+  asiAlgo_AdjacencyMx& currentMx = m_neighborsStack.back();
 
   // Gather all present face indices into a single map.
   asiAlgo_Feature allFaces;
@@ -589,7 +589,7 @@ void asiAlgo_AAG::PushSubgraphX(const t_topoId face2Exclude)
 
 void asiAlgo_AAG::PushSubgraphX(const asiAlgo_Feature& faces2Exclude)
 {
-  asiAlgo_AdjacencyMx& currentMx = m_neighborsStack.top();
+  asiAlgo_AdjacencyMx& currentMx = m_neighborsStack.back();
   asiAlgo_AdjacencyMx subgraphMx(m_alloc);
 
   // Compose new adjacency matrix.
@@ -607,14 +607,14 @@ void asiAlgo_AAG::PushSubgraphX(const asiAlgo_Feature& faces2Exclude)
   }
 
   // Push sub-graph to stack.
-  m_neighborsStack.push(subgraphMx);
+  m_neighborsStack.push_back(subgraphMx);
 }
 
 //-----------------------------------------------------------------------------
 
 void asiAlgo_AAG::PopSubgraph()
 {
-  m_neighborsStack.pop();
+  m_neighborsStack.pop_back();
 }
 
 //-----------------------------------------------------------------------------
@@ -622,7 +622,7 @@ void asiAlgo_AAG::PopSubgraph()
 void asiAlgo_AAG::PopSubgraphs()
 {
   while ( m_neighborsStack.size() != 1 )
-    m_neighborsStack.pop();
+    m_neighborsStack.pop_back();
 }
 
 //-----------------------------------------------------------------------------
@@ -632,7 +632,7 @@ void asiAlgo_AAG::AddVertexAdjacencyArcs(const asiAlgo_Feature& domain)
   const TopTools_IndexedDataMapOfShapeListOfShape&
     vertsFaces = this->RequestMapOfVerticesFaces();
 
-  asiAlgo_AdjacencyMx::t_mx& mx = m_neighborsStack.top().mx;
+  asiAlgo_AdjacencyMx::t_mx& mx = m_neighborsStack.back().mx;
 
   for ( int v = 1; v <= vertsFaces.Extent(); ++v )
   {
@@ -756,26 +756,29 @@ t_topoId asiAlgo_AAG::GetFaceId(const TopoDS_Shape& face) const
 
 bool asiAlgo_AAG::HasNeighbors(const t_topoId face_idx) const
 {
-  return m_neighborsStack.top().mx.IsBound(face_idx);
+  return m_neighborsStack.back().mx.IsBound(face_idx);
 }
 
 //-----------------------------------------------------------------------------
 
-const asiAlgo_Feature& asiAlgo_AAG::GetNeighbors(const t_topoId face_idx) const
+const asiAlgo_Feature& asiAlgo_AAG::GetNeighbors(const t_topoId face_idx,
+                                                 const bool     stackTail) const
 {
-  return m_neighborsStack.top().mx.Find(face_idx);
+  return stackTail ? m_neighborsStack.front().mx.Find(face_idx)
+                   : m_neighborsStack.back().mx.Find(face_idx);
 }
 
 //-----------------------------------------------------------------------------
 
-asiAlgo_Feature asiAlgo_AAG::GetNeighbors(const asiAlgo_Feature& fids) const
+asiAlgo_Feature asiAlgo_AAG::GetNeighbors(const asiAlgo_Feature& fids,
+                                          const bool             stackTail) const
 {
   asiAlgo_Feature res;
 
   for ( asiAlgo_Feature::Iterator fit(fids); fit.More(); fit.Next() )
   {
     const int              fid  = fit.Key();
-    const asiAlgo_Feature& nids = this->GetNeighbors(fid);
+    const asiAlgo_Feature& nids = this->GetNeighbors(fid, stackTail);
 
     res.Unite(nids);
   }
@@ -939,7 +942,7 @@ asiAlgo_Feature
 
 const asiAlgo_AdjacencyMx& asiAlgo_AAG::GetNeighborhood() const
 {
-  return m_neighborsStack.top();
+  return m_neighborsStack.back();
 }
 
 //-----------------------------------------------------------------------------
@@ -1150,7 +1153,7 @@ TopoDS_Shape asiAlgo_AAG::FindSubShapeByAddr(const std::string& addr)
 
 bool asiAlgo_AAG::HasArc(const t_arc& arc) const
 {
-  const asiAlgo_AdjacencyMx& mx = m_neighborsStack.top();
+  const asiAlgo_AdjacencyMx& mx = m_neighborsStack.back();
 
   // Seek for adjacency record.
   const asiAlgo_Feature* pRow = mx.mx.Seek(arc.F1);
@@ -1406,7 +1409,7 @@ bool asiAlgo_AAG::SetNodeAttribute(const t_topoId                     node,
 
 bool asiAlgo_AAG::FindBaseOnly(asiAlgo_Feature& resultFaceIds) const
 {
-  for ( asiAlgo_AdjacencyMx::t_mx::Iterator it( m_neighborsStack.top().mx );
+  for ( asiAlgo_AdjacencyMx::t_mx::Iterator it( m_neighborsStack.back().mx );
         it.More(); it.Next() )
   {
     const t_topoId fid = it.Key();
@@ -1432,7 +1435,7 @@ bool asiAlgo_AAG::FindBaseOnly(asiAlgo_Feature& resultFaceIds) const
 bool asiAlgo_AAG::FindConvexOnly(asiAlgo_Feature& resultFaceIds) const
 {
   asiAlgo_Feature traversed;
-  for ( asiAlgo_AdjacencyMx::t_mx::Iterator it( m_neighborsStack.top().mx );
+  for ( asiAlgo_AdjacencyMx::t_mx::Iterator it( m_neighborsStack.back().mx );
         it.More(); it.Next() )
   {
     const t_topoId         current_face_idx       = it.Key();
@@ -1492,7 +1495,7 @@ bool asiAlgo_AAG::FindConvexOnly(TopTools_IndexedMapOfShape& resultFaces) const
 bool asiAlgo_AAG::FindConcaveOnly(asiAlgo_Feature& resultFaceIds) const
 {
   asiAlgo_Feature traversed;
-  for ( asiAlgo_AdjacencyMx::t_mx::Iterator it( m_neighborsStack.top().mx );
+  for ( asiAlgo_AdjacencyMx::t_mx::Iterator it( m_neighborsStack.back().mx );
         it.More(); it.Next() )
   {
     const t_topoId         current_face_idx       = it.Key();
@@ -1582,7 +1585,7 @@ void asiAlgo_AAG::Remove(const asiAlgo_Feature& faceIndices)
     m_nodeAttributes.UnBind(face_idx);
 
     // Find all neighbors
-    const asiAlgo_Feature& neighbor_indices = m_neighborsStack.top().mx.Find(face_idx);
+    const asiAlgo_Feature& neighbor_indices = m_neighborsStack.back().mx.Find(face_idx);
     for ( asiAlgo_Feature::Iterator nit(neighbor_indices); nit.More(); nit.Next() )
     {
       const t_topoId neighbor_idx = nit.Key();
@@ -1591,13 +1594,13 @@ void asiAlgo_AAG::Remove(const asiAlgo_Feature& faceIndices)
       m_arcAttributes.UnBind( t_arc(face_idx, neighbor_idx) );
 
       // Kill the corresponding chunks from the list of neighbors
-      asiAlgo_Feature* mapPtr = m_neighborsStack.top().mx.ChangeSeek(neighbor_idx);
+      asiAlgo_Feature* mapPtr = m_neighborsStack.back().mx.ChangeSeek(neighbor_idx);
       if ( mapPtr != nullptr )
         (*mapPtr).Subtract(faceIndices);
     }
 
     // Unbind node
-    m_neighborsStack.top().mx.UnBind(face_idx);
+    m_neighborsStack.back().mx.UnBind(face_idx);
   }
 }
 
@@ -1618,7 +1621,7 @@ void asiAlgo_AAG::Collapse(const asiAlgo_Feature& faceIndices)
   if ( faceIndices.IsEmpty() )
     return; // Nothing to collapse.
 
-  asiAlgo_AdjacencyMx::t_mx& mx = m_neighborsStack.top().mx;
+  asiAlgo_AdjacencyMx::t_mx& mx = m_neighborsStack.back().mx;
 
   /*
    * Collect all the links that should be restored upon eliminating
@@ -1834,7 +1837,7 @@ void asiAlgo_AAG::Collapse(const asiAlgo_Feature& faceIndices)
 void asiAlgo_AAG::GetAllFaces(asiAlgo_Feature& allFaces) const
 {
   // Gather all present face indices into a single map.
-  for ( asiAlgo_AdjacencyMx::t_mx::Iterator it( m_neighborsStack.top().mx );
+  for ( asiAlgo_AdjacencyMx::t_mx::Iterator it( m_neighborsStack.back().mx );
         it.More(); it.Next() )
   {
     const t_topoId face = it.Key();
@@ -1859,7 +1862,7 @@ int asiAlgo_AAG::GetConnectedComponentsNb(const asiAlgo_Feature& excluded)
 {
   // Gather all non-exluded face indices into a single map.
   asiAlgo_Feature seeds;
-  for ( asiAlgo_AdjacencyMx::t_mx::Iterator it( m_neighborsStack.top().mx );
+  for ( asiAlgo_AdjacencyMx::t_mx::Iterator it( m_neighborsStack.back().mx );
         it.More(); it.Next() )
   {
     const t_topoId fid = it.Key();
@@ -1993,7 +1996,7 @@ void asiAlgo_AAG::GetConnectedComponents(std::vector<asiAlgo_Feature>& res)
 {
   // Gather all present face indices into a single map.
   asiAlgo_Feature allFaces;
-  for ( asiAlgo_AdjacencyMx::t_mx::Iterator it( m_neighborsStack.top().mx );
+  for ( asiAlgo_AdjacencyMx::t_mx::Iterator it( m_neighborsStack.back().mx );
         it.More(); it.Next() )
   {
     const t_topoId face = it.Key();
@@ -2158,7 +2161,7 @@ void asiAlgo_AAG::init(const TopoDS_Shape&               masterCAD,
   //---------------------------------------------------------------------------
 
   // Put main adjacency matrix to the stack of graph states.
-  m_neighborsStack.push( asiAlgo_AdjacencyMx(m_alloc) );
+  m_neighborsStack.push_back( asiAlgo_AdjacencyMx(m_alloc) );
 
   //---------------------------------------------------------------------------
 
@@ -2188,7 +2191,7 @@ void asiAlgo_AAG::init(const TopoDS_Shape&               masterCAD,
   // treatment for each individual face.
   for ( t_topoId f = 1; f <= m_faces.Extent(); ++f )
   {
-    m_neighborsStack.top().mx.Bind( f, asiAlgo_Feature() );
+    m_neighborsStack.back().mx.Bind( f, asiAlgo_Feature() );
     //
     const TopoDS_Face& face = TopoDS::Face( m_faces(f) );
 
@@ -2247,7 +2250,7 @@ void asiAlgo_AAG::addMates(const TopTools_ListOfShape& mateFaces)
   for ( TopTools_ListIteratorOfListOfShape lit(mateFaces); lit.More(); lit.Next() )
   {
     const t_topoId     face_idx   = m_faces.FindIndex( lit.Value() );
-    asiAlgo_Feature&   face_links = m_neighborsStack.top().mx.ChangeFind(face_idx);
+    asiAlgo_Feature&   face_links = m_neighborsStack.back().mx.ChangeFind(face_idx);
     const TopoDS_Face& face       = TopoDS::Face( m_faces.FindKey(face_idx) );
 
     // Add all the rest faces as neighbors.
@@ -2321,7 +2324,7 @@ void asiAlgo_AAG::dumpNodesJSON(Standard_OStream& out,
 {
   int nidx = 0;
   //
-  for ( asiAlgo_AdjacencyMx::t_mx::Iterator nit( m_neighborsStack.top().mx );
+  for ( asiAlgo_AdjacencyMx::t_mx::Iterator nit( m_neighborsStack.back().mx );
         nit.More(); nit.Next(), ++nidx )
   {
     const t_topoId nodeId = nit.Key();
@@ -2382,7 +2385,7 @@ void asiAlgo_AAG::dumpArcsJSON(Standard_OStream& out,
 
   int arcidx = 0;
   //
-  for ( asiAlgo_AdjacencyMx::t_mx::Iterator it( m_neighborsStack.top().mx );
+  for ( asiAlgo_AdjacencyMx::t_mx::Iterator it( m_neighborsStack.back().mx );
         it.More(); it.Next() )
   {
     const t_topoId f_idx = it.Key();
