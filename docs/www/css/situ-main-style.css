@@ -191,6 +191,16 @@ a.footer-href {
   font-size: 16px;
   font-family: Menlo, Monaco, "Courier New", Courier, monospace;
 }
+.navigation {
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  background-color: rgb(255, 255, 255);
+  border-top: 1px dashed rgb(210, 210, 210);
+  font-size: 18px;
+  font-family: Menlo, Monaco, "Courier New", Courier, monospace;
+}
 .code-margin {
   margin-top: 10px;
   margin-bottom: 10px;

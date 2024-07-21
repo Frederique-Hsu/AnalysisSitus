@@ -1003,6 +1003,15 @@ public:
                   const double          rz,
                   const bool            doUpdateAssemblies = true);
 
+  //! Applies tranformation to the entire assembly.
+  asiAsm_EXPORT void
+    TransformRoot(const double tx,
+                  const double ty,
+                  const double tz,
+                  const double rx,
+                  const double ry,
+                  const double rz);
+
 public:
 
   //! Dumps assembly hierarchy to the passed output stream.

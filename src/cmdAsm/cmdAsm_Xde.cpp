@@ -1572,15 +1572,22 @@ int ASMXDE_Transform(const Handle(asiTcl_Interp)& interp,
   Handle(Doc) xdeDoc = Handle(cmdAsm_XdeModel)::DownCast(var)->GetDocument();
 
   // Get the item in question.
+  AssemblyItemIds aiids;
   std::string itemIdStr;
+  bool isEntireAssembly = false;
   //
   if ( !interp->GetKeyValue(argc, argv, "item", itemIdStr) )
   {
-    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Assembly item is not defined.");
-    return TCL_ERROR;
+    isEntireAssembly = true;
+
+    interp->GetProgress().SendLogMessage(LogNotice(Normal) << "No item is provided, transforming the entire assembly...");
   }
-  //
-  AssemblyItemId aiid( itemIdStr.c_str() );
+  else
+  {
+    AssemblyItemId aiid( itemIdStr.c_str() );
+    //
+    aiids.Append(aiid);
+  }
 
   // Get transformation coefficients.
   std::vector<double> coeffs;
@@ -1604,11 +1611,27 @@ int ASMXDE_Transform(const Handle(asiTcl_Interp)& interp,
     return TCL_ERROR;
   }
 
-  // Apply transformation and update compounds (hell, yes, compounds).
-  xdeDoc->TransformItem(aiid,
-                        coeffs[0], coeffs[1], coeffs[2],
-                        coeffs[3], coeffs[4], coeffs[5],
-                        true);
+  // Apply transformation and update compounds.
+  if ( !isEntireAssembly )
+  {
+    for ( AssemblyItemIds::Iterator itemIt(aiids); itemIt.More(); itemIt.Next() )
+    {
+      const AssemblyItemId& aiid = itemIt.Value();
+
+      xdeDoc->TransformItem(aiid,
+                            coeffs[0], coeffs[1], coeffs[2],
+                            coeffs[3], coeffs[4], coeffs[5],
+                            true);
+    }
+  }
+  else
+  {
+    /* Update the entire assembly */
+
+    xdeDoc->TransformRoot(coeffs[0], coeffs[1], coeffs[2],
+                          coeffs[3], coeffs[4], coeffs[5]);
+  }
+
   return TCL_OK;
 }
 
@@ -1980,9 +2003,10 @@ void cmdAsm::Commands_XDE(const Handle(asiTcl_Interp)&      interp,
   //-------------------------------------------------------------------------//
   interp->AddCommand("asm-xde-transform",
     //
-    "asm-xde-transform -model <M> -item <id> [-t <x> <y> <z> <a> <b> <c>]\n"
+    "asm-xde-transform -model <M> [-item <id>] [-t <x> <y> <z> <a> <b> <c>]\n"
     "\t Applies transformation to the given assembly item. The angles <a>, <b> and <c>\n"
-    "\t are specified in degrees.",
+    "\t are specified in degrees. If no assembly item is passed, the transformation is\n"
+    "\t applied to all roots.",
     //
     __FILE__, group, ASMXDE_Transform);
 

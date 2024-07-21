@@ -2540,6 +2540,32 @@ void Doc::TransformItem(const AssemblyItemId& item,
 
 //-----------------------------------------------------------------------------
 
+void Doc::TransformRoot(const double tx,
+                        const double ty,
+                        const double tz,
+                        const double rx,
+                        const double ry,
+                        const double rz)
+{
+  // Prepare transformation.
+  gp_Vec Translation(tx, ty, tz);
+  gp_Quaternion RX(gp::DX(), rx/180.*M_PI);
+  gp_Quaternion RY(gp::DY(), ry/180.*M_PI);
+  gp_Quaternion RZ(gp::DZ(), rz/180.*M_PI);
+  //
+  gp_Trsf T;
+  T.SetRotation(RZ*RY*RX);
+  T.SetTranslationPart(Translation);
+
+  // Get the entire shape.
+  TopoDS_Shape sh = this->GetOneShape();
+
+  // Add another reference.
+  this->GetShapeTool()->AddShape( sh.Moved(T) );
+}
+
+//-----------------------------------------------------------------------------
+
 void Doc::DumpAssemblyItems(Standard_OStream& out) const
 {
   for ( DocIterator ait(this); ait.More(); ait.Next() )

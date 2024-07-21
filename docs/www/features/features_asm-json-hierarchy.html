@@ -88,36 +88,79 @@
 <div align="center"><img src="../imgs/asm/asm-browser_02.png"/></div>
 
 <p>
-  JSON serialization of an assembly tree is based on the following template (the contents of the following JSON are deliberately reduced to give it an observable structure):
+  Below is an example of JSON serialization of an assembly tree:
 </p>
 
 <pre class="code">
 {
-  assemblyTree: {
-    roots: [1],
-    prototypes: {
-      parts: [
+  "sceneTree": {
+    "roots": [1],
+    "prototypes": {
+      "parts": [
         {
-          id: 3,
-          name: "TS4-3",
-          persistentId: "0:1:1:2"
+          "id": 5,
+          "name": "wheel",
+          "persistentId": "0:1:1:3"
+        },
+        {
+          "id": 8,
+          "name": "axle",
+          "persistentId": "0:1:1:4"
         }
       ],
-      assemblies: [
+      "assemblies": [
         {
-          id: 1,
-          name: "=>[0:1:1:2]",
-          childInstances: [2]
+          "id": 1,
+          "name": "chassis",
+          "childInstances": [2, 9]
+        },
+        {
+          "id": 3,
+          "name": "wheel-axle",
+          "childInstances": [4, 6, 7]
         }
       ]
     },
-    instances: [
+    "instances": [
       {
-        id: 2,
-        name: "1",
-        prototype: 3,
-        rotation: [ 0, 0, 1, 0 ],
-        translation: [ -10, -7.5, 185 ]
+        "id": 2,
+        "name": "wheel-axle-ref",
+        "prototype": 3,
+        "assemblyItemId": "0:1:1:1/0:1:1:1:1",
+        "rotation": [ 0, 0, 1, 0 ],
+        "translation": [ 0, 500, 0 ]
+      },
+      {
+        "id": 4,
+        "name": "=>[0:1:1:1]",
+        "prototype": 5,
+        "assemblyItemId": "0:1:1:1/0:1:1:1:1/0:1:1:2/0:1:1:2:1",
+        "rotation": [ 0, 1, 0, 3.14159 ],
+        "translation": [ -500, 0, 0 ]
+      },
+      {
+        "id": 6,
+        "name": "=>[0:1:1:1]",
+        "prototype": 5,
+        "assemblyItemId": "0:1:1:1/0:1:1:1:1/0:1:1:2/0:1:1:2:2",
+        "rotation": [ 0, 0, 1, 0 ],
+        "translation": [ 500, 0, 0 ]
+      },
+      {
+        "id": 7,
+        "name": "=>[0:1:1:2]",
+        "prototype": 8,
+        "assemblyItemId": "0:1:1:1/0:1:1:1:1/0:1:1:2/0:1:1:2:3",
+        "rotation": [ 0, 0, 1, 0 ],
+        "translation": [ 0, 0, 0 ]
+      },
+      {
+        "id": 9,
+        "name": "wheel-axle-ref",
+        "prototype": 3,
+        "assemblyItemId": "0:1:1:1/0:1:1:1:2",
+        "rotation": [ 0, 0, 1, 0 ],
+        "translation": [ 0, -500, 0 ]
       }
     ]
   }
@@ -125,7 +168,7 @@
 </pre>
 
 <p>
-  The following key observations are used in this template:
+  The following key notions are used in this structure:
 </p>
 
 <ol>
@@ -166,6 +209,10 @@ To make it clear that an assembly can only contain instances as its components (
 <p>
   No instances may be present in the scene tree if a CAD file is exported from a single-part design system. We only output instances if they are in the STEP file (as NEXT_ASSEMBLY_USAGE_OCCURENCE entities); otherwise, no new entities are generated while populating the scene tree. Single-part files usually declare no instances.
 </p>
+
+<div class="navigation">
+  <a href="./features_asm-xde-document.html">&lt;&lt;&lt; Previous chapter</a>
+</div>
 
 <!-- [END] contents -->
 </div>
