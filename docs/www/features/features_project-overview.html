@@ -48,12 +48,7 @@
 <h1>Project overview</h1>
 
 <p>
-Analysis Situs implements Document Model of operating with data. All data
-objects are organized hierarchically into the project tree. Some objects
-are structural and cannot be affected (e.g. <a href="./features_part-node.html">Part Node</a>).
-Some other objects are constructed dynamically and can be dynamically removed.
-The data model of Analysis Situs is entirely based on <a href="https://gitlab.com/ssv/active-data">Active Data framework</a>.
-This framework comes with such handy ready-to-use mechanisms as:
+Analysis Situs implements Document Model of operating with data. All data objects are organized hierarchically into the project tree. Some objects are structural and cannot be affected (e.g. <a href="./features_part-node.html">Part Node</a>). Some other objects are constructed dynamically and can be dynamically removed. The data model of Analysis Situs is entirely based on Active Data framework <a href="../references.html#active-data-2015">[Slyadnev, 2015]</a>. This framework comes with such handy ready-to-use mechanisms as:
 </p>
 
 <ol>
@@ -64,11 +59,23 @@ This framework comes with such handy ready-to-use mechanisms as:
   <li>Parametric dependencies between data objects.</li>
 </ol>
 
+<p>
+You may freely customize the Data Model of Analysis Situs by introducing your own data types as explained in the Developer's Guide <a href="../references.html#active-data-2015">[Slyadnev, 2015]</a>. It should be noted that Analysis Situs checks each newly introduced data object for consistency. If a Node is "bad-formed," it is highlighted in the object browser:
+</p>
+
+<div align="center"><img src="../imgs/bad-formed-node.png"/></div>
+
 <h1>Dump contents</h1>
 
 <p>
 To dump the internals of your current project, use <span class="code-inline">dump-project</span> command.
 </p>
+
+<h1>Read on</h1>
+
+<ul>
+  <li><a href="https://quaoar.su/blog/page/two-ways-of-data-model-design">A long note on prototyping</a> ("Manifold Geometry", 2023)</li>
+</ul>
 
 <!-- [END] contents -->
 </div>
