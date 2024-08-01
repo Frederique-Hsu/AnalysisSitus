@@ -143,6 +143,8 @@ public:
 //!    y   | idx of start grain  | idx of left child node  |
 //! -------+---------------------+-------------------------+
 //!    z   |  idx of end grain   | idx of right child node |
+//! -------+---------------------+-------------------------+
+//!    w   |      depth of the node in the BVH tree        |
 //! ========================================================
 //! </pre>
 class asiAlgo_BVHIterator

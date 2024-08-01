@@ -350,6 +350,16 @@ void asiVisu_PartPrs::SetDisplayMode(const asiVisu_ShapeDisplayMode displayMode,
     plBackside ->Actor() -> SetVisibility(0);
     plContour  ->Actor() -> SetVisibility(0);
   }
+
+  // None.
+  if ( displayMode == ShapeDisplayMode_Undefined )
+  {
+    // Configure actors.
+    plMain     ->Actor() -> SetVisibility(0);
+    plMain     ->Actor() -> SetPickable(0);
+    plBackside ->Actor() -> SetVisibility(0);
+    plContour  ->Actor() -> SetVisibility(0);
+  }
 }
 
 //-----------------------------------------------------------------------------

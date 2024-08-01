@@ -120,7 +120,7 @@ const BVH_Vec4i& asiAlgo_BVHIterator::Current() const
 
 int asiAlgo_BVHIterator::CurrentLevel() const
 {
-  return m_stackHead;
+  return m_current.w();
 }
 
 //-----------------------------------------------------------------------------
