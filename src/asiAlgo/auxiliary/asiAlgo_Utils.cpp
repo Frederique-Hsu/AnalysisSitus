@@ -1643,9 +1643,9 @@ std::string asiAlgo_Utils::CurveName(const Handle(Geom_Curve)& curve)
 
 std::string asiAlgo_Utils::SurfaceName(const Handle(Geom_Surface)& surf)
 {
-  if( surf.IsNull() ) {
+  if ( surf.IsNull() )
     return "unknown";
-  }
+  //
   if ( surf->IsInstance( STANDARD_TYPE(Geom_Plane) ) )
     return "plane";
   //

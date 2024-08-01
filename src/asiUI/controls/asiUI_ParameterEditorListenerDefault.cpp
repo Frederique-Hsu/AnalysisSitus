@@ -178,6 +178,12 @@ void asiUI_ParameterEditorListenerDefault::afterParameterChanged(const Handle(Ac
     {
       part_n->UpdateTransformationMx();
     }
+
+    // Build BVH.
+    if ( pid == asiData_PartNode::PID_RenderBVH )
+    {
+      asiEngine_Part(m_cf->Model).BuildBVH();
+    }
   }
 
   /* ======================================

@@ -173,6 +173,10 @@ public:
   asiAlgo_EXPORT const BVH_Vec4i&
     Current() const;
 
+  //! \return current level.
+  asiAlgo_EXPORT int
+    CurrentLevel() const;
+
   //! \return current node's index.
   asiAlgo_EXPORT int
     CurrentIndex() const;
@@ -194,14 +198,14 @@ protected:
   opencascade::handle<BVH_Tree<double, 3>> m_bvh; //!< Structure to iterate over.
 
   // Iteration variables.
-  int     m_stack[STACK_DEPTH]; //!< Non-traversed nodes to return.
-  int     m_stackHead;          //!< Pointer to the stack head.
-  int     m_currentNode;        //!< Current node.
-  bool    m_blocked[2];         //!< Nodes to stop traverse (their children will be skipped).
+  int  m_stack[STACK_DEPTH]; //!< Non-traversed nodes to return.
+  int  m_stackHead;          //!< Pointer to the stack head.
+  int  m_currentNode;        //!< Current node.
+  bool m_blocked[2];         //!< Nodes to stop traverse (their children will be skipped).
 
   // Internal variables to speedup calculation.
-  BVH_Vec4i m_current;         //!< current node.
-  bool      m_isLeaf;          //!< flag indicating whether the current node is leaf or not.
+  BVH_Vec4i m_current; //!< Current node.
+  bool      m_isLeaf;  //!< Flag indicating whether the current node is leaf or not.
 
 };
 

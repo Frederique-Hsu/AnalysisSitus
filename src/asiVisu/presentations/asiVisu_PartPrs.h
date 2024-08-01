@@ -66,7 +66,8 @@ public:
                        // does not work for mappers with enabled scalars (at least
                        // for VTK 8.2).
     Pipeline_Contour,
-    Pipeline_AAG
+    Pipeline_AAG,
+    Pipeline_BVH
   };
 
 public:

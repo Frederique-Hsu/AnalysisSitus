@@ -124,6 +124,8 @@ public:
     PID_ShowFaultyFaces,    //!< Indicates whether to visualize faulty faces.
     PID_RenderEdgesAsTubes, //!< Indicates whether to render edges as tubes (using shaders).
     PID_RenderAAG,          //!< In-place rendering of adjacency graph.
+    PID_RenderBVH,          //!< In-place rendering of BVH.
+    PID_RenderBVHLevel,     //!< The selected level of the BVH tree to render.
   //------------------------//
   // References             //
   //------------------------//
@@ -303,6 +305,18 @@ public:
 
   asiData_EXPORT bool
     GetRenderAAG() const;
+
+  asiData_EXPORT void
+    SetRenderBVH(const bool);
+
+  asiData_EXPORT bool
+    GetRenderBVH() const;
+
+  asiData_EXPORT void
+    SetRenderBVHLevel(const int);
+
+  asiData_EXPORT int
+    GetRenderBVHLevel() const;
 
   //-------------------------------------------------------------------------//
 

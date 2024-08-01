@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Created on: 28 November 2015
 //-----------------------------------------------------------------------------
-// Copyright (c) 2017, Sergey Slyadnev
+// Copyright (c) 2015-present, Sergey Slyadnev
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -34,9 +34,11 @@
 // asiVisu includes
 #include <asiVisu_AdjGraphDataProvider.h>
 #include <asiVisu_AdjGraphPipeline.h>
+#include <asiVisu_BVHPipeline.h>
 #include <asiVisu_PartDataProvider.h>
 #include <asiVisu_PartEdgesPipeline.h>
 #include <asiVisu_PartPipeline.h>
+#include <asiVisu_ShapeBVHDataProvider.h>
 #include <asiVisu_ShapeDisplayMode.h>
 
 // asiData includes
@@ -125,7 +127,7 @@ asiVisu_PartPrs::asiVisu_PartPrs(const Handle(ActAPI_INode)& N) : asiVisu_Prs(N)
    *  Pipeline for adjacency graph.
    * ============================== */
 
-  // Create Data Provider.
+  // Create Data Provider for AAG.
   Handle(asiVisu_AdjGraphDataProvider)
     aag_dp = new asiVisu_AdjGraphDataProvider(partNode);
 
@@ -143,6 +145,28 @@ asiVisu_PartPrs::asiVisu_PartPrs(const Handle(ActAPI_INode)& N) : asiVisu_Prs(N)
   //
   this->addPipeline        ( Pipeline_AAG, aag_pl );
   this->assignDataProvider ( Pipeline_AAG, aag_dp );
+
+  /* ==================
+   *  Pipeline for BVH.
+   * ================== */
+
+  // Create Data Provider for BVH.
+  Handle(asiVisu_ShapeBVHDataProvider)
+    bvh_dp = new asiVisu_ShapeBVHDataProvider( partNode->GetId(),
+                                               ActParamStream() << partNode->Parameter(asiData_PartNode::PID_BVH)
+                                                                << partNode->Parameter(asiData_PartNode::PID_RenderBVH)
+                                                                << partNode->Parameter(asiData_PartNode::PID_RenderBVHLevel) );
+
+  // Create pipeline for BVH.
+  Handle(asiVisu_BVHPipeline)
+    bvh_pl = new asiVisu_BVHPipeline();
+
+  // Adjust props.
+  bvh_pl->Actor()->GetProperty()->SetLineWidth(2.25f);
+  bvh_pl->Actor()->SetPickable(0);
+  //
+  this->addPipeline        ( Pipeline_BVH, bvh_pl );
+  this->assignDataProvider ( Pipeline_BVH, bvh_dp );
 }
 
 //-----------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-// Created on: 27 April 2024
+// Created on: 01 August 2024
 //-----------------------------------------------------------------------------
 // Copyright (c) 2024-present, Sergey Slyadnev
 // All rights reserved.
@@ -28,52 +28,58 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-----------------------------------------------------------------------------
 
-#ifndef asiVisu_AdjGraphPipeline_h
-#define asiVisu_AdjGraphPipeline_h
+// Own include
+#include <asiVisu_ShapeBVHDataProvider.h>
 
-// asiVisu includes
-#include <asiVisu_DataProvider.h>
-#include <asiVisu_Pipeline.h>
+// asiData includes
+#include <asiData_IVTopoItemNode.h>
+#include <asiData_PartNode.h>
 
-// VTK includes
-#include <vtkPolyDataAlgorithm.h>
+// Active Data includes
+#include <ActData_ParameterFactory.h>
 
 //-----------------------------------------------------------------------------
 
-//! Adjacency graph visualization pipeline.
-class asiVisu_AdjGraphPipeline : public asiVisu_Pipeline
+asiVisu_ShapeBVHDataProvider::asiVisu_ShapeBVHDataProvider(const ActAPI_DataObjectId&           nodeId,
+                                                           const Handle(ActAPI_HParameterList)& paramList)
+: asiVisu_BVHDataProvider (),
+  m_nodeID                (nodeId),
+  m_params                (paramList)
+{}
+
+//-----------------------------------------------------------------------------
+
+opencascade::handle<BVH_Tree<double, 3>> asiVisu_ShapeBVHDataProvider::GetBVH() const
 {
-  // OCCT RTTI
-  DEFINE_STANDARD_RTTI_INLINE(asiVisu_AdjGraphPipeline, asiVisu_Pipeline)
+  Handle(asiData_BVHParameter)
+    bvhParam = Handle(asiData_BVHParameter)::DownCast( m_params->Value(1) );
 
-public:
+  Handle(asiAlgo_BVHFacets) facets = bvhParam->GetBVH();
+  //
+  if ( facets.IsNull() )
+    return nullptr;
 
-  asiVisu_EXPORT
-    asiVisu_AdjGraphPipeline();
+  return facets->BVH();
+}
 
-public:
+//-----------------------------------------------------------------------------
 
-  asiVisu_EXPORT virtual void
-    SetInput(const Handle(asiVisu_DataProvider)& DP);
+bool asiVisu_ShapeBVHDataProvider::IsRenderBVH() const
+{
+  return ActParamTool::AsBool( m_params->Value(2) )->GetValue();
+}
 
-private:
+//-----------------------------------------------------------------------------
 
-  virtual void callback_add_to_renderer      (vtkRenderer* renderer);
-  virtual void callback_remove_from_renderer (vtkRenderer* renderer);
-  virtual void callback_update               ();
+int asiVisu_ShapeBVHDataProvider::GetLevel() const
+{
+  return ActParamTool::AsInt( m_params->Value(3) )->GetValue();
+}
 
-private:
+//-----------------------------------------------------------------------------
 
-  //! Copying prohibited.
-  asiVisu_AdjGraphPipeline(const asiVisu_AdjGraphPipeline&);
-
-  //! Assignment prohibited.
-  asiVisu_AdjGraphPipeline& operator=(const asiVisu_AdjGraphPipeline&);
-
-protected:
-
-  bool m_bMapperColorsSet; //!< Indicates whether scalars are set.
-
-};
-
-#endif
+Handle(ActAPI_HParameterList)
+  asiVisu_ShapeBVHDataProvider::translationSources() const
+{
+  return m_params;
+}

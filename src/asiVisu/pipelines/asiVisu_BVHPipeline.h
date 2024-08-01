@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-// Created on: 27 April 2024
+// Created on: 01 August 2024
 //-----------------------------------------------------------------------------
 // Copyright (c) 2024-present, Sergey Slyadnev
 // All rights reserved.
@@ -28,51 +28,74 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-----------------------------------------------------------------------------
 
-#ifndef asiVisu_AdjGraphPipeline_h
-#define asiVisu_AdjGraphPipeline_h
+#ifndef asiVisu_BVHPipeline_h
+#define asiVisu_BVHPipeline_h
 
 // asiVisu includes
 #include <asiVisu_DataProvider.h>
+#include <asiVisu_BVHSource.h>
 #include <asiVisu_Pipeline.h>
 
 // VTK includes
-#include <vtkPolyDataAlgorithm.h>
+#include <vtkLookupTable.h>
 
 //-----------------------------------------------------------------------------
 
-//! Adjacency graph visualization pipeline.
-class asiVisu_AdjGraphPipeline : public asiVisu_Pipeline
+//! Visualization pipeline for BVH trees.
+class asiVisu_BVHPipeline : public asiVisu_Pipeline
 {
   // OCCT RTTI
-  DEFINE_STANDARD_RTTI_INLINE(asiVisu_AdjGraphPipeline, asiVisu_Pipeline)
+  DEFINE_STANDARD_RTTI_INLINE(asiVisu_BVHPipeline, asiVisu_Pipeline)
 
 public:
 
   asiVisu_EXPORT
-    asiVisu_AdjGraphPipeline();
+    asiVisu_BVHPipeline();
 
 public:
 
   asiVisu_EXPORT virtual void
     SetInput(const Handle(asiVisu_DataProvider)& DP);
 
+public:
+
+  //! \return octree source.
+  const vtkSmartPointer<asiVisu_BVHSource>& GetSource() const
+  {
+    return m_source;
+  }
+
+protected:
+
+  //! Initializes lookup table for scalar mapping.
+  //! \return true if the lookup table has been initialized, false -- otherwise.
+  asiVisu_EXPORT bool
+    initLookupTable();
+
 private:
 
-  virtual void callback_add_to_renderer      (vtkRenderer* renderer);
-  virtual void callback_remove_from_renderer (vtkRenderer* renderer);
+  virtual void callback_add_to_renderer      (vtkRenderer* pRenderer);
+  virtual void callback_remove_from_renderer (vtkRenderer* pRenderer);
   virtual void callback_update               ();
 
 private:
 
   //! Copying prohibited.
-  asiVisu_AdjGraphPipeline(const asiVisu_AdjGraphPipeline&);
+  asiVisu_BVHPipeline(const asiVisu_BVHPipeline&) = delete;
 
   //! Assignment prohibited.
-  asiVisu_AdjGraphPipeline& operator=(const asiVisu_AdjGraphPipeline&);
+  asiVisu_BVHPipeline& operator=(const asiVisu_BVHPipeline&) = delete;
 
 protected:
 
-  bool m_bMapperColorsSet; //!< Indicates whether scalars are set.
+  //! BVH source.
+  vtkSmartPointer<asiVisu_BVHSource> m_source;
+
+  //! Lookup table.
+  vtkSmartPointer<vtkLookupTable> m_lookupTable;
+
+  //! Indicates whether scalars are set.
+  bool m_bMapperColorsSet;
 
 };
 

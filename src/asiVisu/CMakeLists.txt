@@ -54,6 +54,7 @@ set (pipelines_H_FILES
   pipelines/asiVisu_BSurfAxesPipeline.h
   pipelines/asiVisu_BSurfKnotsPipeline.h
   pipelines/asiVisu_BSurfPolesPipeline.h
+  pipelines/asiVisu_BVHPipeline.h
   pipelines/asiVisu_CurvatureCombsPipeline.h
   pipelines/asiVisu_CurvePipeline.h
   pipelines/asiVisu_DiscrFacePipeline.h
@@ -103,6 +104,7 @@ set (pipelines_CPP_FILES
   pipelines/asiVisu_BSurfAxesPipeline.cpp
   pipelines/asiVisu_BSurfKnotsPipeline.cpp
   pipelines/asiVisu_BSurfPolesPipeline.cpp
+  pipelines/asiVisu_BVHPipeline.cpp
   pipelines/asiVisu_CurvatureCombsPipeline.cpp
   pipelines/asiVisu_CurvePipeline.cpp
   pipelines/asiVisu_DiscrFacePipeline.cpp
@@ -237,6 +239,7 @@ set (presentations_CPP_FILES
 set (providers_H_FILES
   providers/asiVisu_AdjGraphDataProvider.h
   providers/asiVisu_AxesDataProvider.h
+  providers/asiVisu_BVHDataProvider.h
   providers/asiVisu_ClearanceDataProvider.h
   providers/asiVisu_ContourDataProvider.h
   providers/asiVisu_ContourPointsDataProvider.h
@@ -276,6 +279,7 @@ set (providers_H_FILES
   providers/asiVisu_ReEdgeShapeDataProvider.h
   providers/asiVisu_RePatchDataProvider.h
   providers/asiVisu_ReVertexDataProvider.h
+  providers/asiVisu_ShapeBVHDataProvider.h
   providers/asiVisu_ShapeDataProvider.h
   providers/asiVisu_SphereDataProvider.h
   providers/asiVisu_SurfaceDataProvider.h
@@ -321,6 +325,7 @@ set (providers_CPP_FILES
   providers/asiVisu_ReEdgeShapeDataProvider.cpp
   providers/asiVisu_RePatchDataProvider.cpp
   providers/asiVisu_ReVertexDataProvider.cpp
+  providers/asiVisu_ShapeBVHDataProvider.cpp
   providers/asiVisu_ShapeDataProvider.cpp
   providers/asiVisu_SphereDataProvider.cpp
   providers/asiVisu_SurfaceDeviationDataProvider.cpp
@@ -365,6 +370,7 @@ set (sources_H_FILES
   sources/asiVisu_BSurfAxesSource.h
   sources/asiVisu_BSurfKnotsSource.h
   sources/asiVisu_BSurfPolesSource.h
+  sources/asiVisu_BVHSource.h
   sources/asiVisu_CurvatureCombsSource.h
   sources/asiVisu_CurveSource.h
   sources/asiVisu_CurveSourceBase.h
@@ -400,6 +406,7 @@ set (sources_CPP_FILES
   sources/asiVisu_BSurfAxesSource.cpp
   sources/asiVisu_BSurfKnotsSource.cpp
   sources/asiVisu_BSurfPolesSource.cpp
+  sources/asiVisu_BVHSource.cpp
   sources/asiVisu_CurvatureCombsSource.cpp
   sources/asiVisu_CurveSource.cpp
   sources/asiVisu_CurveSourceBase.cpp

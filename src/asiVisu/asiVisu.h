@@ -72,6 +72,7 @@
 #define ARRNAME_CURVIAXES_SCALARS  "arrname_curviaxes_scalars"
 #define ARRNAME_POINTCLOUD_VECTORS "arrname_pointcloud_vectors"
 #define ARRNAME_VOXEL_N_SCALARS    "arrname_voxel_n_scalars"
+#define ARRNAME_BVH_N_SCALARS      "arrname_bvh_n_scalars"
 //
 #define ARRNAME_SURF_SCALARS       "arrname_surf_scalars"
 //

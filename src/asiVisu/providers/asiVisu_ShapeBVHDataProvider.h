@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-// Created on: 27 April 2024
+// Created on: 01 August 2024
 //-----------------------------------------------------------------------------
 // Copyright (c) 2024-present, Sergey Slyadnev
 // All rights reserved.
@@ -28,51 +28,72 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-----------------------------------------------------------------------------
 
-#ifndef asiVisu_AdjGraphPipeline_h
-#define asiVisu_AdjGraphPipeline_h
+#ifndef asiVisu_ShapeBVHDataProvider_h
+#define asiVisu_ShapeBVHDataProvider_h
 
 // asiVisu includes
-#include <asiVisu_DataProvider.h>
-#include <asiVisu_Pipeline.h>
+#include <asiVisu_BVHDataProvider.h>
 
-// VTK includes
-#include <vtkPolyDataAlgorithm.h>
+class asiAlgo_BVHFacets;
 
 //-----------------------------------------------------------------------------
 
-//! Adjacency graph visualization pipeline.
-class asiVisu_AdjGraphPipeline : public asiVisu_Pipeline
+//! BVH data provider for B-rep shapes.
+class asiVisu_ShapeBVHDataProvider : public asiVisu_BVHDataProvider
 {
   // OCCT RTTI
-  DEFINE_STANDARD_RTTI_INLINE(asiVisu_AdjGraphPipeline, asiVisu_Pipeline)
+  DEFINE_STANDARD_RTTI_INLINE(asiVisu_ShapeBVHDataProvider, asiVisu_BVHDataProvider)
 
 public:
 
+  //! Ctor.
+  //! \param[in] nodeId    the ID of the Data Node which contains a BVH Parameter to visualize.
+  //! \param[in] paramList the input Parameters.
   asiVisu_EXPORT
-    asiVisu_AdjGraphPipeline();
+    asiVisu_ShapeBVHDataProvider(const ActAPI_DataObjectId&           nodeId,
+                                 const Handle(ActAPI_HParameterList)& paramList);
 
 public:
 
-  asiVisu_EXPORT virtual void
-    SetInput(const Handle(asiVisu_DataProvider)& DP);
+  //! Returns associated Node ID.
+  //! \return Node ID.
+  virtual ActAPI_DataObjectId GetNodeID() const
+  {
+    return m_nodeID;
+  }
 
-private:
+public:
 
-  virtual void callback_add_to_renderer      (vtkRenderer* renderer);
-  virtual void callback_remove_from_renderer (vtkRenderer* renderer);
-  virtual void callback_update               ();
+  //! \return the BVH tree to visualize.
+  asiVisu_EXPORT virtual opencascade::handle<BVH_Tree<double, 3>>
+    GetBVH() const;
 
-private:
+  //! \return true if the BVH rendering mode is activated.
+  asiVisu_EXPORT virtual bool
+    IsRenderBVH() const;
 
-  //! Copying prohibited.
-  asiVisu_AdjGraphPipeline(const asiVisu_AdjGraphPipeline&);
-
-  //! Assignment prohibited.
-  asiVisu_AdjGraphPipeline& operator=(const asiVisu_AdjGraphPipeline&);
+  //! \return the selected level of the BVH tree to render alone. Returns
+  //!         -1 if there is no level restriction set.
+  asiVisu_EXPORT virtual int
+    GetLevel() const;
 
 protected:
 
-  bool m_bMapperColorsSet; //!< Indicates whether scalars are set.
+  //! Enumerates all Active Data Parameters playing as sources for DOMAIN -> VTK
+  //! translation process. If any Parameter listed by this method is changed
+  //! (more precisely, if its MTime record is updated), the translation must
+  //! be repeated.
+  //! \return list of source Parameters.
+  asiVisu_EXPORT virtual Handle(ActAPI_HParameterList)
+    translationSources() const;
+
+protected:
+
+  //! Source Node ID.
+  ActAPI_DataObjectId m_nodeID;
+
+  //! Source Parameters.
+  Handle(ActAPI_HParameterList) m_params;
 
 };
 

@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-// Created on: 27 April 2024
+// Created on: 01 August 2024
 //-----------------------------------------------------------------------------
 // Copyright (c) 2024-present, Sergey Slyadnev
 // All rights reserved.
@@ -28,51 +28,37 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-----------------------------------------------------------------------------
 
-#ifndef asiVisu_AdjGraphPipeline_h
-#define asiVisu_AdjGraphPipeline_h
+#ifndef asiVisu_BVHDataProvider_h
+#define asiVisu_BVHDataProvider_h
 
 // asiVisu includes
 #include <asiVisu_DataProvider.h>
-#include <asiVisu_Pipeline.h>
 
-// VTK includes
-#include <vtkPolyDataAlgorithm.h>
+// OpenCascade includes
+#include <BVH_Tree.hxx>
 
 //-----------------------------------------------------------------------------
 
-//! Adjacency graph visualization pipeline.
-class asiVisu_AdjGraphPipeline : public asiVisu_Pipeline
+//! Data provider for a BVH tree.
+class asiVisu_BVHDataProvider : public asiVisu_DataProvider
 {
   // OCCT RTTI
-  DEFINE_STANDARD_RTTI_INLINE(asiVisu_AdjGraphPipeline, asiVisu_Pipeline)
+  DEFINE_STANDARD_RTTI_INLINE(asiVisu_BVHDataProvider, asiVisu_DataProvider)
 
 public:
 
-  asiVisu_EXPORT
-    asiVisu_AdjGraphPipeline();
+  //! \return the BVH structure to visualize.
+  virtual opencascade::handle<BVH_Tree<double, 3>>
+    GetBVH() const = 0;
 
-public:
+  //! \return true if BVH rendering is on.
+  virtual bool
+    IsRenderBVH() const = 0;
 
-  asiVisu_EXPORT virtual void
-    SetInput(const Handle(asiVisu_DataProvider)& DP);
-
-private:
-
-  virtual void callback_add_to_renderer      (vtkRenderer* renderer);
-  virtual void callback_remove_from_renderer (vtkRenderer* renderer);
-  virtual void callback_update               ();
-
-private:
-
-  //! Copying prohibited.
-  asiVisu_AdjGraphPipeline(const asiVisu_AdjGraphPipeline&);
-
-  //! Assignment prohibited.
-  asiVisu_AdjGraphPipeline& operator=(const asiVisu_AdjGraphPipeline&);
-
-protected:
-
-  bool m_bMapperColorsSet; //!< Indicates whether scalars are set.
+  //! \return the selected level of the BVH tree to render alone. Returns
+  //!         -1 if there is no level restriction set.
+  virtual int
+    GetLevel() const = 0;
 
 };
 
