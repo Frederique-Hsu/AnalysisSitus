@@ -178,7 +178,7 @@ Handle(asiAlgo_BVHFacets) asiEngine_Triangulation::BuildBVH(const bool store)
   // Build BVH for facets
   Handle(asiAlgo_BVHFacets)
     bvh = new asiAlgo_BVHFacets(tris_n->GetTriangulation(),
-                                asiAlgo_BVHFacets::Builder_Binned,
+                                BVHBuilder_Binned,
                                 true,
                                 m_progress,
                                 m_plotter);

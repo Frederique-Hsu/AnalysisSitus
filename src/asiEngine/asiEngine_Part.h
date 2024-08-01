@@ -256,10 +256,12 @@ public:
 
   //! Constructs BVH structure for the visualization facets stored in the
   //! part shape.
+  //! \param[in] algo  BVH construction algorithm.
   //! \param[in] store specifies whether to store BVH in the Node.
   //! \return constructed BVH.
   asiEngine_EXPORT Handle(asiAlgo_BVHFacets)
-    BuildBVH(const bool store = true);
+    BuildBVH(const asiAlgo_BVHBuilderType algo,
+             const bool                   store = true);
 
   //! Cleans up Data Model structure related to the Part Node.
   asiEngine_EXPORT void

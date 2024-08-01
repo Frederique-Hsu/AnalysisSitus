@@ -83,7 +83,7 @@ asiAlgo_CheckClearance::asiAlgo_CheckClearance(const t_ptr<t_mesh>& tris,
 
   // Build BVH.
   m_bvh = new asiAlgo_BVHFacets(m_resField.triangulation,
-                                asiAlgo_BVHFacets::Builder_Binned,
+                                BVHBuilder_Binned,
                                 false);
 }
 

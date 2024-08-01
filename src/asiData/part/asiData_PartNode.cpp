@@ -79,6 +79,7 @@ asiData_PartNode::asiData_PartNode() : ActData_BaseNode()
   REGISTER_PARAMETER(Bool,          PID_RenderAAG);
   REGISTER_PARAMETER(Bool,          PID_RenderBVH);
   REGISTER_PARAMETER(Int,           PID_RenderBVHLevel);
+  REGISTER_PARAMETER(Int,           PID_BVHBuilder);
   //
   REGISTER_PARAMETER(ReferenceList, PID_Features);
 
@@ -125,6 +126,7 @@ void asiData_PartNode::ResetToDefault(const bool resetNaming)
   this->SetRenderAAG             (false);
   this->SetRenderBVH             (false);
   this->SetRenderBVHLevel        (-1);
+  this->SetBVHBuilder            (0);
 
   // Set identity transformation.
   ActParamTool::AsRealArray( this->Parameter(PID_TrsfMx) )->SetArray( new HRealArray(0, 11, 0.) );
@@ -170,6 +172,7 @@ void asiData_PartNode::Init(const bool resetNaming)
   this->InitParameter(PID_RenderAAG,          "Render AAG",         "",               ParameterFlag_IsVisible, true);
   this->InitParameter(PID_RenderBVH,          "Render BVH",         "",               ParameterFlag_IsVisible, true);
   this->InitParameter(PID_RenderBVHLevel,     "BVH level",          "",               ParameterFlag_IsVisible, true);
+  this->InitParameter(PID_BVHBuilder,         "BVH algorithm",      "BVHBuilderAlgo", ParameterFlag_IsVisible, true);
 }
 
 //-----------------------------------------------------------------------------
@@ -638,6 +641,20 @@ void asiData_PartNode::SetRenderBVHLevel(const int level)
 int asiData_PartNode::GetRenderBVHLevel() const
 {
   return ActParamTool::AsInt( this->Parameter(PID_RenderBVH) )->GetValue();
+}
+
+//! Sets the BVH construction algorithm to use.
+//! \param mode [in] the numeric identifier of the algorithm to set.
+void asiData_PartNode::SetBVHBuilder(const int algo)
+{
+  ActParamTool::AsInt( this->Parameter(PID_BVHBuilder) )->SetValue(algo);
+}
+
+//! Accessor for the BVH construction algorithm being used.
+//! \return the numerical identifier of the algorithm being used.
+int asiData_PartNode::GetBVHBuilder() const
+{
+  return ActParamTool::AsInt( this->Parameter(PID_BVHBuilder) )->GetValue();
 }
 
 //-----------------------------------------------------------------------------

@@ -3371,7 +3371,7 @@ int MISC_DumpBVH(const Handle(asiTcl_Interp)& interp,
     // Construct BVH right here.
     M->OpenCommand();
     {
-      bvh = asiEngine_Part(M).BuildBVH();
+      bvh = asiEngine_Part(M).BuildBVH( (asiAlgo_BVHBuilderType) M->GetPartNode()->GetBVHBuilder() );
     }
     M->CommitCommand();
 
@@ -3574,7 +3574,7 @@ int MISC_GenHeightMap(const Handle(asiTcl_Interp)& interp,
   TIMER_RESET
   TIMER_GO
 
-  Handle(asiAlgo_BVHFacets) bvh = asiEngine_Part(M).BuildBVH(false);
+  Handle(asiAlgo_BVHFacets) bvh = asiEngine_Part(M).BuildBVH(BVHBuilder_Binned, false);
 
   Handle(asiAlgo_BaseCloud<double>) resPts = new asiAlgo_BaseCloud<double>;
 

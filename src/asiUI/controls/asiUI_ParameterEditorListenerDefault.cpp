@@ -180,9 +180,15 @@ void asiUI_ParameterEditorListenerDefault::afterParameterChanged(const Handle(Ac
     }
 
     // Build BVH.
-    if ( pid == asiData_PartNode::PID_RenderBVH )
+    if ( part_n->GetRenderBVH() )
     {
-      asiEngine_Part(m_cf->Model).BuildBVH();
+      if ( pid == asiData_PartNode::PID_RenderBVH ||
+           pid == asiData_PartNode::PID_BVHBuilder )
+      {
+        asiAlgo_BVHBuilderType algo = (asiAlgo_BVHBuilderType) part_n->GetBVHBuilder();
+
+        asiEngine_Part(m_cf->Model).BuildBVH(algo);
+      }
     }
   }
 

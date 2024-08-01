@@ -832,7 +832,8 @@ void asiEngine_Part::StoreHistory(const Handle(asiAlgo_History)& history)
 
 //-----------------------------------------------------------------------------
 
-Handle(asiAlgo_BVHFacets) asiEngine_Part::BuildBVH(const bool store)
+Handle(asiAlgo_BVHFacets) asiEngine_Part::BuildBVH(const asiAlgo_BVHBuilderType algo,
+                                                   const bool                   store)
 {
   // Get Part Node
   Handle(asiData_PartNode) part_n = m_model->GetPartNode();
@@ -840,7 +841,7 @@ Handle(asiAlgo_BVHFacets) asiEngine_Part::BuildBVH(const bool store)
   // Build BVH for facets
   Handle(asiAlgo_BVHFacets)
     bvh = new asiAlgo_BVHFacets(part_n->GetShape(true),
-                                asiAlgo_BVHFacets::Builder_Binned,
+                                algo,
                                 m_progress,
                                 m_plotter);
 

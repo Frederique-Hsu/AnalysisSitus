@@ -134,6 +134,11 @@ Make sure to pass non-zero values to surface approximation methods in order to a
     <value id="2">No</value>
   </valueList>
 
+  <valueList id="List-BVHBuilderAlgo" name="BVH algorithm">
+    <value id="0">Binned</value>
+    <value id="1">Linear</value>
+  </valueList>
+
   <valueList id="List-ShapeDisplayMode" name="Display mode">
     <value id="0">None</value>
     <value id="1">Shading</value>
@@ -196,6 +201,13 @@ Make sure to pass non-zero values to surface approximation methods in order to a
     <domain type="Integer" min="-1e99" max="1e99"/>
     <ui widget="Label" />
     <description>Max. scalar</description>
+  </datum>
+
+  <!-- BVH builder algorithm -->
+  <datum id="BVHBuilderAlgo" format="" label="BVH algorithm">
+    <domain type="List" list="List-BVHBuilderAlgo" />
+    <ui widget="ComboBox" />
+    <description>BVH algorithm</description>
   </datum>
 
   <!-- Display mode for shape presentation -->

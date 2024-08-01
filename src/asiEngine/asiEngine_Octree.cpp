@@ -57,7 +57,7 @@ Handle(asiData_OctreeNode)
   {
     if ( owner->IsKind( STANDARD_TYPE(asiData_PartNode) ) )
     {
-      bvh = asiEngine_Part(m_model).BuildBVH(false);
+      bvh = asiEngine_Part(m_model).BuildBVH(BVHBuilder_Binned, false);
     }
     else if ( owner->IsKind( STANDARD_TYPE(asiData_TriangulationNode) ) )
     {

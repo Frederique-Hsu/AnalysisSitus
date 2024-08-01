@@ -76,6 +76,7 @@ set (aux_H_FILES
   auxiliary/asiAlgo_BuildOBB.h
   auxiliary/asiAlgo_BullardRNG.h
   auxiliary/asiAlgo_BVHAlgo.h
+  auxiliary/asiAlgo_BVHBuilderType.h
   auxiliary/asiAlgo_BVHFacets.h
   auxiliary/asiAlgo_BVHIterator.h
   auxiliary/asiAlgo_CheckClearance.h

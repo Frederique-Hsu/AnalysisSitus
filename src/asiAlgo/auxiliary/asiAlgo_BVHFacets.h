@@ -32,7 +32,7 @@
 #define asiAlgo_BVHFacets_h
 
 // Analysis Situs includes
-#include <asiAlgo.h>
+#include <asiAlgo_BVHBuilderType.h>
 
 // OCCT includes
 #include <BVH_Types.hxx>
@@ -84,13 +84,6 @@ public:
     int       FaceIndex;  //!< Index of the host face.
   };
 
-  //! Type of BVH builder to use.
-  enum BuilderType
-  {
-    Builder_Binned,
-    Builder_Linear
-  };
-
 public:
 
   //! Creates the accelerating structure with immediate initialization.
@@ -99,10 +92,10 @@ public:
   //! \param[in] progress    progress notifier.
   //! \param[in] plotter     imperative plotter.
   asiAlgo_EXPORT
-    asiAlgo_BVHFacets(const TopoDS_Shape&  model,
-                      const BuilderType    builderType = Builder_Binned,
-                      ActAPI_ProgressEntry progress    = nullptr,
-                      ActAPI_PlotterEntry  plotter     = nullptr);
+    asiAlgo_BVHFacets(const TopoDS_Shape&          model,
+                      const asiAlgo_BVHBuilderType builderType = BVHBuilder_Binned,
+                      ActAPI_ProgressEntry         progress    = nullptr,
+                      ActAPI_PlotterEntry          plotter     = nullptr);
 
   //! Creates the accelerating structure with immediate initialization.
   //! \param[in] mesh        triangulation to create the accelerating structure for.
@@ -111,7 +104,7 @@ public:
   //! \param[in] plotter     imperative plotter.
   asiAlgo_EXPORT
     asiAlgo_BVHFacets(const Handle(Poly_Triangulation)& mesh,
-                      const BuilderType                 builderType = Builder_Binned,
+                      const asiAlgo_BVHBuilderType      builderType = BVHBuilder_Binned,
                       ActAPI_ProgressEntry              progress    = nullptr,
                       ActAPI_PlotterEntry               plotter     = nullptr);
 
@@ -124,7 +117,7 @@ public:
   //! \param[in] plotter     imperative plotter.
   asiAlgo_EXPORT
     asiAlgo_BVHFacets(const mobius::t_ptr<mobius::t_mesh>& mesh,
-                      const BuilderType                    builderType = Builder_Binned,
+                      const asiAlgo_BVHBuilderType         builderType = BVHBuilder_Binned,
                       const bool                           useFaceRefs = true,
                       ActAPI_ProgressEntry                 progress    = nullptr,
                       ActAPI_PlotterEntry                  plotter     = nullptr);
@@ -220,8 +213,8 @@ protected:
   //! \param[in] builderType type of builder to use.
   //! \return true in case of success, false -- otherwise.
   asiAlgo_EXPORT bool
-    init(const TopoDS_Shape& model,
-         const BuilderType   builderType);
+    init(const TopoDS_Shape&          model,
+         const asiAlgo_BVHBuilderType builderType);
 
   //! Initializes the accelerating structure with the given triangulation.
   //! \param[in] model       triangulation to prepare the accelerating structure for.
@@ -229,7 +222,7 @@ protected:
   //! \return true in case of success, false -- otherwise.
   asiAlgo_EXPORT bool
     init(const Handle(Poly_Triangulation)& mesh,
-         const BuilderType                 builderType);
+         const asiAlgo_BVHBuilderType      builderType);
 
 #if defined USE_MOBIUS
   //! Initializes the accelerating structure with the given mesh.
@@ -239,7 +232,7 @@ protected:
   //! \return true in case of success, false -- otherwise.
   asiAlgo_EXPORT bool
     init(const mobius::t_ptr<mobius::t_mesh>& mesh,
-         const BuilderType                    builderType,
+         const asiAlgo_BVHBuilderType         builderType,
          const bool                           useFaceRefs);
 #endif
 

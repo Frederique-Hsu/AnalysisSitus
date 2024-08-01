@@ -59,10 +59,10 @@ using namespace mobius;
 
 //-----------------------------------------------------------------------------
 
-asiAlgo_BVHFacets::asiAlgo_BVHFacets(const TopoDS_Shape&  model,
-                                     const BuilderType    builderType,
-                                     ActAPI_ProgressEntry progress,
-                                     ActAPI_PlotterEntry  plotter)
+asiAlgo_BVHFacets::asiAlgo_BVHFacets(const TopoDS_Shape&          model,
+                                     const asiAlgo_BVHBuilderType builderType,
+                                     ActAPI_ProgressEntry         progress,
+                                     ActAPI_PlotterEntry          plotter)
 : BVH_PrimitiveSet<double, 3> (),
   m_fBoundingDiag             (0.0),
   m_progress                  (progress),
@@ -75,7 +75,7 @@ asiAlgo_BVHFacets::asiAlgo_BVHFacets(const TopoDS_Shape&  model,
 //-----------------------------------------------------------------------------
 
 asiAlgo_BVHFacets::asiAlgo_BVHFacets(const Handle(Poly_Triangulation)& mesh,
-                                     const BuilderType                 builderType,
+                                     const asiAlgo_BVHBuilderType      builderType,
                                      ActAPI_ProgressEntry              progress,
                                      ActAPI_PlotterEntry               plotter)
 : BVH_PrimitiveSet<double, 3> (),
@@ -90,11 +90,11 @@ asiAlgo_BVHFacets::asiAlgo_BVHFacets(const Handle(Poly_Triangulation)& mesh,
 //-----------------------------------------------------------------------------
 
 #if defined USE_MOBIUS
-asiAlgo_BVHFacets::asiAlgo_BVHFacets(const t_ptr<t_mesh>& mesh,
-                                     const BuilderType    builderType,
-                                     const bool           useFaceRefs,
-                                     ActAPI_ProgressEntry progress,
-                                     ActAPI_PlotterEntry  plotter)
+asiAlgo_BVHFacets::asiAlgo_BVHFacets(const t_ptr<t_mesh>&         mesh,
+                                     const asiAlgo_BVHBuilderType builderType,
+                                     const bool                   useFaceRefs,
+                                     ActAPI_ProgressEntry         progress,
+                                     ActAPI_PlotterEntry          plotter)
 {
   this->init(mesh, builderType, useFaceRefs);
   this->MarkDirty();
@@ -303,16 +303,16 @@ void asiAlgo_BVHFacets::Dump(ActAPI_PlotterEntry IV)
 
 //-----------------------------------------------------------------------------
 
-bool asiAlgo_BVHFacets::init(const TopoDS_Shape& model,
-                             const BuilderType   builderType)
+bool asiAlgo_BVHFacets::init(const TopoDS_Shape&          model,
+                             const asiAlgo_BVHBuilderType builderType)
 {
   if ( model.IsNull() )
     return false;
 
   // Prepare builder
-  if ( builderType == Builder_Binned )
+  if ( builderType == BVHBuilder_Binned )
     myBuilder = new BVH_BinnedBuilder<double, 3, 32>(5, 32);
-  else
+  else if ( builderType == BVHBuilder_Linear )
     myBuilder = new BVH_LinearBuilder<double, 3>(5, 32);
 
   // Explode shape on faces to get face indices
@@ -341,12 +341,12 @@ bool asiAlgo_BVHFacets::init(const TopoDS_Shape& model,
 //-----------------------------------------------------------------------------
 
 bool asiAlgo_BVHFacets::init(const Handle(Poly_Triangulation)& mesh,
-                             const BuilderType                 builderType)
+                             const asiAlgo_BVHBuilderType      builderType)
 {
   // Prepare builder
-  if ( builderType == Builder_Binned )
+  if ( builderType == BVHBuilder_Binned )
     myBuilder = new BVH_BinnedBuilder<double, 3, 32>(5, 32);
-  else
+  else if ( builderType == BVHBuilder_Linear )
     myBuilder = new BVH_LinearBuilder<double, 3>(5, 32);
 
   // Initialize with the passed facets
@@ -368,17 +368,17 @@ bool asiAlgo_BVHFacets::init(const Handle(Poly_Triangulation)& mesh,
 //-----------------------------------------------------------------------------
 
 #if defined USE_MOBIUS
-bool asiAlgo_BVHFacets::init(const t_ptr<t_mesh>& mesh,
-                             const BuilderType    builderType,
-                             const bool           useFaceRefs)
+bool asiAlgo_BVHFacets::init(const t_ptr<t_mesh>&         mesh,
+                             const asiAlgo_BVHBuilderType builderType,
+                             const bool                   useFaceRefs)
 {
   if ( mesh.IsNull() )
     return false;
 
   // Prepare builder
-  if ( builderType == Builder_Binned )
+  if ( builderType == BVHBuilder_Binned )
     myBuilder = new BVH_BinnedBuilder<double, 3, 32>(5, 32);
-  else
+  else if ( builderType == BVHBuilder_Linear )
     myBuilder = new BVH_LinearBuilder<double, 3>(5, 32);
 
   Bnd_Box aabb;

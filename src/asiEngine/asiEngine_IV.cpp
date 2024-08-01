@@ -1128,7 +1128,7 @@ Handle(asiAlgo_BVHFacets)
   // Build BVH for the shape.
   Handle(asiAlgo_BVHFacets)
     bvh = new asiAlgo_BVHFacets(node->GetShape(),
-                                asiAlgo_BVHFacets::Builder_Binned,
+                                BVHBuilder_Binned,
                                 m_progress,
                                 m_plotter);
 
