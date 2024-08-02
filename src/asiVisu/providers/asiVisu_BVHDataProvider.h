@@ -60,6 +60,11 @@ public:
   virtual int
     GetLevel() const = 0;
 
+  //! \return the Boolean flag indicating whether the BVH should be presented
+  //!         in wireframe mode.
+  virtual bool
+    IsWireframe() const = 0;
+
 };
 
 #endif

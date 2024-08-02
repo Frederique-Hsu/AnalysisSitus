@@ -155,7 +155,8 @@ asiVisu_PartPrs::asiVisu_PartPrs(const Handle(ActAPI_INode)& N) : asiVisu_Prs(N)
     bvh_dp = new asiVisu_ShapeBVHDataProvider( partNode->GetId(),
                                                ActParamStream() << partNode->Parameter(asiData_PartNode::PID_BVH)
                                                                 << partNode->Parameter(asiData_PartNode::PID_RenderBVH)
-                                                                << partNode->Parameter(asiData_PartNode::PID_RenderBVHLevel) );
+                                                                << partNode->Parameter(asiData_PartNode::PID_RenderBVHLevel)
+                                                                << partNode->Parameter(asiData_PartNode::PID_RenderBVHWireframe) );
 
   // Create pipeline for BVH.
   Handle(asiVisu_BVHPipeline)

@@ -77,6 +77,11 @@ public:
   asiVisu_EXPORT virtual int
     GetLevel() const;
 
+  //! \return the Boolean flag indicating whether BVH is to be rendered in
+  //!         wireframe mode.
+  asiVisu_EXPORT virtual bool
+    IsWireframe() const;
+
 protected:
 
   //! Enumerates all Active Data Parameters playing as sources for DOMAIN -> VTK

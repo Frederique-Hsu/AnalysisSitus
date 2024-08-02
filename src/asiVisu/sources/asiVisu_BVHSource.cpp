@@ -55,7 +55,8 @@ vtkStandardNewMacro(asiVisu_BVHSource)
 
 asiVisu_BVHSource::asiVisu_BVHSource()
 : vtkUnstructuredGridAlgorithm (),
-  m_iLevel                     (-1) // no selected level
+  m_iLevel                     (-1), // no selected level
+  m_bWireframe                 (false)
 {
   this->SetNumberOfInputPorts(0); // Connected directly to our own Data Provider
                                   // which has nothing to do with VTK pipeline.
@@ -80,6 +81,15 @@ void asiVisu_BVHSource::SetInputBVH(const opencascade::handle<BVH_Tree<double, 3
 void asiVisu_BVHSource::SetInputLevel(const int level)
 {
   m_iLevel = level;
+  //
+  this->Modified();
+}
+
+//-----------------------------------------------------------------------------
+
+void asiVisu_BVHSource::SetWireframeMode(const bool on)
+{
+  m_bWireframe = on;
   //
   this->Modified();
 }
@@ -115,7 +125,27 @@ int asiVisu_BVHSource::RequestData(vtkInformation*        asiVisu_NotUsed(reques
    *  Add cells.
    * =========== */
 
-  // Loop over the BVH nodes
+  // Root box: add wireframe rep.
+  {
+    const BVH_Vec3d& minCorner_Root = m_bvh->MinPoint(0);
+    const BVH_Vec3d& maxCorner_Root = m_bvh->MaxPoint(0);
+
+    gp_Pnt P0( minCorner_Root.x(), minCorner_Root.y(), minCorner_Root.z() );
+    gp_Pnt P7( maxCorner_Root.x(), maxCorner_Root.y(), maxCorner_Root.z() );
+    gp_Pnt Pmin = P0;
+    gp_Pnt Pmax = P7;
+
+    gp_Pnt P1( Pmax.X(), Pmin.Y(), Pmin.Z() );
+    gp_Pnt P2( Pmin.X(), Pmax.Y(), Pmin.Z() );
+    gp_Pnt P3( Pmax.X(), Pmax.Y(), Pmin.Z() );
+    gp_Pnt P4( Pmin.X(), Pmin.Y(), Pmax.Z() );
+    gp_Pnt P5( Pmax.X(), Pmin.Y(), Pmax.Z() );
+    gp_Pnt P6( Pmin.X(), Pmax.Y(), Pmax.Z() );
+
+    this->registerVoxelWireframe(P0, P1, P2, P3, P4, P5, P6, P7, BVHSource_Scalar_Root, pOutputGrid);
+  }
+
+  // Loop over the BVH nodes.
   for ( asiAlgo_BVHIterator it(m_bvh); it.More(); it.Next() )
   {
     const BVH_Vec4i& nodeData = it.Current();
@@ -130,7 +160,7 @@ int asiVisu_BVHSource::RequestData(vtkInformation*        asiVisu_NotUsed(reques
       const BVH_Vec3d& minCorner_Right = m_bvh->MinPoint( nodeData.z() );
       const BVH_Vec3d& maxCorner_Right = m_bvh->MaxPoint( nodeData.z() );
 
-      // Left box
+      // Left box: voxel.
       {
         gp_Pnt P0( minCorner_Left.x(), minCorner_Left.y(), minCorner_Left.z() );
         gp_Pnt P7( maxCorner_Left.x(), maxCorner_Left.y(), maxCorner_Left.z() );
@@ -144,10 +174,13 @@ int asiVisu_BVHSource::RequestData(vtkInformation*        asiVisu_NotUsed(reques
         gp_Pnt P5( Pmax.X(), Pmin.Y(), Pmax.Z() );
         gp_Pnt P6( Pmin.X(), Pmax.Y(), Pmax.Z() );
 
-        this->registerVoxel(P0, P1, P2, P3, P4, P5, P6, P7, true, pOutputGrid);
+        if ( m_bWireframe )
+          this->registerVoxelWireframe(P0, P1, P2, P3, P4, P5, P6, P7, BVHSource_Scalar_Left, pOutputGrid);
+        else
+          this->registerVoxel(P0, P1, P2, P3, P4, P5, P6, P7, true, pOutputGrid);
       }
 
-      // Right box
+      // Right box: voxel.
       {
         gp_Pnt P0( minCorner_Right.x(), minCorner_Right.y(), minCorner_Right.z() );
         gp_Pnt P7( maxCorner_Right.x(), maxCorner_Right.y(), maxCorner_Right.z() );
@@ -161,7 +194,10 @@ int asiVisu_BVHSource::RequestData(vtkInformation*        asiVisu_NotUsed(reques
         gp_Pnt P5( Pmax.X(), Pmin.Y(), Pmax.Z() );
         gp_Pnt P6( Pmin.X(), Pmax.Y(), Pmax.Z() );
 
-        this->registerVoxel(P0, P1, P2, P3, P4, P5, P6, P7, false, pOutputGrid);
+        if ( m_bWireframe )
+          this->registerVoxelWireframe(P0, P1, P2, P3, P4, P5, P6, P7, BVHSource_Scalar_Right, pOutputGrid);
+        else
+          this->registerVoxel(P0, P1, P2, P3, P4, P5, P6, P7, false, pOutputGrid);
       }
     }
   }
@@ -200,7 +236,7 @@ vtkIdType
   vtkDoubleArray*
     pScalarsArr = vtkDoubleArray::SafeDownCast( pData->GetPointData()->GetArray(ARRNAME_BVH_N_SCALARS) );
   //
-  double sc[1] = { isLeft ? 0. : 1. };
+  double sc[1] = { isLeft ? BVHSource_Scalar_Left : BVHSource_Scalar_Right };
   //
   pScalarsArr->InsertTypedTuple(pids[0], sc);
   pScalarsArr->InsertTypedTuple(pids[1], sc);
@@ -213,6 +249,64 @@ vtkIdType
 
   // Register voxel cell.
   vtkIdType cellID = pData->InsertNextCell(VTK_VOXEL, 8, &pids[0]);
+
+  return cellID;
+}
+
+//-----------------------------------------------------------------------------
+
+void
+  asiVisu_BVHSource::registerVoxelWireframe(const gp_Pnt&        P0,
+                                            const gp_Pnt&        P1,
+                                            const gp_Pnt&        P2,
+                                            const gp_Pnt&        P3,
+                                            const gp_Pnt&        P4,
+                                            const gp_Pnt&        P5,
+                                            const gp_Pnt&        P6,
+                                            const gp_Pnt&        P7,
+                                            const double         scalar,
+                                            vtkUnstructuredGrid* pOutputGrid)
+{
+  this->registerLine(P0, P1, scalar, pOutputGrid);
+  this->registerLine(P0, P2, scalar, pOutputGrid);
+  this->registerLine(P1, P3, scalar, pOutputGrid);
+  this->registerLine(P2, P3, scalar, pOutputGrid);
+
+  this->registerLine(P4, P5, scalar, pOutputGrid);
+  this->registerLine(P4, P6, scalar, pOutputGrid);
+  this->registerLine(P5, P7, scalar, pOutputGrid);
+  this->registerLine(P6, P7, scalar, pOutputGrid);
+
+  this->registerLine(P0, P4, scalar, pOutputGrid);
+  this->registerLine(P1, P5, scalar, pOutputGrid);
+  this->registerLine(P2, P6, scalar, pOutputGrid);
+  this->registerLine(P3, P7, scalar, pOutputGrid);
+}
+
+//-----------------------------------------------------------------------------
+
+vtkIdType asiVisu_BVHSource::registerLine(const gp_Pnt&        ptStart,
+                                          const gp_Pnt&        ptEnd,
+                                          const double         scalar,
+                                          vtkUnstructuredGrid* pData)
+{
+  std::vector<vtkIdType> pids =
+  {
+    this->addPoint(ptStart, pData),
+    this->addPoint(ptEnd,   pData)
+  };
+
+  vtkIdType cellID =
+    pData->InsertNextCell( VTK_LINE, (int) pids.size(), &pids[0] );
+
+  // Set scalars.
+  vtkDoubleArray*
+    pScalarsArr = vtkDoubleArray::SafeDownCast( pData->GetPointData()->GetArray(ARRNAME_BVH_N_SCALARS) );
+  //
+  double sc[1] = { scalar };
+  //
+  pScalarsArr->InsertTypedTuple(pids[0], sc);
+  pScalarsArr->InsertTypedTuple(pids[1], sc);
 
   return cellID;
 }

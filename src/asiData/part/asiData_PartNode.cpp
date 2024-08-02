@@ -80,6 +80,7 @@ asiData_PartNode::asiData_PartNode() : ActData_BaseNode()
   REGISTER_PARAMETER(Bool,          PID_RenderBVH);
   REGISTER_PARAMETER(Int,           PID_RenderBVHLevel);
   REGISTER_PARAMETER(Int,           PID_BVHBuilder);
+  REGISTER_PARAMETER(Bool,          PID_RenderBVHWireframe);
   //
   REGISTER_PARAMETER(ReferenceList, PID_Features);
 
@@ -127,6 +128,7 @@ void asiData_PartNode::ResetToDefault(const bool resetNaming)
   this->SetRenderBVH             (false);
   this->SetRenderBVHLevel        (-1);
   this->SetBVHBuilder            (0);
+  this->SetRenderBVHWireframe    (false);
 
   // Set identity transformation.
   ActParamTool::AsRealArray( this->Parameter(PID_TrsfMx) )->SetArray( new HRealArray(0, 11, 0.) );
@@ -173,6 +175,7 @@ void asiData_PartNode::Init(const bool resetNaming)
   this->InitParameter(PID_RenderBVH,          "Render BVH",         "",               ParameterFlag_IsVisible, true);
   this->InitParameter(PID_RenderBVHLevel,     "BVH level",          "",               ParameterFlag_IsVisible, true);
   this->InitParameter(PID_BVHBuilder,         "BVH algorithm",      "BVHBuilderAlgo", ParameterFlag_IsVisible, true);
+  this->InitParameter(PID_RenderBVHWireframe, "BVH wireframe",      "",               ParameterFlag_IsVisible, true);
 }
 
 //-----------------------------------------------------------------------------
@@ -655,6 +658,21 @@ void asiData_PartNode::SetBVHBuilder(const int algo)
 int asiData_PartNode::GetBVHBuilder() const
 {
   return ActParamTool::AsInt( this->Parameter(PID_BVHBuilder) )->GetValue();
+}
+
+//! Sets a Boolean flag indicating whether to render the BVH of the part in
+//! wireframe mode.
+//! \param[in] on value to set.
+void asiData_PartNode::SetRenderBVHWireframe(const bool on)
+{
+  ActParamTool::AsBool( this->Parameter(PID_RenderBVHWireframe) )->SetValue(on);
+}
+
+//! \return Boolean flag indicating whether to render the BVH of the part in
+//! wireframe mode.
+bool asiData_PartNode::GetRenderBVHWireframe() const
+{
+  return ActParamTool::AsBool( this->Parameter(PID_RenderBVHWireframe) )->GetValue();
 }
 
 //-----------------------------------------------------------------------------

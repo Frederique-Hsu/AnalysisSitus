@@ -127,6 +127,7 @@ public:
     PID_RenderBVH,          //!< In-place rendering of BVH.
     PID_RenderBVHLevel,     //!< The selected level of the BVH tree to render.
     PID_BVHBuilder,         //!< BVH construction algorithm.
+    PID_RenderBVHWireframe, //!< BVH wireframe visualization on/off.
   //------------------------//
   // References             //
   //------------------------//
@@ -324,6 +325,12 @@ public:
 
   asiData_EXPORT int
     GetBVHBuilder() const;
+
+  asiData_EXPORT void
+    SetRenderBVHWireframe(const bool);
+
+  asiData_EXPORT bool
+    GetRenderBVHWireframe() const;
 
   //-------------------------------------------------------------------------//
 

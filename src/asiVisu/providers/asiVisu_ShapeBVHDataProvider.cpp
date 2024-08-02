@@ -78,6 +78,13 @@ int asiVisu_ShapeBVHDataProvider::GetLevel() const
 
 //-----------------------------------------------------------------------------
 
+bool asiVisu_ShapeBVHDataProvider::IsWireframe() const
+{
+  return ActParamTool::AsBool( m_params->Value(4) )->GetValue();
+}
+
+//-----------------------------------------------------------------------------
+
 Handle(ActAPI_HParameterList)
   asiVisu_ShapeBVHDataProvider::translationSources() const
 {

@@ -46,6 +46,10 @@
 // OpenCascade includes
 #include <BVH_Tree.hxx>
 
+#define BVHSource_Scalar_Left  0.
+#define BVHSource_Scalar_Right 1.
+#define BVHSource_Scalar_Root  2.
+
 //-----------------------------------------------------------------------------
 
 //! Source of unstructured data for a BVH tree.
@@ -70,6 +74,11 @@ public:
   //! \param[in] level the level to set.
   asiVisu_EXPORT void
     SetInputLevel(const int level);
+
+  //! Enables/disables wireframe visualization mode.
+  //! \param[in] on true/false.
+  asiVisu_EXPORT void
+    SetWireframeMode(const bool on);
 
 public:
 
@@ -126,6 +135,43 @@ private:
                   const bool           isLeft,
                   vtkUnstructuredGrid* pData);
 
+  //! Adds VTK voxel as a wireframe to the unstructured data set being
+  //! constructed. The real cell is not a voxel but 12 VTK_LINE cells.
+  //!
+  //! \param[in]     node0  coordinates of the 1-st node.
+  //! \param[in]     node1  coordinates of the 2-nd node.
+  //! \param[in]     node2  coordinates of the 3-rd node.
+  //! \param[in]     node3  coordinates of the 4-th node.
+  //! \param[in]     node4  coordinates of the 5-th node.
+  //! \param[in]     node5  coordinates of the 6-th node.
+  //! \param[in]     node6  coordinates of the 7-th node.
+  //! \param[in]     node7  coordinates of the 8-th node.
+  //! \param[in]     scalar scalar value to associate with cell points.
+  //! \param[in,out] pData  unstructured data set being populated.
+  void
+    registerVoxelWireframe(const gp_Pnt&        node0,
+                           const gp_Pnt&        node1,
+                           const gp_Pnt&        node2,
+                           const gp_Pnt&        node3,
+                           const gp_Pnt&        node4,
+                           const gp_Pnt&        node5,
+                           const gp_Pnt&        node6,
+                           const gp_Pnt&        node7,
+                           const double         scalar,
+                           vtkUnstructuredGrid* pData);
+
+  //! Adds a line cell into the unstructured grid data set.
+  //! \param[in]     ptStart the first point.
+  //! \param[in]     ptEnd   the second point.
+  //! \param[in]     scalar  the scalar value to associate with cell points.
+  //! \param[in,out] pData   the unstructured data set being populated.
+  //! \return ID of the just added VTK cell.
+  vtkIdType
+    registerLine(const gp_Pnt&        ptStart,
+                 const gp_Pnt&        ptEnd,
+                 const double         scalar,
+                 vtkUnstructuredGrid* pData);
+
   //! Adds the passed coordinates as another point to the VTK data set.
   //! \param[in]     coords coordinates of the point to add.
   //! \param[in,out] pData  unstructured grid being constructed.
@@ -154,6 +200,9 @@ private:
 
   //! Tree level to select for visualization.
   double m_iLevel;
+
+  //! Wireframe mode of visualization on/off.
+  bool m_bWireframe;
 
   //! Progress notifier.
   ActAPI_ProgressEntry m_progress;
