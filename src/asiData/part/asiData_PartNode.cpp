@@ -640,7 +640,7 @@ void asiData_PartNode::SetRenderBVHLevel(const int level)
 //! \return the BVH level selected for rendering.
 int asiData_PartNode::GetRenderBVHLevel() const
 {
-  return ActParamTool::AsInt( this->Parameter(PID_RenderBVH) )->GetValue();
+  return ActParamTool::AsInt( this->Parameter(PID_RenderBVHLevel) )->GetValue();
 }
 
 //! Sets the BVH construction algorithm to use.
