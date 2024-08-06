@@ -37,12 +37,16 @@
 //! The list of names for all defined formats.
 const char* const asiAlgo_FileFormatTool::NAMED_FORMATS[] =
 {
-  "Unknown", // FileFormat_Unknown
-  "SITU",    // FileFormat_NATIVE
-  "BREP",    // FileFormat_BREP
-  "STEP",    // FileFormat_STEP
-  "IGES",    // FileFormat_IGES
-  "STL"      // FileFormat_STL
+  "Unknown",    // FileFormat_Unknown
+  "SITU",       // FileFormat_NATIVE
+  "BREP",       // FileFormat_BREP
+  "STEP",       // FileFormat_STEP
+  "IGES",       // FileFormat_IGES
+  "STL"         // FileFormat_STL
+  "SOLIDWORKS"  // FileFormat_SOLIDWORKS
+  "CREOVIEW"    // FileFormat_CREOVIEW
+  "SOLIDEDGE"   // FileFormat_SOLIDEDGE
+  "INVENTOR"    // FileFormat_INVENTOR
 };
 
 //-----------------------------------------------------------------------------
@@ -108,7 +112,22 @@ asiAlgo_FileFormat
   {
     return FileFormat_XML;
   }
-
+  else if (ext == "sldprt" || ext == "sldasm")
+  {
+    return FileFormat_SOLIDWORKS;
+  }
+  else if (ext == "pvz" || ext == "ol" || ext == "ed" || ext == "edz" || ext == "pvs")
+  {
+    return FileFormat_CREOVIEW;
+  }
+  else if (ext == "par" || ext == "asm" || ext == "psm" || ext == "pwd")
+  {
+    return FileFormat_SOLIDEDGE;
+  }
+  else if (ext == "iam" || ext == "ipt")
+  {
+    return FileFormat_INVENTOR;
+  }
   return FileFormat_Unknown;
 }
 
