@@ -61,6 +61,8 @@
 #include <vtkActor.h>
 #include <vtkMapper.h>
 #include <vtkProperty.h>
+#include <vtkTextActor.h>
+#include <vtkTextProperty.h>
 #pragma warning(pop)
 
 //---------------------------------------------------------------------------//
@@ -339,6 +341,34 @@ void asiUI_IV::ACTUALIZE_PART_PRS()
   //
   if ( m_pBrowser )
     m_pBrowser->Populate();
+}
+
+//---------------------------------------------------------------------------//
+
+void asiUI_IV::ADD_LEGEND(const char*  pText,
+                          const double fred,
+                          const double fgreen,
+                          const double fblue,
+                          const int    fontSize,
+                          int&         yShift)
+{
+  if ( !m_prsMgr3d )
+    return;
+
+  // Prepare and render a text actor.
+  vtkSmartPointer<vtkTextActor>
+    textActor = vtkSmartPointer<vtkTextActor>::New();
+  //
+  textActor->SetInput(pText);
+  textActor->SetPosition(0, yShift);
+  textActor->SetPosition2(10, 30);
+  textActor->GetTextProperty()->SetFontSize(fontSize);
+  textActor->GetTextProperty()->SetColor(fred, fgreen, fblue);
+  //
+  m_prsMgr3d->GetRenderer()->AddActor2D(textActor);
+
+  // Increment position for the next potential legend item.
+  yShift += (fontSize + 4);
 }
 
 //---------------------------------------------------------------------------//

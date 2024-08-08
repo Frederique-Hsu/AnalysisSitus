@@ -107,6 +107,14 @@ public:
   asiUI_EXPORT virtual void
     ACTUALIZE_PART_PRS();
 
+  asiUI_EXPORT virtual void
+    ADD_LEGEND(const char*  pText,
+               const double fred,
+               const double fgreen,
+               const double fblue,
+               const int    fontSize,
+               int&         yShift);
+
 // GEOMETRY:
 public:
 
