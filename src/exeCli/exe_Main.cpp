@@ -97,10 +97,11 @@ DWORD WINAPI Thread_Interp(LPVOID)
   Sleep(100);
 
   cf->Interp = new asiTcl_Interp;
-  cf->Interp->Init(true);
-  cf->Interp->SetModel(cf->Model);
-  cf->Interp->SetProgress(cf->Progress);
-  cf->Interp->SetPlotter(cf->Plotter);
+  //
+  cf->Interp->Init        (true);
+  cf->Interp->SetModel    (cf->Model);
+  cf->Interp->SetProgress (cf->Progress);
+  cf->Interp->SetPlotter  (nullptr); // No draw calls in CLI are passed through.
 
   // Load default commands.
   EXE_LOAD_MODULE("cmdMisc")
