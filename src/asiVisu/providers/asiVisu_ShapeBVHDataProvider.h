@@ -34,7 +34,38 @@
 // asiVisu includes
 #include <asiVisu_BVHDataProvider.h>
 
-class asiAlgo_BVHFacets;
+// asiAlgo includes
+#include <asiAlgo_BVHFacets.h>
+
+//-----------------------------------------------------------------------------
+
+class asiVisu_BVHFacets : public asiVisu_BVHPrimitiveSet
+{
+  // OpenCascade RTTI
+  DEFINE_STANDARD_RTTI_INLINE(asiVisu_BVHFacets, asiVisu_BVHPrimitiveSet)
+
+public:
+
+  //! Ctor.
+  asiVisu_BVHFacets(const Handle(asiAlgo_BVHFacets)& facets)
+  {
+    m_facets = facets;
+  }
+
+public:
+
+  //! AABB provider for the primitive range `[primFirstId, primLastId]`.
+  asiVisu_EXPORT virtual void
+    GetBbox(const int  primFirstId,
+            const int  primLastId,
+            BVH_Vec3d& minCorner,
+            BVH_Vec3d& maxCorner) const;
+
+protected:
+
+  Handle(asiAlgo_BVHFacets) m_facets;
+
+};
 
 //-----------------------------------------------------------------------------
 
@@ -82,6 +113,14 @@ public:
   asiVisu_EXPORT virtual bool
     IsWireframe() const;
 
+  //! \return the Boolean flag indicating whether the leaves-only mode is enabled.
+  asiVisu_EXPORT bool
+    IsLeavesOnly() const;
+
+  //! \return the primitive set to give interpretation to BVH leaves.
+  asiVisu_EXPORT virtual Handle(asiVisu_BVHPrimitiveSet)
+    GetPrimitiveSet();
+
 protected:
 
   //! Enumerates all Active Data Parameters playing as sources for DOMAIN -> VTK
@@ -99,6 +138,9 @@ protected:
 
   //! Source Parameters.
   Handle(ActAPI_HParameterList) m_params;
+
+  //! Primitive set provider.
+  Handle(asiVisu_BVHFacets) m_primSet;
 
 };
 

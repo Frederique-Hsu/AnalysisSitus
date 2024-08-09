@@ -46,9 +46,28 @@
 // OpenCascade includes
 #include <BVH_Tree.hxx>
 
-#define BVHSource_Scalar_Left  0.
-#define BVHSource_Scalar_Right 1.
-#define BVHSource_Scalar_Root  2.
+#define BVHSource_Scalar_Left     0.
+#define BVHSource_Scalar_Right    1.
+#define BVHSource_Scalar_Ultimate 2.
+
+//-----------------------------------------------------------------------------
+
+//! Abstract primitive set provider to give BVH leaves geometric interpretation
+//! as ultimate AABBs.
+class asiVisu_BVHPrimitiveSet : public Standard_Transient
+{
+  // OpenCascade RTTI
+  DEFINE_STANDARD_RTTI_INLINE(asiVisu_BVHPrimitiveSet, Standard_Transient)
+
+public:
+
+  //! AABB provider for the primitive range `[primFirstId, primLastId]`.
+  virtual void
+    GetBbox(const int  primFirstId,
+            const int  primLastId,
+            BVH_Vec3d& minCorner,
+            BVH_Vec3d& maxCorner) const = 0;
+};
 
 //-----------------------------------------------------------------------------
 
@@ -79,6 +98,17 @@ public:
   //! \param[in] on true/false.
   asiVisu_EXPORT void
     SetWireframeMode(const bool on);
+
+  //! Enables/disables leaves-only visualization mode.
+  //! \param[in] on true/false.
+  asiVisu_EXPORT void
+    SetLeavesOnlyMode(const bool on);
+
+  //! Sets optional BVH primitive provider to render leaf BVH nodes.
+  //! \param[in] primSet the primitive set to give interpretation to
+  //!                    the primitive indices stored in BVH leaves.
+  asiVisu_EXPORT void
+    SetPrimitiveSet(const Handle(asiVisu_BVHPrimitiveSet)& primSet);
 
 public:
 
@@ -203,6 +233,12 @@ private:
 
   //! Wireframe mode of visualization on/off.
   bool m_bWireframe;
+
+  //! Leaves-only visualization on/off.
+  bool m_bLeavesOnly;
+
+  //! Optional BVH primitive set.
+  Handle(asiVisu_BVHPrimitiveSet) m_primSet;
 
   //! Progress notifier.
   ActAPI_ProgressEntry m_progress;

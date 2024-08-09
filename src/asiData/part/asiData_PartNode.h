@@ -126,6 +126,7 @@ public:
     PID_RenderAAG,          //!< In-place rendering of adjacency graph.
     PID_RenderBVH,          //!< In-place rendering of BVH.
     PID_RenderBVHLevel,     //!< The selected level of the BVH tree to render.
+    PID_RenderBVHLeaves,    //!< BVH leaves-only rendering on/off.
     PID_BVHBuilder,         //!< BVH construction algorithm.
     PID_RenderBVHWireframe, //!< BVH wireframe visualization on/off.
   //------------------------//
@@ -319,6 +320,12 @@ public:
 
   asiData_EXPORT int
     GetRenderBVHLevel() const;
+
+  asiData_EXPORT void
+    SetRenderBVHLeaves(const bool);
+
+  asiData_EXPORT bool
+    GetRenderBVHLeaves() const;
 
   asiData_EXPORT void
     SetBVHBuilder(const int);

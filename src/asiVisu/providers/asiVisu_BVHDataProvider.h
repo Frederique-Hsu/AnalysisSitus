@@ -32,6 +32,7 @@
 #define asiVisu_BVHDataProvider_h
 
 // asiVisu includes
+#include <asiVisu_BVHSource.h>
 #include <asiVisu_DataProvider.h>
 
 // OpenCascade includes
@@ -64,6 +65,14 @@ public:
   //!         in wireframe mode.
   virtual bool
     IsWireframe() const = 0;
+
+  //! \return the Boolean flag indicating whether the leaves-only mode is enabled.
+  virtual bool
+    IsLeavesOnly() const = 0;
+
+  //! \return the primitive set to give interpretation to BVH leaves.
+  virtual Handle(asiVisu_BVHPrimitiveSet)
+    GetPrimitiveSet() = 0;
 
 };
 

@@ -40,12 +40,37 @@
 
 //-----------------------------------------------------------------------------
 
+void asiVisu_BVHFacets::GetBbox(const int  primFirstId,
+                                const int  primLastId,
+                                BVH_Vec3d& minCorner,
+                                BVH_Vec3d& maxCorner) const
+{
+  BVH_Box<double, 3> bbox;
+
+  for ( int i = primFirstId; i <= primLastId; ++i )
+  {
+    BVH_Box<double, 3> bbox_i = m_facets->Box(i);
+
+    BVH_Vec3d cornerMin = bbox_i.CornerMin();
+    BVH_Vec3d cornerMax = bbox_i.CornerMax();
+
+    bbox.Add(cornerMin);
+    bbox.Add(cornerMax);
+  }
+
+  minCorner = bbox.CornerMin();
+  maxCorner = bbox.CornerMax();
+}
+
+//-----------------------------------------------------------------------------
+
 asiVisu_ShapeBVHDataProvider::asiVisu_ShapeBVHDataProvider(const ActAPI_DataObjectId&           nodeId,
                                                            const Handle(ActAPI_HParameterList)& paramList)
 : asiVisu_BVHDataProvider (),
   m_nodeID                (nodeId),
   m_params                (paramList)
-{}
+{
+}
 
 //-----------------------------------------------------------------------------
 
@@ -81,6 +106,31 @@ int asiVisu_ShapeBVHDataProvider::GetLevel() const
 bool asiVisu_ShapeBVHDataProvider::IsWireframe() const
 {
   return ActParamTool::AsBool( m_params->Value(4) )->GetValue();
+}
+
+//-----------------------------------------------------------------------------
+
+bool asiVisu_ShapeBVHDataProvider::IsLeavesOnly() const
+{
+  return ActParamTool::AsBool( m_params->Value(5) )->GetValue();
+}
+
+//-----------------------------------------------------------------------------
+
+Handle(asiVisu_BVHPrimitiveSet)
+  asiVisu_ShapeBVHDataProvider::GetPrimitiveSet()
+{
+  Handle(asiData_BVHParameter)
+    bvhParam = Handle(asiData_BVHParameter)::DownCast( m_params->Value(1) );
+
+  Handle(asiAlgo_BVHFacets) facets = bvhParam->GetBVH();
+  //
+  if ( !facets.IsNull() )
+  {
+    m_primSet = new asiVisu_BVHFacets(facets);
+  }
+
+  return m_primSet;
 }
 
 //-----------------------------------------------------------------------------

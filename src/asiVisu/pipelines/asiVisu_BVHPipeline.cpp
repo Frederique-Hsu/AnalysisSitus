@@ -48,9 +48,9 @@
 #define RIGHT_BRANCH_COLOR_R 140./255.
 #define RIGHT_BRANCH_COLOR_G 220./255.
 #define RIGHT_BRANCH_COLOR_B 40./255.
-#define ROOT_COLOR_R 240./255.
-#define ROOT_COLOR_G 240./255.
-#define ROOT_COLOR_B 240./255.
+#define ULTIMATE_COLOR_R     240./255.
+#define ULTIMATE_COLOR_G     240./255.
+#define ULTIMATE_COLOR_B     240./255.
 
 //-----------------------------------------------------------------------------
 
@@ -92,9 +92,11 @@ void asiVisu_BVHPipeline::SetInput(const Handle(asiVisu_DataProvider)& DP)
 
   if ( provider->MustExecute( this->GetMTime() ) )
   {
-    m_source->SetInputBVH      ( bvh );
-    m_source->SetInputLevel    ( provider->GetLevel() );
-    m_source->SetWireframeMode ( provider->IsWireframe() );
+    m_source->SetInputBVH       ( bvh );
+    m_source->SetInputLevel     ( provider->GetLevel() );
+    m_source->SetWireframeMode  ( provider->IsWireframe() );
+    m_source->SetLeavesOnlyMode ( provider->IsLeavesOnly() );
+    m_source->SetPrimitiveSet   ( provider->GetPrimitiveSet() );
 
     // Initialize pipeline.
     this->SetInputConnection( m_source->GetOutputPort() );
@@ -113,7 +115,7 @@ bool asiVisu_BVHPipeline::initLookupTable()
 
   // Get scalar range.
   const double minScalar = BVHSource_Scalar_Left;
-  const double maxScalar = BVHSource_Scalar_Root;
+  const double maxScalar = BVHSource_Scalar_Ultimate;
 
   // Build and initialize lookup table.
   m_lookupTable = vtkSmartPointer<vtkLookupTable>::New();
@@ -122,9 +124,9 @@ bool asiVisu_BVHPipeline::initLookupTable()
   m_lookupTable->SetScaleToLinear();
   m_lookupTable->SetNumberOfTableValues(3);
 
-  m_lookupTable->SetTableValue(BVHSource_Scalar_Left,  LEFT_BRANCH_COLOR_R,  LEFT_BRANCH_COLOR_G,  LEFT_BRANCH_COLOR_B);
-  m_lookupTable->SetTableValue(BVHSource_Scalar_Right, RIGHT_BRANCH_COLOR_R, RIGHT_BRANCH_COLOR_G, RIGHT_BRANCH_COLOR_B);
-  m_lookupTable->SetTableValue(BVHSource_Scalar_Root,  ROOT_COLOR_R,         ROOT_COLOR_G,         ROOT_COLOR_B);
+  m_lookupTable->SetTableValue(BVHSource_Scalar_Left,     LEFT_BRANCH_COLOR_R,  LEFT_BRANCH_COLOR_G,  LEFT_BRANCH_COLOR_B);
+  m_lookupTable->SetTableValue(BVHSource_Scalar_Right,    RIGHT_BRANCH_COLOR_R, RIGHT_BRANCH_COLOR_G, RIGHT_BRANCH_COLOR_B);
+  m_lookupTable->SetTableValue(BVHSource_Scalar_Ultimate, ULTIMATE_COLOR_R,     ULTIMATE_COLOR_G,     ULTIMATE_COLOR_B);
 
   return true;
 }

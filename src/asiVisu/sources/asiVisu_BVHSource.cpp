@@ -96,6 +96,24 @@ void asiVisu_BVHSource::SetWireframeMode(const bool on)
 
 //-----------------------------------------------------------------------------
 
+void asiVisu_BVHSource::SetLeavesOnlyMode(const bool on)
+{
+  m_bLeavesOnly = on;
+  //
+  this->Modified();
+}
+
+//-----------------------------------------------------------------------------
+
+void asiVisu_BVHSource::SetPrimitiveSet(const Handle(asiVisu_BVHPrimitiveSet)& primSet)
+{
+  m_primSet = primSet;
+  //
+  this->Modified();
+}
+
+//-----------------------------------------------------------------------------
+
 int asiVisu_BVHSource::RequestData(vtkInformation*        asiVisu_NotUsed(request),
                                    vtkInformationVector** asiVisu_NotUsed(inputVector),
                                    vtkInformationVector*  outputVector)
@@ -142,7 +160,9 @@ int asiVisu_BVHSource::RequestData(vtkInformation*        asiVisu_NotUsed(reques
     gp_Pnt P5( Pmax.X(), Pmin.Y(), Pmax.Z() );
     gp_Pnt P6( Pmin.X(), Pmax.Y(), Pmax.Z() );
 
-    this->registerVoxelWireframe(P0, P1, P2, P3, P4, P5, P6, P7, BVHSource_Scalar_Root, pOutputGrid);
+    this->registerVoxelWireframe(P0, P1, P2, P3, P4, P5, P6, P7,
+                                 BVHSource_Scalar_Ultimate,
+                                 pOutputGrid);
   }
 
   // Loop over the BVH nodes.
@@ -155,6 +175,9 @@ int asiVisu_BVHSource::RequestData(vtkInformation*        asiVisu_NotUsed(reques
 
     if ( !it.IsLeaf() )
     {
+      if ( m_bLeavesOnly )
+        continue;
+
       const BVH_Vec3d& minCorner_Left  = m_bvh->MinPoint( nodeData.y() );
       const BVH_Vec3d& maxCorner_Left  = m_bvh->MaxPoint( nodeData.y() );
       const BVH_Vec3d& minCorner_Right = m_bvh->MinPoint( nodeData.z() );
@@ -196,6 +219,42 @@ int asiVisu_BVHSource::RequestData(vtkInformation*        asiVisu_NotUsed(reques
 
         if ( m_bWireframe )
           this->registerVoxelWireframe(P0, P1, P2, P3, P4, P5, P6, P7, BVHSource_Scalar_Right, pOutputGrid);
+        else
+          this->registerVoxel(P0, P1, P2, P3, P4, P5, P6, P7, false, pOutputGrid);
+      }
+    }
+
+    else
+    {
+      /* A leaf node can be visualized only if the corresponding BVH primitive
+         set has been supplied to the source. */
+
+      if ( !m_primSet.IsNull() )
+      {
+        const int primStartId = nodeData.y();
+        const int primEndId   = nodeData.z();
+
+        BVH_Vec3d minCorner, maxCorner;
+
+        m_primSet->GetBbox(primStartId, primEndId,
+                           minCorner, maxCorner);
+
+        gp_Pnt P0( minCorner.x(), minCorner.y(), minCorner.z() );
+        gp_Pnt P7( maxCorner.x(), maxCorner.y(), maxCorner.z() );
+        gp_Pnt Pmin = P0;
+        gp_Pnt Pmax = P7;
+
+        gp_Pnt P1( Pmax.X(), Pmin.Y(), Pmin.Z() );
+        gp_Pnt P2( Pmin.X(), Pmax.Y(), Pmin.Z() );
+        gp_Pnt P3( Pmax.X(), Pmax.Y(), Pmin.Z() );
+        gp_Pnt P4( Pmin.X(), Pmin.Y(), Pmax.Z() );
+        gp_Pnt P5( Pmax.X(), Pmin.Y(), Pmax.Z() );
+        gp_Pnt P6( Pmin.X(), Pmax.Y(), Pmax.Z() );
+
+        if ( m_bWireframe )
+          this->registerVoxelWireframe(P0, P1, P2, P3, P4, P5, P6, P7,
+                                       BVHSource_Scalar_Ultimate,
+                                       pOutputGrid);
         else
           this->registerVoxel(P0, P1, P2, P3, P4, P5, P6, P7, false, pOutputGrid);
       }

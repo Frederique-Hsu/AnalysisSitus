@@ -79,6 +79,7 @@ asiData_PartNode::asiData_PartNode() : ActData_BaseNode()
   REGISTER_PARAMETER(Bool,          PID_RenderAAG);
   REGISTER_PARAMETER(Bool,          PID_RenderBVH);
   REGISTER_PARAMETER(Int,           PID_RenderBVHLevel);
+  REGISTER_PARAMETER(Bool,          PID_RenderBVHLeaves);
   REGISTER_PARAMETER(Int,           PID_BVHBuilder);
   REGISTER_PARAMETER(Bool,          PID_RenderBVHWireframe);
   //
@@ -127,6 +128,7 @@ void asiData_PartNode::ResetToDefault(const bool resetNaming)
   this->SetRenderAAG             (false);
   this->SetRenderBVH             (false);
   this->SetRenderBVHLevel        (-1);
+  this->SetRenderBVHLeaves       (false);
   this->SetBVHBuilder            (0);
   this->SetRenderBVHWireframe    (false);
 
@@ -174,6 +176,7 @@ void asiData_PartNode::Init(const bool resetNaming)
   this->InitParameter(PID_RenderAAG,          "Render AAG",         "",               ParameterFlag_IsVisible, true);
   this->InitParameter(PID_RenderBVH,          "Render BVH",         "",               ParameterFlag_IsVisible, true);
   this->InitParameter(PID_RenderBVHLevel,     "BVH level",          "",               ParameterFlag_IsVisible, true);
+  this->InitParameter(PID_RenderBVHLeaves,    "BVH leaves",         "",               ParameterFlag_IsVisible, true);
   this->InitParameter(PID_BVHBuilder,         "BVH algorithm",      "BVHBuilderAlgo", ParameterFlag_IsVisible, true);
   this->InitParameter(PID_RenderBVHWireframe, "BVH wireframe",      "",               ParameterFlag_IsVisible, true);
 }
@@ -644,6 +647,19 @@ void asiData_PartNode::SetRenderBVHLevel(const int level)
 int asiData_PartNode::GetRenderBVHLevel() const
 {
   return ActParamTool::AsInt( this->Parameter(PID_RenderBVHLevel) )->GetValue();
+}
+
+//! Sets a Boolean flag indicating whether to render the BVH leaves alone.
+//! \param[in] on value to set.
+void asiData_PartNode::SetRenderBVHLeaves(const bool on)
+{
+  ActParamTool::AsBool( this->Parameter(PID_RenderBVHLeaves) )->SetValue(on);
+}
+
+//! \return Boolean flag indicating whether to render the BVH leaves alone.
+bool asiData_PartNode::GetRenderBVHLeaves() const
+{
+  return ActParamTool::AsBool( this->Parameter(PID_RenderBVHLeaves) )->GetValue();
 }
 
 //! Sets the BVH construction algorithm to use.
