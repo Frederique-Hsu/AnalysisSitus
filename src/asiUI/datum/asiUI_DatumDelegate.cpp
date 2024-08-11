@@ -593,7 +593,7 @@ QRect asiUI_DatumDelegate::getBrowseRect(const QStyleOptionViewItem& theOption) 
   QRect anItemRect  = theOption.rect;
 
   int aWOffset = ( anItemRect.width() - aBrowseRect.width() );
-  int aHOffset = ( anItemRect.height() - aBrowseRect.height() ) * 0.5;
+  int aHOffset = (int) ( ( anItemRect.height() - aBrowseRect.height() ) * 0.5 );
 
   anItemRect.setSize( aBrowseRect.size() );
   anItemRect.translate( aWOffset - aHOffset, aHOffset );
