@@ -227,6 +227,29 @@ void asiUI_IV::ERASE_ALL()
 
 //---------------------------------------------------------------------------//
 
+void asiUI_IV::ERASE_PART()
+{
+  Handle(ActAPI_INode) node = m_model->GetPartNode();
+
+  if ( m_prsMgr3d->IsPresented(node) )
+    m_prsMgr3d->DeletePresentation(node);
+
+  // Clean up Data Model object
+  bool isTx = false;
+  if ( !m_model->HasOpenCommand() )
+  {
+    m_model->OpenCommand();
+    isTx = true;
+  }
+  //
+  node->RemoveUserFlags(NodeFlag_IsPresentationVisible);
+  //
+  if ( isTx )
+    m_model->CommitCommand();
+}
+
+//---------------------------------------------------------------------------//
+
 void asiUI_IV::ERASE(const t_extString& name)
 {
   // Loop over the imperative plotter's objects

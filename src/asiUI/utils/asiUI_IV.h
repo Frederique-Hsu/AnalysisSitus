@@ -89,6 +89,9 @@ public:
     FIT3D() override;
 
   asiUI_EXPORT virtual void
+    ERASE_PART();
+
+  asiUI_EXPORT virtual void
     ERASE_ALL() override;
 
   asiUI_EXPORT virtual void
