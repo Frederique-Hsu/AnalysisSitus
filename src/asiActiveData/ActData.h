@@ -51,7 +51,10 @@
 //   specific Attributes, e.g. Mesh Attribute. Notice that actually we use
 //   extension points of TKBin library, not TKBinL (the latter is not
 //   suitable for all ACT Parameters).
-#define ACTBinFormat "ACTBin" // "ACTBin" or "BinOcaf"
+#define FileFormat_ACTBin  "ACTBin"
+#define FileFormat_BinOcaf "BinOcaf"
+
+#define ACTBinFormat FileFormat_BinOcaf // "ACTBin" or "BinOcaf"
 #define ACTBinExt    "cbf"
 
 // Macro to silent compiler warnings on unused function arguments

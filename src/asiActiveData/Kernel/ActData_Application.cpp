@@ -37,6 +37,7 @@
 #include <ActData_BinDrivers.h>
 
 // OCCT includes
+#include <BinDrivers.hxx>
 #include <TColStd_SequenceOfExtendedString.hxx>
 
 //! Accessor for static instance of CAF Application.
@@ -47,7 +48,15 @@ Handle(ActData_Application) ActData_Application::Instance()
   if ( app.IsNull() )
   {
     app = new ActData_Application();
-    ActData_BinDrivers::DefineFormat(app);
+
+    if ( ACTBinFormat == FileFormat_ACTBin )
+    {
+      ActData_BinDrivers::DefineFormat(app);
+    }
+    else if ( ACTBinFormat == FileFormat_BinOcaf )
+    {
+      BinDrivers::DefineFormat(app);
+    }
   }
   return app;
 }
