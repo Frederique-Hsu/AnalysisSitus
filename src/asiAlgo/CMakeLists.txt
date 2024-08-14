@@ -73,6 +73,7 @@ set (aux_H_FILES
   auxiliary/asiAlgo_AttrFaceUniformGrid.h
   auxiliary/asiAlgo_BuildConvexHull.h
   auxiliary/asiAlgo_BuildHLR.h
+  auxiliary/asiAlgo_BuildMinAreaRect.h
   auxiliary/asiAlgo_BuildOBB.h
   auxiliary/asiAlgo_BullardRNG.h
   auxiliary/asiAlgo_BVHAlgo.h
@@ -97,6 +98,7 @@ set (aux_H_FILES
   auxiliary/asiAlgo_DivideByContinuity.h
   auxiliary/asiAlgo_FaceGrid.h
   auxiliary/asiAlgo_FaceProbe.h
+  auxiliary/asiAlgo_FindOptimalOrientation.h
   auxiliary/asiAlgo_FindVisibleFaces.h
   auxiliary/asiAlgo_FuncUnivariate.h
   auxiliary/asiAlgo_GeomSummary.h
@@ -134,6 +136,7 @@ set (aux_CPP_FILES
   auxiliary/asiAlgo_AnalyzeWire.cpp
   auxiliary/asiAlgo_BuildConvexHull.cpp
   auxiliary/asiAlgo_BuildHLR.cpp
+  auxiliary/asiAlgo_BuildMinAreaRect.cpp
   auxiliary/asiAlgo_BuildOBB.cpp
   auxiliary/asiAlgo_BVHAlgo.cpp
   auxiliary/asiAlgo_BVHFacets.cpp
@@ -150,6 +153,7 @@ set (aux_CPP_FILES
   auxiliary/asiAlgo_ConvertCurve.cpp
   auxiliary/asiAlgo_DesignLaw.cpp
   auxiliary/asiAlgo_DivideByContinuity.cpp
+  auxiliary/asiAlgo_FindOptimalOrientation.cpp
   auxiliary/asiAlgo_FindVisibleFaces.cpp
   auxiliary/asiAlgo_FuncUnivariate.cpp
   auxiliary/asiAlgo_HitFacet.cpp
