@@ -63,16 +63,84 @@
 // OCCT includes
 #include <TDF_Label.hxx>
 
+//-----------------------------------------------------------------------------
+
 #define Parameter_SafeDownCast_Macro(Type) \
   inline static Handle(ActData_##Type##Parameter) As##Type(const Handle(ActAPI_IUserParameter)& theParam) \
   { \
     return Handle(ActData_##Type##Parameter)::DownCast(theParam); \
   }
 
+//-----------------------------------------------------------------------------
+
 //! Convenience short-cut which is useful to reduce the amount of code
 //! to be written. E.g. ActData_ParameterFactory::AsReal(...) becomes
 //! ActParamTool::AsReal(...)
 #define ActParamTool ActData_ParameterFactory
+
+//-----------------------------------------------------------------------------
+
+#define P_Int(NodePtr, PID) \
+  ActParamTool::AsInt( ##NodePtr->Parameter(##PID) )
+
+#define P_Real(NodePtr, PID) \
+  ActParamTool::AsReal( ##NodePtr->Parameter(##PID) )
+
+#define P_Bool(NodePtr, PID) \
+  ActParamTool::AsBool( ##NodePtr->Parameter(##PID) )
+
+#define P_Shape(NodePtr, PID) \
+  ActParamTool::AsShape( ##NodePtr->Parameter(##PID) )
+
+#define P_Mesh(NodePtr, PID) \
+  ActParamTool::AsMesh( ##NodePtr->Parameter(##PID) )
+
+#define P_AsciiString(NodePtr, PID) \
+  ActParamTool::AsAsciiString( ##NodePtr->Parameter(##PID) )
+
+#define P_Name(NodePtr, PID) \
+  ActParamTool::AsName( ##NodePtr->Parameter(##PID) )
+
+#define P_Selection(NodePtr, PID) \
+  ActParamTool::AsSelection( ##NodePtr->Parameter(##PID) )
+
+#define P_TimeStamp(NodePtr, PID) \
+  ActParamTool::AsTimeStamp( ##NodePtr->Parameter(##PID) )
+
+#define P_IntArray(NodePtr, PID) \
+  ActParamTool::AsIntArray( ##NodePtr->Parameter(##PID) )
+
+#define P_RealArray(NodePtr, PID) \
+  ActParamTool::AsRealArray( ##NodePtr->Parameter(##PID) )
+
+#define P_StringArray(NodePtr, PID) \
+  ActParamTool::AsStringArray( ##NodePtr->Parameter(##PID) )
+
+#define P_ComplexArray(NodePtr, PID) \
+  ActParamTool::AsComplexArray( ##NodePtr->Parameter(##PID) )
+
+#define P_BoolArray(NodePtr, PID) \
+  ActParamTool::AsBoolArray( ##NodePtr->Parameter(##PID) )
+
+#define P_Group(NodePtr, PID) \
+  ActParamTool::AsGroup( ##NodePtr->Parameter(##PID) )
+
+#define P_TreeFunction(NodePtr, PID) \
+  ActParamTool::AsTreeFunction( ##NodePtr->Parameter(##PID) )
+
+#define P_TreeNode(NodePtr, PID) \
+  ActParamTool::AsTreeNode( ##NodePtr->Parameter(##PID) )
+
+#define P_Reference(NodePtr, PID) \
+  ActParamTool::AsReference( ##NodePtr->Parameter(##PID) )
+
+#define P_ReferenceList(NodePtr, PID) \
+  ActParamTool::AsReferenceList( ##NodePtr->Parameter(##PID) )
+
+#define P_Triangulation(NodePtr, PID) \
+  ActParamTool::AsTriangulation( ##NodePtr->Parameter(##PID) )
+
+//-----------------------------------------------------------------------------
 
 DEFINE_STANDARD_HANDLE(ActData_ParameterFactory, Standard_Transient)
 
