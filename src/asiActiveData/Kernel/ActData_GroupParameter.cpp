@@ -38,7 +38,6 @@
 
 // OCCT includes
 #include <Standard_ProgramError.hxx>
-#include <TDataStd_Name.hxx>
 
 //! Default constructor.
 ActData_GroupParameter::ActData_GroupParameter() : ActData_UserParameter()

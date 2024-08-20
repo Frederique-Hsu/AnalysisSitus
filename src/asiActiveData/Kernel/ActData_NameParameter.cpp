@@ -33,12 +33,18 @@
 // Own include
 #include <ActData_NameParameter.h>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+
 // Active Data includes
 #include <ActData_Utils.h>
 
 // OCCT includes
 #include <Standard_ProgramError.hxx>
 #include <TDataStd_Name.hxx>
+
+// Restore compiler switches
+#pragma GCC diagnostic pop
 
 //-----------------------------------------------------------------------------
 // Parameter

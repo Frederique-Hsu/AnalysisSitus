@@ -88,7 +88,7 @@ namespace
                  const SymbolPosition open,
                  const SymbolPosition close,
                  const QString collapsedInRow)
-      : Level(level), Open(open), Close(close), CollapsedInRow(collapsedInRow) {}
+      : Level(level), CollapsedInRow(collapsedInRow), Open(open), Close(close) {}
 
     int            Level;
     QString        CollapsedInRow;
@@ -225,9 +225,9 @@ namespace
     MESSAGE_INFO_CUSTOM(info);
 #endif
   }
- 
+
    //-----------------------------------------------------------------------------
- 
+
   void printPositions(const asiUI_MapIntToInt& positions)
    {
     positions;

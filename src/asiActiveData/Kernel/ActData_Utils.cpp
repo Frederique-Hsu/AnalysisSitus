@@ -33,6 +33,9 @@
 // Own include
 #include <ActData_Utils.h>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+
 // Active Data includes
 #include <ActData_BaseModel.h>
 #include <ActData_LogBook.h>
@@ -40,7 +43,6 @@
 
 // OCCT includes
 #include <Standard_ProgramError.hxx>
-#include <TColStd_HArray1OfByte.hxx>
 #include <TDataStd_AsciiString.hxx>
 #include <TDataStd_BooleanArray.hxx>
 #include <TDataStd_Integer.hxx>
@@ -52,6 +54,9 @@
 #include <TNaming_Builder.hxx>
 #include <TNaming_NamedShape.hxx>
 #include <TNaming_UsedShapes.hxx>
+
+// Restore compiler switches
+#pragma GCC diagnostic pop
 
 #define RET_DISPATCHED_ARRAY2MX_BEGIN(MxType, NbRows, NbCols, DataSource) \
   Handle(MxType) aResult = new MxType(0, NbRows - 1, 0, NbCols - 1); \
@@ -246,7 +251,7 @@ Standard_Boolean
   TCollection_AsciiString anOldEvalStr = theParam->GetEvalString();
   TCollection_AsciiString aEvalStr = theParam->GetEvalString();
   Standard_Integer aStart = -1, aEnd = -1;
-      
+
   if ( isCompleteErase && ActData_StringAux::IsLexeme(aEvalStr, theWhat, aStart, aEnd) )
     theParam->SetEvalString(TCollection_AsciiString(), MT_Touched);
   else {
@@ -1256,7 +1261,7 @@ Standard_Boolean ActData_StringAux::IsLexeme(const TCollection_AsciiString& Sour
 
   if ( !isMarginOnLeft || !isMarginOnRight )
     return Standard_False;
-    
+
   Start = aPos;
   End = aLastPos;
   return Standard_True;

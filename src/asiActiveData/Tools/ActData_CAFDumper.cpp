@@ -33,15 +33,15 @@
 // Own include
 #include <ActData_CAFDumper.h>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+
 // Active Data includes
 #include <ActData_ParameterFactory.h>
 #include <ActData_Utils.h>
 
 // OCCT includes
-#include <OSD_OpenMode.hxx>
-#include <OSD_Path.hxx>
 #include <OSD_Protection.hxx>
-#include <TColStd_MapIteratorOfPackedMapOfInteger.hxx>
 #include <TColStd_PackedMapOfInteger.hxx>
 #include <TDataStd_AsciiString.hxx>
 #include <TDataStd_BooleanArray.hxx>
@@ -51,9 +51,11 @@
 #include <TDataStd_Real.hxx>
 #include <TDF_AttributeIterator.hxx>
 #include <TDF_ChildIterator.hxx>
-#include <TDF_ListIteratorOfLabelList.hxx>
 #include <TDF_Reference.hxx>
 #include <TNaming_NamedShape.hxx>
+
+// Restore compiler switches
+#pragma GCC diagnostic pop
 
 //-----------------------------------------------------------------------------
 // Used definitions
@@ -346,7 +348,7 @@ void
 
   // Dump the Data Node itself
   dumpNode(theOut, N, Content_Plain, theVerbosity, theNbSpacesOnTheLeft);
-  
+
   // Dump the child Data Nodes recursively
   Handle(ActAPI_IChildIterator) aChildIt = N->GetChildIterator();
   for ( ; aChildIt->More(); aChildIt->Next() )

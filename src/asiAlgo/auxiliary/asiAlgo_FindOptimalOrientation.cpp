@@ -208,7 +208,7 @@ bool asiAlgo_FindOptimalOrientation::Perform()
       gp_Pnt pnt = gac.Value( pntGen.Parameter(index) );
       bool isFound = false;
 
-      for ( int index1 = 0; index1 < points.size(); ++index1 )
+      for ( int index1 = 0; index1 < (int) ( points.size() ); ++index1 )
       {
         if ( pnt.Distance(points[index1]) < Precision::Confusion() )
         {

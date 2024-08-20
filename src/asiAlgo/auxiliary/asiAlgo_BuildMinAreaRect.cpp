@@ -38,13 +38,13 @@
 // STD include
 #include <algorithm>
 
+#undef DRAW_DEBUG
+#if defined DRAW_DEBUG
+#pragma message("===== warning: DRAW_DEBUG is enabled")
+#endif
+
 namespace
 {
-  gp_XY P2d(const gp_Pnt& P)
-  {
-    return gp_XY( P.X(), P.Y() );
-  }
-
   gp_Pnt P3d(const gp_XY& P)
   {
     return gp_Pnt( P.X(), P.Y(), 0. );
@@ -83,7 +83,9 @@ bool asiAlgo_BuildMinAreaRect::Calculate(const std::vector<gp_Pnt>& points,
   double minAngle = 0;
 
   std::vector<TopoDS_Wire> polyWires, bbRects;
+#if defined DRAW_DEBUG
   int bestWireIdx = -1;
+#endif
 
   for ( int i = 0; i < nbHPnts; ++i )
   {
@@ -172,7 +174,9 @@ bool asiAlgo_BuildMinAreaRect::Calculate(const std::vector<gp_Pnt>& points,
     {
       minBox      = box;
       minAngle    = angle;
+#if defined DRAW_DEBUG
       bestWireIdx = i;
+#endif
     }
   }
 
@@ -296,8 +300,8 @@ bool asiAlgo_BuildMinAreaRect::convexHull(const std::vector<gp_Pnt>& points,
 
   hullPoints = std::vector<gp_XY>( sortedPoints.size() * 2 );
 
-  auto pointLength = sortedPoints.size();
-  auto counter = 0;
+  int pointLength = (int) sortedPoints.size();
+  int counter = 0;
 
   // Iterate for lowerHull.
   for ( int i = 0; i < pointLength; ++i )
