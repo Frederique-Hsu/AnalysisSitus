@@ -48,10 +48,10 @@
 
 //! Creates new Mesh Pipeline instance.
 asiVisu_MeshPipeline::asiVisu_MeshPipeline()
-: asiVisu_MeshPipelineBase(nullptr),
-  m_fPartRed(0.),
-  m_fPartGreen(0.),
-  m_fPartBlue(0.)
+: asiVisu_MeshPipelineBase (nullptr),
+  m_fPartRed               (0.),
+  m_fPartGreen             (0.),
+  m_fPartBlue              (0.)
 {
   this->EmptyGroupForAllModeOn();
 
@@ -65,29 +65,40 @@ asiVisu_MeshPipeline::asiVisu_MeshPipeline()
 void asiVisu_MeshPipeline::SetInput(const Handle(asiVisu_DataProvider)& dataProvider)
 {
   Handle(asiVisu_MeshDataProvider)
-    aMeshPrv = Handle(asiVisu_MeshDataProvider)::DownCast(dataProvider);
+    provider = Handle(asiVisu_MeshDataProvider)::DownCast(dataProvider);
+
+  Handle(ActData_Mesh) mesh = provider->GetMeshDS();
+  //
+  if ( mesh.IsNull() )
+  {
+    // Pass empty data set in order to have valid pipeline.
+    vtkSmartPointer<vtkPolyData> dummyData = vtkSmartPointer<vtkPolyData>::New();
+    this->SetInputData(dummyData);
+    this->Modified(); // Update modification timestamp.
+    return; // Do nothing.
+  }
 
   /* ============================
    *  Prepare polygonal data set
    * ============================ */
 
-  aMeshPrv->GetColor(m_fPartRed, m_fPartGreen, m_fPartBlue);
+  provider->GetColor(m_fPartRed, m_fPartGreen, m_fPartBlue);
 
-  if ( aMeshPrv->MustExecute( this->GetMTime() ) )
+  if ( provider->MustExecute( this->GetMTime() ) )
   {
-    vtkSmartPointer<asiVisu_MeshSource> aMeshSource = m_source;
-    aMeshSource->SetInputMesh( aMeshPrv->GetMeshDS() );
+    vtkSmartPointer<asiVisu_MeshSource> source = m_source;
+    source->SetInputMesh( provider->GetMeshDS() );
     if ( m_bIsEmptyGroupForAll )
-      aMeshSource->EmptyGroupForAllModeOn();
+      source->EmptyGroupForAllModeOn();
     else
-      aMeshSource->EmptyGroupForAllModeOff();
+      source->EmptyGroupForAllModeOff();
 
     // Bind actor to owning Node ID. Thus we set back reference from VTK
     // entity to data object
-    asiVisu_NodeInfo::Store( aMeshPrv->GetNodeID(), this->Actor() );
+    asiVisu_NodeInfo::Store( provider->GetNodeID(), this->Actor() );
 
     // Initialize pipeline
-    this->SetInputConnection( aMeshSource->GetOutputPort() );
+    this->SetInputConnection( source->GetOutputPort() );
   }
 
   // Update modification timestamp

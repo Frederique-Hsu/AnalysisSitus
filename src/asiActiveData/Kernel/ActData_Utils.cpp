@@ -33,8 +33,10 @@
 // Own include
 #include <ActData_Utils.h>
 
+#ifndef WIN32
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
+#endif
 
 // Active Data includes
 #include <ActData_BaseModel.h>
@@ -56,7 +58,9 @@
 #include <TNaming_UsedShapes.hxx>
 
 // Restore compiler switches
+#ifndef WIN32
 #pragma GCC diagnostic pop
+#endif
 
 #define RET_DISPATCHED_ARRAY2MX_BEGIN(MxType, NbRows, NbCols, DataSource) \
   Handle(MxType) aResult = new MxType(0, NbRows - 1, 0, NbCols - 1); \

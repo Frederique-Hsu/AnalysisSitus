@@ -33,8 +33,10 @@
 // Own include
 #include <ActData_NameParameter.h>
 
+#ifndef WIN32
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
+#endif
 
 // Active Data includes
 #include <ActData_Utils.h>
@@ -44,7 +46,9 @@
 #include <TDataStd_Name.hxx>
 
 // Restore compiler switches
+#ifndef WIN32
 #pragma GCC diagnostic pop
+#endif
 
 //-----------------------------------------------------------------------------
 // Parameter

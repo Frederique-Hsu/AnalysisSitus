@@ -41,9 +41,9 @@
 //! Default constructor.
 asiVisu_MeshDataProvider::asiVisu_MeshDataProvider() : asiVisu_DataProvider() {}
 
-//! Constructor accepting the set of source data structures.
-//! \param theNodeId    [in] ID of the target Data Node.
-//! \param theParamList [in] source Parameters: Mesh, Color, EdgesColors.
+//-----------------------------------------------------------------------------
+
+//! Complete ctor.
 asiVisu_MeshDataProvider::asiVisu_MeshDataProvider(const ActAPI_DataObjectId&           nodeId,
                                                    const Handle(ActData_MeshParameter)& meshParam,
                                                    const Handle(ActData_IntParameter)&  colorParam,
@@ -55,6 +55,8 @@ asiVisu_MeshDataProvider::asiVisu_MeshDataProvider(const ActAPI_DataObjectId&   
   m_edgeColorParam     ( edgesColorParam )
 {}
 
+//-----------------------------------------------------------------------------
+
 //! Returns ID of the Data Node represented by VTK actor. This ID is bound to
 //! the pipeline's actor in order to have a back-reference from Presentation
 //! to Data Object.
@@ -64,12 +66,16 @@ ActAPI_DataObjectId asiVisu_MeshDataProvider::GetNodeID() const
   return m_nodeID;
 }
 
+//-----------------------------------------------------------------------------
+
 //! Returns Mesh Data Structures used as the main source for pipelining.
 //! \return tessellation DS.
 Handle(ActData_Mesh) asiVisu_MeshDataProvider::GetMeshDS() const
 {
   return m_meshParam->GetMesh();
 }
+
+//-----------------------------------------------------------------------------
 
 //! Returns persistent color.
 //! \param[out] r red component.
@@ -93,6 +99,8 @@ void asiVisu_MeshDataProvider::GetColor(double& r, double& g, double& b) const
   b = color.Blue();
 }
 
+//-----------------------------------------------------------------------------
+
 //! Returns persistent edges color.
 //! \param[out] r red component.
 //! \param[out] g green component.
@@ -115,12 +123,16 @@ void asiVisu_MeshDataProvider::GetEdgesColor(double& r, double& g, double& b) co
   b = color.Blue();
 }
 
+//-----------------------------------------------------------------------------
+
 //! Accessor for the source Data Parameters.
 //! \return source Parameters.
 Handle(ActAPI_HParameterList) asiVisu_MeshDataProvider::SourceParameters() const
 {
   return this->translationSources();
 }
+
+//-----------------------------------------------------------------------------
 
 //! Enumerates Data Parameters playing as sources for DOMAIN -> VTK
 //! translation process.
