@@ -52,18 +52,16 @@
 typedef rapidjson::Document::Array     t_jsonArray;
 typedef rapidjson::Document::ValueType t_jsonValue;
 
-
-//! Base assembly tree child item.
-class asiAsm_SceneTree_Child : public Standard_Transient
+//! Base scene tree object.
+class asiAsm_SceneTree_Object : public Standard_Transient
 {
   // OpenCascade RTTI
-  DEFINE_STANDARD_RTTI_INLINE( asiAsm_SceneTree_Child, Standard_Transient )
+  DEFINE_STANDARD_RTTI_INLINE( asiAsm_SceneTree_Object, Standard_Transient )
 
   public:
 
     //! Ctor.
-    asiAsm_SceneTree_Child()
-      : id(-1)
+    asiAsm_SceneTree_Object() : id(-1)
     {}
 
   public:
@@ -76,7 +74,7 @@ class asiAsm_SceneTree_Child : public Standard_Transient
     //! Checks if this scene tree's child is equal to the passed one.
     //! \param[in] other the item to test.
     //! \return true/false.
-    bool IsEqual(const Handle(asiAsm_SceneTree_Child)& other) const
+    bool IsEqual(const Handle(asiAsm_SceneTree_Object)& other) const
     {
       if ( this->id != other->id
         || this->name != other->name )
@@ -90,8 +88,8 @@ class asiAsm_SceneTree_Child : public Standard_Transient
     //! Constructs the scene tree's child data structure from a JSON object.
     //! \param[in]  pJsonBlock the JSON object to construct the data structure from.
     //! \param[out] value      the outcome data structure.
-    static void FromJSON(void*                                 pJsonBlock,
-                         const Handle(asiAsm_SceneTree_Child)& value)
+    static void FromJSON(void*                                  pJsonBlock,
+                         const Handle(asiAsm_SceneTree_Object)& value)
     {
       t_jsonValue*
         pJsonObj = reinterpret_cast< t_jsonValue* >( pJsonBlock );
@@ -108,13 +106,13 @@ class asiAsm_SceneTree_Child : public Standard_Transient
         std::string prop( mit->name.GetString() );
 
         // Id.
-        if ( prop == asiPropName_SceneChildId )
+        if ( prop == asiPropName_SceneId )
         {
           value->id = mit->value.GetInt();
         }
 
         // Name.
-        else if ( prop == asiPropName_SceneChildName )
+        else if ( prop == asiPropName_SceneName )
         {
           value->name = mit->value.GetString();
         }
@@ -131,15 +129,15 @@ class asiAsm_SceneTree_Child : public Standard_Transient
   //! \param[in]     value  the data structure to serialize.
   //! \param[in]     indent the pretty indentation shift.
   //! \param[in,out] out    the output JSON string stream.
-  static void ToJSON(const Handle(asiAsm_SceneTree_Child)& value,
+  static void ToJSON(const Handle(asiAsm_SceneTree_Object)& value,
                      const int                              indent,
                      std::ostream&                          out)
   {
     std::string ws(indent, ' ');
     std::string nl = "\n" + ws;
 
-    out        << nl << "\"" << asiPropName_SceneChildId   << "\"" << ": " << value->id;
-    out << "," << nl << "\"" << asiPropName_SceneChildName << "\"" << ": " << "\"" << asiAlgo_Utils::Json::EscapeJson( value->name ) << "\"";
+    out        << nl << "\"" << asiPropName_SceneId   << "\"" << ": " << value->id;
+    out << "," << nl << "\"" << asiPropName_SceneName << "\"" << ": " << "\"" << asiAlgo_Utils::Json::EscapeJson( value->name ) << "\"";
 
     // Dump delivered classes data.
     value->toJSON( indent, out );
@@ -157,31 +155,47 @@ class asiAsm_SceneTree_Child : public Standard_Transient
     {}
 
     //! To check equality of derived classes.
-    virtual bool isEqual(const Handle(asiAsm_SceneTree_Child)&) const
+    virtual bool isEqual(const Handle(asiAsm_SceneTree_Object)&) const
     {
       return true;
     }
 
 };
-
 //-----------------------------------------------------------------------------
 
-//! Provides properties of parts in assembly tree.
-class asiAsm_SceneTree_Part : public asiAsm_SceneTree_Child
+//! Base class for prototypes in the scene tree.
+class asiAsm_SceneTree_Prototype : public asiAsm_SceneTree_Object
 {
   // OpenCascade RTTI
-  DEFINE_STANDARD_RTTI_INLINE( asiAsm_SceneTree_Part, asiAsm_SceneTree_Child )
+  DEFINE_STANDARD_RTTI_INLINE( asiAsm_SceneTree_Prototype, asiAsm_SceneTree_Object )
 
   public:
 
     //! Ctor.
-    asiAsm_SceneTree_Part()
-      : asiAsm_SceneTree_Child()
+    asiAsm_SceneTree_Prototype() : asiAsm_SceneTree_Object()
     {}
 
   public:
 
     std::string persistentId;
+};
+
+//-----------------------------------------------------------------------------
+
+//! Provides properties of parts in assembly tree.
+class asiAsm_SceneTree_Part : public asiAsm_SceneTree_Prototype
+{
+  // OpenCascade RTTI
+  DEFINE_STANDARD_RTTI_INLINE( asiAsm_SceneTree_Part, asiAsm_SceneTree_Prototype )
+
+  public:
+
+    //! Ctor.
+    asiAsm_SceneTree_Part() : asiAsm_SceneTree_Prototype()
+    {}
+
+  public:
+
     std::string shape;
 
   protected:
@@ -196,11 +210,13 @@ class asiAsm_SceneTree_Part : public asiAsm_SceneTree_Child
         pJsonObj = reinterpret_cast< t_jsonValue* >( pJsonBlock );
 
       // Persistent id.
-      if ( prop == asiPropName_ScenePartsPersistentId )
+      if ( prop == asiPropName_ScenePersistentId )
       {
         this->persistentId = pJsonObj->GetString();
       }
-      if ( prop == asiPropName_ScenePartsRepresentation )
+
+      // Shape
+      else if ( prop == asiPropName_SceneShape )
       {
         this->shape = pJsonObj->GetString();
       }
@@ -215,18 +231,19 @@ class asiAsm_SceneTree_Part : public asiAsm_SceneTree_Child
       std::string ws(indent, ' ');
       std::string nl = "\n" + ws;
 
-      out << "," << nl << "\"" << asiPropName_ScenePartsPersistentId << "\"" << ": " << "\"" << persistentId << "\"";
+      out << "," << nl << "\"" << asiPropName_ScenePersistentId << "\"" << ": " << "\"" << this->persistentId << "\"";
 
-      if (!shape.empty())
-        out << "," << nl << "\"" << asiPropName_ScenePartsRepresentation << "\"" << ": " << "\"" << shape << "\"";
+      if ( !shape.empty() )
+        out << "," << nl << "\"" << asiPropName_SceneShape << "\"" << ": " << "\"" << this->shape << "\"";
     }
 
     //! Checks is this part is equal to the passed one.
     //! \param[in] other the part to test.
     //! \return true/false.
-    virtual bool isEqual(const Handle(asiAsm_SceneTree_Child)& other) const
+    virtual bool isEqual(const Handle(asiAsm_SceneTree_Object)& other) const
     {
-      Handle(asiAsm_SceneTree_Part) otherCasted = Handle(asiAsm_SceneTree_Part)::DownCast( other );
+      Handle(asiAsm_SceneTree_Part)
+        otherCasted = Handle(asiAsm_SceneTree_Part)::DownCast( other );
 
       return this->persistentId == otherCasted->persistentId;
     }
@@ -235,16 +252,15 @@ class asiAsm_SceneTree_Part : public asiAsm_SceneTree_Child
 //-----------------------------------------------------------------------------
 
 //! Provides properties of assemblies in assembly tree.
-class asiAsm_SceneTree_Assembly : public asiAsm_SceneTree_Child
+class asiAsm_SceneTree_Assembly : public asiAsm_SceneTree_Prototype
 {
   // OpenCascade RTTI
-  DEFINE_STANDARD_RTTI_INLINE( asiAsm_SceneTree_Assembly, asiAsm_SceneTree_Child )
+  DEFINE_STANDARD_RTTI_INLINE( asiAsm_SceneTree_Assembly, asiAsm_SceneTree_Prototype )
 
   public:
 
     //! Ctor.
-    asiAsm_SceneTree_Assembly()
-      : asiAsm_SceneTree_Child()
+    asiAsm_SceneTree_Assembly() : asiAsm_SceneTree_Prototype()
     {}
 
   public:
@@ -262,8 +278,13 @@ class asiAsm_SceneTree_Assembly : public asiAsm_SceneTree_Child
       t_jsonValue*
         pJsonObj = reinterpret_cast< t_jsonValue* >( pJsonBlock );
 
+      if ( prop == asiPropName_ScenePersistentId )
+      {
+        this->persistentId = pJsonObj->GetString();
+      }
+
       // Children instances.
-      if ( prop == asiPropName_SceneAssembliesAssemblyChildInstances )
+      else if ( prop == asiPropName_SceneChildInstances )
       {
         t_jsonArray arr = pJsonObj->GetArray();
 
@@ -280,7 +301,8 @@ class asiAsm_SceneTree_Assembly : public asiAsm_SceneTree_Child
       std::string ws(indent, ' ');
       std::string nl = "\n" + ws;
 
-      out << "," << nl << "\"" << asiPropName_SceneAssembliesAssemblyChildInstances << "\"" << ": ";
+      out << "," << nl << "\"" << asiPropName_ScenePersistentId << "\"" << ": " << "\"" << persistentId << "\"";
+      out << "," << nl << "\"" << asiPropName_SceneChildInstances << "\"" << ": ";
 
       out << asiAlgo_Utils::Json::FromVector( children );
     }
@@ -288,16 +310,22 @@ class asiAsm_SceneTree_Assembly : public asiAsm_SceneTree_Child
     //! Checks is this assembly is equal to the passed one.
     //! \param[in] other the assembly to test.
     //! \return true/false.
-    virtual bool isEqual(const Handle(asiAsm_SceneTree_Child)& other) const
+    virtual bool isEqual(const Handle(asiAsm_SceneTree_Object)& other) const
     {
-      Handle(asiAsm_SceneTree_Assembly) otherCasted = Handle(asiAsm_SceneTree_Assembly)::DownCast( other );
+      Handle(asiAsm_SceneTree_Assembly)
+        otherCasted = Handle(asiAsm_SceneTree_Assembly)::DownCast(other);
+
+      if ( this->persistentId != otherCasted->persistentId )
+      {
+        return false;
+      }
 
       if ( children.size() != otherCasted->children.size() )
       {
         return false;
       }
 
-      for ( const auto& i : children )
+      for ( const auto i : children )
       {
         if ( std::find( children.begin(), children.end(), i ) == children.end() )
         {
@@ -311,18 +339,18 @@ class asiAsm_SceneTree_Assembly : public asiAsm_SceneTree_Child
 
 //-----------------------------------------------------------------------------
 
-class asiAsm_SceneTree_Instance : public asiAsm_SceneTree_Child
+class asiAsm_SceneTree_Instance : public asiAsm_SceneTree_Object
 {
   // OpenCascade RTTI
-  DEFINE_STANDARD_RTTI_INLINE( asiAsm_SceneTree_Instance, asiAsm_SceneTree_Child )
+  DEFINE_STANDARD_RTTI_INLINE( asiAsm_SceneTree_Instance, asiAsm_SceneTree_Object )
 
   public:
 
     //! Ctor.
     asiAsm_SceneTree_Instance()
-      : asiAsm_SceneTree_Child(),
-        prototype( -1 ),
-        angle( -1. )
+      : asiAsm_SceneTree_Object (),
+        prototype               ( -1 ),
+        angle                   ( 0. )
     {}
 
   public:
@@ -345,17 +373,17 @@ class asiAsm_SceneTree_Instance : public asiAsm_SceneTree_Child
         pJsonObj = reinterpret_cast< t_jsonValue* >( pJsonBlock );
 
       // Prototype.
-      if ( prop == asiPropName_SceneInstancesInstancePrototype )
+      if ( prop == asiPropName_ScenePrototype )
       {
         this->prototype = pJsonObj->GetInt();
       }
       // Id.
-      if (prop == asiPropName_SceneInstancesAssemblyItemId)
+      else if (prop == asiPropName_SceneAssemblyItemId)
       {
         this->assemblyItemId = pJsonObj->GetString();
       }
       // Rotation
-      if (prop == asiPropName_SceneInstancesRotation)
+      else if (prop == asiPropName_SceneRotation)
       {
         t_jsonArray arr = pJsonObj->GetArray();
 
@@ -365,7 +393,7 @@ class asiAsm_SceneTree_Instance : public asiAsm_SceneTree_Child
         this->angle              = arr[3].GetDouble();
       }
       // Translation
-      if (prop == asiPropName_SceneInstancesTranslation)
+      else if (prop == asiPropName_SceneTranslation)
       {
         t_jsonArray arr = pJsonObj->GetArray();
         gp_XYZ coords;
@@ -385,17 +413,17 @@ class asiAsm_SceneTree_Instance : public asiAsm_SceneTree_Child
       std::string ws(indent, ' ');
       std::string nl = "\n" + ws;
 
-      out << "," << nl << "\"" << asiPropName_SceneInstancesInstancePrototype << "\"" << ": " << prototype;
+      out << "," << nl << "\"" << asiPropName_ScenePrototype << "\"" << ": " << prototype;
 
-      out << "," << nl << "\"" << asiPropName_SceneInstancesAssemblyItemId << "\"" << ": " << "\"" << assemblyItemId << "\"";
+      out << "," << nl << "\"" << asiPropName_SceneAssemblyItemId << "\"" << ": " << "\"" << assemblyItemId << "\"";
 
-      out << "," << nl << "\"" << asiPropName_SceneInstancesRotation << "\"" << ": [ "
+      out << "," << nl << "\"" << asiPropName_SceneRotation << "\"" << ": [ "
           << xyz.X() << ", "
           << xyz.Y() << ", "
           << xyz.Z() << ", "
           << angle   << " ]";
 
-      out << "," << nl << "\"" << asiPropName_SceneInstancesTranslation << "\"" << ": [ "
+      out << "," << nl << "\"" << asiPropName_SceneTranslation << "\"" << ": [ "
           << translation.X() << ", "
           << translation.Y() << ", "
           << translation.Z() << " ]";
@@ -405,15 +433,12 @@ class asiAsm_SceneTree_Instance : public asiAsm_SceneTree_Child
     //! Checks is this instance is equal to the passed one.
     //! \param[in] other the instance to test.
     //! \return true/false.
-    virtual bool isEqual(const Handle(asiAsm_SceneTree_Child)& other) const
+    virtual bool isEqual(const Handle(asiAsm_SceneTree_Object)& other) const
     {
-      Handle(asiAsm_SceneTree_Instance) otherCasted = Handle(asiAsm_SceneTree_Instance)::DownCast( other );
+      Handle(asiAsm_SceneTree_Instance)
+        otherCasted = Handle(asiAsm_SceneTree_Instance)::DownCast( other );
 
-      return prototype == otherCasted->prototype
-         /* && assemblyItemId == otherCasted->assemblyItemId
-            && xyz.IsEqual(otherCasted->xyz, 0.001)
-            && translation.IsEqual(otherCasted->translation, 0.001)
-               Abs( angle - otherCasted->angle ) < 0.001*/;
+      return prototype == otherCasted->prototype;
     }
 };
 
@@ -435,7 +460,7 @@ namespace
 
       t_jsonValue pJsonObj = vit->GetObject();
 
-      asiAsm_SceneTree_Child::FromJSON( &pJsonObj, value );
+      asiAsm_SceneTree_Object::FromJSON( &pJsonObj, value );
 
       v.push_back( value );
     }
@@ -456,7 +481,7 @@ namespace
     {
       out << comma << nl << "{";
 
-      asiAsm_SceneTree_Child::ToJSON( value, indent + 2, out );
+      asiAsm_SceneTree_Object::ToJSON( value, indent + 2, out );
 
       out << nl << "}";
 
@@ -474,8 +499,8 @@ asiAsm_SceneTree::asiAsm_SceneTree()
 //-----------------------------------------------------------------------------
 
 bool asiAsm_SceneTree::Match(const asiAsm_SceneTree& R1,
-                              const asiAsm_SceneTree& R2,
-                              ActAPI_ProgressEntry     progress)
+                             const asiAsm_SceneTree& R2,
+                             ActAPI_ProgressEntry    progress)
 {
   // Check roots.
   auto resRoots = R1.GetRoots();
@@ -603,11 +628,11 @@ void asiAsm_SceneTree::cleanUpData()
 
 //-----------------------------------------------------------------------------
 
-void asiAsm_SceneTree::getChildInfo(const Handle(asiAsm::xde::Doc)&       doc,
-                                    const Handle(asiAsm::xde::Graph)&     graph,
-                                    const Handle(asiAsm_SceneTree_Child)& child,
-                                    const int                             childId,
-                                    const std::string&                    path)
+void asiAsm_SceneTree::getChildInfo(const Handle(asiAsm::xde::Doc)&        doc,
+                                    const Handle(asiAsm::xde::Graph)&      graph,
+                                    const Handle(asiAsm_SceneTree_Object)& child,
+                                    const int                              childId,
+                                    const std::string&                     path)
 {
   // Get id.
   child->id = childId;
@@ -623,6 +648,11 @@ void asiAsm_SceneTree::getChildInfo(const Handle(asiAsm::xde::Doc)&       doc,
   if ( child->DynamicType() == STANDARD_TYPE( asiAsm_SceneTree_Part ) )
   {
     Handle(asiAsm_SceneTree_Part)::DownCast( child )->persistentId =
+      graph->GetPersistentId( childId ).ToCString();
+  }
+  else if ( child->DynamicType() == STANDARD_TYPE( asiAsm_SceneTree_Assembly ) )
+  {
+    Handle(asiAsm_SceneTree_Assembly)::DownCast( child )->persistentId =
       graph->GetPersistentId( childId ).ToCString();
   }
   else if ( child->DynamicType() == STANDARD_TYPE( asiAsm_SceneTree_Instance ) )
@@ -650,7 +680,7 @@ void asiAsm_SceneTree::Build(const Handle(asiAsm::xde::Doc)& doc,
 
     m_roots.push_back( rootId );
 
-    Handle(asiAsm_SceneTree_Child) child;
+    Handle(asiAsm_SceneTree_Object) child;
 
     populate( doc, graph, rootId, child, graph->GetPersistentId( rootId ).ToCString(), doDumpShapes);
   }
@@ -661,7 +691,7 @@ void asiAsm_SceneTree::Build(const Handle(asiAsm::xde::Doc)& doc,
 void asiAsm_SceneTree::populate(const Handle(asiAsm::xde::Doc)&   doc,
                                 const Handle(asiAsm::xde::Graph)& graph,
                                 const int                         parentId,
-                                Handle(asiAsm_SceneTree_Child)&   parent,
+                                Handle(asiAsm_SceneTree_Object)&  parent,
                                 const std::string&                path,
                                 const bool                        doDumpShapes)
 {
@@ -717,7 +747,7 @@ void asiAsm_SceneTree::populate(const Handle(asiAsm::xde::Doc)&   doc,
     {
       const int childId = cit.Key();
       //
-      auto comparator = [ childId ] (const Handle( asiAsm_SceneTree_Child )& c)
+      auto comparator = [ childId ] (const Handle( asiAsm_SceneTree_Object )& c)
       {
         return c->id == childId;
       };
@@ -800,7 +830,7 @@ void asiAsm_SceneTree::populate(const Handle(asiAsm::xde::Doc)&   doc,
 
 //-----------------------------------------------------------------------------
 
-const std::vector< Handle( asiAsm_SceneTree_Assembly ) >&
+const std::vector< Handle(asiAsm_SceneTree_Assembly) >&
   asiAsm_SceneTree::GetAssemblies() const
 {
   return m_assemblies;
@@ -808,7 +838,7 @@ const std::vector< Handle( asiAsm_SceneTree_Assembly ) >&
 
 //-----------------------------------------------------------------------------
 
-const std::vector< Handle( asiAsm_SceneTree_Instance ) >&
+const std::vector< Handle(asiAsm_SceneTree_Instance) >&
   asiAsm_SceneTree::GetInstances() const
 {
   return m_instances;
@@ -816,7 +846,7 @@ const std::vector< Handle( asiAsm_SceneTree_Instance ) >&
 
 //-----------------------------------------------------------------------------
 
-const std::vector< Handle( asiAsm_SceneTree_Part ) >&
+const std::vector< Handle(asiAsm_SceneTree_Part) >&
   asiAsm_SceneTree::GetParts() const
 {
   return m_parts;
@@ -824,10 +854,25 @@ const std::vector< Handle( asiAsm_SceneTree_Part ) >&
 
 //-----------------------------------------------------------------------------
 
-const std::vector<int>&
-  asiAsm_SceneTree::GetRoots() const
+const std::vector<int>& asiAsm_SceneTree::GetRoots() const
 {
   return m_roots;
+}
+
+//-----------------------------------------------------------------------------
+
+std::vector<Handle(asiAsm_SceneTree_Prototype)>
+  asiAsm_SceneTree::GetPrototypes() const
+{
+  std::vector<Handle(asiAsm_SceneTree_Prototype)> prototypes;
+
+  for ( const auto& part : m_parts )
+    prototypes.push_back(part);
+
+  for ( const auto& assm : m_assemblies )
+    prototypes.push_back(assm);
+
+  return prototypes;
 }
 
 //-----------------------------------------------------------------------------
@@ -867,7 +912,7 @@ void asiAsm_SceneTree::FromJSON(void*             pJsonGenericObj,
     std::string prop( mit->name.GetString() );
 
     // Roots.
-    if ( prop == asiPropName_SceneRootsIds )
+    if ( prop == asiPropName_SceneRoots )
     {
       t_jsonArray arr = mit->value.GetArray();
 
@@ -881,7 +926,7 @@ void asiAsm_SceneTree::FromJSON(void*             pJsonGenericObj,
     }
 
     // Parts.
-    else if ( prop == asiPropName_ScenePartsName )
+    else if ( prop == asiPropName_SceneParts )
     {
       t_jsonArray arr = mit->value.GetArray();
 
@@ -889,7 +934,7 @@ void asiAsm_SceneTree::FromJSON(void*             pJsonGenericObj,
     }
 
     // Assemblies.
-    else if ( prop == asiPropName_SceneAssembliesName )
+    else if ( prop == asiPropName_SceneAssemblies )
     {
       t_jsonArray arr = mit->value.GetArray();
 
@@ -897,7 +942,7 @@ void asiAsm_SceneTree::FromJSON(void*             pJsonGenericObj,
     }
 
     // Instances.
-    else if ( prop == asiPropName_SceneInstancesName )
+    else if ( prop == asiPropName_SceneInstances )
     {
       t_jsonArray arr = mit->value.GetArray();
 
@@ -931,7 +976,7 @@ void asiAsm_SceneTree::ToJSON(const asiAsm_SceneTree& info,
   out << nl << "\"" << asiPropName_SceneTree << "\"" << ": {";
 
   // Roots.
-  out << nl << "  " << "\"" << asiPropName_SceneRootsIds << "\"" << ": ";
+  out << nl << "  " << "\"" << asiPropName_SceneRoots << "\"" << ": ";
 
   out << asiAlgo_Utils::Json::FromVector( info.GetRoots() );
 
@@ -940,14 +985,14 @@ void asiAsm_SceneTree::ToJSON(const asiAsm_SceneTree& info,
 
   {
     // Parts.
-    out << nl << "    " << "\"" << asiPropName_ScenePartsName << "\"" << ": [";
+    out << nl << "    " << "\"" << asiPropName_SceneParts << "\"" << ": [";
     //
     dumpChildren< asiAsm_SceneTree_Part >( indent + 6, info.GetParts(), out );
 
     out << nl << "    ]"; // End parts.
 
     // Assemblies.
-    out << "," << nl << "    " << "\"" << asiPropName_SceneAssembliesName << "\"" << ": [";
+    out << "," << nl << "    " << "\"" << asiPropName_SceneAssemblies << "\"" << ": [";
     //
     dumpChildren< asiAsm_SceneTree_Assembly >( indent + 6, info.GetAssemblies(), out );
 
@@ -957,7 +1002,7 @@ void asiAsm_SceneTree::ToJSON(const asiAsm_SceneTree& info,
   out << nl << "  }"; // End prototypes.
 
   // Instances.
-  out << "," << nl << "  " << "\"" << asiPropName_SceneInstancesName << "\"" << ": [";
+  out << "," << nl << "  " << "\"" << asiPropName_SceneInstances << "\"" << ": [";
 
   dumpChildren< asiAsm_SceneTree_Instance >( indent + 4, info.GetInstances(), out );
 
@@ -973,10 +1018,10 @@ void asiAsm_SceneTree::ToJSON(const asiAsm_SceneTree& info,
 
 //-----------------------------------------------------------------------------
 
-void iterateInDepth(const std::vector<Handle(asiAsm_SceneTree_Child)>& allSceneObjects,
-                    const Handle(asiAsm_SceneTree_Child)&              sceneObj,
-                    gp_Trsf&                                           resultTrsf,
-                    ActAPI_PlotterEntry                                plotter)
+void iterateInDepth(const std::vector<Handle(asiAsm_SceneTree_Object)>& allSceneObjects,
+                    const Handle(asiAsm_SceneTree_Object)&              sceneObj,
+                    gp_Trsf&                                            resultTrsf,
+                    ActAPI_PlotterEntry                                 plotter)
 {
   // in case of assemblies iterate all its children.
   if (sceneObj->DynamicType() == STANDARD_TYPE(asiAsm_SceneTree_Assembly))
@@ -984,7 +1029,7 @@ void iterateInDepth(const std::vector<Handle(asiAsm_SceneTree_Child)>& allSceneO
     Handle(asiAsm_SceneTree_Assembly) assemblyObj = Handle(asiAsm_SceneTree_Assembly)::DownCast(sceneObj);
     for (const int chId : assemblyObj->children)
     {
-      auto comparator = [chId](const Handle(asiAsm_SceneTree_Child)& c)
+      auto comparator = [chId](const Handle(asiAsm_SceneTree_Object)& c)
       {
         return c->id == chId;
       };
@@ -1004,7 +1049,7 @@ void iterateInDepth(const std::vector<Handle(asiAsm_SceneTree_Child)>& allSceneO
     resultTrsf.Multiply( T );
 
     int refId = instanceObj->prototype;
-    auto comparator = [refId](const Handle(asiAsm_SceneTree_Child)& c)
+    auto comparator = [refId](const Handle(asiAsm_SceneTree_Object)& c)
     {
       return c->id == refId;
     };
@@ -1031,7 +1076,8 @@ void iterateInDepth(const std::vector<Handle(asiAsm_SceneTree_Child)>& allSceneO
 
 void asiAsm_SceneTree::Dislay(ActAPI_PlotterEntry plotter)
 {
-  std::vector<Handle(asiAsm_SceneTree_Child)> sceneObjects;
+  std::vector<Handle(asiAsm_SceneTree_Object)> sceneObjects;
+  //
   std::copy(m_assemblies.begin(), m_assemblies.end(), back_inserter(sceneObjects));
   std::copy(m_instances.begin(),  m_instances.end(),  back_inserter(sceneObjects));
   std::copy(m_parts.begin(),      m_parts.end(),      back_inserter(sceneObjects));
@@ -1039,13 +1085,13 @@ void asiAsm_SceneTree::Dislay(ActAPI_PlotterEntry plotter)
   // iterate from top to bottom accumulating parent transformations for leaves
   for (const int& rootId : GetRoots())
   {
-    auto comparator = [rootId](const Handle(asiAsm_SceneTree_Child)& c)
+    auto comparator = [rootId](const Handle(asiAsm_SceneTree_Object)& c)
     {
       return c->id == rootId;
     };
 
     auto it = std::find_if(sceneObjects.begin(), sceneObjects.end(), comparator);
-    Handle(asiAsm_SceneTree_Child) root = *it;
+    Handle(asiAsm_SceneTree_Object) root = *it;
 
     // Iterate scene tree until parts, while iterating gather all parent's transformation
     // to apply them to parts and then draw the parts in the given plotter.

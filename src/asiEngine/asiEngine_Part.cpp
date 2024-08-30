@@ -858,6 +858,13 @@ Handle(asiAlgo_BVHFacets) asiEngine_Part::BuildBVH(const asiAlgo_BVHBuilderType 
 
 //-----------------------------------------------------------------------------
 
+Handle(asiAlgo_BVHFacets) asiEngine_Part::BuildBVH(const bool store)
+{
+  return BuildBVH(BVHBuilder_Binned, store);
+}
+
+//-----------------------------------------------------------------------------
+
 void asiEngine_Part::Clean(const bool cleanMeta,
                            const bool resetUVScaling)
 {

@@ -39,9 +39,10 @@
 #include <memory>
 
 // Forward declarations.
-class asiAsm_SceneTree_Child;
+class asiAsm_SceneTree_Object;
 class asiAsm_SceneTree_Part;
 class asiAsm_SceneTree_Assembly;
+class asiAsm_SceneTree_Prototype;
 class asiAsm_SceneTree_Instance;
 
 //-----------------------------------------------------------------------------
@@ -61,7 +62,7 @@ public:
   //! \param[in]  in   the input stream containing description of the structure.
   //! \param[out] info the outcome data structure.
   asiAsm_EXPORT static void
-    FromJSON(std::ifstream&     in,
+    FromJSON(std::ifstream&    in,
              asiAsm_SceneTree& info);
 
   //! Constructs the scene tree structure from a JSON object.
@@ -103,21 +104,25 @@ public:
 
 public:
 
-  //! Get assemblies.
+  //! \return all assemblies.
   asiAsm_EXPORT const std::vector<Handle(asiAsm_SceneTree_Assembly)>&
     GetAssemblies() const;
 
-  //! Get instances.
+  //! \return all instances.
   asiAsm_EXPORT const std::vector<Handle(asiAsm_SceneTree_Instance)>&
     GetInstances() const;
 
-  //! Get parts.
+  //! \return all parts.
   asiAsm_EXPORT const std::vector<Handle(asiAsm_SceneTree_Part)>&
     GetParts() const;
 
-  //! Get roots.
+  //! \return all root IDs.
   asiAsm_EXPORT const std::vector<int>&
     GetRoots() const;
+
+  //! \return all prototypes.
+  asiAsm_EXPORT std::vector<Handle(asiAsm_SceneTree_Prototype)>
+    GetPrototypes() const;
 
 private:
 
@@ -131,7 +136,7 @@ private:
   void populate(const Handle(asiAsm::xde::Doc)&   doc,
                 const Handle(asiAsm::xde::Graph)& graph,
                 const int                         parentId,
-                Handle(asiAsm_SceneTree_Child)&   parent,
+                Handle(asiAsm_SceneTree_Object)&  parent,
                 const std::string&                path,
                 const bool                        doDumpShapes);
 
@@ -141,11 +146,11 @@ private:
   //! \param[in] child    pointer to child.
   //! \param[in] childId  child id.
   //! \param[in] path     assembly item id of the child.
-  void getChildInfo(const Handle(asiAsm::xde::Doc)&       doc,
-                    const Handle(asiAsm::xde::Graph)&     graph,
-                    const Handle(asiAsm_SceneTree_Child)& child,
-                    const int                             childId,
-                    const std::string&                    path);
+  void getChildInfo(const Handle(asiAsm::xde::Doc)&        doc,
+                    const Handle(asiAsm::xde::Graph)&      graph,
+                    const Handle(asiAsm_SceneTree_Object)& child,
+                    const int                              childId,
+                    const std::string&                     path);
 
   //! Cleans previously saved data.
   void cleanUpData();

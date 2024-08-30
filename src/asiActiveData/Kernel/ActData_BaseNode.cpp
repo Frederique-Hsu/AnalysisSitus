@@ -422,6 +422,13 @@ int ActData_BaseNode::GetChildren(Handle(ActAPI_HNodeList)& theChildren) const
   return res;
 }
 
+//! \return true if this Node has any child Nodes.
+bool ActData_BaseNode::HasChildren() const
+{
+  Handle(ActAPI_IChildIterator) cit = this->GetChildIterator();
+  return cit->More();
+}
+
 //! Adds a child Node to this one.
 //! \param theNode [in] child Node to add.
 void ActData_BaseNode::AddChildNode(const Handle(ActAPI_INode)& theNode)

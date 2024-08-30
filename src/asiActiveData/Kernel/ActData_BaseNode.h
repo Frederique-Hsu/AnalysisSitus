@@ -338,6 +338,9 @@ public:
   ActData_EXPORT virtual int
     GetChildren(Handle(ActAPI_HNodeList)& theChildren) const;
 
+  ActData_EXPORT virtual bool
+    HasChildren() const;
+
   ActData_EXPORT virtual void
     AddChildNode(const Handle(ActAPI_INode)& theNode);
 
