@@ -717,6 +717,8 @@ Handle(asiData_PartNode) asiEngine_Part::Update(const TopoDS_Shape&            m
   // Build AAG automatically (if not auto-build is not disabled).
   if ( part_n->IsAutoAAG() )
     aagParam->SetAAG( new asiAlgo_AAG(model) );
+  else
+    aagParam->SetAAG( nullptr ); // Since new geometry is set, AAG has to be invalidated.
 
   // Reset tessellation parameters if requested.
   if ( doResetTessParams )

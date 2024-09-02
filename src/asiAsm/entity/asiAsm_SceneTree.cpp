@@ -161,6 +161,7 @@ class asiAsm_SceneTree_Object : public Standard_Transient
     }
 
 };
+
 //-----------------------------------------------------------------------------
 
 //! Base class for prototypes in the scene tree.
