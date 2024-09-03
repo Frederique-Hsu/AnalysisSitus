@@ -1744,14 +1744,7 @@ int ENGINE_BuildOBB(const Handle(asiTcl_Interp)& interp,
   // Check if an equivalent cylinder or sphere is requested.
   const bool isCyl    = interp->HasKeyword(argc, argv, "cyl");
   const bool isSphere = interp->HasKeyword(argc, argv, "sphere");
-
-  if (isCyl || isSphere)
-  {
-    if (argc < 3)
-    {
-      return interp->ErrorOnWrongArgs(argv[0]);
-    }
-  }
+  const bool isOnMesh = interp->HasKeyword(argc, argv, "mesh");
 
   Handle(asiEngine_Model)
     M = Handle(asiEngine_Model)::DownCast( interp->GetModel() );
@@ -1760,34 +1753,72 @@ int ENGINE_BuildOBB(const Handle(asiTcl_Interp)& interp,
   Handle(asiData_PartNode) partNode = M->GetPartNode();
 
   // Build OBB.
-  asiAlgo_BuildOBB mkOBB(partNode->GetAAG());
+  tl::optional<asiAlgo_OBB> obb;
   //
-  if ( !mkOBB.Perform() )
+  if ( !isOnMesh )
   {
-    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Operation failed.");
-    return TCL_ERROR;
+    asiAlgo_BuildOBB mkObb( partNode->GetAAG(),
+                            interp->GetProgress()/*,
+                            interp->GetPlotter()*/ );
+    //
+    if ( !mkObb.Perform() )
+    {
+      interp->GetProgress().SendLogMessage(LogErr(Normal) << "Failed to compute OBB.");
+      return TCL_ERROR;
+    }
+    //
+    obb = mkObb.GetResult();
+  }
+  else
+  {
+    asiAlgo_MeshOBB mkObb( partNode->GetShape(),
+                           interp->GetProgress()/*,
+                           interp->GetPlotter()*/ );
+    //
+    if ( !mkObb.Perform() )
+    {
+      interp->GetProgress().SendLogMessage(LogErr(Normal) << "Failed to compute OBB on mesh.");
+      return TCL_ERROR;
+    }
+    //
+    obb = mkObb.GetResult();
   }
 
-  // Get OBB data structure.
-  const asiAlgo_OBB& obb = mkOBB.GetResult();
+  if ( !obb.has_value() )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "OBB was not constructed.");
+    return TCL_ERROR;
+  }
 
   // Get result shape.
   TopoDS_Shape obbShape;
   //
   if ( isCyl )
   {
-    obbShape = obb.BuildCircumscribedCylinder();
+    obbShape = obb->BuildCircumscribedCylinder();
   }
-  else if (isSphere)
+  else if ( isSphere )
   {
-    obbShape = obb.BuildCircumscribedSphere();
+    obbShape = obb->BuildCircumscribedSphere();
   }
   else
   {
-    obbShape = mkOBB.GetResultBox();
+    obbShape = obb->BuildSolid();
   }
 
   interp->GetPlotter().REDRAW_SHAPE(argv[1], obbShape, Color_Yellow, 1.0, true);
+
+  gp_Pnt Pmin = obb->LocalCornerMin;
+  gp_Pnt Pmax = obb->LocalCornerMax;
+  //
+  const double dx = Pmax.X() - Pmin.X();
+  const double dy = Pmax.Y() - Pmin.Y();
+  const double dz = Pmax.Z() - Pmin.Z();
+
+  interp->GetProgress().SendLogMessage(LogInfo(Normal) << "\n\t obbDx = %1"
+                                                          "\n\t obbDy = %2"
+                                                          "\n\t obbDz = %3"
+                                                       << dx << dy << dz);
 
   return TCL_OK;
 }
@@ -2653,10 +2684,12 @@ void cmdEngine::Commands_Modeling(const Handle(asiTcl_Interp)&      interp,
   //-------------------------------------------------------------------------//
   interp->AddCommand("build-obb",
     //
-    "build-obb <res> [-cyl] [-sphere]\n"
+    "build-obb <res> [-cyl] [-sphere] [-mesh]\n"
     "\t Builds the oriented bounding box (OBB) for the active part.\n"
     "\t If the '-cyl' or '-sphere' flag is passed, the constructed OBB is turned\n"
-    "\t into an circumscribed cylinder or sphere.",
+    "\t into an circumscribed cylinder or sphere. If the '-mesh' argument is\n"
+    "\t provided, then OBB is built using principal component analysis for a\n"
+    "\t covariance matrix over the part's triangulation.",
     //
     __FILE__, group, ENGINE_BuildOBB);
 

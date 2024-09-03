@@ -51,9 +51,9 @@
 asiAlgo_BuildOBB::asiAlgo_BuildOBB(const Handle(asiAlgo_AAG)& aag,
                                    ActAPI_ProgressEntry       progress,
                                    ActAPI_PlotterEntry        plotter)
-  //
-  : ActAPI_IAlgorithm(progress, plotter),
-    m_aag(aag)
+//
+: ActAPI_IAlgorithm(progress, plotter),
+  m_aag(aag)
 {
 }
 
@@ -61,31 +61,34 @@ asiAlgo_BuildOBB::asiAlgo_BuildOBB(const Handle(asiAlgo_AAG)& aag,
 
 bool asiAlgo_BuildOBB::Perform()
 {
-  // Find a better orientation.
+  // Find a better orientation of the B-rep shape based on "feature hints".
   asiAlgo_OrientCnc orient(m_aag);
   //
-  if (!orient.Perform())
+  if ( !orient.Perform() )
   {
     return false;
   }
 
-  // Make another shape.
-  BRepBuilderAPI_Transform transform = BRepBuilderAPI_Transform(orient.GetTrsf());
+  // Make the transformed shape.
+  BRepBuilderAPI_Transform
+    transform = BRepBuilderAPI_Transform( orient.GetTrsf() );
+  //
   transform.Perform(m_aag->GetMasterShape(), true);
   //
   const TopoDS_Shape& oriented = transform.Shape();
   //
   tl::optional<gp_Ax3> ax = orient.GetAxes();
-  //
-  ax->Transform(orient.GetTrsf());
-  //
+
+  // Oriented bounds.
   double xMin, yMin, zMin, xMax, yMax, zMax;
   asiAlgo_Utils::Bounds(oriented, xMin, yMin, zMin, xMax, yMax, zMax);
+
   // Protect from degenerated bbox.
   const double precision = Precision::Confusion();
-  if (Abs(xMin - xMax) < precision ||
-      Abs(yMin - yMax) < precision ||
-      Abs(zMin - zMax) < precision)
+  //
+  if ( Abs(xMin - xMax) < precision ||
+       Abs(yMin - yMax) < precision ||
+       Abs(zMin - zMax) < precision )
   {
     xMin -= precision;
     yMin -= precision;
@@ -95,14 +98,32 @@ bool asiAlgo_BuildOBB::Perform()
     zMax += precision;
   }
 
-  // Set placement and corner positions to the result.
   gp_Pnt corner_min = gp_XYZ(xMin, yMin, zMin);
   gp_Pnt corner_max = gp_XYZ(xMax, yMax, zMax);
-  //
-  if (ax)
+
+  /* Visual diagnostics */
+  {
+    const double scale = Max(Max(xMax - xMin, yMax - yMin), zMax - zMin)*0.1;
+
+    m_plotter.REDRAW_SHAPE("oriented", oriented);
+    m_plotter.REDRAW_AXES("orientAxes",
+                           ax->Location(),
+                           ax->XDirection(),
+                           ax->YDirection(),
+                           ax->Direction(),
+                           scale);
+    m_plotter.REDRAW_POINT("corner_min", corner_min, Color_Red);
+    m_plotter.REDRAW_POINT("corner_max", corner_max, Color_Green);
+  }
+
+  //ax->Transform(orient.GetTrsf());
+
+  // Set placement and corner positions to the result.
+  if ( ax )
   {
     m_obb.Placement = *ax;
   }
+  //
   m_obb.Trsf           = orient.GetTrsf();
   m_obb.LocalCornerMin = corner_min;
   m_obb.LocalCornerMax = corner_max;

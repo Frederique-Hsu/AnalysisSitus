@@ -81,6 +81,12 @@ struct asiAlgo_OBB
   asiAlgo_EXPORT TopoDS_Shape
     BuildSolid(gp_Trsf& T) const;
 
+  //! Creates a topological solid representing the oriented bounding box. This
+  //! solid will be positioned according to the known placement.
+  //! \return the constructed solid.
+  asiAlgo_EXPORT TopoDS_Shape
+    BuildSolid() const;
+
   //! Builds a medial line segment representing the longer OBB axis.
   //! \param[out] P1 the first point on the axial range.
   //! \param[out] P2 the second point on the axial range.

@@ -82,6 +82,15 @@ TopoDS_Shape asiAlgo_OBB::BuildSolid(gp_Trsf& T) const
 
 //-----------------------------------------------------------------------------
 
+TopoDS_Shape asiAlgo_OBB::BuildSolid() const
+{
+  gp_Trsf T;
+
+  return this->BuildSolid(T);
+}
+
+//-----------------------------------------------------------------------------
+
 void asiAlgo_OBB::BuildMedialAxis(gp_Pnt& P1,
                                   gp_Pnt& P2) const
 {
