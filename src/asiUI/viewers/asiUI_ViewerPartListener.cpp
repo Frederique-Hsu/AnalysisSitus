@@ -314,6 +314,12 @@ void asiUI_ViewerPartListener::onFacePicked(asiVisu_PickerResult* pickRes)
   if ( sel.IsEmpty() )
     return;
 
+  if ( geom_n->GetAAG().IsNull() )
+  {
+    m_progress.SendLogMessage( LogErr(Normal) << "Null AAG. Part data is incomplete." );
+    return;
+  }
+
   // Get sub-shapes map.
   const TopTools_IndexedMapOfShape&
     allSubShapes = geom_n->GetAAG()->RequestMapOfSubShapes();
