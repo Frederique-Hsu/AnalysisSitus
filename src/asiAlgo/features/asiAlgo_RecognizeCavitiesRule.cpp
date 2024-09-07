@@ -54,6 +54,36 @@
 // Defines maximum number of elements in the feature.
 const static int MaxNumOfFeatureFaces = 100;
 
+namespace
+{
+  //! Checks if the passed `edges` all belongs to the outer wire.
+  bool AreOnOuterWire(const TopTools_IndexedMapOfShape& edges,
+                      const TopoDS_Wire&                outerWire)
+  {
+    TopTools_IndexedMapOfShape edgesOW; // Edges on outer wire.
+    TopExp::MapShapes(outerWire, TopAbs_EDGE, edgesOW);
+
+    // Check that all edges are on outer wire of neighbor.
+    bool isOnOuter = true;
+    //
+    for ( TopTools_IndexedMapOfShape::Iterator eit(edges); eit.More(); eit.Next() )
+    {
+      if ( !edgesOW.Contains( eit.Value() ) )
+      {
+        isOnOuter = false;
+        break;
+      }
+    }
+    //
+    if ( isOnOuter )
+    {
+      return true;
+    }
+
+    return false;
+  }
+}
+
 //-----------------------------------------------------------------------------
 
 asiAlgo_RecognizeCavitiesRule::asiAlgo_RecognizeCavitiesRule(const Handle(asiAlgo_AAGIterator)& it,
@@ -188,6 +218,32 @@ void asiAlgo_RecognizeCavitiesRule::propagate(const int                   startI
       const int          nid   = nit.Key();
       const TopoDS_Face& nFace = m_it->GetGraph()->GetFace(nid);
 
+      asiAlgo_AAG::t_arc arc(fid, nid);
+
+      // Connecting edges.
+      Handle(asiAlgo_FeatureAttrAdjacency)
+        adjacencyEdges = m_it->GetGraph()->ATTR_ARC<asiAlgo_FeatureAttrAdjacency>(arc);
+      //
+      TopTools_IndexedMapOfShape edges;
+      adjacencyEdges->GetEdges(edges);
+
+      // Check that we are not getting back to the seed face via its outer wire.
+      // Such a transition would mean that our feature badly propagates over the
+      // surface of the model, e.g. like in `recognize-cavities/A34.tcl` for
+      // the `start` face 1 and `fid` 22.
+      if ( nid == startId )
+      {
+        const TopoDS_Wire* wirePtr   = m_mapFaceOuterWire.Seek(nFace);
+        const TopoDS_Wire  outerWire = ( wirePtr ) ? (*wirePtr)
+                                                   : asiAlgo_Utils::CacheOuterWire( nid, m_it->GetGraph() );
+        //
+        if ( ::AreOnOuterWire(edges, outerWire) )
+        {
+          isOk = false;
+          return;
+        }
+      }
+
       if ( (startId == nid) || seedIds.Contains(nid) )
         continue; // Do not look back.
 
@@ -197,35 +253,12 @@ void asiAlgo_RecognizeCavitiesRule::propagate(const int                   startI
       if ( nextIterIds.Contains(nid) )
         continue; // Skip faces that will be checked later on recursively.
 
-      asiAlgo_AAG::t_arc arc(fid, nid);
-
-      // Connecting edges.
-      Handle(asiAlgo_FeatureAttrAdjacency)
-        feature = m_it->GetGraph()->ATTR_ARC<asiAlgo_FeatureAttrAdjacency>(arc);
-
-      TopTools_IndexedMapOfShape edges;
-      feature->GetEdges(edges);
-
       const TopoDS_Wire* wirePtr   = m_mapFaceOuterWire.Seek(nFace);
       const TopoDS_Wire  outerWire = ( wirePtr ) ? (*wirePtr)
                                                  : asiAlgo_Utils::CacheOuterWire( nid, m_it->GetGraph() );
 
-      TopTools_IndexedMapOfShape edgesOW; // Edges on outer wire.
-      TopExp::MapShapes(outerWire, TopAbs_EDGE, edgesOW);
-
-      // Check that all edges are on outer wire of neighbor.
-      bool isOnOuter = true;
-      //
-      for ( TopTools_IndexedMapOfShape::Iterator eit(edges); eit.More(); eit.Next() )
-      {
-        if ( !edgesOW.Contains( eit.Value() ) )
-        {
-          isOnOuter = false;
-          break;
-        }
-      }
-
-      if ( isOnOuter )
+      // Check if the edges are all included to the outer wire of neighbor.
+      if ( ::AreOnOuterWire(edges, outerWire) )
       {
         nextIterIds.Add(nid);
       }
