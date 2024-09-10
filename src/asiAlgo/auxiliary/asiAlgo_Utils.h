@@ -1486,19 +1486,21 @@ namespace asiAlgo_Utils
   //!
   //! \sa https://quaoar.su/blog/page/outerwire-problem-of-opencascade
   //!
-  //! \param[in]  F    the face in question.
-  //! \param[in]  W    the wire in question.
-  //! \param[out] umin the U min value.
-  //! \param[out] umax the U max value.
-  //! \param[out] vmin the V min value.
-  //! \param[out] vmax the V max value.
+  //! \param[in]  F       the face in question.
+  //! \param[in]  W       the wire in question.
+  //! \param[out] umin    the computed U min value.
+  //! \param[out] umax    the computed U max value.
+  //! \param[out] vmin    the computed V min value.
+  //! \param[out] vmax    the computed V max value.
+  //! \param[in]  plotter the optional imperative plotter for visual dumps.
   asiAlgo_EXPORT void
-    ComputeWireUVBounds(const TopoDS_Face& F,
-                        const TopoDS_Wire& W,
-                        double&            umin,
-                        double&            umax,
-                        double&            vmin,
-                        double&            vmax);
+    ComputeWireUVBounds(const TopoDS_Face&  F,
+                        const TopoDS_Wire&  W,
+                        double&             umin,
+                        double&             umax,
+                        double&             vmin,
+                        double&             vmax,
+                        ActAPI_PlotterEntry plotter = nullptr);
 
   //! Handles getting UV bounds of faces using the AAG as a cache.
   //! \param[in]  fid  the AAG node id of the face.

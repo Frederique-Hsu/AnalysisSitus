@@ -2749,12 +2749,13 @@ double asiAlgo_Utils::ComputeArea(const TopoDS_Shape& shape)
 
 //-----------------------------------------------------------------------------
 
-void asiAlgo_Utils::ComputeWireUVBounds(const TopoDS_Face& F,
-                                        const TopoDS_Wire& W,
-                                        double&            umin,
-                                        double&            umax,
-                                        double&            vmin,
-                                        double&            vmax)
+void asiAlgo_Utils::ComputeWireUVBounds(const TopoDS_Face&  F,
+                                        const TopoDS_Wire&  W,
+                                        double&             umin,
+                                        double&             umax,
+                                        double&             vmin,
+                                        double&             vmax,
+                                        ActAPI_PlotterEntry plotter)
 {
   TopoDS_Face FF = F;
   TopoDS_Wire WW = W;
@@ -2779,7 +2780,7 @@ void asiAlgo_Utils::ComputeWireUVBounds(const TopoDS_Face& F,
     if ( !sae.PCurve(edge, F, c2d, f, l, false) )
       continue;
 
-    sac.FillBndBox(c2d, f, l, 20, true, B);
+    sac.FillBndBox(c2d, f, l, 20, false, B);
   }
 
   B.Get(umin, vmin, umax, vmax);
