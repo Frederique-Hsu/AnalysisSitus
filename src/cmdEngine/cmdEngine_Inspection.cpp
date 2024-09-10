@@ -3754,7 +3754,7 @@ int ENGINE_GetOuterWire(const Handle(asiTcl_Interp)& interp,
     const int          fid  = fit.Key();
     const TopoDS_Face& face = aag->GetFace(fid);
 
-    TopoDS_Wire wire = BRepTools::OuterWire(face);
+    TopoDS_Wire wire = asiAlgo_Utils::ComputeOuterWire( face, interp->GetPlotter() );
 
     if ( selected.Extent() == 1 )
       interp->GetPlotter().REDRAW_SHAPE(argv[1], wire, Color_Default, 1., true);

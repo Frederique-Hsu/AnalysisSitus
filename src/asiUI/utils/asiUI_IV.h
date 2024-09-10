@@ -250,6 +250,18 @@ public:
                 const double) override;
 
   asiUI_EXPORT virtual void
+    DRAW_RECT(const gp_Pnt2d&,
+              const gp_Pnt2d&,
+              const ActAPI_Color&,
+              const t_extString&) override;
+
+  asiUI_EXPORT virtual void
+    REDRAW_RECT(const t_extString&,
+                const gp_Pnt2d&,
+                const gp_Pnt2d&,
+                const ActAPI_Color&) override;
+
+  asiUI_EXPORT virtual void
     DRAW_CURVE(const Handle(Geom_Curve)&,
                const ActAPI_Color&,
                const t_extString&) override;

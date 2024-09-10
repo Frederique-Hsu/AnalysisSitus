@@ -170,6 +170,7 @@ typedef rapidjson::Document::Object    t_jsonObject;
 #include <TopTools_HSequenceOfShape.hxx>
 #include <TopTools_ListIteratorOfListOfShape.hxx>
 #include <TopTools_MapOfShape.hxx>
+#include <ShapeAnalysis_Curve.hxx>
 #include <ShapeAnalysis_FreeBounds.hxx>
 
 // For offscreen rendering
@@ -2744,6 +2745,44 @@ double asiAlgo_Utils::ComputeArea(const TopoDS_Shape& shape)
   BRepGProp::SurfaceProperties(shape, props, 1.0e-2);
   //
   return props.Mass();
+}
+
+//-----------------------------------------------------------------------------
+
+void asiAlgo_Utils::ComputeWireUVBounds(const TopoDS_Face& F,
+                                        const TopoDS_Wire& W,
+                                        double&            umin,
+                                        double&            umax,
+                                        double&            vmin,
+                                        double&            vmax)
+{
+  TopoDS_Face FF = F;
+  TopoDS_Wire WW = W;
+  FF.Orientation(TopAbs_FORWARD);
+  WW.Orientation(TopAbs_FORWARD);
+
+  TopExp_Explorer ex(WW,TopAbs_EDGE);
+  if ( !ex.More() )
+  {
+    return;
+  }
+
+  Bnd_Box2d B;
+  ShapeAnalysis_Edge sae;
+  ShapeAnalysis_Curve sac;
+  for ( ;ex.More(); ex.Next() )
+  {
+    const TopoDS_Edge& edge = TopoDS::Edge( ex.Current() );
+    Handle(Geom2d_Curve) c2d;
+    double f, l;
+    //
+    if ( !sae.PCurve(edge, F, c2d, f, l, false) )
+      continue;
+
+    sac.FillBndBox(c2d, f, l, 20, true, B);
+  }
+
+  B.Get(umin, vmin, umax, vmax);
 }
 
 //-----------------------------------------------------------------------------
@@ -5627,7 +5666,8 @@ gp_XYZ asiAlgo_Utils::ComputeAveragePoint(const std::vector<gp_XYZ>& pts)
 
 //-----------------------------------------------------------------------------
 
-TopoDS_Wire asiAlgo_Utils::ComputeOuterWire(const TopoDS_Face& face)
+TopoDS_Wire asiAlgo_Utils::ComputeOuterWire(const TopoDS_Face&  face,
+                                            ActAPI_PlotterEntry plotter)
 {
   const double prec = Precision::PConfusion();
 
@@ -5642,12 +5682,16 @@ TopoDS_Wire asiAlgo_Utils::ComputeOuterWire(const TopoDS_Face& face)
     {
       double UMin, UMax, VMin, VMax;
       double umin, umax, vmin, vmax;
-      BRepTools::UVBounds(face, Wres, UMin, UMax, VMin, VMax);
+      ComputeWireUVBounds(face, Wres, UMin, UMax, VMin, VMax);
+
+      plotter.DRAW_RECT( gp_Pnt2d(UMin, VMin), gp_Pnt2d(UMax, VMax), Color_White, "uvBounds" );
 
       while ( expw.More() )
       {
         const TopoDS_Wire& W = TopoDS::Wire( expw.Current() );
-        BRepTools::UVBounds(face, W, umin, umax, vmin, vmax);
+        ComputeWireUVBounds(face, W, umin, umax, vmin, vmax);
+
+        plotter.DRAW_RECT( gp_Pnt2d(umin, vmin), gp_Pnt2d(umax, vmax), Color_White, "uvBounds" );
 
         if ( (umin < UMin || Abs(umin - UMin) < prec) &&
              (umax > UMax || Abs(umax - UMax) < prec) &&

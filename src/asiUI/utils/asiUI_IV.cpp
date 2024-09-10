@@ -668,6 +668,44 @@ void asiUI_IV::REDRAW_AXES(const t_extString& name,
 
 //---------------------------------------------------------------------------//
 
+void asiUI_IV::DRAW_RECT(const gp_Pnt2d&     Pmin,
+                         const gp_Pnt2d&     Pmax,
+                         const ActAPI_Color& color,
+                         const t_extString&  name)
+{
+  std::vector<gp_XY>
+    poles = { gp_XY( Pmin.X(), Pmin.Y() ),
+              gp_XY( Pmax.X(), Pmin.Y() ),
+              gp_XY( Pmax.X(), Pmax.Y() ),
+              gp_XY( Pmin.X(), Pmax.Y() ),
+              gp_XY( Pmin.X(), Pmin.Y() ) };
+
+  Handle(Geom2d_Curve) curve = asiAlgo_Utils::PolylineAsSpline(poles);
+
+  this->DRAW_CURVE2D(curve, color, name);
+}
+
+//---------------------------------------------------------------------------//
+
+void asiUI_IV::REDRAW_RECT(const t_extString&  name,
+                           const gp_Pnt2d&     Pmin,
+                           const gp_Pnt2d&     Pmax,
+                           const ActAPI_Color& color)
+{
+  std::vector<gp_XY>
+    poles = { gp_XY( Pmin.X(), Pmin.Y() ),
+              gp_XY( Pmax.X(), Pmin.Y() ),
+              gp_XY( Pmax.X(), Pmax.Y() ),
+              gp_XY( Pmin.X(), Pmax.Y() ),
+              gp_XY( Pmin.X(), Pmin.Y() ) };
+
+  Handle(Geom2d_Curve) curve = asiAlgo_Utils::PolylineAsSpline(poles);
+
+  this->REDRAW_CURVE2D(name, curve, color);
+}
+
+//---------------------------------------------------------------------------//
+
 void asiUI_IV::DRAW_CURVE(const Handle(Geom_Curve)& curve,
                           const ActAPI_Color&       color,
                           const t_extString&        name)
