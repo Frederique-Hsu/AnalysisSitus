@@ -124,6 +124,34 @@ namespace asiAlgo_PartBodyTypeUtils
     return false;
   }
 
+  //! Checks if the passed enum encodes pipe bending process.
+  //! \param[in] type object type to check.
+  //! \return true/false.
+  inline bool IsBentPipe(const asiAlgo_PartBodyType type)
+  {
+    switch ( type )
+    {
+      case PartBodyType_RoundBentTube:
+      case PartBodyType_RectangularBentTube:
+      case PartBodyType_BentWire:
+        return true;
+      case PartBodyType_FlatShape:
+      case PartBodyType_FoldedSheetMetal:
+      case PartBodyType_RectTube:
+      case PartBodyType_CylTube:
+      case PartBodyType_OtherTube:
+      case PartBodyType_Profile:
+      case PartBodyType_Unrecognized:
+      case PartBodyType_CncMilling:
+      case PartBodyType_CncLathe:
+      case PartBodyType_CncLatheMilling:
+        return false;
+      default: break;
+    }
+
+    return false;
+  }
+
   //! Checks if the passed enum encodes a sheet metal.
   //! \param[in] type object type to check.
   //! \return true/false.
