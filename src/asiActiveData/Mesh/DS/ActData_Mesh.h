@@ -114,6 +114,10 @@ public:
 
 public:
 
+  //! Constructs a deep copy of this mesh.
+  ActData_EXPORT Handle(ActData_Mesh)
+    DeepCopy() const;
+
   //! Construct Poly_Triangulation from internal representation of mesh.
   //! return Poly_Triangulation.
   ActData_EXPORT Handle(Poly_Triangulation) GetPolyTriangulation();

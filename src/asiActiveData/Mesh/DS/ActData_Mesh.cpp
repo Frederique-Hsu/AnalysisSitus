@@ -85,6 +85,38 @@ ActData_Mesh::ActData_Mesh(const int nbnodes,
 }
 
 //=======================================================================
+//function : DeepCopy
+//=======================================================================
+
+Handle(ActData_Mesh) ActData_Mesh::DeepCopy() const
+{
+  Handle(ActData_Mesh) result = new ActData_Mesh;
+
+  // Copy nodes.
+  for ( ActData_Mesh_ElementsIterator nit(this, ActData_Mesh_ET_Node); nit.More(); nit.Next() )
+  {
+    const Handle(ActData_Mesh_Node)&
+      node = Handle(ActData_Mesh_Node)::DownCast( nit.GetValue() );
+    //
+    const int     nodeId = node->GetID();
+    const gp_XYZ& xyz    = node->Pnt().XYZ();
+
+    // Add node to the resulting mesh.
+    result->AddNodeWithID(xyz.X(), xyz.Y(), xyz.Z(), nodeId);
+  }
+
+  // Copy elements.
+  for ( ActData_Mesh_ElementsIterator it(this, ActData_Mesh_ET_Face); it.More(); it.Next() )
+  {
+    const Handle(ActData_Mesh_Element)& E = it.GetValue();
+
+    result->AddElementWithID( E, E->GetID() );
+  }
+
+  return result;
+}
+
+//=======================================================================
 //function : GetPolyTriangulation
 //purpose  : construct Poly_Triangulation from internal representation of
 //           mesh.
