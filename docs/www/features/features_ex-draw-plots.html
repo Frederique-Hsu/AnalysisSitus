@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Analysis Situs: draw plots</title>
+  <link rel="shortcut icon" type="image/png" href="../imgs/favicon.png"/>
+  <link rel="stylesheet" type="text/css" href="../css/situ-main-style.css">
+
+  <!-- [begin] Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-112292727-2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-112292727-2');
+  </script>
+  <!-- [end] Google Analytics -->
+
+ </head>
+<body>
+
+<a name="top"></a> <!-- anchor for 'back to top' link -->
+<table width="100%"><tr><td>
+<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+  <td align="left" class="header">
+    <span class="header-logo"><a href="../index.html" class="header-href">Analysis&nbsp;Situs</a></span>
+    &nbsp;
+    ./<a class="header-href" href="../features.html">features</a>/draw plots
+  </td>
+</tr>
+</table>
+<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+  <td class="header-menu"><a href='http://quaoar.su/blog/page/analysis-situs'>Download</a></td>
+  <td class="header-menu"><a href="../features.html">Features</a></td>
+  <td class="header-menu"><a href="https://gitlab.com/ssv/AnalysisSitus">Source code</a></td>
+  <td class="header-menu"><a href="http://analysissitus.org/forum/index.php">Forum</a></td>
+  <td class="header-menu"><a href="http://quaoar.su/blog/contact">Ask for support</a></td>
+</tr>
+</table>
+</td></tr></table>
+
+<div class="content-body">
+<!-- [BEGIN] contents -->
+
+<h1>Draw plots</h1>
+
+<p>
+  To generate a two-dimensional plot filled with one or more functions, use the <span class="code-inline">draw-plot</span> Tcl command. With this command, we can prepare graphs for further analysis and also for scientific publication (as they can be dumped to SVG format). Example of command usage:
+</p>
+
+<pre class="code">
+  draw-plot 1 0.083579 2 0.143794 3 2.306677 4 5.008208 6 3.694496 7 4.674164
+</pre>
+
+<p>
+  This command generates the following chart:
+</p>
+
+<div align="center"><a href="../imgs/draw-plot_01.png"><img src="../imgs/draw-plot_01.png" width="60%"/></a></div>
+
+<p>
+  We frequently collect execution time measurements during heavy algorithm runs and provide the results as a graphic for additional analysis. To capture execution time measurements, the following C++ code is quite useful:
+</p>
+
+<pre class="code">
+  TIMER_NEW
+  TIMER_GO
+  
+  // Run your algorithm
+  
+  TIMER_FINISH
+  TIMER_COUT_RESULT_NOTIFIER(progress, "Algorithm")
+  
+  // Compute the elapsed time in seconds.
+  const double elapsedTime = __aux_debug_Seconds
+                           + 60*__aux_debug_Minutes
+                           + 60*60*__aux_debug_Hours;
+</pre>
+
+<p>
+  The collected <span class="code-inline">elapsedTime</span> values can be dumped to a text file like the following code snippet shows:
+</p>
+
+<pre class="code">
+  static int __caseId = 0; __caseId++;
+  {
+    FILE* __pFile;
+    errno_t err;
+    err = fopen_s(&__pFile, "C:/users/serge/Desktop/timelog.txt", "a"); // !!! Change path
+    if ( err == 0 )
+    {
+      fprintf(__pFile, "\n %d %f", __caseId, elapsedTime);
+      fclose(__pFile);
+    }
+  }
+</pre>
+
+<p>
+  The contents of the <span class="code-inline">timelog.txt</span> file can then be rendered as a plot.
+</p>
+
+<div align="center"><a href="../imgs/draw-plot_02.png"><img src="../imgs/draw-plot_02.png" width="60%"/></a></div>
+
+<p>
+  To dump several charts at once, use the <span class="code-inline">-numFunc &lt;numFunc&gt;</span> parameter, followed by the number of functions being plotted. In this case, each argument value of <span class="code-inline">x</span> should be followed by precisely <span class="code-inline">&lt;numFunc&gt;</span> values of the functions to plot.
+</p>
+
+<div align="center"><a href="../imgs/draw-plot_03.png"><img src="../imgs/draw-plot_03.png" width="60%"/></a></div>
+
+<p>
+  Example:
+</p>
+
+<pre class="code">
+  draw-plot 1 0.08 0.9 2 0.14 0.16 3 2.3 4.2 4 5.0 3.0 -numFunc 2
+</pre>
+
+<p>
+  It should be noted that the <span class="code-inline">-numFunc &lt;numFunc&gt;</span> parameter should be specified at the very end of the list of command's arguments.
+</p>
+
+<!-- [END] contents -->
+</div>
+<br/>
+<table class="footer" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+  <td>
+    Copyright &copy; Analysis&nbsp;Situs 2015-present &nbsp; | &nbsp; <a class="footer-href" href="#top">^^^</a>  &nbsp; | &nbsp; <a href="http://quaoar.su/blog/contact" class="footer-href">contact us</a> &nbsp; | &nbsp; <a href="https://www.youtube.com/channel/UCc0exKIoqbeOSqKoc1RnfBQ" class="icon brands fa-youtube"></a> &nbsp; | &nbsp; <a href="https://quaoar.su" class="icon brands fa-medium"></a> &nbsp; | &nbsp; <a href="https://www.linkedin.com/in/sergey-slyadnev-277496b1" class="icon brands fa-linkedin"></a>
+  </td>
+</tr>
+</table>
+
+</body>
+</html>

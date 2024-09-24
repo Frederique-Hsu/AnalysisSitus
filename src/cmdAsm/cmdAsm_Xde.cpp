@@ -890,6 +890,14 @@ int ASMXDE_SaveGLTF(const Handle(asiTcl_Interp)& interp,
   TCollection_AsciiString ext = filename;
   ext.LowerCase();
 
+  // Get optional scaling coefficient.
+  double scaleCoeff = 1.;
+  interp->GetKeyValue(argc, argv, "scale", scaleCoeff);
+
+  // Get optional part ID.
+  PersistentId partId;
+  interp->GetKeyValue(argc, argv, "part", partId);
+
   // Get the XDE document.
   Handle(asiTcl_Variable) var = interp->GetVar(name);
   //
@@ -901,7 +909,27 @@ int ASMXDE_SaveGLTF(const Handle(asiTcl_Interp)& interp,
   }
   //
   Handle(cmdAsm_XdeModel) xdeModel = Handle(cmdAsm_XdeModel)::DownCast(var);
-  Handle(Doc)             doc      = xdeModel->GetDocument();
+  Handle(Doc)             asmDoc   = xdeModel->GetDocument();
+
+  // Decide which document to export.
+  Handle(Doc) doc;
+  //
+  if ( partId.IsEmpty() )
+  {
+    doc = asmDoc;
+    interp->GetProgress().SendLogMessage(LogInfo(Normal) << "Entire assembly is being exported.");
+  }
+  else
+  {
+    PartId pid(partId);
+    TopoDS_Shape partShape = asmDoc->GetShape(pid);
+
+    doc = new Doc;
+    doc->AddPart(partShape);
+
+    interp->GetProgress().SendLogMessage(LogInfo(Normal) << "Part %1 is being exported."
+                                                         << pid);
+  }
 
   TIMER_NEW
   TIMER_GO
@@ -913,11 +941,11 @@ int ASMXDE_SaveGLTF(const Handle(asiTcl_Interp)& interp,
   cafWriter.SetTransformationFormat(glTFWriterTrsfFormat_TRS);
   cafWriter.SetForcedUVExport(false);
   //
-  //const double systemUnitFactor = UnitsMethods::GetCasCadeLengthUnit() * 0.001;
-  //cafWriter.ChangeCoordinateSystemConverter().SetInputLengthUnit(systemUnitFactor);
+  const double systemUnitFactor = UnitsMethods::GetCasCadeLengthUnit() * scaleCoeff;
+  cafWriter.ChangeCoordinateSystemConverter().SetInputLengthUnit(systemUnitFactor);
   cafWriter.ChangeCoordinateSystemConverter().SetInputCoordinateSystem(glTFCoordinateSystem_Zup);
 
-  Handle(glTFXdeDataSourceProvider) dataProvider = new glTFXdeDataSourceProvider(doc->GetDocument());
+  Handle(glTFXdeDataSourceProvider) dataProvider = new glTFXdeDataSourceProvider( doc->GetDocument() );
   if ( !cafWriter.Perform(filename, dataProvider) )
   {
     interp->GetProgress().SendLogMessage(LogErr(Normal) << "glTF export failed.");
@@ -1921,11 +1949,10 @@ void cmdAsm::Commands_XDE(const Handle(asiTcl_Interp)&      interp,
   //-------------------------------------------------------------------------//
   interp->AddCommand("asm-xde-save-gltf",
     //
-    "asm-xde-save-gltf -model <M> -filename <filename>\n"
+    "asm-xde-save-gltf -model <M> -filename <filename> [-part <partId>] [-scale <coeff>]\n"
     "\t Exports the passed XDE model to glTF format.",
     //
     __FILE__, group, ASMXDE_SaveGLTF);
-
 
   //-------------------------------------------------------------------------//
   interp->AddCommand("asm-xde-load-fbx",
