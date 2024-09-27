@@ -101,7 +101,7 @@ private:
     QPushButton*      pClose;                //!< Closes the dialog.
     QLabel*           pSelectInputFileLabel; //!< STEP file selector label.
     asiUI_SelectFile* pSelectInputFile;      //!< STEP file selector.
-    QLabel*           pSelectOuputDirLabel;  //!< Output directory selector label.
+    QLabel*           pSelectOutputDirLabel; //!< Output directory selector label.
     asiUI_SelectFile* pSelectOutputDir;      //!< Output directory selector.
     QWidget*          pProgressFrame;        //!< Progress widget.
     QProgressBar*     pProgressBar;          //!< Progress bar.
@@ -113,7 +113,7 @@ private:
                   pClose                (nullptr),
                   pSelectInputFileLabel (nullptr),
                   pSelectInputFile      (nullptr),
-                  pSelectOuputDirLabel  (nullptr),
+                  pSelectOutputDirLabel (nullptr),
                   pSelectOutputDir      (nullptr),
                   pProgressFrame        (nullptr),
                   pProgressBar          (nullptr),
@@ -127,7 +127,7 @@ private:
       delete pClose;                 pClose                = nullptr;
       delete pSelectInputFileLabel;  pSelectInputFileLabel = nullptr;
       delete pSelectInputFile;       pSelectInputFile      = nullptr;
-      delete pSelectOuputDirLabel;   pSelectOuputDirLabel  = nullptr;
+      delete pSelectOutputDirLabel;  pSelectOutputDirLabel = nullptr;
       delete pSelectOutputDir;       pSelectOutputDir      = nullptr;
       delete pProgressFrame;         pProgressFrame        = nullptr;
       delete pProgressBar;           pProgressBar          = nullptr;

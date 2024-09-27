@@ -78,13 +78,13 @@ asiUI_DialogBreakDownAssembly::asiUI_DialogBreakDownAssembly(ActAPI_ProgressEntr
                                                           this);
 
   // Output directory.
-  m_widgets.pSelectOuputDirLabel = new QLabel("Ouput directory", this);
-  m_widgets.pSelectOutputDir     = new asiUI_SelectFile("",
-                                                        "Set output directory",
-                                                         QString(),
-                                                         QImage(":icons/asitus/select_xyz.svg"),
-                                                         asiUI_Common::OpenSaveAction::OpenSaveAction_OpenDirectory,
-                                                         this);
+  m_widgets.pSelectOutputDirLabel = new QLabel("Output directory", this);
+  m_widgets.pSelectOutputDir      = new asiUI_SelectFile("",
+                                                         "Set output directory",
+                                                          QString(),
+                                                          QImage(":icons/asitus/select_xyz.svg"),
+                                                          asiUI_Common::OpenSaveAction::OpenSaveAction_OpenDirectory,
+                                                          this);
 
   // Expand compounds.
   QFrame* pExpandFrame = new QFrame;
@@ -214,7 +214,7 @@ asiUI_DialogBreakDownAssembly::asiUI_DialogBreakDownAssembly(ActAPI_ProgressEntr
   // Configure main layout.
   m_pMainLayout->addWidget(m_widgets.pSelectInputFileLabel);
   m_pMainLayout->addWidget(m_widgets.pSelectInputFile);
-  m_pMainLayout->addWidget(m_widgets.pSelectOuputDirLabel);
+  m_pMainLayout->addWidget(m_widgets.pSelectOutputDirLabel);
   m_pMainLayout->addWidget(m_widgets.pSelectOutputDir);
   m_pMainLayout->addWidget(pExpandFrame);
   m_pMainLayout->addWidget(pPrefixFrame);
