@@ -34,7 +34,15 @@
 <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%">
 <tr>
   <td class="header-menu"><a href='http://quaoar.su/blog/page/analysis-situs'>Download</a></td>
-  <td class="header-menu"><a href="./features.html">Features</a></td>
+  <td class="header-menu">
+    <div class="dropdown">
+      <button class="dropbtn">Features ...</button>
+      <div class="dropdown-content">
+        <a href="./features.html">Open source</a>
+        <a href="./featuresext.html">Commercial</a>
+      </div>
+    </div>
+  </td>
   <td class="header-menu"><a href="https://gitlab.com/ssv/AnalysisSitus">Source code</a></td>
   <td class="header-menu"><a href="http://analysissitus.org/forum/index.php">Forum</a></td>
   <td class="header-menu"><a href="http://quaoar.su/blog/contact">Ask for support</a></td>
@@ -74,75 +82,79 @@ The following list enumerates the main milestones of this story (you can read mo
 
 <ul>
   <li class="text-block">
-    <b>November 2015:</b> start prototyping.
+    <b>November 2015.</b> Start prototyping.
   </li>
 
   <li class="text-block">
-    <b>January 2016:</b> the software was used to demonstrate B-Rep internals during <a href="http://ioda.sems.qmul.ac.uk/events/paris2016/">computational geometry workshop</a> in Paris.
+    <b>January 2016.</b> The software was used to demonstrate B-Rep internals during <a href="http://ioda.sems.qmul.ac.uk/events/paris2016/">computational geometry workshop</a> in Paris.
   </li>
 
   <li class="text-block">
-    <b>2016-2017:</b> the software was occasionally used in the educational process in Lobachevsky University, Nizhny Novgorod, Russia.
+    <b>2016-2017.</b> The software was occasionally used in the educational process in Lobachevsky University, Nizhny Novgorod, Russia.
   </li>
 
   <li class="text-block">
-    <b>September 2017:</b> the first public paper about the software <a href="./references.html#slyadnev-2017">[Slyadnev et al, 2017]</a> was presented at the <a href="http://graphicon.ru/ru/conference/2017/proceedings">Graphicon'2017 conference</a>, Perm, Russia.
+    <b>September 2017.</b> The first public paper about the software <a href="./references.html#slyadnev-2017">[Slyadnev et al, 2017]</a> was presented at the <a href="http://graphicon.ru/ru/conference/2017/proceedings">Graphicon'2017 conference</a>, Perm, Russia.
   </li>
 
   <li class="text-block">
-    <b>September 2018:</b> the plenary <a href="http://quaoar.su/blog/page/problemy-razvitija-geometricheskogo-modelirovanija-vne-kommercheskih-sapr">report on the future of FOSS geometric modeling</a> was made at the Graphicon'2018 conference, Tomsk, Russia. Analysis Situs was used as a primary tool for demonstration.
+    <b>September 2018.</b> The plenary <a href="http://quaoar.su/blog/page/problemy-razvitija-geometricheskogo-modelirovanija-vne-kommercheskih-sapr">report on the future of FOSS geometric modeling</a> was made at the Graphicon'2018 conference, Tomsk, Russia. Analysis Situs was used as a primary tool for demonstration.
   </li>
 
   <li class="text-block">
-    <b>October 2018:</b> starting to publish documentation at www.analysissitus.org. The goal is to make the software available for a broader community of researchers.
+    <b>October 2018.</b> Starting to publish documentation at www.analysissitus.org. The goal is to make the software available for a broader community of researchers.
   </li>
 
   <li class="text-block">
-    <b>Spring 2019:</b> our paper on reconstruction of CAD models using Analysis Situs <a href="./references.html#slyadnev-re-rus-2019">[Slyadnev and Turlapov, 2019]</a> was selected for publishing in the proceedings of Ivannikov Institute for System Programming of the RAS.
+    <b>Spring 2019.</b> Our paper on reconstruction of CAD models using Analysis Situs <a href="./references.html#slyadnev-re-rus-2019">[Slyadnev and Turlapov, 2019]</a> was selected for publishing in the proceedings of Ivannikov Institute for System Programming of the RAS.
   </li>
 
   <li class="text-block">
-    <b>March 2019:</b> Analysis Situs was used as a framework to conduct a training for software developers in prosthesis manufacturing field (Berlin). The clients were looking for an open-sourced CAD platform to ground their development on.
+    <b>March 2019.</b> Analysis Situs was used as a framework to conduct a training for software developers in prosthesis manufacturing field (Berlin). The clients were looking for an open-sourced CAD platform to ground their development on.
   </li>
 
   <li class="text-block">
-    <b>August 2019:</b> Analysis Situs was selected as a framework for development of sheet metal processing algorithms (industrial application, the company name cannot be disclosed).
+    <b>August 2019.</b> Analysis Situs was selected as a framework for the development of sheet metal processing algorithms in a MaaS platform (Manufacturing as a Service, the company name cannot be disclosed).
   </li>
 
   <li class="text-block">
-    <b>January-February 2020:</b> the software was <a href="http://quaoar.su/blog/page/build-analysis-situs-04-on-linux">ported to Linux</a>.
+    <b>January-February 2020.</b> The software was <a href="http://quaoar.su/blog/page/build-analysis-situs-04-on-linux">ported to Linux</a>.
   </li>
 
   <li class="text-block">
-    <b>November 2020:</b> I left OPEN CASCADE company where I worked 12 years and became indie to devote more time to the project. The ambitious goal is to develop an open-source CAD platform (SDK) for solving challenging problems in the field.
+    <b>November 2020.</b> I left OPEN CASCADE company where I worked 12 years and became indie to devote more time to the project. The ambitious goal is to develop an open-source CAD platform (SDK) for solving challenging problems in the field.
   </li>
 
   <li class="text-block">
-    <b>Winter-Spring 2021:</b> start working on the commercial SDK around open-sourced Analysis Situs. Support of assemblies was added. Work on feature recognition framework was started. Also, it seemed like the right time to release ver.1.0 of the software.
+    <b>Winter-Spring 2021.</b> Start working on the commercial SDK around open-sourced Analysis Situs. Support of assemblies was added. Work on feature recognition framework was started. Also, it seemed like the right time to release ver.1.0 of the software.
   </li>
 
   <li class="text-block">
-    <b>Somewhere in 2021:</b> a good comrade and business partner integrated Analysis Situs as a backbone for CAD data processing at <a href="https://ascad.net/">ascad.net</a>. This opened the door for CAD simplification jobs for different use cases, e.g., embedding CAD data into gaming engines.
+    <b>Somewhere in 2021.</b> A good comrade and business partner integrated Analysis Situs as a backbone for CAD data processing at <a href="https://ascad.net/">ascad.net</a>. This opened the door for CAD simplification jobs for different use cases, e.g., embedding CAD data into gaming engines.
   </li>
 
   <li class="text-block">
-    <b>Summer 2021:</b> Analysis Situs was chosen as a backbone for implementing Design for Manufacturing (DfM) analysis SDK.
+    <b>Summer 2021.</b> Analysis Situs was chosen as a backbone for implementing Design for Manufacturing (DfM) analysis SDK.
   </li>
 
   <li class="text-block">
-    <b>10 December 2021:</b> together with Julia, I started a new legal entity to maintain Analysis Situs and commercial SDK around it.
+    <b>10 December 2021.</b> Together with Julia, I started a new legal entity to maintain Analysis Situs and commercial SDK around it.
   </li>
 
   <li class="text-block">
-    <b>12 March 2022:</b> we hired our first employee to help us working on Analysis Situs and the commercial SDK around.
+    <b>12 March 2022.</b> We hired our first employee to help us working on Analysis Situs and the commercial SDK around.
   </li>
 
   <li class="text-block">
-    <b>Autumn-Winter 2022:</b> one big industrial client started using and improving Analysis Situs for CFD use cases. The idea is to prepare CAD geometries designed in Catia for meshing using Salome.
+    <b>Autumn-Winter 2022.</b> One big industrial client started using and improving Analysis Situs for CFD use cases. The idea is to prepare CAD geometries designed in Catia for meshing using Salome.
   </li>
 
   <li class="text-block">
-    <b>Winter 2024:</b> release 2024.1 came out. This was the first release that we found to be quite valuable for a larger audience, so the corresponding news were shared a little further than usual (TenLinks). More people are interested, more features are coming, so the product is organically maturing. Now we are a team of six people, all making living from this project and related activities.
+    <b>Winter 2024.</b> Release 2024.1 came out. This was the first release that we found to be quite valuable for a larger audience, so the corresponding news were shared a little further than usual (TenLinks). More people are interested, more features are coming, so the product is organically maturing. Now we are a team of six people, all making living from this project and related activities.
+  </li>
+
+  <li class="text-block">
+    <b>September 2024.</b> One of our early clients (from August 2019) walked away considering that the project was successfully finished and can be switched to maintenance mode. Therefore we decided to focus on commercial extensions for Analysis Situs SDK, which included sheet metal recognition and unfolding (SMRU), CNC recognition, DXF feature recognition, design checks (DFM) and other useful reusable components and algorithms. 
   </li>
 </ul>
 
@@ -160,7 +172,7 @@ The following list enumerates the main milestones of this story (you can read mo
 <table class="footer" cellpadding="0" cellspacing="0" width="100%">
 <tr>
   <td>
-    Copyright &copy; Analysis&nbsp;Situs 2015-present &nbsp; | &nbsp; <a class="footer-href" href="#top">^^^</a>  &nbsp; | &nbsp; <a href="http://quaoar.su/blog/contact" class="footer-href">contact us</a> &nbsp; | &nbsp; <a href="https://www.youtube.com/channel/UCc0exKIoqbeOSqKoc1RnfBQ" class="icon brands fa-youtube"></a> &nbsp; | &nbsp; <a href="https://quaoar.su" class="icon brands fa-medium"></a> &nbsp; | &nbsp; <a href="https://www.linkedin.com/in/sergey-slyadnev-277496b1" class="icon brands fa-linkedin"></a>
+    Copyright &copy; Quaoar&nbsp;Studio&nbsp;LLC 2015-present &nbsp; | &nbsp; <a class="footer-href" href="#top">^^^</a>  &nbsp; | &nbsp; <a href="http://quaoar.su/blog/contact" class="footer-href">contact us</a> &nbsp; | &nbsp; <a href="https://www.youtube.com/channel/UCc0exKIoqbeOSqKoc1RnfBQ" class="icon brands fa-youtube"></a> &nbsp; | &nbsp; <a href="https://quaoar.su" class="icon brands fa-medium"></a> &nbsp; | &nbsp; <a href="https://www.linkedin.com/in/sergey-slyadnev-277496b1" class="icon brands fa-linkedin"></a>
   </td>
 </tr>
 </table>

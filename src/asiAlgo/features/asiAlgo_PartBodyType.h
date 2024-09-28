@@ -49,11 +49,12 @@ enum asiAlgo_PartBodyType
   PartBodyType_Unrecognized = 0,    //!< Pending for recognition.
   PartBodyType_FlatShape,           //!< Sheet metal body without folds.
   PartBodyType_FoldedSheetMetal,    //!< Folded sheet metal body.
-  PartBodyType_RectTube,            //!< Rectangular tube body.
-  PartBodyType_CylTube,             //!< Cylindrical tube body.
-  PartBodyType_RoundBentTube,       //!< Round bent tube body.
-  PartBodyType_RectangularBentTube, //!< Rectangular bent tube body.
-  PartBodyType_BentWire,            //!< Bent wire body.
+  PartBodyType_RectTube,            //!< Hollow rectangular tube.
+  PartBodyType_CylTube,             //!< Hollow cylindrical tube.
+  PartBodyType_Wire,                //!< Non-hollow straight cylindrical body.
+  PartBodyType_RoundBentTube,       //!< Round bent tube (hollow).
+  PartBodyType_RectangularBentTube, //!< Rectangular bent tube (hollow).
+  PartBodyType_BentWire,            //!< Bent wire (non-hollow).
   PartBodyType_OtherTube,           //!< Other type of tube.
   PartBodyType_Profile,             //!< Sheet metal profile.
   PartBodyType_CncMilling,          //!< CNC milled body.
@@ -79,6 +80,7 @@ namespace asiAlgo_PartBodyTypeUtils
       case PartBodyType_FoldedSheetMetal:
       case PartBodyType_RectTube:
       case PartBodyType_CylTube:
+      case PartBodyType_Wire:
       case PartBodyType_RoundBentTube:
       case PartBodyType_RectangularBentTube:
       case PartBodyType_BentWire:
@@ -107,6 +109,7 @@ namespace asiAlgo_PartBodyTypeUtils
       case PartBodyType_FoldedSheetMetal:
       case PartBodyType_RectTube:
       case PartBodyType_CylTube:
+      case PartBodyType_Wire:
       case PartBodyType_RoundBentTube:
       case PartBodyType_RectangularBentTube:
       case PartBodyType_BentWire:
@@ -139,6 +142,7 @@ namespace asiAlgo_PartBodyTypeUtils
       case PartBodyType_FoldedSheetMetal:
       case PartBodyType_RectTube:
       case PartBodyType_CylTube:
+      case PartBodyType_Wire:
       case PartBodyType_OtherTube:
       case PartBodyType_Profile:
       case PartBodyType_Unrecognized:
@@ -164,6 +168,7 @@ namespace asiAlgo_PartBodyTypeUtils
         return true;
       case PartBodyType_RectTube:
       case PartBodyType_CylTube:
+      case PartBodyType_Wire:
       case PartBodyType_RoundBentTube:
       case PartBodyType_RectangularBentTube:
       case PartBodyType_BentWire:
@@ -189,6 +194,7 @@ namespace asiAlgo_PartBodyTypeUtils
     {
       case PartBodyType_RectTube:
       case PartBodyType_CylTube:
+      case PartBodyType_Wire:
       case PartBodyType_OtherTube:
       case PartBodyType_Profile:
         return true;
@@ -220,6 +226,7 @@ namespace asiAlgo_PartBodyTypeUtils
       case PartBodyType_FoldedSheetMetal:    return asiPropVal_Type_FoldedSheetMetal;
       case PartBodyType_RectTube:            return asiPropVal_Type_RectTube;
       case PartBodyType_CylTube:             return asiPropVal_Type_CylTube;
+      case PartBodyType_Wire:                return asiPropVal_Type_Wire;
       case PartBodyType_RoundBentTube:       return asiPropVal_Type_RoundBentTube;
       case PartBodyType_RectangularBentTube: return asiPropVal_Type_RectangularBentTube;
       case PartBodyType_BentWire:            return asiPropVal_Type_BentWire;
@@ -249,6 +256,8 @@ namespace asiAlgo_PartBodyTypeUtils
       return PartBodyType_RectTube;
     if ( name == asiPropVal_Type_CylTube )
       return PartBodyType_CylTube;
+    if ( name == asiPropVal_Type_Wire )
+      return PartBodyType_Wire;
     if (name == asiPropVal_Type_RoundBentTube)
       return PartBodyType_RoundBentTube;
     if (name == asiPropVal_Type_RectangularBentTube)
@@ -281,6 +290,7 @@ namespace asiAlgo_PartBodyTypeUtils
       case PartBodyType_FoldedSheetMetal:    return ActAPI_Color(190./255, 230./255, 140./255, Quantity_TOC_RGB);
       case PartBodyType_RectTube:            return ActAPI_Color(160./255, 130./255, 250./255, Quantity_TOC_RGB);
       case PartBodyType_CylTube:             return ActAPI_Color(230./255, 180./255, 250./255, Quantity_TOC_RGB);
+      case PartBodyType_Wire:                return ActAPI_Color(210./255, 210./255, 250./255, Quantity_TOC_RGB);
       case PartBodyType_RoundBentTube:       return ActAPI_Color(200./255, 180./255, 250./255, Quantity_TOC_RGB);
       case PartBodyType_RectangularBentTube: return ActAPI_Color(160./255, 180./255, 250./255, Quantity_TOC_RGB);
       case PartBodyType_BentWire:            return ActAPI_Color(180./255, 180./255, 250./255, Quantity_TOC_RGB);

@@ -42,6 +42,7 @@
 #define asiPropVal_Type_FoldedSheetMetal                  "SHEET_METAL_FOLDED"
 #define asiPropVal_Type_RectTube                          "TUBE_RECTANGULAR"
 #define asiPropVal_Type_CylTube                           "TUBE_ROUND"
+#define asiPropVal_Type_Wire                              "WIRE"
 #define asiPropVal_Type_RoundBentTube                     "BENT_TUBE_ROUND"
 #define asiPropVal_Type_RectangularBentTube               "BENT_TUBE_RECTANGULAR"
 #define asiPropVal_Type_BentWire                          "BENT_WIRE"
