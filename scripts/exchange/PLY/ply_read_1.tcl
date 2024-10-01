@@ -1,5 +1,5 @@
 clear
-set datafile ply/ANC101.ply
+set datafile public/ply/ANC101.ply
 set datadir $env(ASI_TEST_DATA)
 load-ply $datadir/$datafile
 

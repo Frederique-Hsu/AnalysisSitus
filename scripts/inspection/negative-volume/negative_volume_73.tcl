@@ -1,4 +1,4 @@
-set datafile cad/chamfers/chamfer_6.stp
+set datafile public/cad/chamfers/chamfer_6.stp
 
 # Read input geometry.
 set datadir $env(ASI_TEST_DATA)

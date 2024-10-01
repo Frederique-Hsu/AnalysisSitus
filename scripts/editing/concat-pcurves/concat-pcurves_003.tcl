@@ -1,5 +1,5 @@
 # CAD file.
-set datafile cad/turbines/concat-pcurves/concat-pcurves.stp
+set datafile private/turbines/concat-pcurves/concat-pcurves.stp
 
 # Expected cardinal numbers.
 set nbVertices 41

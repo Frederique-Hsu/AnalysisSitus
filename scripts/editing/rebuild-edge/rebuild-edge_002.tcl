@@ -5,7 +5,7 @@
 # edges and the corresponding terminating faces.
 
 # Set working variables.
-set datafile cad/blends/0038_nist_ctc_01_asme1_ap242.brep
+set datafile public/cad/blends/0038_nist_ctc_01_asme1_ap242.brep
 
 # Read input geometry.
 set datadir $env(ASI_TEST_DATA)

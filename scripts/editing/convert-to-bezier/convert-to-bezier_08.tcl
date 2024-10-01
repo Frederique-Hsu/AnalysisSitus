@@ -1,5 +1,5 @@
 # Set working variables.
-set datafile cad/convert-to-bezier/s3.stp
+set datafile private/convert-to-bezier/s3.stp
 set refErr   0.00195
 set epsilon  0.0001
 

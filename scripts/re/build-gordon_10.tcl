@@ -1,5 +1,5 @@
 # Set working variables.
-set datafile cad/gordon/gordon_test-BeGrid.step
+set datafile private/gordon/gordon_test-BeGrid.step
 set refErr   0.0036
 
 # Read input geometry.

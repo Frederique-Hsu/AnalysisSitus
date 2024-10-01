@@ -1,5 +1,5 @@
 clear
-set datafile cad/179_synthetic_case.brep
+set datafile public/cad/179_synthetic_case.brep
 
 # Read input geometry.
 set datadir $env(ASI_TEST_DATA)

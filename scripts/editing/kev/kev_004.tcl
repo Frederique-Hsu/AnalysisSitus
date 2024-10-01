@@ -2,11 +2,9 @@
 # KEV / Test case 04:
 #-------------------------------------------------------------------------------
 # This test case applies KEV (Kill Edge-Vertex) Euler operator to solid body.
-#-------------------------------------------------------------------------------
-# Target CAD file: data/cad/boxblend_01.brep
 #===============================================================================
 
-set datafile cad/blends/0007_boxblend_01.brep
+set datafile public/cad/blends/0007_boxblend_01.brep
 
 # Read input geometry.
 set datadir $env(ASI_TEST_DATA)

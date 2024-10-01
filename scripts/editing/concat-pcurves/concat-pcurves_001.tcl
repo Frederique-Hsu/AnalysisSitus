@@ -1,5 +1,5 @@
 # CAD file.
-set datafile cad/turbines/blade.igs
+set datafile private/turbines/blade.igs
 
 # Expected cardinal numbers.
 set nbVertices 38

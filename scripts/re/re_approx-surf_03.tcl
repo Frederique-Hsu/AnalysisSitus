@@ -1,5 +1,5 @@
 # Set working variables.
-set datafile points/interior-nodes_02.xyz
+set datafile public/points/interior-nodes_02.xyz
 
 # Read input geometry.
 set datadir $env(ASI_TEST_DATA)

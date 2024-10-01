@@ -1,5 +1,5 @@
 clear
-set datafile cad/astra/lna.DAT
+set datafile private/astra/lna.DAT
 set refNb 2
 
 # Read input geometry.

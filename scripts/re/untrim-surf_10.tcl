@@ -1,5 +1,5 @@
 # Set working variables.
-set datafile cad/untrim/00261_TES1.BREP
+set datafile private/untrim/00261_TES1.BREP
 set refErr   0.001
 
 # Read input geometry.

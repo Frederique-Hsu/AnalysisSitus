@@ -1,5 +1,5 @@
 # Set working variables.
-set datafile cad/convert-to-bezier/s1.stp
+set datafile private/convert-to-bezier/s1.stp
 set refErr   0.622
 set epsilon  0.001
 

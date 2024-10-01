@@ -1,7 +1,7 @@
 source $env(ASI_TEST_SCRIPTS)/editing/canrec/__begin
 
 # Set working variables.
-set datafile cad/industrial/78477-318714-F627941-V2.STEP
+set datafile public/cad/industrial/78477-318714-F627941-V2.STEP
 
 # Reference numbers.
 set ref_nbSurfBezier     0

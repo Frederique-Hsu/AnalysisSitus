@@ -1,5 +1,5 @@
 # Set working variables.
-set datafile cad/convert-to-bezier/test.igs
+set datafile private/convert-to-bezier/test.igs
 set refErrS  1e-7
 set refErrC  1e-7
 set epsilon  0.001

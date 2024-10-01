@@ -3,7 +3,31 @@
   <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
     <script type="text/javascript" src="https://unpkg.com/vtk.js"></script>
-  </head>
+ 
+  <!-- [begin] Code highlight -->
+  <link rel="stylesheet" href="../css/highlight.min.css">
+  <script src="../js/highlight.min.js"></script>
+  <!-- [end] Code highlight -->
+
+  <!-- [begin] Pseudocode -->
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS_CHTML"
+          integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw="
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [['$','$'], ['\\(','\\)']],
+            displayMath: [['$$','$$'], ['\\[','\\]']],
+            processEscapes: true,
+            processEnvironments: true,
+        }
+    });
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.js"></script>
+  <!-- [end] Pseudocode -->
+
+</head>
 <body>
   <div id="glcontainer" style="border: 1px solid black; height: 400px; width: 400px;"></div>
   <br>
@@ -72,6 +96,11 @@
     renderWindow.render();
 
   </script>
+
+<script>
+hljs.highlightAll();
+pseudocode.renderClass("pseudocode");
+</script>
 
 </body>
 </html>

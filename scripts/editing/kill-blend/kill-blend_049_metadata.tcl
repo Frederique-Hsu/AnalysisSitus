@@ -1,7 +1,7 @@
 clear
 
 # Set working variables.
-set datafile cad/blends/0048_cable_tie_slot_10_v6_colored.step
+set datafile public/cad/blends/0048_cable_tie_slot_10_v6_colored.step
 set ref_ncomp    0
 set ref_ncompso  0
 set ref_nso      1

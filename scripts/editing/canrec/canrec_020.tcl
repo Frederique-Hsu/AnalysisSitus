@@ -1,7 +1,7 @@
 source $env(ASI_TEST_SCRIPTS)/editing/canrec/__begin
 
 # Set working variables.
-set datafile cad/milled/milled_003.stp
+set datafile public/cad/milled/milled_003.stp
 
 # Reference numbers.
 set ref_nbSurfBezier     0

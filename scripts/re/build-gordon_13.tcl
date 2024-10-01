@@ -1,5 +1,5 @@
 # Set working variables.
-set datafile cad/gordon/DT-loft-curves.stp
+set datafile private/gordon/DT-loft-curves.stp
 set refErr   0.1
 
 # Read input geometry.

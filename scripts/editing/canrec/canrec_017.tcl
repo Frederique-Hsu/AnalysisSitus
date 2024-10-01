@@ -1,7 +1,7 @@
 source $env(ASI_TEST_SCRIPTS)/editing/canrec/__begin
 
 # Set working variables.
-set datafile cad/sheet-metal/rear_camera_mount.stp
+set datafile public/cad/sheet-metal/rear_camera_mount.stp
 
 # Reference numbers.
 set ref_nbSurfBezier     0

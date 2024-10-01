@@ -1,5 +1,5 @@
 # Set working variables.
-set datafile cad/coons/001_Compound_4_edges.brep
+set datafile public/cad/coons/001_Compound_4_edges.brep
 set refErr   0.062
 
 # Read input geometry.

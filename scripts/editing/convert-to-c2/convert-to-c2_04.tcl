@@ -1,5 +1,5 @@
 # Set working variables.
-set datafile cad/convert-to-c2/from-narva_01.stp
+set datafile private/convert-to-c2/from-narva_01.stp
 set refErr   0.0008
 set epsilon  0.001
 

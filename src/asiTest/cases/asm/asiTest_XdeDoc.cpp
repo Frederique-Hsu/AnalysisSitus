@@ -42,7 +42,7 @@
 //-----------------------------------------------------------------------------
 
 // Filenames are specified relatively to ASI_TEST_DATA environment variable.
-#define filename_asm_001 "cad/asm/asm-simplified-connectors.stp"
+#define filename_asm_001 "public/cad/asm/asm-simplified-connectors.stp"
 
 //-----------------------------------------------------------------------------
 

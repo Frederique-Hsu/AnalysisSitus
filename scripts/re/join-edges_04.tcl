@@ -1,5 +1,5 @@
 # Set working variables.
-set datafile cad/gordon/loft1.stp
+set datafile private/gordon/loft1.stp
 
 # Read input geometry.
 set datadir $env(ASI_TEST_DATA)

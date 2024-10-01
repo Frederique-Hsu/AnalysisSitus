@@ -385,6 +385,7 @@ set (features_H_FILES
   features/asiAlgo_Isomorphism.h
   features/asiAlgo_PartBodyType.h
   features/asiAlgo_RecognitionRule.h
+  features/asiAlgo_RecognitionRuleShaft.h
   features/asiAlgo_RecognizeCavities.h
   features/asiAlgo_RecognizeCavitiesRule.h
   features/asiAlgo_RecognizeConvexHull.h
@@ -392,6 +393,8 @@ set (features_H_FILES
   features/asiAlgo_RecognizeDrillHolesRule.h
   features/asiAlgo_RecognizeIsolated.h
   features/asiAlgo_Recognizer.h
+  features/asiAlgo_RecognizeShafts.h
+  features/asiAlgo_Shaft.h
   features/asiAlgo_ShapePartnerHasher.h
   features/asiAlgo_TopoAttr.h
   features/asiAlgo_TopoAttrLocation.h
@@ -411,6 +414,7 @@ set (features_CPP_FILES
   features/asiAlgo_FeatureFaces.cpp
   features/asiAlgo_FindFeatureHints.cpp
   features/asiAlgo_Isomorphism.cpp
+  features/asiAlgo_RecognitionRuleShaft.cpp
   features/asiAlgo_RecognizeCavities.cpp
   features/asiAlgo_RecognizeCavitiesRule.cpp
   features/asiAlgo_RecognizeConvexHull.cpp
@@ -418,6 +422,8 @@ set (features_CPP_FILES
   features/asiAlgo_RecognizeDrillHolesRule.cpp
   features/asiAlgo_RecognizeIsolated.cpp
   features/asiAlgo_Recognizer.cpp
+  features/asiAlgo_RecognizeShafts.cpp
+  features/asiAlgo_Shaft.cpp
   features/asiAlgo_TopoGraph.cpp
 )
 

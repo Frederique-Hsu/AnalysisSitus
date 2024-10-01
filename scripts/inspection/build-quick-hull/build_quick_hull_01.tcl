@@ -1,7 +1,7 @@
 clear
 
-set datafile points/PC2.xyz
-set refPntsName reference/quickHull/ref_quick_hull_PC2.xyz
+set datafile public/points/PC2.xyz
+set refPntsName public/reference/quickHull/ref_quick_hull_PC2.xyz
 
 # Read input geometry.
 set datadir $env(ASI_TEST_DATA)

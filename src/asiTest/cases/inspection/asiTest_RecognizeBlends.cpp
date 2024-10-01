@@ -43,20 +43,20 @@
 //-----------------------------------------------------------------------------
 
 // Filenames are specified relatively to ASI_TEST_DATA environment variable.
-#define filename_boxblend_01        "cad/blends/0007_boxblend_01.brep"
-#define filename_boxblend_01_f3_ref "reference/aag/test_boxblend_01_f3_ref.json"
+#define filename_boxblend_01        "public/cad/blends/0007_boxblend_01.brep"
+#define filename_boxblend_01_f3_ref "public/reference/aag/test_boxblend_01_f3_ref.json"
 //
-#define filename_boxblend_02        "cad/blends/0008_boxblend_02.brep"
-#define filename_boxblend_02_f3_ref "reference/aag/test_boxblend_02_f3_ref.json"
+#define filename_boxblend_02        "public/cad/blends/0008_boxblend_02.brep"
+#define filename_boxblend_02_f3_ref "public/reference/aag/test_boxblend_02_f3_ref.json"
 //
-#define filename_bb_boxblend_03         "cad/blends/0015_bb_boxblend_03.brep"
-#define filename_bb_boxblend_03_f29_ref "reference/aag/test_bb_boxblend_03_f29_ref.json"
+#define filename_bb_boxblend_03         "public/cad/blends/0015_bb_boxblend_03.brep"
+#define filename_bb_boxblend_03_f29_ref "public/reference/aag/test_bb_boxblend_03_f29_ref.json"
 //
-#define filename_boxblend_05     "cad/blends/0017_boxblend_05.brep"
-#define filename_boxblend_05_ref "reference/aag/test_boxblend_05_ref.json"
+#define filename_boxblend_05     "public/cad/blends/0017_boxblend_05.brep"
+#define filename_boxblend_05_ref "public/reference/aag/test_boxblend_05_ref.json"
 //
-#define filename_task_166     "cad/blends/test_task_166.brep"
-#define filename_task_166_ref "reference/aag/test_task_166_ref.json"
+#define filename_task_166     "public/cad/blends/test_task_166.brep"
+#define filename_task_166_ref "public/reference/aag/test_task_166_ref.json"
 
 //--------------------
 #define filename_task_166_tcl "editing/recognize-blends/01_task_166.tcl"

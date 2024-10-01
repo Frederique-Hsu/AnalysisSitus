@@ -1,5 +1,5 @@
 # Set working variables.
-set datafile cad/ANC101.brep
+set datafile public/cad/ANC101.brep
 
 # Read input geometry.
 set datadir $env(ASI_TEST_DATA)

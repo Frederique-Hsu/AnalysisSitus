@@ -1,5 +1,5 @@
 # Set working variables.
-set datafile cad/gordon/test-cim.stp
+set datafile private/gordon/test-cim.stp
 set refErr   0.045
 
 # Read input geometry.

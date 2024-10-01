@@ -1,6 +1,6 @@
 clear
-set to   cad/astra/Curve_test.dat
-set from cad/astra/Curve.dat
+set to   private/astra/Curve_test.dat
+set from private/astra/Curve.dat
 set refNb 1
 
 # Read input geometry.

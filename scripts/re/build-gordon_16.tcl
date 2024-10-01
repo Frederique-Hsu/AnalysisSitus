@@ -1,5 +1,5 @@
 # Set working variables.
-set datafile cad/gordon/klp1.igs
+set datafile private/gordon/klp1.igs
 set refErr   0.1
 
 # Read input geometry.

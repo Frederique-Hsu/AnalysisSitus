@@ -1,7 +1,7 @@
 source $env(ASI_TEST_SCRIPTS)/editing/canrec/__begin
 
 # Set working variables.
-set datafile cad/canrec/rhino_solidworks_comparison_Sketched-Bend4_cr.stp
+set datafile public/cad/canrec/rhino_solidworks_comparison_Sketched-Bend4_cr.stp
 
 # Reference numbers.
 set ref_nbSurfBezier     0

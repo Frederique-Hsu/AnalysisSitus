@@ -1,4 +1,4 @@
-set datafile cad/blends/test_task_166.stp
+set datafile public/cad/blends/test_task_166.stp
 
 # Read input geometry.
 set datadir $env(ASI_TEST_DATA)

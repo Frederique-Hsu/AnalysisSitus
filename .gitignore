@@ -112,3 +112,5 @@ build-occt-760-sdk/
 install-occt-760-sdk/
 
 .idea/
+
+data/private/

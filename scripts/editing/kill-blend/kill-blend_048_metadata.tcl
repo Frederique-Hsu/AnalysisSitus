@@ -1,7 +1,7 @@
 clear
 
 # Set working variables.
-set datafile cad/blends/0047_boxblend_11_colored.stp
+set datafile public/cad/blends/0047_boxblend_11_colored.stp
 set ref_ncomp    0
 set ref_ncompso  0
 set ref_nso      1

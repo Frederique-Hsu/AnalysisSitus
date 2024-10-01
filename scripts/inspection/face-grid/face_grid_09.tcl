@@ -1,5 +1,5 @@
-set datafile cad/industrial/tail_section_asm.stp
-set refPntsName reference/faceGrid/tail_section_asm_443.xyz
+set datafile public/cad/industrial/tail_section_asm.stp
+set refPntsName public/reference/faceGrid/tail_section_asm_443.xyz
 
 # Read input geometry.
 set datadir $env(ASI_TEST_DATA)

@@ -17,7 +17,31 @@
   </script>
   <!-- [end] Google Analytics -->
 
- </head>
+
+  <!-- [begin] Code highlight -->
+  <link rel="stylesheet" href="./css/highlight.min.css">
+  <script src="./js/highlight.min.js"></script>
+  <!-- [end] Code highlight -->
+
+  <!-- [begin] Pseudocode -->
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS_CHTML"
+          integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw="
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [['$','$'], ['\\(','\\)']],
+            displayMath: [['$$','$$'], ['\\[','\\]']],
+            processEscapes: true,
+            processEnvironments: true,
+        }
+    });
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.js"></script>
+  <!-- [end] Pseudocode -->
+
+</head>
 <body>
 
 <a name="top"></a> <!-- anchor for 'back to top' link -->
@@ -33,7 +57,7 @@
 </table>
 <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%">
 <tr>
-  <td class="header-menu"><a href='http://quaoar.su/blog/page/analysis-situs'>Download</a></td>
+  <td class="header-menu"><a href='https://analysissitus.org/forum/index.php?resources/analysis-situs.6/'>Download</a></td>
   <td class="header-menu">
     <div class="dropdown">
       <button class="dropbtn">Features ...</button>
@@ -121,10 +145,15 @@
 <table class="footer" cellpadding="0" cellspacing="0" width="100%">
 <tr>
   <td>
-    Copyright &copy; Quaoar&nbsp;Studio&nbsp;LLC 2015-present &nbsp; | &nbsp; <a class="footer-href" href="#top">^^^</a>  &nbsp; | &nbsp; <a href="http://quaoar.su/blog/contact" class="footer-href">contact us</a> &nbsp; | &nbsp; <a href="https://www.youtube.com/channel/UCc0exKIoqbeOSqKoc1RnfBQ" class="icon brands fa-youtube"></a> &nbsp; | &nbsp; <a href="https://quaoar.su" class="icon brands fa-medium"></a> &nbsp; | &nbsp; <a href="https://www.linkedin.com/in/sergey-slyadnev-277496b1" class="icon brands fa-linkedin"></a>
+    <small>&copy; Quaoar&nbsp;Studio&nbsp;LLC 2015-present &nbsp; (Yerevan, Armenia)</small> | &nbsp; <a class="footer-href" href="#top">^^^</a>  &nbsp; | &nbsp; <a href="http://quaoar.su/blog/contact" class="footer-href">contact us</a> &nbsp; | &nbsp; <a href="https://www.youtube.com/channel/UCc0exKIoqbeOSqKoc1RnfBQ" class="icon brands fa-youtube"></a> &nbsp; | &nbsp; <a href="https://quaoar.su" class="icon brands fa-medium"></a> &nbsp; | &nbsp; <a href="https://www.linkedin.com/in/sergey-slyadnev-277496b1" class="icon brands fa-linkedin"></a>
   </td>
 </tr>
 </table>
+
+<script>
+hljs.highlightAll();
+pseudocode.renderClass("pseudocode");
+</script>
 
 </body>
 </html>

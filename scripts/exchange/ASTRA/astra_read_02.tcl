@@ -1,5 +1,5 @@
 clear
-set datafile cad/astra/narvakd.dat
+set datafile private/astra/narvakd.dat
 set refNb 8
 
 # Read input geometry.

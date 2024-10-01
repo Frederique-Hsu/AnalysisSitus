@@ -16,4 +16,4 @@ mkdir confidential-data
 
 git clone git@gitlab.com:ssv/analysissitus_data.git ./confidential-data
 
-xcopy /s confidential-data\data data\cad
+xcopy /s confidential-data\data data\private

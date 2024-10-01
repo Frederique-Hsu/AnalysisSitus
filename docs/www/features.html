@@ -17,7 +17,31 @@
   </script>
   <!-- [end] Google Analytics -->
 
- </head>
+
+  <!-- [begin] Code highlight -->
+  <link rel="stylesheet" href="./css/highlight.min.css">
+  <script src="./js/highlight.min.js"></script>
+  <!-- [end] Code highlight -->
+
+  <!-- [begin] Pseudocode -->
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS_CHTML"
+          integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw="
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [['$','$'], ['\\(','\\)']],
+            displayMath: [['$$','$$'], ['\\[','\\]']],
+            processEscapes: true,
+            processEnvironments: true,
+        }
+    });
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.js"></script>
+  <!-- [end] Pseudocode -->
+
+</head>
 <body>
 
 <a name="top"></a> <!-- anchor for 'back to top' link -->
@@ -33,7 +57,7 @@
 </table>
 <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%">
 <tr>
-  <td class="header-menu"><a href='http://quaoar.su/blog/page/analysis-situs'>Download</a></td>
+  <td class="header-menu"><a href='https://analysissitus.org/forum/index.php?resources/analysis-situs.6/'>Download</a></td>
   <td class="header-menu">
     <div class="dropdown">
       <button class="dropbtn">Features ...</button>
@@ -83,25 +107,6 @@
   <li class="menu-item"><a href="./features/features_visualization-modes.html">Visualization modes</a>.</li>
 </ul>
 
-<h1>Inspection and Healing</h1>
-
-<ul>
-  <li class="menu-item"><a href="./features/features_check-shape.html">Check CAD model validity</a>.</li>
-  <li class="menu-item"><a href="./features/features_check-facets.html">Check CAD facets</a>.</li>
-  <li class="menu-item"><a href="./features/features_check-toler.html">Check geometric tolerances</a>.</li>
-  <li class="menu-item"><a href="./features/features_is-contour-closed.html">Check if face contour is closed</a>.</li>
-  <li class="menu-item"><a href="./features/features_fix-small-edges.html">Merge small edges</a>.</li>
-  <li class="menu-item"><a href="./features/features_check-open-edges.html">Check naked (open) edges</a>.</li>
-  <li class="menu-item"><a href="./features/features_check-nm-edges.html">Check non-manifold edges</a>.</li>
-  <li class="menu-item"><a href="./features/features_convert-canonical.html">Convert to analytical (canonical) representation</a>.</li>
-  <li class="menu-item">Fill gaps.</li>
-  <li class="menu-item">Stitch faces.</li>
-  <li class="menu-item">Curvature plots and combs.</li>
-  <li class="menu-item">Gaussian and mean curvature maps.</li>
-  <li class="menu-item"><a href="./features/features_thickness.html">Check thickness distribution</a>.</li>
-  <li class="menu-item"><a href="./features/features_recognize-analytical.html">Recognize analytical shapes</a>.</li>
-</ul>
-
 <h1>Feature Recognition</h1>
 
 <div class="note">
@@ -124,6 +129,7 @@ available in Analysis Situs. Feature recognition is a backbone for such use case
   <li class="menu-item"><a href="./features/features_check-face-norms.html">Check face normal vectors</a>.</li>
   <li class="menu-item"><a href="./features/features_find-isomorphous-faces.html">Find isomorphous faces</a>.</li>
   <li class="menu-item"><a href="./features/features_recognize-drill-holes.html">Recognize drilled holes</a>.</li>
+  <li class="menu-item"><a href="./features/features_recognize-shafts.html">Recognize shafts</a>.</li>
   <li class="menu-item"><a href="./features/features_recognize-cavities.html">Recognize cavities</a>.</li>
   <li class="menu-item"><a href="./features/features_recognize-fillets.html">Recognize fillets</a>.</li>
   <li class="menu-item"><a href="./features/features_isolate-features.html">Isolate features</a>.</li>
@@ -131,6 +137,25 @@ available in Analysis Situs. Feature recognition is a backbone for such use case
   <li class="menu-item"><a href="./features/features_recognize-cnc-milling-features.html">Recognize CNC milling features</a>.</li>
   <li class="menu-item"><a href="./features/features_bounding-cyl.html">Bounding cylinder</a>.</li>
   <li class="menu-item"><a href="./features/features_recognition-anatomy-of-feature.html">The anatomy of a feature</a>.</li>
+</ul>
+
+<h1>Inspection and Healing</h1>
+
+<ul>
+  <li class="menu-item"><a href="./features/features_check-shape.html">Check CAD model validity</a>.</li>
+  <li class="menu-item"><a href="./features/features_check-facets.html">Check CAD facets</a>.</li>
+  <li class="menu-item"><a href="./features/features_check-toler.html">Check geometric tolerances</a>.</li>
+  <li class="menu-item"><a href="./features/features_is-contour-closed.html">Check if face contour is closed</a>.</li>
+  <li class="menu-item"><a href="./features/features_fix-small-edges.html">Merge small edges</a>.</li>
+  <li class="menu-item"><a href="./features/features_check-open-edges.html">Check naked (open) edges</a>.</li>
+  <li class="menu-item"><a href="./features/features_check-nm-edges.html">Check non-manifold edges</a>.</li>
+  <li class="menu-item"><a href="./features/features_convert-canonical.html">Convert to analytical (canonical) representation</a>.</li>
+  <li class="menu-item">Fill gaps.</li>
+  <li class="menu-item">Stitch faces.</li>
+  <li class="menu-item">Curvature plots and combs.</li>
+  <li class="menu-item">Gaussian and mean curvature maps.</li>
+  <li class="menu-item"><a href="./features/features_thickness.html">Check thickness distribution</a>.</li>
+  <li class="menu-item"><a href="./features/features_recognize-analytical.html">Recognize analytical shapes</a>.</li>
 </ul>
 
 <h1>Assemblies</h1>
@@ -272,10 +297,15 @@ techniques can contribute to solving the following tasks:
 <table class="footer" cellpadding="0" cellspacing="0" width="100%">
 <tr>
   <td>
-    Copyright &copy; Quaoar&nbsp;Studio&nbsp;LLC 2015-present &nbsp; | &nbsp; <a class="footer-href" href="#top">^^^</a>  &nbsp; | &nbsp; <a href="http://quaoar.su/blog/contact" class="footer-href">contact us</a> &nbsp; | &nbsp; <a href="https://www.youtube.com/channel/UCc0exKIoqbeOSqKoc1RnfBQ" class="icon brands fa-youtube"></a> &nbsp; | &nbsp; <a href="https://quaoar.su" class="icon brands fa-medium"></a> &nbsp; | &nbsp; <a href="https://www.linkedin.com/in/sergey-slyadnev-277496b1" class="icon brands fa-linkedin"></a>
+    <small>&copy; Quaoar&nbsp;Studio&nbsp;LLC 2015-present &nbsp; (Yerevan, Armenia)</small> | &nbsp; <a class="footer-href" href="#top">^^^</a>  &nbsp; | &nbsp; <a href="http://quaoar.su/blog/contact" class="footer-href">contact us</a> &nbsp; | &nbsp; <a href="https://www.youtube.com/channel/UCc0exKIoqbeOSqKoc1RnfBQ" class="icon brands fa-youtube"></a> &nbsp; | &nbsp; <a href="https://quaoar.su" class="icon brands fa-medium"></a> &nbsp; | &nbsp; <a href="https://www.linkedin.com/in/sergey-slyadnev-277496b1" class="icon brands fa-linkedin"></a>
   </td>
 </tr>
 </table>
+
+<script>
+hljs.highlightAll();
+pseudocode.renderClass("pseudocode");
+</script>
 
 </body>
 </html>

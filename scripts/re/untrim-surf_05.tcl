@@ -1,5 +1,5 @@
 # Set working variables.
-set datafile cad/turbines/Partition_3.step
+set datafile private/turbines/Partition_3.step
 set refErr   4.0
 
 # Read input geometry.

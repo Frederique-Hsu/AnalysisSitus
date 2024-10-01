@@ -1,5 +1,5 @@
 # Set working variables.
-set datafile     cad/situ/situ13.brep
+set datafile     public/cad/situ/situ13.brep
 set ref_isClosed 0
 
 # Read input geometry.

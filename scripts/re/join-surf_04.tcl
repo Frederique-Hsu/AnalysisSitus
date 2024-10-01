@@ -1,5 +1,5 @@
 # Set working variables.
-set datafile cad/joinsurf/test-joinsurf_04.stp
+set datafile public/cad/joinsurf/test-joinsurf_04.stp
 set refEnergy 1390.96
 set epsilon 0.1
 

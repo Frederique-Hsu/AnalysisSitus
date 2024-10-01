@@ -59,6 +59,7 @@
 #include <asiTest_RecognizeCavities.h>
 #include <asiTest_RecognizeConvexHull.h>
 #include <asiTest_RecognizeHoles.h>
+#include <asiTest_RecognizeShafts.h>
 #include <asiTest_SuppressBlends.h>
 #include <asiTest_UntrimSurf.h>
 #include <asiTest_Utils.h>
@@ -162,6 +163,7 @@ int main(int argc, char* argv[])
   CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<asiTest_RecognizeCavities>     );
   CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<asiTest_RecognizeConvexHull>   );
   CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<asiTest_RecognizeHoles>        );
+  CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<asiTest_RecognizeShafts>       );
   CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<asiTest_SuppressBlends>        );
   CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<asiTest_AAG>                   );
   CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<asiTest_EdgeVexity>            );

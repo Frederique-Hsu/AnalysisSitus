@@ -1,5 +1,5 @@
 clear
-set datafile mesh/adapter_holder_grabcad-dan-yochelson.stl
+set datafile public/mesh/adapter_holder_grabcad-dan-yochelson.stl
 set datadir $env(ASI_TEST_DATA)
 load-part $datadir/$datafile
 

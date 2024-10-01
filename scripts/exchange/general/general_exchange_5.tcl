@@ -1,5 +1,5 @@
 clear
-set datafile obj/grabcad_obj1.obj
+set datafile public/obj/grabcad_obj1.obj
 set datadir $env(ASI_TEST_DATA)
 load-part $datadir/$datafile
 

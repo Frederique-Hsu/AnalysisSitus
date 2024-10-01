@@ -1,5 +1,5 @@
 # Set working variables.
-set datafile cad/gordon/loft2.stp
+set datafile private/gordon/loft2.stp
 set refErr   0.00001
 
 # Read input geometry.

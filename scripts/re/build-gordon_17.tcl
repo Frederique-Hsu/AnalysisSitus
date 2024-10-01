@@ -1,5 +1,5 @@
 # Set working variables.
-set datafile cad/gordon/GORDON_10x2.brep
+set datafile private/gordon/GORDON_10x2.brep
 set refErr   0.1
 
 # Read input geometry.

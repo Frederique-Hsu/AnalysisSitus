@@ -46,19 +46,19 @@
 //-----------------------------------------------------------------------------
 
 // Filenames are specified relatively to ASI_TEST_DATA environment variable.
-#define filename_brep_001 "cad/box.brep"
-#define filename_brep_002 "cad/ANC101_isolated_components.brep"
-#define filename_brep_003 "cad/ANC101.brep"
-#define filename_brep_004 "cad/blends/0006_3boxesblend_06.brep"
-#define filename_brep_005 "cad/blends/0028_customblend_04.brep"
-#define filename_brep_006 "cad/blends/0038_nist_ctc_01_asme1_ap242.brep"
-#define filename_brep_007 "cad/blends/box-corner-cut-fillet.brep"
+#define filename_brep_001 "public/cad/box.brep"
+#define filename_brep_002 "public/cad/ANC101_isolated_components.brep"
+#define filename_brep_003 "public/cad/ANC101.brep"
+#define filename_brep_004 "public/cad/blends/0006_3boxesblend_06.brep"
+#define filename_brep_005 "public/cad/blends/0028_customblend_04.brep"
+#define filename_brep_006 "public/cad/blends/0038_nist_ctc_01_asme1_ap242.brep"
+#define filename_brep_007 "public/cad/blends/box-corner-cut-fillet.brep"
 //
-#define filename_json_001 "reference/aag/testJSON01.json"
-#define filename_json_002 "reference/aag/testJSON02.json"
-#define filename_json_003 "reference/aag/testJSON03.json"
-#define filename_json_004 "reference/aag/testJSON04.json"
-#define filename_json_005 "reference/aag/testJSON05.json"
+#define filename_json_001 "public/reference/aag/testJSON01.json"
+#define filename_json_002 "public/reference/aag/testJSON02.json"
+#define filename_json_003 "public/reference/aag/testJSON03.json"
+#define filename_json_004 "public/reference/aag/testJSON04.json"
+#define filename_json_005 "public/reference/aag/testJSON05.json"
 
 //-----------------------------------------------------------------------------
 

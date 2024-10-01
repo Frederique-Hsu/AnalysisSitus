@@ -1,4 +1,4 @@
-set datafile cad/pockets/pockets_9.stp
+set datafile public/cad/pockets/pockets_9.stp
 
 # Read input geometry.
 set datadir $env(ASI_TEST_DATA)

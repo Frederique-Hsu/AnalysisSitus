@@ -1,5 +1,5 @@
 # Set working variables.
-set datafile cad/gordon/test-cim.stp
+set datafile private/gordon/test-cim.stp
 
 # Read input geometry.
 set datadir $env(ASI_TEST_DATA)

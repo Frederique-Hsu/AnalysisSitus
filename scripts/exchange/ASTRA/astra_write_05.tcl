@@ -1,6 +1,6 @@
 # Set working variables.
-set datafile cad/turbines/Partition_8.brep
-set to       cad/astra/astra_write_04.dat
+set datafile private/turbines/Partition_8.brep
+set to       private/astra/astra_write_04.dat
 set refNb    8
 
 # Read input geometry.

@@ -1,5 +1,5 @@
 # Set working variables.
-set datafile cad/gordon/gordonRight.step
+set datafile private/gordon/gordonRight.step
 set refErr   0.008
 
 # Read input geometry.

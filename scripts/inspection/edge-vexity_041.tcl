@@ -1,5 +1,5 @@
 # Set working variables.
-set datafile cad/situ/vexity/concave-seam-on-revol.stp
+set datafile public/cad/situ/vexity/concave-seam-on-revol.stp
 
 # -1: undefined
 #  0: concave

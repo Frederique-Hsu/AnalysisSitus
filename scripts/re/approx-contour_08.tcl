@@ -1,5 +1,5 @@
 # Set working variables.
-set datafile     cad/approx-contour/approx-contour_08.brep
+set datafile     public/cad/approx-contour/approx-contour_08.brep
 set nbVertices   29
 set nbEdges      29
 set nbWires      1

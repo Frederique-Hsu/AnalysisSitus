@@ -1,5 +1,5 @@
 # Set working variables.
-set datafile points/sampled-surf_01.xyz
+set datafile public/points/sampled-surf_01.xyz
 
 # Read input geometry.
 set datadir $env(ASI_TEST_DATA)

@@ -1,5 +1,5 @@
 # Set working variables.
-set datafile cad/untrim/repatch-hpdc_01.stp
+set datafile private/untrim/repatch-hpdc_01.stp
 set refErr   0.001
 
 # Read input geometry.

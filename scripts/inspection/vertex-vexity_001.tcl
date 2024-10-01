@@ -1,5 +1,5 @@
 # Set working variables.
-set datafile cad/situ/vexity/vexity_bug1.brep
+set datafile public/cad/situ/vexity/vexity_bug1.brep
 
 # Read input geometry.
 set datadir $env(ASI_TEST_DATA)

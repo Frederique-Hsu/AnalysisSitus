@@ -1,5 +1,5 @@
 # Set working variables.
-set datafile cad/untrim/test.igs
+set datafile private/untrim/test.igs
 set refErr   7.0
 
 # Read input geometry.

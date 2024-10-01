@@ -1,6 +1,6 @@
 clear
-set to   cad/astra/surface_test.dat
-set from cad/astra/surface.dat
+set to   private/astra/surface_test.dat
+set from private/astra/surface.dat
 set refNb 1
 
 # Read input geometry.

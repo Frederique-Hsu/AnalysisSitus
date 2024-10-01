@@ -1,5 +1,5 @@
 clear
-set datafile cad/ANC101_colored.stp
+set datafile public/cad/ANC101_colored.stp
 
 # Read input geometry.
 set datadir $env(ASI_TEST_DATA)

@@ -1,4 +1,4 @@
-set datafile cad/pockets/09-05-22_cutter_male.step
+set datafile public/cad/pockets/09-05-22_cutter_male.step
 
 # Read input geometry.
 set datadir $env(ASI_TEST_DATA)

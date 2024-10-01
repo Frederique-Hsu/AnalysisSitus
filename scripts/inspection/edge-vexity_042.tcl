@@ -1,5 +1,5 @@
 # Set working variables.
-set datafile cad/situ/vexity/cable-inlet-with-threads.stp
+set datafile public/cad/situ/vexity/cable-inlet-with-threads.stp
 
 # -1: undefined
 #  0: concave

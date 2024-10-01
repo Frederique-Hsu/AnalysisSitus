@@ -1,5 +1,5 @@
 # Set working variables.
-set datafile cad/situ/vexity/situ_vexity_040.brep
+set datafile public/cad/situ/vexity/situ_vexity_040.brep
 
 # -1: undefined
 #  0: concave

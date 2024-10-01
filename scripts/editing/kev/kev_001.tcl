@@ -3,11 +3,9 @@
 #-------------------------------------------------------------------------------
 # This test case runs a sequence of topo reduction operations emulating double
 # KEV and one KEF for a solid.
-#-------------------------------------------------------------------------------
-# Target CAD file: data/cad/boxblend_01.brep
 #===============================================================================
 
-set datafile cad/blends/0007_boxblend_01.brep
+set datafile public/cad/blends/0007_boxblend_01.brep
 
 # Read input geometry.
 set datadir $env(ASI_TEST_DATA)

@@ -63,6 +63,7 @@
 #include <asiAlgo_RecognizeCavities.h>
 #include <asiAlgo_RecognizeConvexHull.h>
 #include <asiAlgo_RecognizeDrillHoles.h>
+#include <asiAlgo_RecognizeShafts.h>
 #include <asiAlgo_RTCD.h>
 #include <asiAlgo_SampleFace.h>
 #include <asiAlgo_Timer.h>
@@ -2963,6 +2964,7 @@ int ENGINE_RecognizeBlends(const Handle(asiTcl_Interp)& interp,
 
   return TCL_OK;
 }
+
 //-----------------------------------------------------------------------------
 
 int ENGINE_RecognizeHoles(const Handle(asiTcl_Interp)& interp,
@@ -3000,7 +3002,7 @@ int ENGINE_RecognizeHoles(const Handle(asiTcl_Interp)& interp,
   TIMER_NEW
   TIMER_GO
 
-  // Recognize cavities.
+  // Recognize holes.
   asiAlgo_RecognizeDrillHoles recHoles( G, true,
                                         interp->GetProgress(),
                                         interp->GetPlotter() );
@@ -3016,6 +3018,87 @@ int ENGINE_RecognizeHoles(const Handle(asiTcl_Interp)& interp,
 
   // Get the extracted face indices.
   const asiAlgo_Feature& resIndices = recHoles.GetResultIndices();
+
+  /* ==========
+   *  Finalize.
+   * ========== */
+
+  asiEngine_Part partApi( cmdEngine::model,
+                          cmdEngine::cf.IsNull() ? nullptr : cmdEngine::cf->ViewerPart->PrsMgr() );
+
+  // Highlight the detected faces.
+  if ( !cmdEngine::cf.IsNull() && cmdEngine::cf->ViewerPart )
+    partApi.HighlightFaces(resIndices);
+
+  // Dump to result.
+  *interp << resIndices;
+
+  return TCL_OK;
+}
+
+//-----------------------------------------------------------------------------
+
+int ENGINE_RecognizeShafts(const Handle(asiTcl_Interp)& interp,
+                           int                          argc,
+                           const char**                 argv)
+{
+  /* ==============
+   *  Get prepared.
+   * ============== */
+
+  // Get part.
+  Handle(asiData_PartNode)
+    partNode = cmdEngine::model->GetPartNode();
+  //
+  if ( partNode.IsNull() || !partNode->IsWellFormed() )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Part Node is null or ill-defined.");
+    return TCL_OK;
+  }
+  //
+  TopoDS_Shape        partShape = partNode->GetShape();
+  Handle(asiAlgo_AAG) G         = partNode->GetAAG();
+
+  // Read max allowed radius.
+  double r = Precision::Infinite();
+  interp->GetKeyValue<double>(argc, argv, "radius", r);
+  //
+  if ( Abs(r) < gp::Resolution() )
+    r = Precision::Infinite();
+
+  /* =========================
+   *  Recognize drilled holes.
+   * ========================= */
+
+  TIMER_NEW
+  TIMER_GO
+
+  // Recognize shafts.
+  asiAlgo_RecognizeShafts recShafts( G,
+                                     interp->GetProgress(),
+                                     interp->GetPlotter() );
+  //
+  if ( !recShafts.Perform(r) )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Shaft recognition failed.");
+    return TCL_ERROR;
+  }
+
+  TIMER_FINISH
+  TIMER_COUT_RESULT_NOTIFIER(interp->GetProgress(), "Recognize shafts")
+
+  // Get the extracted face indices.
+  const asiAlgo_Feature& resIndices = recShafts.GetResultIndices();
+
+  // Get the recognized shafts.
+  int idx = 0;
+  std::vector<Handle(asiAlgo_Shaft)> shafts = recShafts.GetShafts();
+  //
+  for ( const auto& shaft : shafts )
+  {
+    interp->GetProgress().SendLogMessage(LogInfo(Normal) << "\nShaft %1:\n\t diameter: %2\n\t length: %3"
+                                                         << ++idx << shaft->diameter << shaft->length);
+  }
 
   /* ==========
    *  Finalize.
@@ -5312,6 +5395,14 @@ void cmdEngine::Commands_Inspection(const Handle(asiTcl_Interp)&      interp,
     "\t Recognizes drilled holes.",
     //
     __FILE__, group, ENGINE_RecognizeHoles);
+
+  //-------------------------------------------------------------------------//
+  interp->AddCommand("recognize-shafts",
+  //
+  "recognize-shafts [-radius <r>]\n"
+  "\t Recognizes cylindrical shafts.",
+  //
+  __FILE__, group, ENGINE_RecognizeShafts);
 
   //-------------------------------------------------------------------------//
   interp->AddCommand("recognize-cavities",

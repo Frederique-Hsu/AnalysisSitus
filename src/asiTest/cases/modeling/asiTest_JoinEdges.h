@@ -51,7 +51,7 @@ public:
   //! \return filename for the description of the Test Case.
   static std::string DescriptionFn()
   {
-    return "asiTest_BuildGordonSurf";
+    return "asiTest_JoinEdges";
   }
 
   //! Returns Test Case description directory.

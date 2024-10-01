@@ -1,5 +1,5 @@
 # Set working variables.
-set datafile cad/convert-to-c2/sr-c1.igs
+set datafile private/convert-to-c2/sr-c1.igs
 set refErr   0.019
 set epsilon  0.001
 

@@ -1,4 +1,4 @@
-set datafile cad/topEdgeFillets/topEdgeFillets_5.stp
+set datafile public/cad/topEdgeFillets/topEdgeFillets_5.stp
 
 # Read input geometry.
 set datadir $env(ASI_TEST_DATA)

@@ -1,7 +1,7 @@
 source $env(ASI_TEST_SCRIPTS)/editing/canrec/__begin
 
 # Set working variables.
-set datafile cad/situ/cr/linear-extrusion_02.brep
+set datafile public/cad/situ/cr/linear-extrusion_02.brep
 
 # Reference numbers.
 set ref_nbSurfBezier     0

@@ -1,5 +1,5 @@
-set datafile cad/anomalies/freecad/index_hmd_frunk.stp
-set refPntsName reference/faceGrid/index_hmd_frunk_2361.xyz
+set datafile public/cad/anomalies/freecad/index_hmd_frunk.stp
+set refPntsName public/reference/faceGrid/index_hmd_frunk_2361.xyz
 
 # Read input geometry.
 set datadir $env(ASI_TEST_DATA)

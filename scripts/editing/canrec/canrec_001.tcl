@@ -1,7 +1,7 @@
 source $env(ASI_TEST_SCRIPTS)/editing/canrec/__begin
 
 # Set working variables.
-set datafile cad/canrec/2021-06-18_z-axis_plate.stp
+set datafile public/cad/canrec/2021-06-18_z-axis_plate.stp
 
 # Reference numbers.
 set ref_nbSurfBezier     0

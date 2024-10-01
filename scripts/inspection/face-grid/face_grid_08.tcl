@@ -1,5 +1,5 @@
-set datafile cad/nist/nist_ctc_05.stp
-set refPntsName reference/faceGrid/nist_ctc_05_117.xyz
+set datafile public/cad/nist/nist_ctc_05.stp
+set refPntsName public/reference/faceGrid/nist_ctc_05_117.xyz
 
 # Read input geometry.
 set datadir $env(ASI_TEST_DATA)

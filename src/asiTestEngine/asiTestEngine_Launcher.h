@@ -272,7 +272,8 @@ public:
   //! \return subdirectory dedicated to source files.
   inline static std::string current_temp_dir_source()
   {
-    return asiAlgo_Utils::Str::Slashed( asiAlgo_Utils::Env::AsiTestData() );
+    return asiAlgo_Utils::Str::Slashed( asiAlgo_Utils::Env::AsiTestData() )
+         + "public/";
   }
 
 };

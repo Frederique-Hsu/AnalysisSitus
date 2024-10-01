@@ -1,6 +1,6 @@
 clear
-set to   cad/astra/surfaceOfRev_test.dat
-set from cad/astra/surfaceOfRev.dat
+set to   private/astra/surfaceOfRev_test.dat
+set from private/astra/surfaceOfRev.dat
 
 # Read input geometry.
 set datadir $env(ASI_TEST_DATA)
