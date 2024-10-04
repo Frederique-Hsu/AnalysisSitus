@@ -13,6 +13,7 @@ REM Clone repo with data
 REM ===========================================================================
 
 mkdir confidential-data
+mkdir data\private
 
 git clone git@gitlab.com:ssv/analysissitus_data.git ./confidential-data
 
