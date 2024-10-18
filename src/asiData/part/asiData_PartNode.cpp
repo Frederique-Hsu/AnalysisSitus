@@ -252,13 +252,13 @@ TopoDS_Shape asiData_PartNode::GetShape(const bool applyTransform) const
 //! \param[in] flag on/off.
 void asiData_PartNode::SetAutoAAG(const bool flag) const
 {
-  ActParamTool::AsBool( this->Parameter(PID_AutoAAG) )->SetValue(flag);
+  P_Bool(this, PID_AutoAAG)->SetValue(flag);
 }
 
 //! \return true/false.
 bool asiData_PartNode::IsAutoAAG() const
 {
-  return ActParamTool::AsBool( this->Parameter(PID_AutoAAG) )->GetValue();
+  return P_Bool(this, PID_AutoAAG)->GetValue();
 }
 
 //! \return stored AAG.

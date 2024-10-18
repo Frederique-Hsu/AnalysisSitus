@@ -81,68 +81,66 @@
 //-----------------------------------------------------------------------------
 
 #define P_Int(NodePtr, PID) \
-  ActParamTool::AsInt( ##NodePtr->Parameter(##PID) )
+  ActParamTool::AsInt( NodePtr->Parameter(PID) )
 
 #define P_Real(NodePtr, PID) \
-  ActParamTool::AsReal( ##NodePtr->Parameter(##PID) )
+  ActParamTool::AsReal( NodePtr->Parameter(PID) )
 
 #define P_Bool(NodePtr, PID) \
-  ActParamTool::AsBool( ##NodePtr->Parameter(##PID) )
+  ActParamTool::AsBool( NodePtr->Parameter(PID) )
 
 #define P_Shape(NodePtr, PID) \
-  ActParamTool::AsShape( ##NodePtr->Parameter(##PID) )
+  ActParamTool::AsShape( NodePtr->Parameter(PID) )
 
 #define P_Mesh(NodePtr, PID) \
-  ActParamTool::AsMesh( ##NodePtr->Parameter(##PID) )
+  ActParamTool::AsMesh( NodePtr->Parameter(PID) )
 
 #define P_AsciiString(NodePtr, PID) \
-  ActParamTool::AsAsciiString( ##NodePtr->Parameter(##PID) )
+  ActParamTool::AsAsciiString( NodePtr->Parameter(PID) )
 
 #define P_Name(NodePtr, PID) \
-  ActParamTool::AsName( ##NodePtr->Parameter(##PID) )
+  ActParamTool::AsName( NodePtr->Parameter(PID) )
 
 #define P_Selection(NodePtr, PID) \
-  ActParamTool::AsSelection( ##NodePtr->Parameter(##PID) )
+  ActParamTool::AsSelection( NodePtr->Parameter(PID) )
 
 #define P_TimeStamp(NodePtr, PID) \
-  ActParamTool::AsTimeStamp( ##NodePtr->Parameter(##PID) )
+  ActParamTool::AsTimeStamp( NodePtr->Parameter(PID) )
 
 #define P_IntArray(NodePtr, PID) \
-  ActParamTool::AsIntArray( ##NodePtr->Parameter(##PID) )
+  ActParamTool::AsIntArray( NodePtr->Parameter(PID) )
 
 #define P_RealArray(NodePtr, PID) \
-  ActParamTool::AsRealArray( ##NodePtr->Parameter(##PID) )
+  ActParamTool::AsRealArray( NodePtr->Parameter(PID) )
 
 #define P_StringArray(NodePtr, PID) \
-  ActParamTool::AsStringArray( ##NodePtr->Parameter(##PID) )
+  ActParamTool::AsStringArray( NodePtr->Parameter(PID) )
 
 #define P_ComplexArray(NodePtr, PID) \
-  ActParamTool::AsComplexArray( ##NodePtr->Parameter(##PID) )
+  ActParamTool::AsComplexArray( NodePtr->Parameter(PID) )
 
 #define P_BoolArray(NodePtr, PID) \
-  ActParamTool::AsBoolArray( ##NodePtr->Parameter(##PID) )
+  ActParamTool::AsBoolArray( NodePtr->Parameter(PID) )
 
 #define P_Group(NodePtr, PID) \
-  ActParamTool::AsGroup( ##NodePtr->Parameter(##PID) )
+  ActParamTool::AsGroup( NodePtr->Parameter(PID) )
 
 #define P_TreeFunction(NodePtr, PID) \
-  ActParamTool::AsTreeFunction( ##NodePtr->Parameter(##PID) )
+  ActParamTool::AsTreeFunction( NodePtr->Parameter(PID) )
 
 #define P_TreeNode(NodePtr, PID) \
-  ActParamTool::AsTreeNode( ##NodePtr->Parameter(##PID) )
+  ActParamTool::AsTreeNode( NodePtr->Parameter(PID) )
 
 #define P_Reference(NodePtr, PID) \
-  ActParamTool::AsReference( ##NodePtr->Parameter(##PID) )
+  ActParamTool::AsReference( NodePtr->Parameter(PID) )
 
 #define P_ReferenceList(NodePtr, PID) \
-  ActParamTool::AsReferenceList( ##NodePtr->Parameter(##PID) )
+  ActParamTool::AsReferenceList( NodePtr->Parameter(PID) )
 
 #define P_Triangulation(NodePtr, PID) \
-  ActParamTool::AsTriangulation( ##NodePtr->Parameter(##PID) )
+  ActParamTool::AsTriangulation( NodePtr->Parameter(PID) )
 
 //-----------------------------------------------------------------------------
-
-DEFINE_STANDARD_HANDLE(ActData_ParameterFactory, Standard_Transient)
 
 //! \ingroup AD_DF
 //!
@@ -150,8 +148,6 @@ DEFINE_STANDARD_HANDLE(ActData_ParameterFactory, Standard_Transient)
 class ActData_ParameterFactory : public Standard_Transient
 {
 friend class ActData_TreeFunctionDriver;
-
-public:
 
   // OCCT RTTI
   DEFINE_STANDARD_RTTI_INLINE(ActData_ParameterFactory, Standard_Transient)
