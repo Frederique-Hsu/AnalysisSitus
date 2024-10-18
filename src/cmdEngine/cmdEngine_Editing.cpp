@@ -60,6 +60,7 @@
 #include <asiAlgo_SmallEdges.h>
 #include <asiAlgo_SuppressBlendChain.h>
 #include <asiAlgo_SuppressBlendsInc.h>
+#include <asiAlgo_SuppressFeatures.h>
 #include <asiAlgo_Timer.h>
 #include <asiAlgo_TopoAttrOrientation.h>
 #include <asiAlgo_TopoKill.h>
@@ -874,6 +875,70 @@ int ENGINE_KillFaces(const Handle(asiTcl_Interp)& interp,
   cmdEngine::model->OpenCommand();
   {
     asiEngine_Part(cmdEngine::model).Update(result);
+  }
+  cmdEngine::model->CommitCommand();
+
+  // Update UI.
+  if ( cmdEngine::cf && cmdEngine::cf->ViewerPart )
+    cmdEngine::cf->ViewerPart->PrsMgr()->Actualize(part_n);
+
+  return TCL_OK;
+}
+
+//-----------------------------------------------------------------------------
+
+int ENGINE_SuppressFeatures(const Handle(asiTcl_Interp)& interp,
+                            int                          argc,
+                            const char**                 argv)
+{
+  // Get Part Node.
+  Handle(asiData_PartNode) part_n = cmdEngine::model->GetPartNode();
+  //
+  TopoDS_Shape initShape = part_n->GetShape();
+
+  // Get map of sub-shapes with respect to those the passed index is relevant.
+  TopTools_IndexedMapOfShape subShapesOfType;
+  part_n->GetAAG()->RequestMapOf(TopAbs_FACE, subShapesOfType);
+
+  // Get selected faces.
+  asiAlgo_Feature features, unsuppressed;
+  //
+  for ( int k = 1; k < argc; ++k )
+  {
+    const int fid = atoi(argv[k]);
+    //
+    if ( fid < 1 || fid > subShapesOfType.Extent() )
+    {
+      interp->GetProgress().SendLogMessage(LogErr(Normal) << "Face ID %1 is out of range. Skipping..."
+                                                          << fid);
+      continue;
+    }
+
+    features.Add(fid);
+  }
+  //
+  if ( features.IsEmpty() )
+  {
+    if ( !cmdEngine::cf.IsNull() )
+    {
+      asiEngine_Part( cmdEngine::cf->Model,
+                      cmdEngine::cf->ViewerPart->PrsMgr() ).GetHighlightedFaces(features);
+    }
+  }
+
+  // Suppress.
+  TopoDS_Shape              resShape;
+  Handle(BRepTools_History) resHistory;
+  //
+  asiAlgo_SuppressFeatures suppress( interp->GetProgress() );
+  //
+  if ( !suppress(initShape, features, true, resShape, unsuppressed, resHistory) )
+    return TCL_ERROR;
+
+  // Modify Data Model.
+  cmdEngine::model->OpenCommand();
+  {
+    asiEngine_Part(cmdEngine::model).Update(resShape);
   }
   cmdEngine::model->CommitCommand();
 
@@ -4240,6 +4305,15 @@ void cmdEngine::Commands_Editing(const Handle(asiTcl_Interp)&      interp,
     "\t Kills the faces with the given 1-based indices.",
     //
     __FILE__, group, ENGINE_KillFaces);
+
+  //-------------------------------------------------------------------------//
+  interp->AddCommand("suppress-features",
+    //
+    "suppress-features [<fid1> [<fid2> ...]]\n"
+    "\t Suppresses features passed with 1-based identifiers of faces or selected\n"
+    "\t in the viewer.",
+    //
+    __FILE__, group, ENGINE_SuppressFeatures);
 
   //-------------------------------------------------------------------------//
   interp->AddCommand("kill-solid-by-face",
