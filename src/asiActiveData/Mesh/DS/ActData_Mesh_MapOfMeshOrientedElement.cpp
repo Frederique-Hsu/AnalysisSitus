@@ -45,9 +45,10 @@ const Handle(ActData_Mesh_Element)& ActData_Mesh_MapOfMeshOrientedElement::Find(
   }
 //  Standard_NoSuchObject_Raise_if(IsEmpty(),"ActData_Mesh_MapOfMeshOrientedElement::Find");
   ActData_Mesh_MapOfOrientedElements::MapNode** data = (ActData_Mesh_MapOfOrientedElements::MapNode**) myData1;
-  ActData_Mesh_MapOfOrientedElements::MapNode* p = data[ActData_Mesh_Element::OrientedHasher::HashCode(K,NbBuckets())];
+  ActData_Mesh_Element::Hasher hasher;
+  ActData_Mesh_MapOfOrientedElements::MapNode* p = data[hasher(K)];
   while (p) {
-    if (ActData_Mesh_Element::OrientedHasher::IsEqual(p->Key(),K))
+    if (hasher(p->Key(),K))
       return p->Key();
     p = (ActData_Mesh_MapOfOrientedElements::MapNode*) p->Next();
   }
@@ -67,9 +68,10 @@ Handle(ActData_Mesh_Element)& ActData_Mesh_MapOfMeshOrientedElement::ChangeFind(
   }
 //Standard_NoSuchObject_Raise_if(IsEmpty(),"ActData_Mesh_MapOfMeshOrientedElement::ChangeFind");
   ActData_Mesh_MapOfOrientedElements::MapNode** data = (ActData_Mesh_MapOfOrientedElements::MapNode**) myData1;
-  ActData_Mesh_MapOfOrientedElements::MapNode* p = data[ActData_Mesh_Element::OrientedHasher::HashCode(K,NbBuckets())];
+  ActData_Mesh_Element::Hasher hasher;
+  ActData_Mesh_MapOfOrientedElements::MapNode* p = data[hasher(K)];
   while (p) {
-    if (ActData_Mesh_Element::OrientedHasher::IsEqual(p->Key(),K))
+    if (hasher(p->Key(),K))
       return p->ChangeValue();
     p = (ActData_Mesh_MapOfOrientedElements::MapNode*)  p->Next();
   }

@@ -275,7 +275,7 @@ bool asiAlgo_MeshGen::DoNetGen(const TopoDS_Shape&                              
   for ( int i = 1; i <= nbNodes; ++i )
   {
     const netgen::MeshPoint& point = ngMesh.Point(netgen::PointIndex(i));
-    mesh->ChangeNode(i).SetCoord(point[0], point[1], point[2]);
+    mesh->SetNode(i, gp_Pnt(point[0], point[1], point[2]));
   }
 
   for ( int i = 1; i <= nbTriangles; ++i )

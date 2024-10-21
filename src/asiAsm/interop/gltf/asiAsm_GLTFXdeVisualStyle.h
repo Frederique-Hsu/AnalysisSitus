@@ -127,18 +127,16 @@ public:
   {
     //! Computes a hash code in the range [1, upper] for the given set of styling settings.
     //! \param[in] style the style structure to compute hash code for.
-    //! \param[in] upper the upper bound for the hash code being computed.
     //! \return the computed hash code.
-    gltf_EXPORT static int
-      HashCode(const glTFXdeVisualStyle& style,
-               const int                  upper);
+    gltf_EXPORT size_t
+      operator()(const glTFXdeVisualStyle& style) const;
 
     //! Checks if the passed styles are equal.
     //! \param[in] S1 the first style to check.
     //! \param[in] S2 the second style to check.
-    gltf_EXPORT static bool
-      IsEqual(const glTFXdeVisualStyle& S1,
-              const glTFXdeVisualStyle& S2);
+    gltf_EXPORT bool
+      operator()(const glTFXdeVisualStyle& S1,
+                 const glTFXdeVisualStyle& S2) const;
   };
 
 protected:

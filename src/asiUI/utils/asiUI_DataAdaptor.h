@@ -65,11 +65,10 @@ public:
     //! \param Adt      [in] Data Adaptor to calculate hash code for.
     //! \param nBuckets [in] number of buckets.
     //! \return hash code.
-    static int
-      HashCode(const Handle(asiUI_DataAdaptor)& Adt,
-               const int                        nBuckets = 100)
+    size_t operator()(const Handle(asiUI_DataAdaptor)& Adt) const noexcept
     {
-      return ::HashCode(Adt->ID(), nBuckets);
+      std::hash<Standard_Integer> hash;
+      return hash(Adt->ID());
     }
 
     //! Checks whether two Data Adaptors represent the same data. It is
@@ -77,9 +76,8 @@ public:
     //! \param Adt1 [in] first adaptor.
     //! \param Adt2 [in] second adaptor.
     //! \return true in case of equality, false -- otherwise.
-    static int
-      IsEqual(const Handle(asiUI_DataAdaptor)& Adt1,
-              const Handle(asiUI_DataAdaptor)& Adt2)
+    bool operator()(const Handle(asiUI_DataAdaptor)& Adt1,
+                    const Handle(asiUI_DataAdaptor)& Adt2) const noexcept
     {
       return ( Adt1->ID() == Adt2->ID() );
     }

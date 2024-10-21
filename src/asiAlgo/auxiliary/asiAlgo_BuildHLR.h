@@ -32,6 +32,7 @@
 #define asiAlgo_BuildHLR_h
 
 // asiAlgo includes
+#include <Standard_TypeDef.hxx>
 #include <asiAlgo_ConcurrentSet.h>
 #include <asiAlgo_Thread.h>
 

@@ -174,32 +174,35 @@ bool glTFXdeVisualStyle::operator==(const glTFXdeVisualStyle& other) const
 
 //-----------------------------------------------------------------------------
 
-int glTFXdeVisualStyle::Hasher::HashCode(const glTFXdeVisualStyle& style,
-                                          const int                  upper)
+size_t glTFXdeVisualStyle::Hasher::operator()(const glTFXdeVisualStyle& style) const
 {
   if ( !style.m_bIsVisible )
     return 1; // ??? Taken from OpenCascade like this.
 
-  int hashCode = 0;
+  size_t hashCode = 0;
   if ( style.m_bHasColorSurf )
   {
-    hashCode = hashCode ^ Quantity_ColorRGBAHasher::HashCode(style.m_colorSurf, upper);
+    std::hash<Quantity_ColorRGBA> hash;
+    hashCode = hashCode ^ hash(style.m_colorSurf);
   }
   if ( style.m_bHasColorCurve )
   {
-    hashCode = hashCode ^ Quantity_ColorHasher::HashCode(style.m_colorCurve, upper);
+    std::hash<Quantity_Color> hash;
+    hashCode = hashCode ^ hash(style.m_colorCurve);
   }
   if ( !style.m_material.IsNull() )
   {
-    hashCode = hashCode ^ ::HashCode(style.m_material, upper);
+    std::hash<Handle(glTFMaterialAttr)> hash;
+    hashCode = hashCode ^ hash(style.m_material);
   }
-  return ::HashCode(hashCode, upper);
+  std::hash<size_t> hash;
+  return hash(hashCode);
 }
 
 //-----------------------------------------------------------------------------
 
-bool glTFXdeVisualStyle::Hasher::IsEqual(const glTFXdeVisualStyle& S1,
-                                          const glTFXdeVisualStyle& S2)
+bool glTFXdeVisualStyle::Hasher::operator()(const glTFXdeVisualStyle& S1,
+                                            const glTFXdeVisualStyle& S2) const
 {
   return S1.IsEqual(S2);
 }

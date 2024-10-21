@@ -218,21 +218,22 @@ public:
     //! \param theParamDTO [in] Parameter DTO to calculate hash code for.
     //! \param theNbBuckets [in] number of buckets.
     //! \return calculated hash code.
-    static Standard_Integer HashCode(const Handle(ActData_ParameterDTO)& theParamDTO,
-                                     const Standard_Integer              theNbBuckets = 100)
+    size_t operator()(const Handle(ActData_ParameterDTO)& theParamDTO) const noexcept
     {
-      return ActAPI_ParameterGID::Hasher::HashCode(theParamDTO->GID(), theNbBuckets);
+      ActAPI_ParameterGID::Hasher hasher;
+      return hasher(theParamDTO->GID());
     }
 
     //! Checks whether two Parameter DTO instances are the same.
     //! \param theParamDTO1 [in] first Parameter DTO.
     //! \param theParamDTO2 [in] second Parameter DTO.
     //! \return true in case of equality, false -- otherwise.
-    static Standard_Boolean IsEqual(const Handle(ActData_ParameterDTO)& theParamDTO1,
-                                    const Handle(ActData_ParameterDTO)& theParamDTO2)
+    bool operator()(const Handle(ActData_ParameterDTO)& theParamDTO1,
+                    const Handle(ActData_ParameterDTO)& theParamDTO2) const noexcept
     {
-      return ActAPI_ParameterGID::Hasher::IsEqual( theParamDTO1->GID(),
-                                                   theParamDTO2->GID() );
+      ActAPI_ParameterGID::Hasher hasher;
+      return hasher( theParamDTO1->GID(),
+                     theParamDTO2->GID() );
     }
   };
 

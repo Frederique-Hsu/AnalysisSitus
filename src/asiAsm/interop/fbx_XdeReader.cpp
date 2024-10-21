@@ -271,11 +271,6 @@ namespace
       if (nbTriangles == 0)
         continue;
 
-      Poly_Array1OfTriangle trianglesPoly = Poly_Array1OfTriangle(1, nbTriangles);
-      int trIt = 0;
-      for (std::vector<Poly_Triangle>::iterator it = trVector.begin(); it != trVector.end(); it++)
-        trianglesPoly.SetValue(++trIt, *it);
-
       bool hasUVNodes = (fbxMesh->GetElementUVCount() > 0);
 
       Handle(Poly_Triangulation) triangulation = new Poly_Triangulation(nbNodes, nbTriangles, hasUVNodes);
@@ -283,8 +278,9 @@ namespace
       for ( int n = nodes.Lower(); n <= nodes.Upper(); ++n )
         triangulation->SetNode( n, nodes(n) );
 
-      //triangulation->ChangeNodes() = nodes;
-      triangulation->ChangeTriangles() = trianglesPoly;
+      int trIt = 0;
+      for (std::vector<Poly_Triangle>::iterator it = trVector.begin(); it != trVector.end(); it++)
+        triangulation->SetTriangle(++trIt, *it);
 
       if (hasUVNodes)
       {
@@ -307,12 +303,12 @@ namespace
         Handle(TShort_HArray1OfShortReal) normals = new TShort_HArray1OfShortReal(1, nbNodes * 3);
         for (int normalIt = 0; normalIt < nbNodes; normalIt++)
         {
-          int newIt = normalIt * 3;
-          normals->SetValue(newIt + 1, (Standard_ShortReal)fbxNormals->GetDirectArray()[normalIt][0]);
-          normals->SetValue(newIt + 2, (Standard_ShortReal)fbxNormals->GetDirectArray()[normalIt][1]);
-          normals->SetValue(newIt + 3, (Standard_ShortReal)fbxNormals->GetDirectArray()[normalIt][2]);
+          gp_Dir normal;
+          normal.SetXYZ({ (Standard_ShortReal)fbxNormals->GetDirectArray()[normalIt][0],
+                          (Standard_ShortReal)fbxNormals->GetDirectArray()[normalIt][1],
+                          (Standard_ShortReal)fbxNormals->GetDirectArray()[normalIt][1] });
+          triangulation->SetNormal(normalIt + 1, normal);
         }
-        triangulation->SetNormals(normals);
       }
 
       if (pState->toMergeNodes)

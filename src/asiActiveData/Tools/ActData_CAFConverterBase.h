@@ -63,33 +63,35 @@ struct ActData_VersionDelta
                                                            NewVersion(theNewVer) {}
 };
 
-//! \ingroup AD_DF
-//!
-//! Hash-function for versioning deltas.
-//! \param theVDelta [in] versioning delta.
-//! \param theUpper [in] hash integer.
-inline Standard_Integer HashCode(const ActData_VersionDelta& theVDelta,
-                                 const Standard_Integer theUpper)
+struct ActData_VersionDeltaHasher
 {
-  Standard_Integer aKey = theVDelta.OldVersion + theVDelta.NewVersion;
-  aKey += (aKey << 10);
-  aKey ^= (aKey >> 6);
-  aKey += (aKey << 3);
-  aKey ^= (aKey >> 11);
-  return (aKey & 0x7fffffff) % theUpper;
-}
+  //! \ingroup AD_DF
+  //!
+  //! Hash-function for versioning deltas.
+  //! \param theVDelta [in] versioning delta.
+  //! \param theUpper [in] hash integer.
+  int operator()(const ActData_VersionDelta& theVDelta) const noexcept
+  {
+    Standard_Integer aKey = theVDelta.OldVersion + theVDelta.NewVersion;
+    aKey += (aKey << 10);
+    aKey ^= (aKey >> 6);
+    aKey += (aKey << 3);
+    aKey ^= (aKey >> 11);
+    return (aKey & 0x7fffffff) % sizeof(int);
+  }
 
-//! \ingroup AD_DF
-//!
-//! Equality checker for versioning deltas.
-//! \param theVDelta1 [in] first delta.
-//! \param theVDelta2 [in] second delta.
-inline Standard_Boolean IsEqual(const ActData_VersionDelta& theVDelta1,
-                                const ActData_VersionDelta& theVDelta2)
-{
-  return theVDelta1.OldVersion == theVDelta2.OldVersion &&
-         theVDelta1.NewVersion == theVDelta2.NewVersion;
-}
+  //! \ingroup AD_DF
+  //!
+  //! Equality checker for versioning deltas.
+  //! \param theVDelta1 [in] first delta.
+  //! \param theVDelta2 [in] second delta.
+  bool operator()(const ActData_VersionDelta& theVDelta1,
+                  const ActData_VersionDelta& theVDelta2) const noexcept
+  {
+    return theVDelta1.OldVersion == theVDelta2.OldVersion &&
+      theVDelta1.NewVersion == theVDelta2.NewVersion;
+  }
+};
 
 //! \ingroup AD_DF
 //!
@@ -193,7 +195,7 @@ private:
 
   //! Type shortcut for mapping between version deltas and their correspondent
   //! conversion routines.
-  typedef NCollection_DataMap<ActData_VersionDelta, ActData_ConversionRoutine> _ConversionMap;
+  typedef NCollection_DataMap<ActData_VersionDelta, ActData_ConversionRoutine, ActData_VersionDeltaHasher> _ConversionMap;
 
 private:
 

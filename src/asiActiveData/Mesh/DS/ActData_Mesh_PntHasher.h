@@ -42,12 +42,12 @@ public:
 
   //! Returns a HasCode value  for  the  Key <K>  in the
   //! range 0..Upper.
-  static int HashCode(const gp_Pnt& Point, const int Upper);
+  size_t operator()(const gp_Pnt& Point) const;
 
   //! Returns True  when the two  keys are the same. Two
   //! same  keys  must   have  the  same  hashcode,  the
   //! contrary is not necessary.
-  static unsigned IsEqual(const gp_Pnt& Point1, const gp_Pnt& Point2);
+  bool operator()(const gp_Pnt& Point1, const gp_Pnt& Point2) const;
 };
 
 
@@ -56,7 +56,7 @@ public:
 //purpose  : 
 //=======================================================================
 
-inline int ActData_Mesh_PntHasher::HashCode(const gp_Pnt& point, const int Upper)
+size_t ActData_Mesh_PntHasher::operator()(const gp_Pnt& point) const
 {
   union 
   {
@@ -65,8 +65,8 @@ inline int ActData_Mesh_PntHasher::HashCode(const gp_Pnt& point, const int Upper
   } U;
 
   point.Coord(U.R[0],U.R[1],U.R[2]);
-
-  return ::HashCode(U.I[0]/23+U.I[1]/19+U.I[2]/17+U.I[3]/13+U.I[4]/11+U.I[5]/7,Upper);
+  std::hash<Standard_Integer> hasher;
+  return hasher(U.I[0]/23+U.I[1]/19+U.I[2]/17+U.I[3]/13+U.I[4]/11+U.I[5]/7);
 }
 
 //=======================================================================
@@ -74,7 +74,7 @@ inline int ActData_Mesh_PntHasher::HashCode(const gp_Pnt& point, const int Upper
 //purpose  : 
 //=======================================================================
 
-inline unsigned ActData_Mesh_PntHasher::IsEqual(const gp_Pnt& point1, const gp_Pnt& point2)
+bool ActData_Mesh_PntHasher::operator()(const gp_Pnt& point1, const gp_Pnt& point2) const
 {
   Standard_Real tab1[3], tab2[3];
   point1.Coord(tab1[0],tab1[1],tab1[2]);

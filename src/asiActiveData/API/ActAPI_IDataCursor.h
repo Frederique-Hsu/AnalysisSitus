@@ -92,22 +92,22 @@ public:
     //! \param theDC [in] Data Cursor to calculate a hash code for.
     //! \param theUpper [in] upper index.
     //! \return hash code.
-    static inline Standard_Integer HashCode(const Handle(ActAPI_IDataCursor)& theDC,
-                                            const Standard_Integer theUpper)
+    size_t operator()(const Handle(ActAPI_IDataCursor)& theDC) const noexcept
     {
       if ( theDC.IsNull() )
         return 0;
 
       ActAPI_DataObjectId anObjectId = theDC->GetId();
-      return ::HashCode(anObjectId, theUpper);
+      std::hash<ActAPI_DataObjectId> hash;
+      return hash(anObjectId);
     }
 
     //! IsEqual() function for Data Cursors to be used in OCCT Data Maps.
     //! \param theDC1 [in] first Data Cursor.
     //! \param theDC2 [in] second Data Cursor.
     //! \return true in case of equality, false -- otherwise.
-    static inline Standard_Boolean IsEqual(const Handle(ActAPI_IDataCursor)& theDC1,
-                                           const Handle(ActAPI_IDataCursor)& theDC2)
+    bool operator()(const Handle(ActAPI_IDataCursor)& theDC1,
+                    const Handle(ActAPI_IDataCursor)& theDC2) const noexcept
     {
       if ( theDC1.IsNull() || theDC2.IsNull() )
         return Standard_False;
@@ -122,10 +122,10 @@ public:
   //! \param theDC [in] Data Cursor to calculate a hash code for.
   //! \param theUpper [in] upper index.
   //! \return hash code.
-  static inline Standard_Integer HashCode(const Handle(ActAPI_IDataCursor)& theDC,
-                                          const Standard_Integer theUpper)
+  static inline size_t HashCode(const Handle(ActAPI_IDataCursor)& theDC)
   {
-    return Hasher::HashCode(theDC, theUpper);
+    Hasher hasher;
+    return hasher(theDC);
   }
 
   //! IsEqual() function for Data Cursors to be used in OCCT Data Maps.
@@ -135,7 +135,8 @@ public:
   static inline Standard_Boolean IsEqual(const Handle(ActAPI_IDataCursor)& theDC1,
                                          const Handle(ActAPI_IDataCursor)& theDC2)
   {
-    return Hasher::IsEqual(theDC1, theDC2);
+    Hasher hasher;
+    return hasher(theDC1, theDC2);
   }
 
 public:

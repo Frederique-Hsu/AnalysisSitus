@@ -191,7 +191,8 @@ Standard_Integer
     const Handle(ActData_CAFConversionParameter)& aCAFParam = m_params.Value(i);
     const ActAPI_ParameterGID& aCurGID = aCAFParam->GetData()->GID();
 
-    if ( ActAPI_ParameterGID::Hasher::IsEqual(aCurGID, theGID) )
+    ActAPI_ParameterGID::Hasher hasher;
+    if ( hasher(aCurGID, theGID) )
       return i;
   }
   return -1;

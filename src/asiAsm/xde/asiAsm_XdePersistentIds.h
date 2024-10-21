@@ -44,7 +44,6 @@
 #include <NCollection_Shared.hxx>
 #include <TCollection_HAsciiString.hxx>
 #include <TDF_Label.hxx>
-#include <TDF_LabelMapHasher.hxx>
 #include <TDF_Tool.hxx>
 
 //-----------------------------------------------------------------------------
@@ -123,18 +122,18 @@ public:
     //! \param[in] item  item to calculate a hash code for.
     //! \param[in] upper upper index.
     //! \return hash code.
-    static int HashCode(const AssemblyItemId& item,
-                        const int             upper)
+    size_t operator()(const AssemblyItemId& item) const noexcept
     {
-      return ::HashCode( item.ToString(), upper );
+      std::hash<TCollection_AsciiString> hash;
+      return hash( item.ToString() );
     }
 
     //! IsEqual() function for items to be used in OCCT Data Maps.
     //! \param[in] item1 first item.
     //! \param[in] item2 second item.
     //! \return true in case of equality, false -- otherwise.
-    static int IsEqual(const AssemblyItemId& item1,
-                       const AssemblyItemId& item2)
+    bool operator()(const AssemblyItemId& item1,
+                    const AssemblyItemId& item2) const noexcept
     {
       return ::IsEqual( item1.ToString(), item2.ToString() );
     }
@@ -548,18 +547,18 @@ struct PartId
     //! \param[in] entry to calculate a hash code for.
     //! \param[in] upper upper index.
     //! \return hash code.
-    static int HashCode(const PartId& entry,
-                        const int     upper)
+    size_t operator()(const PartId& entry) const noexcept
     {
-      return ::HashCode(entry.Entry, upper);
+      std::hash<PersistentId> hash;
+      return hash(entry.Entry);
     }
 
     //! IsEqual() function for entries to be used in OCCT Data Maps.
     //! \param[in] entry1 first entry.
     //! \param[in] entry2 second entry.
     //! \return true in case of equality, false -- otherwise.
-    static bool IsEqual(const PartId& entry1,
-                        const PartId& entry2)
+    bool operator()(const PartId& entry1,
+                    const PartId& entry2) const noexcept
     {
       return ::IsEqual(entry1.Entry, entry2.Entry);
     }
@@ -598,8 +597,7 @@ typedef NCollection_IndexedDataMap<PartId,
 //!
 //! Map of labels to instances.
 typedef NCollection_IndexedDataMap<TDF_Label,
-                                   AssemblyItemIdList,
-                                   TDF_LabelMapHasher> LabelsToInstancesMap;
+                                   AssemblyItemIdList> LabelsToInstancesMap;
 
 //! \ingroup ASIASM
 //!
@@ -612,8 +610,7 @@ typedef NCollection_DataMap<AssemblyItemId,
 //!
 //! Features associated with prototypes.
 typedef NCollection_DataMap<TDF_Label,
-                            asiAlgo_Feature,
-                            TDF_LabelMapHasher> UngroupedFeatureMapOnOriginals;
+                            asiAlgo_Feature> UngroupedFeatureMapOnOriginals;
 
 //! \ingroup ASIASM
 //!

@@ -70,14 +70,15 @@ public:
   //! Hasher for sets.
   struct t_hasher
   {
-    static int HashCode(const Handle(asiAlgo_TopoAttr)& attr, const int upper)
+    size_t operator()(const Handle(asiAlgo_TopoAttr)& attr, const int upper) const noexcept
     {
-      return Standard_GUID::HashCode(attr->GetGUID(), upper);
+      std::hash<Standard_GUID> hash;
+      return hash(attr->GetGUID());
     }
 
-    static bool IsEqual(const Handle(asiAlgo_TopoAttr)& attr, const Handle(asiAlgo_TopoAttr)& other)
+    bool operator()(const Handle(asiAlgo_TopoAttr)& attr, const Handle(asiAlgo_TopoAttr)& other) const noexcept
     {
-      return Standard_GUID::IsEqual( attr->GetGUID(), other->GetGUID() );
+      return attr->GetGUID().IsSame( other->GetGUID() );
     }
   };
 

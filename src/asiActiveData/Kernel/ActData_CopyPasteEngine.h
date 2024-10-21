@@ -50,7 +50,6 @@
 #include <NCollection_Map.hxx>
 #include <TDF_ChildIterator.hxx>
 #include <TDF_Label.hxx>
-#include <TDF_LabelMapHasher.hxx>
 
 DEFINE_STANDARD_HANDLE(ActData_CopyPasteEngine, Standard_Transient)
 
@@ -83,8 +82,7 @@ public:
 public:
 
   //! Correspondence map between source Labels and the target ones.
-  typedef NCollection_DoubleMap<TDF_Label, TDF_Label,
-                                TDF_LabelMapHasher, TDF_LabelMapHasher> RelocationTable;
+  typedef NCollection_DoubleMap<TDF_Label, TDF_Label> RelocationTable;
 
 public:
 

@@ -20,7 +20,6 @@
 #define TIGLCOMMONFUNCTIONS_H
 
 #include "Standard.hxx"
-#include "Standard_values.h"
 #include "gp_Pnt.hxx"
 #include "gp_Vec.hxx"
 #include "gp_Pln.hxx"

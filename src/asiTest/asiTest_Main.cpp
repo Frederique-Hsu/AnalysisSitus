@@ -135,9 +135,11 @@ DEFINE_TEST_VARIABLES
 }
 
 //-----------------------------------------------------------------------------
-
+#include <chrono>
 int main(int argc, char* argv[])
 {
+
+  std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
   asiTest_NotUsed(argc);
   asiTest_NotUsed(argv);
 
@@ -233,10 +235,22 @@ int main(int argc, char* argv[])
   {
     std::cout << "\t***\n\tTests FAILED" << std::endl;
     PRINT_DECOR
+
+
+
+      std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
+    std::cout << "\n\nTime difference = " << std::chrono::duration_cast<std::chrono::nanoseconds> (end - begin).count() << "[ns]" << std::endl;
     return 1;
   }
 
   std::cout << "\t***\n\tTests SUCCEEDED" << std::endl;
+
+
+
+  std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
+  std::cout << "\n\nTime difference = " << std::chrono::duration_cast<std::chrono::nanoseconds> (end - begin).count() << "[ns]" << std::endl;
   PRINT_DECOR
   return 0;
 }

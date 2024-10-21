@@ -83,18 +83,18 @@ namespace {
     struct Hasher
     {
       //! \return hash code for the link.
-      static int HashCode(const t_link& link, const int upper)
+      size_t operator()(const t_link& link) const noexcept
       {
         int key = link.n[0] + link.n[1];
         key += (key << 10);
         key ^= (key >> 6);
         key += (key << 3);
         key ^= (key >> 11);
-        return (key & 0x7fffffff) % upper;
+        return (key & 0x7fffffff) % sizeof(int);
       }
 
       //! \return true if two links are equal.
-      static int IsEqual(const t_link& link0, const t_link& link1)
+      bool operator()(const t_link& link0, const t_link& link1) const noexcept
       {
         return ( (link0.n[0] == link1.n[0]) && (link0.n[1] == link1.n[1]) ) ||
                ( (link0.n[1] == link1.n[0]) && (link0.n[0] == link1.n[1]) );

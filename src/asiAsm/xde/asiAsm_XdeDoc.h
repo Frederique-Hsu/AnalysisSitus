@@ -1315,8 +1315,7 @@ protected:
   //! This caching technique is quite safe because labels are never deleted
   //! in OCAF sessions.
   mutable NCollection_DataMap<TDF_Label,
-                              TCollection_AsciiString,
-                              TDF_LabelMapHasher> m_LECache;
+                              TCollection_AsciiString> m_LECache;
 
   /* Diagnostics tools */
 

@@ -33,8 +33,8 @@
 #include <TColStd_MapOfReal.hxx>
 #include <TColStd_SequenceOfAsciiString.hxx>
 #include <NCollection_DataMap.hxx>
-#include <NCollection_DefineIndexedDataMap.hxx>
 #include <NCollection_Sequence.hxx>
+#include <NCollection_IndexedDataMap.hxx>
 
 class LDOM_Element;
 class DDS_Dictionary;
@@ -259,7 +259,7 @@ public:
 //!
 typedef NCollection_Sequence<Handle(DDS_DicItem)> DDS_BaseCollectionOfDicItems;
 
-DEFINE_INDEXEDDATAMAP(DDS_IndexedDataMapOfDicItems, DDS_BaseCollectionOfDicItems,
-                      TCollection_AsciiString, Handle(DDS_DicItem))
+typedef NCollection_IndexedDataMap<TCollection_AsciiString,
+                                   Handle(DDS_DicItem)> DDS_IndexedDataMapOfDicItems;
 
 #endif

@@ -28,7 +28,7 @@
 
 // OCCT includes
 #include <TCollection_AsciiString.hxx>
-#include <NCollection_DefineDataMap.hxx>
+//#include <NCollection_DefineDataMap.hxx>
 #include <NCollection_Sequence.hxx>
 
 #define UNIT_SYSTEM_SI "SI"

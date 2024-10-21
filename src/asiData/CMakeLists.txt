@@ -243,10 +243,9 @@ set (OCCT_LIB_FILES
   TKXCAF
   TKService
   TKXSBase
-  TKSTEP
-  TKIGES
-  TKXDESTEP
-  TKXDEIGES
+  TKDE
+  TKDESTEP
+  TKDEIGES
 )
 
 #------------------------------------------------------------------------------

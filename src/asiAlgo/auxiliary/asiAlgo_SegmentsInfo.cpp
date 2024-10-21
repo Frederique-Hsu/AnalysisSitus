@@ -45,6 +45,7 @@
 
 typedef rapidjson::Document::Array     t_jsonArray;
 typedef rapidjson::Document::ValueType t_jsonValue;
+#endif
 
 #endif
 
@@ -274,6 +275,9 @@ void asiAlgo_SegmentsInfo::FromJSON(void*                 pJsonGenericObj,
         info.angle = mit->value.GetDouble();
     }
   }
+#else
+  (void)pJsonGenericObj;
+  (void)info;
 #endif
 }
 
@@ -297,6 +301,9 @@ void asiAlgo_SegmentsInfo::FromJSON(void*                    pJsonGenericObj,
 
     infoVec.push_back( segInfo );
   }
+#else
+  (void)pJsonGenericObj;
+  (void)infoVec;
 #endif
 }
 

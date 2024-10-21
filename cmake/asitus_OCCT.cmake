@@ -51,25 +51,22 @@ set (LIBS
   TKG3d
   TKGeomAlgo
   TKGeomBase
-  TKIGES
+  TKDEIGES
   TKLCAF
   TKMath
   TKMesh
   TKOffset
   TKPrim
   TKShHealing
-  TKSTEP
-  TKSTEP209
-  TKSTEPAttr
-  TKSTEPBase
+  TKDE
+  TKDESTEP
+  TKDESTEP209
   TKTopAlgo
   TKXSBase
   TKHLR
   TKFillet
-  TKSTL
+  TKDESTL
   TKXCAF
-  TKXDESTEP
-  TKXDEIGES
   TKVCAF
   TKV3d
   TKOpenGl

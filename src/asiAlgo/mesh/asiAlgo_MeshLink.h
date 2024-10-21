@@ -54,19 +54,19 @@ struct asiAlgo_MeshLink
   asiAlgo_MeshLink(const int _N1, const int _N2) : N1(_N1), N2(_N2) {}
 
   //! \return hash code for the arc.
-  static int HashCode(const asiAlgo_MeshLink& arc, const int upper)
+  int operator()(const asiAlgo_MeshLink& arc) const noexcept
   {
     int key = arc.N1 + arc.N2;
     key += (key << 10);
     key ^= (key >> 6);
     key += (key << 3);
     key ^= (key >> 11);
-    return (key & 0x7fffffff) % upper;
+    return (key & 0x7fffffff) % sizeof(int);
   }
 
   //! \return true if two links are equal.
-  static int IsEqual(const asiAlgo_MeshLink& arc1,
-                     const asiAlgo_MeshLink& arc2)
+  bool operator()(const asiAlgo_MeshLink& arc1,
+                  const asiAlgo_MeshLink& arc2) const noexcept
   {
     return arc1.N1 == arc2.N1 && arc1.N2 == arc2.N2 ||
            arc1.N2 == arc2.N1 && arc1.N1 == arc2.N2;

@@ -42,6 +42,7 @@
 
 typedef rapidjson::Document::Array     t_jsonArray;
 typedef rapidjson::Document::ValueType t_jsonValue;
+#endif
 
 #endif
 
@@ -136,6 +137,9 @@ void asiAlgo_Shaft::FromJSON(void*                  pJsonGenericObj,
       }
     }
   }
+#else
+  (void)pJsonGenericObj;
+  (void)shaft;
 #endif
 }
 

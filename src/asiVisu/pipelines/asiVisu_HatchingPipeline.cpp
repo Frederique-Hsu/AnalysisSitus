@@ -45,7 +45,6 @@
 #include <Geom2dHatch_Hatcher.hxx>
 #include <Draw_Color.hxx>
 #include <TopExp_Explorer.hxx>
-#include <TopTools_OrientedShapeMapHasher.hxx>
 
 // VTK includes
 #include <vtkAppendPolyData.h>
@@ -449,7 +448,7 @@ public:
 protected:
 
   typedef NCollection_IndexedDataMap
-    <TopoDS_Shape, Handle(Geom2d_Curve), TopTools_OrientedShapeMapHasher>
+    <TopoDS_Shape, Handle(Geom2d_Curve)>
       DataMapOfEdgePCurve;
 
   //! Adds to the hatcher the 2D segments connecting the p-curves

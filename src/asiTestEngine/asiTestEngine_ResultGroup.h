@@ -56,14 +56,14 @@ struct asiTestEngine_ResultGroups
 {
   struct StrHasher
   {
-    static int HashCode(const std::string& str,
-                        const int          upper)
+    size_t operator()(const std::string& str) const noexcept
     {
-      return ::HashCode(str.c_str(), int( str.length() ), upper);
+      std::hash<std::string> hash;
+      return hash(str.c_str());
     }
 
-    static bool IsEqual(const std::string& str1,
-                        const std::string& str2)
+    bool operator()(const std::string& str1,
+                    const std::string& str2) const noexcept
     {
       return str1 == str2;
     }

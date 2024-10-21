@@ -112,14 +112,15 @@ struct asiAlgo_Edge2Rebuild
   //! Hasher for data maps.
   struct Hasher
   {
-    static int HashCode(const asiAlgo_Edge2Rebuild& e, const int upper)
+    size_t operator()(const asiAlgo_Edge2Rebuild& e) const noexcept
     {
-      return ::HashCode(e.edge, upper);
+      std::hash<TopoDS_Edge> hash;
+      return hash(e.edge);
     }
 
-    static bool IsEqual(const asiAlgo_Edge2Rebuild& e1, const asiAlgo_Edge2Rebuild& e2)
+    bool operator()(const asiAlgo_Edge2Rebuild& e1, const asiAlgo_Edge2Rebuild& e2) const noexcept
     {
-      return ::IsEqual(e1.edge, e2.edge);
+      return e1.edge.IsEqual(e2.edge);
     }
   };
 };

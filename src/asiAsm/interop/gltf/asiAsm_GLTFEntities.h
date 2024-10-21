@@ -252,16 +252,16 @@ enum { glTFWriterTrsfFormat_LOWER = 0, glTFWriterTrsfFormat_UPPER = glTFWriterTr
 struct gltf_DocumentNodeHasher
 {
   //! Returns hash code based on node string identifier.
-  static int HashCode(const XCAFPrs_DocumentNode& N,
-                      const int                   upper)
+  size_t operator()(const XCAFPrs_DocumentNode& N) const noexcept
   {
-    return ::HashCode(N.Id, upper);
+    std::hash<TCollection_AsciiString> hash;
+    return hash(N.Id);
   }
 
   //! Returns `true` if two document nodes have the same
   //! string identifier.
-  static bool IsEqual(const XCAFPrs_DocumentNode& N1,
-                      const XCAFPrs_DocumentNode& N2)
+  bool operator()(const XCAFPrs_DocumentNode& N1,
+                  const XCAFPrs_DocumentNode& N2) const noexcept
   {
     return N1.Id == N2.Id;
   }
@@ -286,7 +286,8 @@ public:
       return 0;
     }
 
-    for ( IndexedMapNode* it = (IndexedMapNode*) myData1[ ::HashCode( nid, this->NbBuckets() ) ];
+    std::hash<TCollection_AsciiString> hash;
+    for ( IndexedMapNode* it = (IndexedMapNode*) myData1[ hash( nid ) ];
           it != nullptr;
           it = (IndexedMapNode*) it->Next() )
     {

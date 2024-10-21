@@ -72,10 +72,10 @@ RUN apt-get update && apt-get install -y xvfb
 # OpenCascade
 RUN mkdir /home/opencascade
 WORKDIR /home/opencascade
-RUN wget https://github.com/Open-Cascade-SAS/OCCT/archive/refs/tags/V7_6_0.tar.gz
-RUN tar zxvf V7_6_0.tar.gz
-RUN mkdir /home/opencascade/OCCT-7_6_0/build
-WORKDIR /home/opencascade/OCCT-7_6_0/build
+RUN wget https://github.com/Open-Cascade-SAS/OCCT/archive/refs/tags/V7_8_1.tar.gz
+RUN tar zxvf V7_8_1.tar.gz
+RUN mkdir /home/opencascade/OCCT-7_8_1/build
+WORKDIR /home/opencascade/OCCT-7_8_1/build
 RUN cmake .. \
     -DCMAKE_BUILD_TYPE=release \
     -DCMAKE_INSTALL_PREFIX=/usr \

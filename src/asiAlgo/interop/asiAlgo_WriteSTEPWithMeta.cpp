@@ -239,6 +239,10 @@ bool asiAlgo_WriteSTEPWithMeta::writeColors(const Handle(XSControl_WorkSession)&
   // Iterate over all individual sub-shapes.
   const int numSubShapes = m_input->GetNumSubShapes();
   //
+  const Handle(XSControl_TransferWriter)& aTW = WS->TransferWriter();
+  const Handle(Transfer_FinderProcess)& aFP = aTW->FinderProcess();
+  Handle(StepData_StepModel) stepModel = Handle(StepData_StepModel)::DownCast(aFP->Model());
+  //
   for ( int ss = 0; ss < numSubShapes; ++ss )
   {
     // Get subshape.
@@ -260,7 +264,7 @@ bool asiAlgo_WriteSTEPWithMeta::writeColors(const Handle(XSControl_WorkSession)&
     if ( m_mapCompMDGPR.IsBound(subShape) )
       m_progress.SendLogMessage(LogWarn(Normal) << "Current shape already has MDGPR.");
     //
-    Styles.CreateMDGPR(context, MDGPR);
+    Styles.CreateMDGPR(context, MDGPR, stepModel);
     //
     if ( !MDGPR.IsNull() )
       m_mapCompMDGPR.Bind(subShape, MDGPR);
@@ -284,7 +288,7 @@ bool asiAlgo_WriteSTEPWithMeta::writeColors(const Handle(XSControl_WorkSession)&
     if ( m_mapCompMDGPR.IsBound(expSolids.Value()) )
       m_progress.SendLogMessage(LogWarn(Normal) << "Current shape already has MDGPR.");
     //
-    Styles.CreateMDGPR(context, MDGPR);
+    Styles.CreateMDGPR(context, MDGPR, stepModel);
     //
     if ( !MDGPR.IsNull() )
       m_mapCompMDGPR.Bind(expSolids.Value(), MDGPR);

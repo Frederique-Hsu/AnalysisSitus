@@ -43,6 +43,7 @@
 typedef rapidjson::Document::Array     t_jsonArray;
 typedef rapidjson::Document::ValueType t_jsonValue;
 typedef rapidjson::Document::Object    t_jsonObject;
+#endif
 
 #endif
 
@@ -88,6 +89,9 @@ void asiAlgo_SemanticCode::FromJSON(void*                 pJsonGenericObj,
       asiAlgo_Utils::Json::ReadFeature(&arr, code.vertexIds);
     }
   }
+#else
+  (void)pJsonGenericObj;
+  (void)code;
 #endif
 }
 
