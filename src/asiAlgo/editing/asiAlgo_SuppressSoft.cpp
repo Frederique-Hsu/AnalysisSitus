@@ -88,9 +88,6 @@ bool asiAlgo_SuppressSoft::Perform(const asiAlgo_Feature& faceIndices)
     //
     if ( !m_aag->HasFace(face_id) )
     {
-      this->GetProgress().SendLogMessage( LogWarn(Normal) << "algoFeat_SuppressSoft.NoSuchFace"
-                                                          << face_id );
-      //
       this->AddStatusFlag(StatusCode_WarnMissingFaces);
       continue;
     }
@@ -159,7 +156,7 @@ bool asiAlgo_SuppressSoft::Perform(const asiAlgo_Feature& faceIndices)
       this->collectLocalFeature(hard_face_id, faceIndices, hardFacesCompletion, visited);
     }
 
-    this->GetProgress().SendLogMessage( LogWarn(Normal) << "1% non-isolated face(s) detected."
+    this->GetProgress().SendLogMessage( LogWarn(Normal) << "%1 non-isolated face(s) detected."
                                                         << hardFacesCompletion.Extent() );
     //
     this->AddStatusFlag(StatusCode_WarnHardFacesFound);
@@ -195,8 +192,6 @@ bool asiAlgo_SuppressSoft::Perform(const asiAlgo_Feature& faceIndices)
   // Check if there is anything to suppress after detection of hard faces.
   if ( faces2Suppress.IsEmpty() )
   {
-    this->GetProgress().SendLogMessage( LogWarn(Normal) << "algoFeat_SuppressSoft.NoIsolatedFaces" );
-    //
     this->AddStatusFlag(StatusCode_WarnNoFaces2Suppress);
 
     m_output       = m_input;

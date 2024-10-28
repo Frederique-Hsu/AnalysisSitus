@@ -87,7 +87,7 @@ bool asiAlgo_SuppressFeatures::operator()(const TopoDS_Shape&        shape,
       //
       if ( !hardEraser.Perform(feature) || hardEraser.GetResult().IsNull() )
       {
-        stillThere   = feature;
+        stillThere = feature;
       }
       else
       {

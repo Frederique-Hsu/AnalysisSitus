@@ -935,10 +935,13 @@ int ENGINE_SuppressFeatures(const Handle(asiTcl_Interp)& interp,
   if ( !suppress(initShape, features, true, resShape, unsuppressed, resHistory) )
     return TCL_ERROR;
 
+  Handle(asiAlgo_History)
+    H = asiAlgo_History::Create(initShape, resHistory);
+
   // Modify Data Model.
   cmdEngine::model->OpenCommand();
   {
-    asiEngine_Part(cmdEngine::model).Update(resShape);
+    asiEngine_Part(cmdEngine::model).Update(resShape, H);
   }
   cmdEngine::model->CommitCommand();
 
