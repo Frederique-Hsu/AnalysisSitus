@@ -67,6 +67,9 @@
 #include <asiAlgo_Utils.h>
 #include <asiAlgo_ConvertToBezier.h>
 
+// asiUI includes
+#include <asiUI_HistoryGraph.h>
+
 // OCCT includes
 #include <BRep_Builder.hxx>
 #include <BRepAdaptor_Curve.hxx>
@@ -941,13 +944,36 @@ int ENGINE_SuppressFeatures(const Handle(asiTcl_Interp)& interp,
   // Modify Data Model.
   cmdEngine::model->OpenCommand();
   {
+    // Make sure to store the history in the naming service. Since we cannot pass the history
+    // from the naming service to the algorithm, we rather enforce the naming service to inherit
+    // the history graph from the called algorithm.
+    if ( part_n->HasNaming() )
+    {
+      part_n->GetNaming()->SetHistory(H);
+    }
+
+    // With the enforced history, we can now actualize the naming service.
     asiEngine_Part(cmdEngine::model).Update(resShape, H);
   }
   cmdEngine::model->CommitCommand();
 
   // Update UI.
   if ( cmdEngine::cf && cmdEngine::cf->ViewerPart )
+  {
     cmdEngine::cf->ViewerPart->PrsMgr()->Actualize(part_n);
+
+    if ( interp->HasKeyword(argc, argv, "graph") )
+    {
+      // Visualize history in graph view.
+      asiUI_HistoryGraph*
+        pGraph = new asiUI_HistoryGraph( cmdEngine::model,
+                                         H,
+                                         interp->GetProgress(),
+                                         interp->GetPlotter() );
+      //
+      pGraph->Render();
+    }
+  }
 
   return TCL_OK;
 }
@@ -4312,9 +4338,10 @@ void cmdEngine::Commands_Editing(const Handle(asiTcl_Interp)&      interp,
   //-------------------------------------------------------------------------//
   interp->AddCommand("suppress-features",
     //
-    "suppress-features [<fid1> [<fid2> ...]]\n"
+    "suppress-features [<fid1> [<fid2> ...]] [-graph]\n"
     "\t Suppresses features passed with 1-based identifiers of faces or selected\n"
-    "\t in the viewer.",
+    "\t in the viewer. Use '-graph' keyword to render the history of modification\n"
+    "\t upon completion.",
     //
     __FILE__, group, ENGINE_SuppressFeatures);
 

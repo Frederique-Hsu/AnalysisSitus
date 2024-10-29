@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Analysis Situs: naming service</title>
+  <link rel="shortcut icon" type="image/png" href="../imgs/favicon.png"/>
+  <link rel="stylesheet" type="text/css" href="../css/situ-main-style.css">
+
+  <!-- [begin] Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-112292727-2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-112292727-2');
+  </script>
+  <!-- [end] Google Analytics -->
+
+  <!-- [begin] Code highlight -->
+  <link rel="stylesheet" href="../css/highlight.min.css">
+  <script src="../js/highlight.min.js"></script>
+  <!-- [end] Code highlight -->
+
+  <!-- [begin] Pseudocode -->
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS_CHTML"
+          integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw="
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [['$','$'], ['\\(','\\)']],
+            displayMath: [['$$','$$'], ['\\[','\\]']],
+            processEscapes: true,
+            processEnvironments: true,
+        }
+    });
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.js"></script>
+  <!-- [end] Pseudocode -->
+
+</head>
+<body>
+
+<a name="top"></a> <!-- anchor for 'back to top' link -->
+<table width="100%"><tr><td>
+<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+  <td align="left" class="header">
+    <span class="header-logo"><a href="../index.html" class="header-href">Analysis&nbsp;Situs</a></span>
+    &nbsp;
+    ./<a class="header-href" href="../features.html">features</a>/naming service
+  </td>
+</tr>
+</table>
+<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+  <td class="header-menu"><a href='https://analysissitus.org/forum/index.php?resources/analysis-situs.6/'>Download</a></td>
+  <td class="header-menu">
+    <div class="dropdown">
+      <button class="dropbtn">Features ...</button>
+      <div class="dropdown-content">
+        <a href="../features.html">Open source</a>
+        <!-- <a href="../featuresext.html">Commercial</a> -->
+      </div>
+    </div>
+  </td>
+  <td class="header-menu"><a href="https://gitlab.com/ssv/AnalysisSitus">Source code</a></td>
+  <td class="header-menu"><a href="http://analysissitus.org/forum/index.php">Forum</a></td>
+  <td class="header-menu"><a href="http://quaoar.su/blog/contact">Ask for support</a></td>
+</tr>
+</table>
+</table></tr></td>
+
+<div class="content-body">
+<!-- [BEGIN] contents -->
+
+<h1>Topology naming service</h1>
+
+<p>
+  During model editing in Analysis Situs, you may need to ensure that the CAD face IDs remain intact. This is not the case with serial face IDs, which correspond to the order of topology graph visits. For attaching "stronger" IDs with CAD faces, one approach is to use the inline naming service. The following animation demonstrates how defeaturing works without the naming service enabled (pay attention to what happens to face indices):
+</p>
+
+<div align="center"><a href="../imgs/naming_01-anim.gif"><img src="../imgs/naming_01-anim.gif" width="60%"/></a></div>
+
+<p>
+  The naming service is a wrapper for modification history recorded in the <a href="./features_part-node.html">Part Node</a>. This service is valid for a single application run, and the history is lost when a Part is reinitialized (for example, reloaded from a file). With the naming service enabled, you can keep track of faces by their associated names instead of using the volatile indices:
+</p>
+
+<div align="center"><a href="../imgs/naming_02-anim.gif"><img src="../imgs/naming_02-anim.gif" width="60%"/></a></div>
+
+<p>
+  With the naming service turned on, faces are updated from the stored history graph and inherit the names of their preimages. This allows you to continue working on the updated model while retaining the previously initialized face names. Use the <a href="../commands.html#init-naming"><span class="code-inline">init-naming</span></a> command to initialize the naming service for the active part.
+</p>
+
+<p>
+  To validate if naming service contains a history graph consistent with the present state of boundary representation, you may want to consult the dedicated graph view. The view is enabled as follows (in C++):
+</p>
+
+<pre><code>// History from the Part Node.
+Handle(asiAlgo_History) history = ...;
+
+// Visualize history in graph view
+asiUI_HistoryGraph*
+  pGraph = new asiUI_HistoryGraph( model,
+                                   history,
+                                   progress,
+                                   plotter );
+//
+pGraph->Render();</code></pre>
+
+<p>
+  Using the graph view, you can check if the evolved boundary elements are "alive" in the present state of the model. It may happen that the history of modification does not contain "alive" entities in the cases when the history chain is broken. This situation normally indicates a logical flaw in one of the employed modeling algorithms.
+</p>
+
+<div align="center"><a href="../imgs/naming_03.png"><img src="../imgs/naming_03.png" width="60%"/></a></div>
+
+<p>
+  A practical way to see if naming service works for a specific algorithm is enabling it, performing the shape modification of interest and consulting the history wrapped by the naming service. If all goes well, the evolution traces for the boundary elements should end with "alive" (green) nodes. Clicking on the associated graph nodes displays the corresponding B-rep entity in the viewer (even if it is not "alive").
+</p>
+
+<p>
+  Use the <a href="../commands.html#get-face-name"><span class="code-inline">get-face-name</span></a> function to access the face name by its serial ID from the initialized naming service. Use the <a href="../commands.html#get-face-id"><span class="code-inline">get-face-id</span></a> or <a href="../commands.html#get-face-ids"><span class="code-inline">get-face-ids</span></a> function to access the serial face IDs by their names.
+</p>
+
+<!-- [END] contents -->
+</div>
+<br/>
+<table class="footer" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+  <td>
+    <small>&copy; Quaoar&nbsp;Studio&nbsp;LLC 2015-present &nbsp; (Yerevan, Armenia)</small> | &nbsp; <a class="footer-href" href="#top">^^^</a>  &nbsp; | &nbsp; <a href="http://quaoar.su/blog/contact" class="footer-href">contact us</a> &nbsp; | &nbsp; <a href="https://www.youtube.com/channel/UCc0exKIoqbeOSqKoc1RnfBQ" class="icon brands fa-youtube"></a> &nbsp; | &nbsp; <a href="https://quaoar.su" class="icon brands fa-medium"></a> &nbsp; | &nbsp; <a href="https://www.linkedin.com/in/sergey-slyadnev-277496b1" class="icon brands fa-linkedin"></a>
+  </td>
+</tr>
+</table>
+
+<script>
+hljs.highlightAll();
+pseudocode.renderClass("pseudocode");
+</script>
+
+</body>
+</html>

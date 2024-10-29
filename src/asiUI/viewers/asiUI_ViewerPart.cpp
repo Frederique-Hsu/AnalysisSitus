@@ -954,6 +954,8 @@ void asiUI_ViewerPart::onDefeature()
   if ( initShape.IsNull() )
     return;
 
+  Handle(asiData_PartNode) part_n = m_model->GetPartNode();
+
   // Get selected faces.
   asiAlgo_Feature features, unsuppressed;
   partApi.GetHighlightedFaces(features);
@@ -969,12 +971,18 @@ void asiUI_ViewerPart::onDefeature()
 
   // Prepare native history.
   Handle(asiAlgo_History)
-    history = asiAlgo_History::Create(initShape, resHistory);
+    H = asiAlgo_History::Create(initShape, resHistory);
 
   // Update data model.
   m_model->OpenCommand();
   {
-    partApi.Update(resShape, history);
+    // Make sure to store the history.
+    if ( part_n->HasNaming() )
+    {
+      part_n->GetNaming()->SetHistory(H);
+    }
+    //
+    partApi.Update(resShape, H);
   }
   m_model->CommitCommand();
 }

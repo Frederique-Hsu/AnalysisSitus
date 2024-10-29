@@ -52,10 +52,14 @@ outcome asiTest_SuppressFeatures::runTestScript(const int   funcID,
 
 //-----------------------------------------------------------------------------
 
-//! Test scenario 001.
-//! \param[in] funcID ID of the Test Function.
-//! \return true in case of success, false -- otherwise.
 outcome asiTest_SuppressFeatures::test001(const int funcID, const bool)
 {
   return runTestScript(funcID, "editing/suppress-features/suppress-features_001.tcl");
+}
+
+//-----------------------------------------------------------------------------
+
+outcome asiTest_SuppressFeatures::test002(const int funcID, const bool)
+{
+  return runTestScript(funcID, "editing/suppress-features/suppress-features_002.tcl");
 }

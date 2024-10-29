@@ -5073,6 +5073,187 @@ int ENGINE_GetDominatingPlane(const Handle(asiTcl_Interp)& interp,
 
 //-----------------------------------------------------------------------------
 
+int ENGINE_GetFaceName(const Handle(asiTcl_Interp)& interp,
+                       int                          argc,
+                       const char**                 argv)
+{
+  int fid = 0;
+  interp->GetKeyValue(argc, argv, "fid", fid);
+
+  // Get Part Node.
+  Handle(asiData_PartNode) partNode = cmdEngine::model->GetPartNode();
+  //
+  if ( partNode.IsNull() || !partNode->IsWellFormed() )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Part is not initialized.");
+    return TCL_ERROR;
+  }
+  //
+  Handle(asiAlgo_AAG) G = partNode->GetAAG();
+
+  if ( fid < 1 || fid >= G->GetNumberOfNodes() )
+  {
+    interp->GetProgress().SendLogMessage( LogErr(Normal) << "Face ID %1 is out of range [1,%2]."
+                                                         << fid << G->GetNumberOfNodes() );
+    return TCL_ERROR;
+  }
+
+  if ( !partNode->HasNaming() )
+  {
+    interp->GetProgress().SendLogMessage( LogErr(Normal) << "Naming service is not initialized." );
+    return TCL_ERROR;
+  }
+
+  // Find face name.
+  t_asciiString faceName;
+  //
+  if ( !partNode->GetNaming()->FindName( G->GetFace(fid), faceName ) )
+  {
+    interp->GetProgress().SendLogMessage( LogErr(Normal) << "The face %1 is unnamed." << fid );
+    return TCL_ERROR;
+  }
+
+  // Send to interpreter.
+  *interp << faceName;
+
+  return TCL_OK;
+}
+
+//-----------------------------------------------------------------------------
+
+int ENGINE_GetFaceId(const Handle(asiTcl_Interp)& interp,
+                     int                          argc,
+                     const char**                 argv)
+{
+  t_asciiString name;
+  if ( !interp->GetKeyValue(argc, argv, "name", name) )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Please, provide face name followed by '-name' keyword.");
+    return TCL_ERROR;
+  }
+
+  // Get Part Node.
+  Handle(asiData_PartNode) partNode = cmdEngine::model->GetPartNode();
+  //
+  if ( partNode.IsNull() || !partNode->IsWellFormed() )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Part is not initialized.");
+    return TCL_ERROR;
+  }
+  //
+  Handle(asiAlgo_AAG) G = partNode->GetAAG();
+
+  if ( !partNode->HasNaming() )
+  {
+    interp->GetProgress().SendLogMessage( LogErr(Normal) << "Naming service is not initialized." );
+    return TCL_ERROR;
+  }
+
+  // Find shape by name.
+  TopoDS_Shape shape = partNode->GetNaming()->GetShape(name);
+  //
+  if ( shape.IsNull() )
+  {
+    interp->GetProgress().SendLogMessage( LogErr(Normal) << "The shape named '%1' is null." << name );
+    return TCL_ERROR;
+  }
+
+  TopoDS_Face face = TopoDS::Face(shape);
+  //
+  if ( face.IsNull() )
+  {
+    interp->GetProgress().SendLogMessage( LogErr(Normal) << "The shape named '%1' is not a face." << name );
+    return TCL_ERROR;
+  }
+
+  // Get ID of the face.
+  const int fid = G->GetFaceId(face);
+
+  // Send to interpreter.
+  *interp << fid;
+
+  return TCL_OK;
+}
+
+//-----------------------------------------------------------------------------
+
+int ENGINE_GetFaceIds(const Handle(asiTcl_Interp)& interp,
+                      int                          argc,
+                      const char**                 argv)
+{
+  // Read names.
+  std::vector<t_asciiString> names;
+  int namesIdx = -1;
+  //
+  if ( interp->HasKeyword(argc, argv, "names", namesIdx) )
+  {
+    int k = namesIdx;
+    //
+    while ( (k + 1 < argc) && !interp->IsKeyword(argv[++k]) )
+    {
+      names.push_back(argv[k]);
+    }
+  }
+  else
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "No face names are specified. "
+                                                           "Use '-names' keyword followed by the ASCII "
+                                                           "names of the faces to lookup.");
+    return TCL_ERROR;
+  }
+
+  // Get Part Node.
+  Handle(asiData_PartNode) partNode = cmdEngine::model->GetPartNode();
+  //
+  if ( partNode.IsNull() || !partNode->IsWellFormed() )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Part is not initialized.");
+    return TCL_ERROR;
+  }
+  //
+  Handle(asiAlgo_AAG) G = partNode->GetAAG();
+
+  if ( !partNode->HasNaming() )
+  {
+    interp->GetProgress().SendLogMessage( LogErr(Normal) << "Naming service is not initialized." );
+    return TCL_ERROR;
+  }
+
+  asiAlgo_Feature fids;
+  //
+  for ( const auto& name : names )
+  {
+    // Find shape by name.
+    TopoDS_Shape shape = partNode->GetNaming()->GetShape(name);
+    //
+    if ( shape.IsNull() )
+    {
+      interp->GetProgress().SendLogMessage( LogErr(Normal) << "The shape named '%1' is null." << name );
+      return TCL_ERROR;
+    }
+
+    TopoDS_Face face = TopoDS::Face(shape);
+    //
+    if ( face.IsNull() )
+    {
+      interp->GetProgress().SendLogMessage( LogErr(Normal) << "The shape named '%1' is not a face." << name );
+      return TCL_ERROR;
+    }
+
+    // Get ID of the face.
+    const int fid = G->GetFaceId(face);
+    //
+    fids.Add(fid);
+  }
+
+  // Send to interpreter.
+  *interp << fids;
+
+  return TCL_OK;
+}
+
+//-----------------------------------------------------------------------------
+
 void cmdEngine::Commands_Inspection(const Handle(asiTcl_Interp)&      interp,
                                     const Handle(Standard_Transient)& cmdEngine_NotUsed(data))
 {
@@ -5650,4 +5831,28 @@ void cmdEngine::Commands_Inspection(const Handle(asiTcl_Interp)&      interp,
     "\t the components of its normal vector.",
     //
     __FILE__, group, ENGINE_GetDominatingPlane);
+
+  //-------------------------------------------------------------------------//
+  interp->AddCommand("get-face-name",
+    //
+    "get-face-name -fid <fid>\n"
+    "\t Returns face name (from the naming service) by its passed ID.",
+    //
+    __FILE__, group, ENGINE_GetFaceName);
+
+  //-------------------------------------------------------------------------//
+  interp->AddCommand("get-face-id",
+    //
+    "get-face-id -name <name>\n"
+    "\t Returns the serial face ID by its passed name (from the naming service).",
+    //
+    __FILE__, group, ENGINE_GetFaceId);
+
+  //-------------------------------------------------------------------------//
+  interp->AddCommand("get-face-ids",
+    //
+    "get-face-id -names <name>\n"
+    "\t Returns the serial face IDs by the passed names (from the naming service).",
+    //
+    __FILE__, group, ENGINE_GetFaceIds);
 }

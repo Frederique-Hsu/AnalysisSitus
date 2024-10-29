@@ -131,6 +131,12 @@ public:
     return m_history;
   }
 
+  //! Sets the passed history.
+  void SetHistory(const Handle(asiAlgo_History)& history)
+  {
+    m_history = history;
+  }
+
   //! Accessor for shape by its name.
   //! \param[in] name name of the shape to find.
   //! \return transient pointer by persistent name.
