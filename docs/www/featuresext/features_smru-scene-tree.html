@@ -2,9 +2,9 @@
 <html>
  <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>Analysis Situs: commercial features</title>
-  <link rel="shortcut icon" type="image/png" href="./imgs/favicon.png"/>
-  <link rel="stylesheet" type="text/css" href="./css/situ-main-style.css">
+  <title>Analysis Situs: SMRU scene tree</title>
+  <link rel="shortcut icon" type="image/png" href="../imgs/favicon.png"/>
+  <link rel="stylesheet" type="text/css" href="../css/situ-main-style.css">
 
   <!-- [begin] Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-112292727-2"></script>
@@ -16,11 +16,17 @@
     gtag('config', 'UA-112292727-2');
   </script>
   <!-- [end] Google Analytics -->
-
+  
+  <!--
+    Quick navigation script. Use a div with "toc-panel" class having a
+    nested div with "toc" id to place the navigation panel.
+  -->
+  <script src="../js/jquery-3.5.1.min.js"></script>
+  <script src="../js/toc.js"></script>
 
   <!-- [begin] Code highlight -->
-  <link rel="stylesheet" href="./css/highlight.min.css">
-  <script src="./js/highlight.min.js"></script>
+  <link rel="stylesheet" href="../css/highlight.min.css">
+  <script src="../js/highlight.min.js"></script>
   <!-- [end] Code highlight -->
 
   <!-- [begin] Pseudocode -->
@@ -49,9 +55,9 @@
 <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%">
 <tr>
   <td align="left" class="header">
-    <span class="header-logo"><a href="./index.html" class="header-href">Analysis&nbsp;Situs</a></span>
+    <span class="header-logo"><a href="../index.html" class="header-href">Analysis&nbsp;Situs</a></span>
     &nbsp;
-    ./extensions
+    ./<a class="header-href" href="../featuresext.html">extensions</a>/SMRU scene tree
   </td>
 </tr>
 </table>
@@ -62,8 +68,8 @@
     <div class="dropdown">
       <button class="dropbtn">Features ...</button>
       <div class="dropdown-content">
-        <a href="./features.html">Open source</a>
-        <!-- <a href="./featuresext.html">Commercial</a> -->
+        <a href="../features.html">Open source</a>
+        <!-- <a href="../featuresext.html">Commercial</a> -->
       </div>
     </div>
   </td>
@@ -74,87 +80,58 @@
 </table>
 </td></tr></table>
 
-<!-- Search form -->
-<script>
-  function setFocusToTextBox(){
-      document.getElementById("searchfield").focus();
-  }
-</script>
-<div align="left" onload='setFocusToTextBox()'>
-  <form action="https://duckduckgo.com/" id="searchform" role="search" method="get" target="google_window">
-    <fieldset style="border: none; margin-left: 0px; padding-left: 3px;">
-      <input type="text" class="form-control" id="searchfield" placeholder="Search" name="q" maxlength="255" title="Search">
-      <input type="hidden" name="sites" value="analysissitus.org" checked="checked">
-    </fieldset>
-  </form>
-</div>
-
 <div class="content-body">
 <!-- [BEGIN] contents -->
 
-<h1>Getting started</h1>
+<h1 id="toc-scene-tree">SMRU scene tree</h1>
 
-<ul>
-  <li class="menu-item">About commercial extensions.</li>
-  <li class="menu-item">Form of delivery.</li>
-</ul>
+<div class="toc-panel"><div id="toc"></div></div>
 
-<h1>Sheet Metal Recognition and Unfolding (SMRU)</h1>
+<p>
+  When processing assemblies, the client application might need to incorporate the product hierarchy and its as-designed view. At the same time, SMRU and other Analysis Situs recognition tools operate at the level of a single B-rep solid (often a single CAD part). Nonetheless, SMRU is capable of acquiring scene tree data. Depending on the delivery form, this mode is activated in different ways as described below.
+</p>
 
-<ul>
-  <li class="menu-item">Processed sheet metal types.</li>
-  <li class="menu-item">Thumbnail images.</li>
-  <li class="menu-item">Output JSON format.</li>
-  <li class="menu-item">Diagnostic messages.</li>
-  <li class="menu-item"><a href="./featuresext/features_smru-scene-tree.html">Scene tree</a>.</li>
-</ul>
+<p>
+  With the "scene tree" mode activated, the outcome JSON gets <span class="code-inline">"sceneTree"</span> node that holds the information about unique prototypes, roots and instances.
+</p>
 
-<h1>CNC recognition</h1>
+<div align="center"><a href="../imgs/ext/smru-scene-tree_01.png"><img src="../imgs/ext/smru-scene-tree_01.png" width="60%"/></a></div>
 
-<ul>
-  <li class="menu-item">Processed CNC types.</li>
-  <li class="menu-item">Output JSON format.</li>
-  <li class="menu-item">Diagnostic messages.</li>
-  <li class="menu-item">Optimal bounding box.</li>
-  <li class="menu-item">Max turned state.</li>
-  <li class="menu-item">Recognized CNC features.</li>
-  <li class="menu-item">Drilled holes.</li>
-  <li class="menu-item">Prismatic features.</li>
-  <li class="menu-item">Shoulders.</li>
-  <li class="menu-item">Fillet chains.</li>
-  <li class="menu-item">Chamfer chains.</li>
-  <li class="menu-item">Free flat faces.</li>
-  <li class="menu-item">Free radial faces.</li>
-  <li class="menu-item">Pointwise depth.</li>
-  <li class="menu-item">Pointwise clearance.</li>
-  <li class="menu-item">Setups (milling ops).</li>
-</ul>
+<p>
+  The format of the scene tree follows the specification of "<a href="../features/features_asm-json-hierarchy.html">Assembly JSON hierarchy</a>".
+</p>
 
-<h1>Design for Manufacturability (DFM)</h1>
+<h2 id="toc-cli">CLI</h2>
 
-<ul>
-  <li class="menu-item">Thickness analysis.</li>
-</ul>
+<p>
+  To extract the scene tree in the CLI mode, use <span class="code-inline">-model</span> key followed by the model name. This option instructs SMRU to keep the assembly document in memory rather than releasing it upon completion of the recognition process.
+</p>
 
-<h1>DXF feature recognition</h1>
+<pre class="code">
+> sm-perform -filename /data/public/cad/chassis.stp -model M
+</pre>
 
-<ul>
-  <li class="menu-item"><a href="./featuresext/features_dxf-read.html">DXF reader</a>.</li>
-  <li class="menu-item"><a href="./featuresext/features_dxf-perform.html">DXF conversion workflow</a>.</li>
-  <li class="menu-item">Evaluate DXF complexity.</li>
-</ul>
+<h2 id="toc-cpp">C++ SDK</h2>
 
-<h1>Simplification</h1>
+<p>
+  To dump the scene tree programmatically, make sure to pass <span class="code-inline">false</span> to the <span class="code-inline">SetReleaseDocument()</span> method of the <span class="code-inline">InspectFile</span> tool class:
+</p>
 
-<ul>
-  <li class="menu-item">Find hidden parts.</li>
-</ul>
+<pre><code>// Prepare inspector.
+InspectFile inspector(cadFilename, progress, nullptr);
+//
+inspector.SetReleaseDocument(false); // Keep the document in memory.
+</code></pre>
 
-<h1>Examples</h1>
+<h2 id="toc-exe">Executable</h2>
 
-<ul>
-  <li class="menu-item">Ex 1.</li>
-</ul>
+<p>
+  If SMRU is used as an executable, then to render the scene tree in the outcome JSON, pass <span class="code-inline">-asm</span> key. E.g.:
+</p>
+
+<pre class="code">
+./asiSheetMetalExe.sh /data/public/cad/chassis.stp outcome.json -asm
+</pre>
 
 <!-- [END] contents -->
 </div>
