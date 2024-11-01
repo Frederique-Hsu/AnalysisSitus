@@ -95,16 +95,16 @@
   The following sections explain the primary steps in the CNC recognition workflow. Please keep in mind that CNC recognition is independent of sheet metal recognition, thus it is up to the client application to arrange these algorithms in one way or another. One viable technique is to run sheet metal recognition first, and then, if the input part remains unrecognized, finish the workflow with CNC recognition. Alternatively, both recognizers can be launched concurrently, with the desired production technique chosen a posteriori based on the recognition results (and possibly the resulting fabrication costs).
 </p>
 
-<h2 id="toc-cnc-check">cnc-check</h2>
+<h2 id="toc-cnc-check">Recognition commands</h2>
 
 <p>
   The <span class="code-inline">cnc-check</span> command can be used in the <a href="../features/features_active-script.html">Active Script</a> session to perform CNC recognition for the active part. The same logic can be used from within C++ and <span class="code-inline">asiCncExe</span> executable. The following script illustrates a typical way of running the CNC recognition workflow:
 </p>
 
-<pre class="code">> clear; load-part /data/public/cad/lathed/ex-lathing_05.stp
-> cnc-check -nv</pre>
+<pre><code>> clear; load-part ex-lathing_05.stp
+> cnc-check -nv</code></pre>
 
-<div align="center"><a href="../imgs/ext/cnc-lathing_01-anim.gif"><img src="../imgs/ext/cnc-lathing_01-anim.gif" width="40%"/></a></div>
+<div align="center"><a href="../imgs/ext/cnc-lathing_01-anim.gif"><img src="../imgs/ext/cnc-lathing_01-anim.gif" width="60%"/></a></div>
 
 <p>
   If the <span class="code-inline">-nv</span> key is passed, the recognition procedure ends up constructing the negative volume cells for the turning features (if any). Among other parameters, the most frequently used are the <span class="code-inline">-blendRadius</span> and the <span class="code-inline">-holeRadius</span> to limit the sizes of the recognized fillets and drilled holes.
@@ -132,7 +132,7 @@
   It remains the intelligence of the algorithm to decide whether a part is lathed of milled. This decision is based on the identified rotational symmetries and the evaluation of the contribution of non-lathed features to the overall finished part. However, milling recognition can be enforced by supplying the <span class="code-inline">-type</span> keyword, for example:
 </p>
 
-<pre class="code">> cnc-check -type milling</pre>
+<pre><code>> cnc-check -type milling</code></pre>
 
 <p>
   The default colors associated with the recognized faces help to quickly grasp the recognized features. The milling features are normally green-ish, while the turned features are blue-ish or red-ish (depending on whether they are turned or bored).
@@ -147,7 +147,67 @@
 <div align="center"><a href="../imgs/ext/cnc-milling_02.png"><img src="../imgs/ext/cnc-milling_02.png" width="50%"/></a></div>
 
 <p>
-  The outcomes of CNC recognition are the JSON file with all extracted properties and optional artifact files, such as glTF meshes with submeshes for each CAD face.
+  The outcomes of CNC recognition are the JSON file with all extracted properties and optional artifact files, such as glTF meshes with submeshes for each CAD face. To generate filesystem artifacts, another command <span class="code-inline">cnc-perform</span> should be used, e.g.:
+</p>
+
+<pre><code>> cnc-perform ex-milling_02.stp ex-milling_02.json -gltfWithColors -image ex-milling_02.png</code></pre>
+
+<p>
+  This command is not interactive and is designed for batch processing. Together with the output JSON it can output the glTF meshes and a thumbnail image. The glTF format is open and can be used to communicate data between various systems, including web-viewers with Three.js API.
+</p>
+
+<div align="center"><a href="../imgs/ext/cnc-milling_03.png"><img src="../imgs/ext/cnc-milling_03.png" width="50%"/></a></div>
+
+<h2 id="toc-steps">Recognition steps</h2>
+
+<p>
+  The following code snippet illustrates how to run CNC recognition from C++:
+</p>
+
+<pre><code>// Initialize settings.
+const bool   computeVolumes = true;
+const double maxHoleRadius  = 10; // mm
+const double maxBlendRadius = 5; // mm
+const bool   doReorient     = true;
+const bool   allowSharp     = false;
+
+// Prepare the inspection algorithm.
+InspectFile inspector( shape,
+                        inFilename,
+                        progress,
+                        plotter );
+//
+inspector.SetComputeVolumes      (computeVolumes);
+inspector.SetMaxHoleRadius       (maxHoleRadius);
+inspector.SetMaxBlendRadius      (maxBlendRadius);
+inspector.SetAutoOrient          (doReorient);
+inspector.SetSharpCornerContours (allowSharp);
+
+// Perform inspection.
+if ( !inspector.Perform() )
+{
+  progress.SendLogMessage(LogErr(Normal) << "Inspection failed.");
+  return 1; // Error.
+}
+
+// Get the inspection results.
+const Handle(InspectFileResult)& fileRes = inspector.GetResult();
+// ...
+</code></pre>
+
+<p>
+  The instance of <span class="code-inline">InspectFile</span> class is the main entry point to the recognition workflow. This tool implements the default sceme of recognition where each elementary algorithm has its own place with respect to others. For example, the default workflow assumes that the input part has to be reoriented optimally in the 3D space (although this mode is optional), and such reorientation is done in the very beginning (before AAG construction). The main processing stages are as follows:
+</p>
+
+<ol>
+  <li>Optionally reorient the body.</li>
+  <li>Build sparse visualization meshes for the body and compute summary information, such as AABB, surface area, volume, etc.</li>
+  <li>Check if the body is lathed or milled and extract its features correspondingly.</li>
+  <li>If the body is lathed, optionally build its max turned state (MTS) and the negative volume cells.</li>
+</ol>
+
+<p>
+  The recognition results are programmatically accessible via <span class="code-inline">InspectFileResult</span> data structure, which is also serializable to JSON.
 </p>
 
 <!-- [END] contents -->
