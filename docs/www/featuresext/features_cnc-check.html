@@ -158,6 +158,12 @@
 
 <div align="center"><a href="../imgs/ext/cnc-milling_03.png"><img src="../imgs/ext/cnc-milling_03.png" width="50%"/></a></div>
 
+<p>
+  Thumbnail images are useful for making preview of CAD files. These images are dumped in PNG format and do not require GPU for rendering, i.e. they can be generated in pure headless mode.
+</p>
+
+<div align="center"><a href="../imgs/ext/ex-milling_02.png"><img src="../imgs/ext/ex-milling_02.png" width="40%"/></a></div>
+
 <h2 id="toc-steps">Recognition steps</h2>
 
 <p>
@@ -173,9 +179,9 @@ const bool   allowSharp     = false;
 
 // Prepare the inspection algorithm.
 InspectFile inspector( shape,
-                        inFilename,
-                        progress,
-                        plotter );
+                       inFilename,
+                       progress,
+                       plotter );
 //
 inspector.SetComputeVolumes      (computeVolumes);
 inspector.SetMaxHoleRadius       (maxHoleRadius);
