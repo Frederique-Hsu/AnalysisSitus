@@ -2,7 +2,7 @@
 <html>
  <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>Analysis Situs: recognize cylindrical shafts</title>
+  <title>Analysis Situs: bend sequence simulation</title>
   <link rel="shortcut icon" type="image/png" href="../imgs/favicon.png"/>
   <link rel="stylesheet" type="text/css" href="../css/situ-main-style.css">
 
@@ -16,6 +16,13 @@
     gtag('config', 'UA-112292727-2');
   </script>
   <!-- [end] Google Analytics -->
+  
+  <!--
+    Quick navigation script. Use a div with "toc-panel" class having a
+    nested div with "toc" id to place the navigation panel.
+  -->
+  <script src="../js/jquery-3.5.1.min.js"></script>
+  <script src="../js/toc.js"></script>
 
   <!-- [begin] Code highlight -->
   <link rel="stylesheet" href="../css/highlight.min.css">
@@ -50,7 +57,7 @@
   <td align="left" class="header">
     <span class="header-logo"><a href="../index.html" class="header-href">Analysis&nbsp;Situs</a></span>
     &nbsp;
-    ./<a class="header-href" href="../features.html">features</a>/recognize cylindrical shafts
+    ./<a class="header-href" href="../featuresext.html">extensions</a>/bend sequence simulation
   </td>
 </tr>
 </table>
@@ -71,77 +78,69 @@
   <td class="header-menu"><a href="http://quaoar.su/blog/contact">Ask for support</a></td>
 </tr>
 </table>
-</table></tr></td>
+</td></tr></table>
 
 <div class="content-body">
 <!-- [BEGIN] contents -->
 
-<h1>Recognize cylindrical shafts</h1>
+<h1 id="toc-simulation">Bend sequence simulation</h1>
+
+<div class="toc-panel"><div id="toc"></div></div>
+
+<h2 id="toc-simulation-find-seq">Sequence finder</h2>
 
 <p>
-A cylindrical shaft is a "hole inverted." Therefore, the algorithmic principles behind shafts recognition are similar to those of <a href="./features_recognize-drill-holes.html">drilled holes</a>. The following pseudocode describes the recognition algorithm.
+  Finding bend sequence is NP-hard problem. Therefore, SMRU employs a heuristic-based approach to predict feasibility issues with making a folded sheet metal part on a press brake. To conclude if a part is feasible or not, SMRU attempts to guess the order in which it might be folded. The pseudocode below describes the bend sequence finder's logic.
 </p>
 
-<pre id="recognize-shafts" class="pseudocode">
-  % Rule-based recognition of cylindrical shafts (www.analysissitus.org).
+<p>
+  The algorithm progressively identifies all bends that can be regarded as "last" ones to obtain the present folded state of geometry $S$. All feasible bends are reported in a single group and unfolded to generate the new (temporary) folded state. The process repeats until the part gets completely unfolded or there remains no feasible bend to report. To conclude if the part is feasible it is enough to assure that all bends were listed in the collected groups.
+</p>
+
+<!-- pseudocode.js -->
+<pre id="find-sequence" class="pseudocode">
+  % Find feasible bends (www.analysissitus.org).
   \begin{algorithm}
-  \caption{RecognizeShafts}
+  \caption{FindSequence}
   \begin{algorithmic}
-  \PROCEDURE{RecognizeShafts}{$S$} \Comment{$S$ is a CAD model.}
-    \STATE $R$ $\gets \emptyset$ \Comment{$R$ is a result set of features.}
-    \STATE visited $\gets \emptyset$
-    \FOR{$f \in F$} \Comment{$F$ are all faces.}
-      \IF{$f \notin$ visited}
-        \STATE visited $\gets$ \CALL{ApplyRule}{$f$} \Comment{faces visited by the rule.}
+  \PROCEDURE{FindSequence}{$S, B, \alpha$}
+    \STATE \Comment{$S$ is the folded state of geometry.}
+    \STATE \Comment{$B$ is a set of all bends.}
+    \STATE \Comment{$\alpha$ is angular increment for collision frames.}
+    \STATE stop $\gets$ false \Comment{Prepare iterations.}
+    \STATE sequence $\gets \emptyset$ \Comment{Collected sequence.}
+    \STATE processed $\gets \emptyset$ \Comment{Visited bends.}
+    \REPEAT
+      \STATE feasible $\gets$ $\emptyset$ \Comment{All bends feasible on this iteration.}
+      \FOR{$b \subset B$} \Comment{Let's collect all feasible bends for the current state of $S$.}
+        \IF{$b \in$ processed}
+          \CONTINUE
+        \ENDIF
+        \IF { \CALL{IsBendFeasible}{$b$} }
+          \STATE feasible $\gets b$
+          \STATE processed $\gets b$
+        \ENDIF
+      \ENDFOR
+      \IF{feasible = $\emptyset$} \Comment{No feasible bend remains.}
+        \STATE stop $\gets$ true
+        \CONTINUE
       \ENDIF
-    \ENDFOR
-    \FOR{$c \subset G$} \Comment{$c$ is a connected component in the adjacency graph $G$.}
-      \STATE $R \gets$ \CALL{PopulateFeature}{$c$} \Comment{Extract properties.}
-    \ENDFOR
-    \RETURN $R$
+      \STATE $S$ $\gets$ \CALL{Unfold}{feasible, $\alpha$} \Comment{Unfold feasible bends.}
+      \STATE sequence $\gets$ feasible
+    \UNTIL{ !stop }
+    \RETURN sequence
   \ENDPROCEDURE
   \end{algorithmic}
   \end{algorithm}
 </pre>
 
-<p>
-Here $S$ is a CAD shape defined as a formal solid. The algorithm is a typical <a href="./features_recognition-principles.html#toc-feat-rec-rule-based">rule-based</a> template. The main body of the algorithm iterates the faces with a "cursor" (the Rule), which does all the useful job. Optionally, all the CAD faces detected as shaft elements can be labeled with the corresponding <a href="./features_aag.html">AAG</a> attribute.
-</p>
-
-<div align="center"><a href="../imgs/recognize-shafts_01.png"><img src="../imgs/recognize-shafts_01.png" width="60%"></a></div>
+<h2 id="toc-simulation-tooling">Tooling</h2>
 
 <p>
-The following code snippet illustrates how to run the recognizer programmatically:
+  SMRU provides data-driven architecture for specifying the geometry of punches used in simulation. The geometry of a punch is stored in a BREP file as a closed contour. The simulator reads all available contours from the directory with punches and builds swept solids (prisms) out of them. The height of the prism is chosen with respect to the corresponding bend length. Precomputed punch solids are cached for reuse in other bends having the same length.
 </p>
 
-<pre><code>// Recognize shafts.
-asiAlgo_RecognizeShafts recShafts(G);
-//
-if ( !recShafts.Perform(r) ) // `r` is the max radius.
-{
-  std::cout << "Shaft recognition failed." << std::endl;
-  return 1; // Error.
-}
-
-// Get the extracted face indices.
-const asiAlgo_Feature& resIndices = recShafts.GetResultIndices();
-
-// Get the recognized shafts.
-int idx = 0;
-std::vector<Handle(asiAlgo_Shaft)> shafts = recShafts.GetShafts();
-//
-for ( const auto& shaft : shafts )
-{
-  std::cout << "Shaft "     << ++idx
-            << " diameter " << shaft->diameter
-            << " length "   << shaft->length
-            << std::endl;
-}
-</code></pre>
-
-<p>
-  It should be emphasized that the recognizer not only returns the extracted face IDs, but it also groups shaft features according to topological connectivity and provides their properties, such as diameter and length.
-</p>
+<div align="center"><a href="../imgs/ext/smru-simulation-punch_01.png"><img src="../imgs/ext/smru-simulation-punch_01.png" width="60%"/></a></div>
 
 <!-- [END] contents -->
 </div>
