@@ -111,7 +111,7 @@
     \STATE sequence $\gets \emptyset$ \Comment{Collected sequence.}
     \STATE processed $\gets \emptyset$ \Comment{Visited bends.}
     \REPEAT
-      \STATE feasible $\gets$ $\emptyset$ \Comment{All bends feasible on this iteration.}
+      \STATE feasible $\gets$ $\emptyset$ \Comment{All bends which are feasible on this iteration.}
       \FOR{$b \subset B$} \Comment{Let's collect all feasible bends for the current state of $S$.}
         \IF{$b \in$ processed}
           \CONTINUE
@@ -133,6 +133,14 @@
   \end{algorithmic}
   \end{algorithm}
 </pre>
+
+<p>
+  This function is heuristic-based and seeks a "generic" solution to the problem. Because the reported bends are not ordered in the outcome groups, the resulting sequences remain conceptually ambiguous. Each group has a number of bends, each of which can be considered the "final" one in the group. To solve ambiguity, the grouped bends should be numbered, i.e., an unordered tuple needs to become ordered. One solution is to just take all bends in the order they were stored in the groups or use some further heuristics such as "shape determining weights" to sort bends. The imposed ordering is employed in the <span class="code-inline">Unfold()</span> function. However, the chosen ordering does not guarantee that a tested sequence is feasible (though it usually is).
+</p>
+
+<p>
+  If the sequence is found, then that part is feasible (as long as simulation is precise enough). If, however, a sequence is not found, then it does not generally mean the part is infeasible. What it rather means is that the bending sequence discovered by the <span class="code-inline">FindSequence()</span> function is not good, and there still might be another (better) sequence that remained unexplored. Like in the game of chess, there is a huge configuration space to explore, and the optimal strategy is challeging to find. If the simulator fails to find such a strategy, a dedicated warning code is issued by the algorithm, and the human engineer has to review the part for a manual feasibility check.
+</p>
 
 <h2 id="toc-simulation-tooling">Tooling</h2>
 
