@@ -90,11 +90,11 @@
 <h2 id="toc-simulation-find-seq">Sequence finder</h2>
 
 <p>
-  Finding bend sequence is NP-hard problem. Therefore, SMRU employs a heuristic-based approach to predict feasibility issues with making a folded sheet metal part on a press brake. To conclude if a part is feasible or not, SMRU attempts to guess the order in which it might be folded. The pseudocode below describes the bend sequence finder's logic.
+  Finding bend sequence is NP-hard problem. Therefore, SMRU employs a heuristic-based approach to find a reasonable solution. To check if a part is feasible or not, SMRU attempts to guess the order in which it might be folded. The pseudocode below describes the bend sequence finder's logic.
 </p>
 
 <p>
-  The algorithm progressively identifies all bends that can be regarded as "last" ones to obtain the present folded state of geometry $S$. All feasible bends are reported in a single group and unfolded to generate the new (temporary) folded state. The process repeats until the part gets completely unfolded or there remains no feasible bend to report. To conclude if the part is feasible it is enough to assure that all bends were listed in the collected groups.
+  The algorithm progressively identifies all bends that can be regarded as "last" ones to obtain the next intermediate folded state of geometry $S$. All feasible bends are reported in a single group and unfolded to generate a new folded state. The process repeats until the part gets completely unfolded or there remains no feasible bend to report. To conclude if the part is feasible it is enough to assure that all bends were listed in the collected groups.
 </p>
 
 <!-- pseudocode.js -->
@@ -135,7 +135,11 @@
 </pre>
 
 <p>
-  This function is heuristic-based and seeks a "generic" solution to the problem. Because the reported bends are not ordered in the outcome groups, the resulting sequences remain conceptually ambiguous. Each group has a number of bends, each of which can be considered the "final" one in the group. To solve ambiguity, the grouped bends should be numbered, i.e., an unordered tuple needs to become ordered. One solution is to just take all bends in the order they were stored in the groups or use some further heuristics such as "shape determining weights" to sort bends. The imposed ordering is employed in the <span class="code-inline">Unfold()</span> function. However, the chosen ordering does not guarantee that a tested sequence is feasible (though it usually is).
+  The <span class="code-inline">FindSequence()</span> function is heuristic-based and seeks a "generic" solution to the problem. Because the reported bends are not ordered in the outcome groups, the resulting sequences remain essentially ambiguous. Each group has a number of bends, each of which can be considered the "final" one together with all others in the same group. To solve ambiguity, the grouped bends should be numbered, i.e., an unordered tuple needs to become ordered. One solution is just to take the persistent order of bends in the group or, alternatively, use some "smarter" heuristics such as "shape determining weights" to sort bends. The imposed ordering is employed in the <span class="code-inline">Unfold()</span> function. However, the chosen ordering does not guarantee that a tested sequence is feasible (though it usually is).
+</p>
+
+<p class="note">
+  Further discussion of weights for sorting bends in a sequence is discussed in our "Sheet Metal" series in the Manifold Geometry blog. Read on about "permutation operators" <a href="https://quaoar.su/blog/page/on-sheet-metal-unfolding-part-6">here</a>.
 </p>
 
 <p>
@@ -149,6 +153,82 @@
 </p>
 
 <div align="center"><a href="../imgs/ext/smru-simulation-punch_01.png"><img src="../imgs/ext/smru-simulation-punch_01.png" width="60%"/></a></div>
+
+<h2 id="toc-simulation-commands">Simulation commands</h2>
+
+<p>
+  To prepare the simulation model, use <span class="code-inline">sm-begin-simulation</span> command in the Active Script window. This command converts the original B-rep model to a simplified dynamic mesh-based model that allows for interactive manipulations and collision checks.
+</p>
+
+<div align="center"><a href="../imgs/ext/smru-simulation_02.png"><img src="../imgs/ext/smru-simulation_02.png" width="60%"/></a></div>
+
+<p>
+  Clicking over the interactive bend handles you can observe "left" and "right" flanges as divided by the selected bend line. These handles span over the detected bend groups, so you can easily guess which flanges are going to be <a href="https://quaoar.su/blog/page/on-sheet-metal-unfolding-part-11-bend-grouping">folded together</a> and which ones are simulated separately.
+</p>
+
+<div align="center"><a href="../imgs/ext/smru-simulation_03.png"><img src="../imgs/ext/smru-simulation_03.png" width="60%"/></a></div>
+
+<p>
+  To find a bend sequence (and this way to test the part for feasibility), use <span class="code-inline">sm-find-seq</span> command. The outcome groups of bends will be reported in the Logger:
+</p>
+
+<pre>
+  0: (1 2 3 4)
+  1: (5 6)
+</pre>
+
+<p>
+  This output means that the bends from the group "0" should be unfolded before the bends from the group "1". The simulator does not know which order to use in both groups, but it assumes that the reported orders are fine as long as they do not result in any collisions. You may want to trace the convergence of sequence finder visually. For that, pass the <span class="code-inline">-draw</span> flag to the <span class="code-inline">sm-find-seq</span> command:
+</p>
+
+<pre class="code">
+> sm-begin-simulation
+> sm-find-seq -draw
+</pre>
+
+<p>
+  The following animation shows how the first group of feasible bends is populated. All bends except for the 5 and 6 can be regarded as final ones. The bends 5 and 6 require the first group to be done first as otherwise they cannot be approached without collisions. Therefore, the bends 5 and 6 are reported in the second group.
+</p>
+
+<div align="center"><a href="../imgs/ext/sm-simulation_find-seq.gif"><img src="../imgs/ext/sm-simulation_find-seq.gif" width="60%"/></a></div>
+
+<p>
+  Once the sequence is found, it is possible to replay it by using <span class="code-inline">sm-fold-seq</span> command.
+</p>
+
+<pre class="code">
+> sm-begin-simulation
+> sm-find-seq -draw
+> sm-fold-seq -step 5 -draw -collideSelf -collidePunches -seq 1 2 3 4
+</pre>
+
+<p>
+  Among the arguments of the <span class="code-inline">sm-fold-seq</span> command, you may want to configure the simulation angle and a couple of options to turn on and off the provided collision checkers: with punches and with the part itself. Use the <span class="code-inline">-seq</span> key to pass the IDs of the bends to unfold. Normally, you should use the IDs reported by the sequence finder but you are also free to experiment with different sequences if you will.
+</p>
+
+<div align="center"><a href="../imgs/ext/sm-simulation_fold-seq.gif"><img src="../imgs/ext/sm-simulation_fold-seq.gif" width="60%"/></a></div>
+
+<p>
+  To fold and unfold a selected bend, use <span class="code-inline">sm-fold</span> command followed by the angle increment. This command is mostly useful for maintenance but it also allows you to check closely punch positioning with respect to a bend line in a certain folded state of geometry.
+</p>
+
+<div align="center"><a href="../imgs/ext/sm-simulation_fold.gif"><img src="../imgs/ext/sm-simulation_fold.gif" width="60%"/></a></div>
+
+<p>
+  Punches store the detected collision zones making it possible to consult the detected interferences later one. Here is an example illustrating why bend 5 cannot be unfolded in the first group of bends. The punch profile has been loaded from filesystem and extruded along the bend line. On simulation, it has been posed at a bend line's <a href="https://quaoar.su/blog/page/on-sheet-metal-unfolding-part-4-1">border trihedron</a> and tested for collisions.
+</p>
+
+<div align="center"><a href="../imgs/ext/smru-simulation_04.png"><img src="../imgs/ext/smru-simulation_04.png" width="60%"/></a></div>
+
+<p class="note">
+  It should be noted that decreasing the angular step leads to more precise simulation, because collision testing is done at each frame. However, too small angular values have negative impact on the overall performance of the simulation. A reasonable degree to be used in automation is probably around 15 degrees.
+</p>
+
+<p>
+  To avoid false-positive collisions for "boxy" shapes, the geometry of punches is slightly reduced as the following illustration shows:
+</p>
+
+<div align="center"><a href="../imgs/ext/smru-simulation_05.png"><img src="../imgs/ext/smru-simulation_05.png" width="60%"/></a></div>
 
 <!-- [END] contents -->
 </div>
