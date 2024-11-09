@@ -1,0 +1,226 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Analysis Situs: SMRU flat pattern structure</title>
+  <link rel="shortcut icon" type="image/png" href="../imgs/favicon.png"/>
+  <link rel="stylesheet" type="text/css" href="../css/situ-main-style.css">
+
+  <!-- [begin] Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-112292727-2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-112292727-2');
+  </script>
+  <!-- [end] Google Analytics -->
+  
+  <!--
+    Quick navigation script. Use a div with "toc-panel" class having a
+    nested div with "toc" id to place the navigation panel.
+  -->
+  <script src="../js/jquery-3.5.1.min.js"></script>
+  <script src="../js/toc.js"></script>
+
+  <!-- [begin] Code highlight -->
+  <link rel="stylesheet" href="../css/highlight.min.css">
+  <script src="../js/highlight.min.js"></script>
+  <!-- [end] Code highlight -->
+
+  <!-- [begin] Pseudocode -->
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS_CHTML"
+          integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw="
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [['$','$'], ['\\(','\\)']],
+            displayMath: [['$$','$$'], ['\\[','\\]']],
+            processEscapes: true,
+            processEnvironments: true,
+        }
+    });
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.js"></script>
+  <!-- [end] Pseudocode -->
+
+</head>
+<body>
+
+<a name="top"></a> <!-- anchor for 'back to top' link -->
+<table width="100%"><tr><td>
+<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+  <td align="left" class="header">
+    <span class="header-logo"><a href="../index.html" class="header-href">Analysis&nbsp;Situs</a></span>
+    &nbsp;
+    ./<a class="header-href" href="../featuresext.html">extensions</a>/SMRU flat pattern structure
+  </td>
+</tr>
+</table>
+<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+  <td class="header-menu"><a href='https://analysissitus.org/forum/index.php?resources/analysis-situs.6/'>Download</a></td>
+  <td class="header-menu">
+    <div class="dropdown">
+      <button class="dropbtn">Features ...</button>
+      <div class="dropdown-content">
+        <a href="../features.html">Open source</a>
+        <!-- <a href="../featuresext.html">Commercial</a> -->
+      </div>
+    </div>
+  </td>
+  <td class="header-menu"><a href="https://gitlab.com/ssv/AnalysisSitus">Source code</a></td>
+  <td class="header-menu"><a href="http://analysissitus.org/forum/index.php">Forum</a></td>
+  <td class="header-menu"><a href="http://quaoar.su/blog/contact">Ask for support</a></td>
+</tr>
+</table>
+</td></tr></table>
+
+<div class="content-body">
+<!-- [BEGIN] contents -->
+
+<h1 id="toc-scene-tree">SMRU flat pattern structure</h1>
+
+<p>
+  To access the unfolded flat pattern programmatically, you can iterate the inspection results by parts and bodies as the following code snippet illustrates:
+</p>
+
+<pre><code>// Iterate over individual parts (`res` is the inspection result).
+PartResultMap::Iterator it( res->PartResults );
+//
+for ( ; it.More(); it.Next() )
+{
+  // Iterate over bodies.
+  const Handle(PartResult)& partResult      = it.Value();
+  const PartBodyResults&    partBodyResults = partResult->GetBodyResults();
+  //
+  for ( PartBodyResults::Iterator bresIt(partBodyResults); bresIt.More(); bresIt.Next() )
+  {
+    const Handle(PartBodyResult)& bodyRes = bresIt.Value();
+    const TopoDS_Shape&           fp      = bodyRes->GetFlatPatternShape();
+    //
+    BRepTools::Write(fp, "fp.brep");
+  }
+}
+</code></pre>
+
+<p>
+  The following diagram illustrates the structure of the flat pattern shape:
+</p>
+
+<pre>
+  COMPOUND 1 // Root shape
+  |
+  +- Maximized face // No bends, all flat faces are merged into one
+  |
+  +- COMPOUND 1.1 // Details
+    |
+    +- COMPOUND 1.1.1 // Flattened flanges
+    |  |
+    |  +- Flat flange 1 // Face
+    |  +- Flat flange 2
+    |  +- ...
+    |
+    +- COMPOUND 1.1.2 // Flattened bends
+    |  |
+    |  +- Flat bend 1 // Face
+    |  +- Flat bend 2
+    |  +- ...
+    |
+    +- COMPOUND 1.1.3 // Bend lines
+        |
+        +- Bend line 1 // Edge
+        +- Bend line 2
+        ...
+</pre>
+
+<p>
+  The flat pattern shape is a compound that includes not only the part's flat geometry, but also such details as flat flanges, unwrapped bends, and bend lines.
+</p>
+
+<div align="center"><a href="../imgs/ext/smru-fp_01.png"><img src="../imgs/ext/smru-fp_01.png" width="60%"/></a></div>
+
+<p>
+  The maximized face contains only cutting lines. Its contours are supposed to be processed by a cutter tool.
+</p>
+
+<div align="center"><a href="../imgs/ext/smru-fp_02.png"><img src="../imgs/ext/smru-fp_02.png" width="60%"/></a></div>
+
+<p>
+  The flattened flanges represent the unfolded flanges of the model. These faces can be used for attaching measurement points and dimension lines.
+</p>
+
+<div align="center"><a href="../imgs/ext/smru-fp_03.png"><img src="../imgs/ext/smru-fp_03.png" width="60%"/></a></div>
+
+<p>
+  The unwrapped bends are reported as a separate compound of faces:
+</p>
+
+<div align="center"><a href="../imgs/ext/smru-fp_04.png"><img src="../imgs/ext/smru-fp_04.png" width="60%"/></a></div>
+
+<p>
+  Bend lines are reported as a plain list of edges in the compound 1.1.3:
+</p>
+
+<div align="center"><a href="../imgs/ext/smru-fp_05.png"><img src="../imgs/ext/smru-fp_05.png" width="60%"/></a></div>
+
+<p>
+  The following code snippet illustrates how to access bend lines from the flat pattern's compound in C++:
+</p>
+
+<pre><code>// Let `fp` be the flat pattern shape (COMPOUND 1).
+TopoDS_Shape fp = ...
+
+// Get maximized face as `mxFace`.
+TopoDS_Iterator fpIt(fp);
+TopoDS_Shape mxFace = fpIt.Value();
+
+// Move on to COMPOUND 1.1
+fpIt.Next();
+{
+  // Iterate COMPOUND 1.1
+  TopoDS_Iterator fpIt2( fpIt.Value() );
+
+  // Move on to COMPOUND 1.1.3
+  fpIt2.Next(); // Skip COMPOUND 1.1.1
+  fpIt2.Next(); // Skip COMPOUND 1.1.2
+  TopoDS_Shape blComp = fpIt2.Value();
+
+  // Iterate COMPOUND 1.1.3 to access bend lines as edges
+  for ( TopoDS_Iterator blIt(blComp); blIt.More(); blIt.Next() )
+  {
+    const TopoDS_Edge& blEdge = TopoDS::Edge( blIt.Value() );
+
+    // Do what you need with the bend line `blEdge`...
+  }
+}
+</code></pre>
+
+<p>
+  The reported bend lines can be used to export them as dashed lines in a separate DXF layer and for conducting measurements.
+</p>
+
+<div align="center"><a href="../imgs/ext/smru-fp_06.png"><img src="../imgs/ext/smru-fp_06.png" width="60%"/></a></div>
+
+<!-- [END] contents -->
+</div>
+<br/>
+<table class="footer" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+  <td>
+    <small>&copy; Quaoar&nbsp;Studio&nbsp;LLC 2015-present &nbsp; (Yerevan, Armenia)</small> | &nbsp; <a class="footer-href" href="#top">^^^</a>  &nbsp; | &nbsp; <a href="http://quaoar.su/blog/contact" class="footer-href">contact us</a> &nbsp; | &nbsp; <a href="https://www.youtube.com/channel/UCc0exKIoqbeOSqKoc1RnfBQ" class="icon brands fa-youtube"></a> &nbsp; | &nbsp; <a href="https://quaoar.su" class="icon brands fa-medium"></a> &nbsp; | &nbsp; <a href="https://www.linkedin.com/in/sergey-slyadnev-277496b1" class="icon brands fa-linkedin"></a>
+  </td>
+</tr>
+</table>
+
+<script>
+hljs.highlightAll();
+pseudocode.renderClass("pseudocode");
+</script>
+
+</body>
+</html>
