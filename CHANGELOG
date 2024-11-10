@@ -1,7 +1,81 @@
 -------------------------------------------------------------------------------
+v2024.2, XX November 2024
+
+Milestone "ver 2024.2": https://gitlab.com/ssv/AnalysisSitus/-/milestones/2
+-------------------------------------------------------------------------------
+
+## Interoperability
+
+- Introduce the possibility of SVG scaling on export.
+- Fix #310: OBJ file reader confuses vertex indices.
+- Make drawings aligned smartly in DXF export.
+- Get rid of slow STL reader from Mobius.
+
+## UI and Visualization
+
+- Introduce "black box HLR" mode activated by "B" or "Alt + B" keys.
+- Introduce parallel threads for HLR (with timeout); make DHLR results complete.
+- Fix #317: Add AAG visualization alongside with the part.
+- Disable mesh links visualization for a better FPS.
+- Add BVH source and pipeline for visualization.
+- Introduce BVH construction strategy in the Part Node.
+- Introduce ADD_LEGEND imperative drawing call; add a couple of JSON dictionary props.
+- Add ERASE_PART() function to IV (imperative plotter) interface.
+
+## Console Commands
+
+- Add `eval-iso-u` and `eval-iso-v` Tcl commands.
+- Fix #316: Turn back slashes to forward slashes by hotkey.
+- #326: Introduce `misc-convert-curves-poly` command.
+- Fix `add-subshape` command to avoid "frozen shape" crashes.
+- Fix OBB construction logic: `build-obb` command worked incorrectly.
+- Add `suppress-features` command to work like "Delete" button in UI.
+
+## AAG
+
+- Introduce asiAlgo_AAG::RemoveNodeAttributes() with the collection of GUIDs to keep.
+- Fix #307: Numerical properties should not be dumped as string values in AAG
+- Introduce asiAlgo_AAG::GetNeighbors() for a feature as an argument.
+- Fix #318: Introduce AAG attributes for graph arcs; add test cases for graph isomorphism.
+- Serialize/deserialize AAG with a header.
+- Introduce AAG format version.
+- Make AAG deserialization verify the binary format (V1 is expected).
+- Fix the performance of AAG arc attribute accessor.
+- Add caching technique for outer wires.
+- Rework asiAlgo_AAG::GetConnectedComponentsNb() for better performance.
+- Change std::stack to std::vector to be able to freely access the stacked states of AAG.
+
+## Modeling
+
+- Fix #315: "Canonical conversion freezes for endlessly long when attempting to fix pcurves for a periodic surface of linear extrusion."
+- Protect asiAlgo_Utils::GetFaceNorm() from crashing on irregularities.
+- Add transformation parameters for Triangulation Node.
+- Forcibly raise construction-time exception in BVH iterator if NodeInfoBuffer() is empty.
+- Add utilities to optimally orient parts by rotating callipers method.
+- Fix #329: bad result of `recognize-cavities` command: too many faces get reported.
+- Fix #328: Refactor the logic behind`asiAlgo_Utils::ComputeOuterWire()` and use it in `get-outer-wire` command.
+- Relates to #328: Disable extrema for bbox computation in UV.
+- Introduce `recognize-shafts` Tcl command with the corresponding recognizer.
+
+## Assemblies
+
+- Make it possible to transform the entire assembly by `asm-xde-transform` command.
+- Introduce a dialog mode for asm-xde-unload command.
+
+## Data Model
+
+- Add a set of convenience macro for fast Parameter access.
+- Add `DeepCopy()` method to `ActData_Mesh` class for making complete copies of meshes.
+- Fix #336: Set naming history forcibly to the Part Node on defeaturing from UI and CLI.
+
+## Infrastructure/Configuration
+
+- Fix AppImage and update the corresponding documentation.
+
+-------------------------------------------------------------------------------
 v2024.1, 03 January 2024
 
-Milestone "ver 1.2": https://gitlab.com/ssv/AnalysisSitus/-/milestones/1#tab-issues
+Milestone "ver 1.2": https://gitlab.com/ssv/AnalysisSitus/-/milestones/1
 -------------------------------------------------------------------------------
 
 ## Infrastructure/Configuration
