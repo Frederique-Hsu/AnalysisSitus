@@ -51,7 +51,7 @@ Milestone "ver 2024.2": https://gitlab.com/ssv/AnalysisSitus/-/milestones/2
 - Protect asiAlgo_Utils::GetFaceNorm() from crashing on irregularities.
 - Add transformation parameters for Triangulation Node.
 - Forcibly raise construction-time exception in BVH iterator if NodeInfoBuffer() is empty.
-- Add utilities to optimally orient parts by rotating callipers method.
+- Add utilities to optimally orient parts by rotating calipers method.
 - Fix #329: bad result of `recognize-cavities` command: too many faces get reported.
 - Fix #328: Refactor the logic behind`asiAlgo_Utils::ComputeOuterWire()` and use it in `get-outer-wire` command.
 - Relates to #328: Disable extrema for bbox computation in UV.
