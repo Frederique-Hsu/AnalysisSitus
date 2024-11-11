@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Analysis Situs: detect sharp corners</title>
+  <link rel="shortcut icon" type="image/png" href="../imgs/favicon.png"/>
+  <link rel="stylesheet" type="text/css" href="../css/situ-main-style.css">
+
+  <!-- [begin] Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-112292727-2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-112292727-2');
+  </script>
+  <!-- [end] Google Analytics -->
+
+
+  <!-- [begin] Code highlight -->
+  <link rel="stylesheet" href="../css/highlight.min.css">
+  <script src="../js/highlight.min.js"></script>
+  <!-- [end] Code highlight -->
+
+  <!-- [begin] Pseudocode -->
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS_CHTML"
+          integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw="
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [['$','$'], ['\\(','\\)']],
+            displayMath: [['$$','$$'], ['\\[','\\]']],
+            processEscapes: true,
+            processEnvironments: true,
+        }
+    });
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.js"></script>
+  <!-- [end] Pseudocode -->
+
+</head>
+<body>
+
+<a name="top"></a> <!-- anchor for 'back to top' link -->
+<table width="100%"><tr><td>
+<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+  <td align="left" class="header">
+    <span class="header-logo"><a href="../index.html" class="header-href">Analysis&nbsp;Situs</a></span>
+    &nbsp;
+    ./<a class="header-href" href="../featuresext.html">extensions</a>/detect sharp corners
+  </td>
+</tr>
+</table>
+<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+  <td class="header-menu"><a href='https://analysissitus.org/forum/index.php?resources/analysis-situs.6/'>Download</a></td>
+  <td class="header-menu">
+    <div class="dropdown">
+      <button class="dropbtn">Features ...</button>
+      <div class="dropdown-content">
+        <a href="../features.html">Open source</a>
+        <!-- <a href="../featuresext.html">Commercial</a> -->
+      </div>
+    </div>
+  </td>
+  <td class="header-menu"><a href="https://gitlab.com/ssv/AnalysisSitus">Source code</a></td>
+  <td class="header-menu"><a href="http://analysissitus.org/forum/index.php">Forum</a></td>
+  <td class="header-menu"><a href="http://quaoar.su/blog/contact">Ask for support</a></td>
+</tr>
+</table>
+</td></tr></table>
+
+<div class="content-body">
+<!-- [BEGIN] contents -->
+
+<h1>Detect sharp corners</h1>
+
+<p>
+  Sharp internal corners are difficult to process and require specialized machining operations which can be expensive. Milling cannot generate sharp inside corners, necessitating the use of different machining technologies such as EDM. Therefore, radiused corners are always preferable at the inner concave edges that are supposed to be side-milled.
+</p>
+
+<div align="center"><a href="../imgs/ext/dfm-corners_01.png"><img src="../imgs/ext/dfm-corners_01.png" width="60%"/></a></div>
+
+<p>
+  CNC recognition workflow performs sharp corner detection by default. The detected issues are reported in the <span class="code-inline">warnings</span> JSON section with the code <span class="code-inline">cncCode_PartBody_Warn_ImpossibleCorner</span> as many times as many connected components (features) are detected. The corresponding vertex IDs are reported alongside with the face IDs. The problematic vertices can be located visually with the help of &lt;Ctrl&gt;+&lt;V&gt; key combination in the UI of Analysis Situs.
+</p>
+
+<p>
+  To avoid having sharp corners reported in a part, the design has to be slightly changed around the problematic corners. One way to fix it is to add rounded walls:
+</p>
+
+<div align="center"><a href="../imgs/ext/dfm-corners_02.png"><img src="../imgs/ext/dfm-corners_02.png" width="60%"/></a></div>
+
+<p>
+  Alternatively, "relief" cuts can be added at corners (which seems to be a less common option):
+</p>
+
+<div align="center"><a href="../imgs/ext/dfm-corners_03.png"><img src="../imgs/ext/dfm-corners_03.png" width="60%"/></a></div>
+
+<p>
+  Some more details on the sharp corner detection algorithm can be found in the sec. 3.1. of our conference talk at NUMGRID 2022 [<a href="../references.html#slyadnev-dfm-2022">Slyadnev and Voevodin 2022</a>].
+</p>
+
+<!-- [END] contents -->
+</div>
+<br/>
+<table class="footer" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+  <td>
+    <small>&copy; Quaoar&nbsp;Studio&nbsp;LLC 2015-present &nbsp; (Yerevan, Armenia)</small> | &nbsp; <a class="footer-href" href="#top">^^^</a>  &nbsp; | &nbsp; <a href="http://quaoar.su/blog/contact" class="footer-href">contact us</a> &nbsp; | &nbsp; <a href="https://www.youtube.com/channel/UCc0exKIoqbeOSqKoc1RnfBQ" class="icon brands fa-youtube"></a> &nbsp; | &nbsp; <a href="https://quaoar.su" class="icon brands fa-medium"></a> &nbsp; | &nbsp; <a href="https://www.linkedin.com/in/sergey-slyadnev-277496b1" class="icon brands fa-linkedin"></a>
+  </td>
+</tr>
+</table>
+
+<script>
+hljs.highlightAll();
+pseudocode.renderClass("pseudocode");
+</script>
+
+</body>
+</html>

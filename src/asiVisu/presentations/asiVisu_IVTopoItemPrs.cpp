@@ -66,6 +66,7 @@ asiVisu_IVTopoItemPrs::asiVisu_IVTopoItemPrs(const Handle(ActAPI_INode)& N)
   // Configure
   pl->Actor()->GetProperty()->SetLineWidth(2.0f);
   pl->Actor()->GetProperty()->RenderLinesAsTubesOn();
+  pl->Actor()->GetProperty()->RenderPointsAsSpheresOn();
 }
 
 //-----------------------------------------------------------------------------
