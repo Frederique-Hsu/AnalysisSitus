@@ -80,7 +80,7 @@
 <h1>Design for Manufacturability (DfM) checks</h1>
 
 <p>
-  Analysis Situs provides a number of API services for analyzing manufacturability. Our NUMGRID conference talk [<a href="../references.html#slyadnev-dfm-2022">Slyadnev and Voevodin 2022</a>] provides a theoretical overview of the implemented tests. The DFM checks available in the scope of CNC recognition toolbox can be divided into three categories:
+  Analysis Situs provides a number of API services for analyzing manufacturability. Our NUMGRID conference talk [<a href="../references.html#slyadnev-dfm-2022">Slyadnev and Voevodin 2022</a>] gives a theoretical overview of the implemented tests. The DFM checks available in the scope of CNC recognition toolbox can be divided into three categories:
 </p>
 
 <ol>
@@ -96,8 +96,59 @@
 <div align="center"><a href="../imgs/ext/dfm-implicit_01.png"><img src="../imgs/ext/dfm-implicit_01.png" width="60%"/></a></div>
 
 <p>
-  By not reporting such "implicit" DFM issues, Analysis Situs remains flexible for configuration against a specific manufacturing shop. Deep narrow slots, deep holes, non-prismatic features, small-radius fillets, recommended groove distances and similar problems are therefore not reported directly but can be reported by the user application. At the same time, there are some "stronger" DFM issues, which are reported regardless of rules. A simplest example of such a "stronger" DFM issue is a sharp corner that cannot be milled by traditional machining.
+  By not reporting such "implicit" DFM issues, Analysis Situs remains flexible for configuration against a specific manufacturing shop. Deep narrow slots, deep holes, non-prismatic features, small-radius fillets, recommended groove distances and similar problems are therefore not reported directly and should be handled by the user application. At the same time, there are some "stronger" DFM issues, which are reported regardless of rules. A simplest example of such a "stronger" DFM issue is a <a href="./features_dfm-sharp-corners.html">sharp corner</a> that cannot be milled by traditional machining.
 </p>
+
+<div align="center"><a href="../imgs/ext/dfm-questions.png"><img src="../imgs/ext/dfm-questions.png" width="60%"/></a></div>
+
+<div align="center"><a href="../imgs/ext/dfm-questions2.png"><img src="../imgs/ext/dfm-questions2.png" width="60%"/></a></div>
+
+<p>
+  Optional DFM checks are usually computationally heavier. They include such tests as the following ones:
+</p>
+
+<ol>
+  <li><a href="./features_dfm-inaccessible-faces.html">Face accessibility analysis</a>.</li>
+  <li><a href="./features_dfm-inaccessible-edges.html">Edge accessibility analysis</a>.</li>
+  <li><a href="./features_dfm-thickness-analysis.html">Thickness analysis</a>.</li>
+  <li><a href="./features_dfm-clearance-analysis.html">Clearance analysis</a>.</li>
+</ol>
+
+<p>
+  All of the "heavy" inspections are done on a mesh representation of a part and require extensive ray casting. For the sake of overview, let us consider the benchmark test scenario illustrated in the following image:
+</p>
+
+<div align="center"><a href="../imgs/ext/dfm-benchmark_01.png"><img src="../imgs/ext/dfm-benchmark_01.png" width="60%"/></a></div>
+
+<p>
+  This part is almost entirely recognized, with the exception of a squared pocket that failed accessibility checks built into the contour recognizer. This is already an example of a "implicit" DFM check, which was done inline together with feature recognition logic. However, there are some more DFM issues reported in the JSON outcome:
+</p>
+
+<div align="center"><a href="../imgs/ext/dfm-benchmark_02.png"><img src="../imgs/ext/dfm-benchmark_02.png" width="60%"/></a></div>
+
+<p>
+  First come the "impossible" sharp corners:
+</p>
+
+<div align="center"><a href="../imgs/ext/dfm-benchmark_03.png"><img src="../imgs/ext/dfm-benchmark_03.png" width="60%"/></a></div>
+
+<p>
+  Then, a number of inaccessible faces are reported as distinct features. It is important to note that in this case, the approach directions were chosen parallel to the primary coordinate axes. This explains why angled holes were reported:
+</p>
+
+<div align="center"><a href="../imgs/ext/dfm-benchmark_04.png"><img src="../imgs/ext/dfm-benchmark_04.png" width="60%"/></a></div>
+
+<p>
+  All inaccessible faces are identified "as a whole." However, sometimes the CAD faces are simply too large to serve as a representative carrier of manufacturability issues. Alternatively, mesh elements representing the actual occluded portions of the CAD faces are given. The outcome is in a more refined output of inaccessible spots:
+</p>
+
+<div align="center"><a href="../imgs/ext/dfm-benchmark_05.png"><img src="../imgs/ext/dfm-benchmark_05.png" width="60%"/></a></div>
+
+<p>
+  Finally, inaccessible edges are also reported:
+</p>
+
+<div align="center"><a href="../imgs/ext/dfm-benchmark_06.png"><img src="../imgs/ext/dfm-benchmark_06.png" width="60%"/></a></div>
 
 <!-- [END] contents -->
 </div>
