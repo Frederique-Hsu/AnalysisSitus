@@ -87,6 +87,19 @@ a:visited:hover {
   border: 1px solid rgb(210, 210, 210);
   font-size: 12pt;
 }
+.mg {
+  padding-left: 0px;
+  background-color: rgb(240, 240, 240);
+  border: 1px solid rgb(210, 210, 210);
+  font-size: 12pt;
+}
+.mg-headline {
+  margin: 0px;
+  padding: 10px;
+  background-color: rgb(220, 240, 150);
+  border: 0px;
+  font-size: 14pt;
+}
 .header, .header-logo {
   padding-left: 15px;
   padding-top: 15px;
@@ -283,6 +296,13 @@ h3 {
   -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
   -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
   transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+}
+
+.fancy_ul_item::marker {
+    content: ' >>>  ';
+    color: rgb(10,70,140);
+    font-size: 0.9em;
+    letter-spacing: 0px;
 }
 
 /* ================
