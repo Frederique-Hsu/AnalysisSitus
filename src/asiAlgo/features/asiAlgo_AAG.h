@@ -666,7 +666,7 @@ public:
   //! \param[in] arc the arc to check.
   //! \return true/false.
   asiAlgo_EXPORT bool
-    HasArcAttribute(const t_arc& arc) const;
+    HasArcAttributes(const t_arc& arc) const;
 
   //! Checks whether the given arc has any attributes or not. If yes, an
   //! arc attribute is returned.

@@ -255,6 +255,20 @@ public:
   //-------------------------------------------------------------------------//
 
   virtual void
+    DRAW_RECT(const gp_Pnt2d&,
+              const gp_Pnt2d&,
+              const ActAPI_Color&,
+              const t_extString&) {}
+
+  virtual void
+    REDRAW_RECT(const t_extString&,
+                const gp_Pnt2d&,
+                const gp_Pnt2d&,
+                const ActAPI_Color&) {}
+
+  //-------------------------------------------------------------------------//
+
+  virtual void
     DRAW_AXES(const gp_Pnt&,
               const gp_Dir&,
               const gp_Dir&,
@@ -905,6 +919,32 @@ public:
     if ( m_iv.IsNull() ) return;
     //
     m_iv->REDRAW_AXES(name, origin, dx, dy, dz, scale);
+  }
+
+//-------------------------------------------------------------------------//
+
+  void
+    DRAW_RECT(const gp_Pnt2d&     Pmin,
+              const gp_Pnt2d&     Pmax,
+              const ActAPI_Color& color,
+              const t_extString&  name = "")
+  {
+    if ( m_iv.IsNull() ) return;
+    //
+    m_iv->DRAW_RECT(Pmin, Pmax, color, name);
+  }
+
+//-------------------------------------------------------------------------//
+
+  void
+    REDRAW_RECT(const t_extString&  name,
+                const gp_Pnt2d&     Pmin,
+                const gp_Pnt2d&     Pmax,
+                const ActAPI_Color& color)
+  {
+    if ( m_iv.IsNull() ) return;
+    //
+    m_iv->REDRAW_RECT(name, Pmin, Pmax, color);
   }
 
 //---------------------------------------------------------------------------//

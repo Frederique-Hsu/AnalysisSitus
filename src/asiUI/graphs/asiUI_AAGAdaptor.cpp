@@ -162,7 +162,7 @@ vtkSmartPointer<vtkMutableUndirectedGraph>
 
       asiAlgo_AAG::t_arc arc(f_idx, neighbor_f_idx);
 
-      if ( aag->HasArcAttribute(arc) )
+      if ( aag->HasArcAttributes(arc) )
       {
         // Check angle
         Handle(asiAlgo_FeatureAttrAngle)

@@ -1194,6 +1194,28 @@ namespace asiAlgo_Utils
   asiAlgo_EXPORT double
     ComputeArea(const TopoDS_Shape& shape);
 
+  //! Computes the two-dimensional bounding box of a wire `W`
+  //! on the face `F`. This function makes sure to compute
+  //! tight bounding rectangles.
+  //!
+  //! \sa https://quaoar.su/blog/page/outerwire-problem-of-opencascade
+  //!
+  //! \param[in]  F       the face in question.
+  //! \param[in]  W       the wire in question.
+  //! \param[out] umin    the computed U min value.
+  //! \param[out] umax    the computed U max value.
+  //! \param[out] vmin    the computed V min value.
+  //! \param[out] vmax    the computed V max value.
+  //! \param[in]  plotter the optional imperative plotter for visual dumps.
+  asiAlgo_EXPORT void
+    ComputeWireUVBounds(const TopoDS_Face&  F,
+                        const TopoDS_Wire&  W,
+                        double&             umin,
+                        double&             umax,
+                        double&             vmin,
+                        double&             vmax,
+                        ActAPI_PlotterEntry plotter = nullptr);
+
   //! Handles getting UV bounds of faces using the AAG as a cache.
   //! \param[in]  fid  the AAG node id of the face.
   //! \param[in]  aag  the AAG instance.
@@ -2082,6 +2104,24 @@ namespace asiAlgo_Utils
   //! \return outer wire.
   asiAlgo_EXPORT TopoDS_Wire
     OuterWire(const TopoDS_Face& face);
+
+  //! Fixed version of BRepTools::OuterWire (see #31172 in the OpenCascade
+  //! bugtracker).
+  //! \param[in] face    the face in question.
+  //! \param[in] plotter the imperative plotter for diagnostic visual dumps.
+  //! \return outer wire.
+  asiAlgo_EXPORT TopoDS_Wire
+    ComputeOuterWire(const TopoDS_Face&  face,
+                     ActAPI_PlotterEntry plotter = nullptr);
+
+  //! Computes and caches the outer wire for the passed face. If the outer wire
+  //! is already computed, it is returned from the corresponding attribute.
+  //! \param[in] fid the ID of the face in question.
+  //! \param[in] aag the attribute adjacency graph.
+  //! \return the computed or cached outer wire.
+  asiAlgo_EXPORT TopoDS_Wire
+    CacheOuterWire(const int                  fid,
+                   const Handle(asiAlgo_AAG)& aag);
 
   //! Computes random inner point on a face.
   //! \param[in]     face the face of interest.

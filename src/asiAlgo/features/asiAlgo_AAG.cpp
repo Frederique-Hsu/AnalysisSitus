@@ -731,7 +731,7 @@ bool asiAlgo_AAG::HasArc(const t_arc& arc) const
 
 //-----------------------------------------------------------------------------
 
-bool asiAlgo_AAG::HasArcAttribute(const t_arc& arc) const
+bool asiAlgo_AAG::HasArcAttributes(const t_arc& arc) const
 {
   return m_arcAttributes.IsBound(arc);
 }
@@ -741,7 +741,7 @@ bool asiAlgo_AAG::HasArcAttribute(const t_arc& arc) const
 bool asiAlgo_AAG::HasArcAttribute(const t_arc&                 arc,
                                   Handle(asiAlgo_FeatureAttr)& attr) const
 {
-  if ( !this->HasArcAttribute(arc) )
+  if ( !this->HasArcAttributes(arc) )
     return false;
 
   attr = this->GetArcAttribute(arc);

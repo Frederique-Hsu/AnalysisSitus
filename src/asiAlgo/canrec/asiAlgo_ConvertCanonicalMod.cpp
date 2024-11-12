@@ -38,9 +38,11 @@
 // OpenCascade includes
 #include <BRep_Builder.hxx>
 #include <BRep_Tool.hxx>
+#include <Geom_BSplineCurve.hxx>
 #include <Geom_Plane.hxx>
 #include <Geom_RectangularTrimmedSurface.hxx>
 #include <Geom_SphericalSurface.hxx>
+#include <Geom_SurfaceOfLinearExtrusion.hxx>
 #include <ShapeAnalysis_Curve.hxx>
 #include <ShapeAnalysis_Surface.hxx>
 #include <ShapeFix_Edge.hxx>
@@ -324,6 +326,23 @@ bool asiAlgo_ConvertCanonicalMod::NewCurve2d(const TopoDS_Edge&    E,
     {
       bool   isClosed = BRep_Tool::IsClosed(E, F);
       double workTol  = 2*m_fToler + Tol;
+
+      // This code was introduced to fix the conversion problem for `/cad/canrec/canrec_010.stp`,
+      // where OpenCascade ver.7.6. freezes on pcurve reprojection. The idea is to check that the
+      // curve is too tricky to handle: in this case, it's a C0-continuous periodic spline to
+      // be projected onto a surface of linear extrusion. Ideally, OpenCascade should be patched
+      // to avoid infinite computations.
+      //
+      // See also: https://gitlab.com/ssv/AnalysisSitus/-/issues/315
+      Handle(Geom_BSplineCurve)
+        C3dBspl = Handle(Geom_BSplineCurve)::DownCast(C3d);
+      //
+      if ( S->IsKind( STANDARD_TYPE(Geom_SurfaceOfLinearExtrusion) ) &&
+          !C3dBspl.IsNull() && (C3dBspl->Continuity() == GeomAbs_C0) && C3dBspl->IsPeriodic() )
+      {
+        this->SetErrorStateOn();
+        return false;
+      }
 
       sfe->FixAddPCurve( TempE, STemp, LTemp, isClosed, Max(Precision::Confusion(), workTol) );
       sfe->FixSameParameter(TempE);

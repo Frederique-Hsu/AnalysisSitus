@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
-// Created on: 29 October 2021
+// Created on: 24 May 2024
 //-----------------------------------------------------------------------------
-// Copyright (c) 2021-present, Sergey Slyadnev
+// Copyright (c) 2024-present, Quaoar Studio LLC
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -28,45 +28,64 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-----------------------------------------------------------------------------
 
-#ifndef asiAlgo_ConvertCanonicalSurface_HeaderFile
-#define asiAlgo_ConvertCanonicalSurface_HeaderFile
+#ifndef asiAlgo_FeatureAttrOuterWire_h
+#define asiAlgo_FeatureAttrOuterWire_h
 
 // asiAlgo includes
 #include <asiAlgo.h>
 
+// asiAlgo includes
+#include <asiAlgo_FeatureAttrFace.h>
+
 // OpenCascade includes
-#include <Geom_Surface.hxx>
+#include <TopoDS_Wire.hxx>
 
 //-----------------------------------------------------------------------------
 
-//! \ingroup ASI_MODELING
+//! \ingroup ASI_AFR
 //!
-//! Utility to recognize B-spline and Bezier surfaces as canonical surfaces,
-//! such as planes, cylinders, cones, spheres, toruses.
-class asiAlgo_ConvertCanonicalSurface
+//! AAG attribute to store outer wire of a face.
+class asiAlgo_FeatureAttrOuterWire : public asiAlgo_FeatureAttr
 {
-public:
-
-  //! Ctor accepting the surface to convert.
-  //! \param[in] S the surface to convert.
-  asiAlgo_EXPORT
-    asiAlgo_ConvertCanonicalSurface(const Handle(Geom_Surface)& S);
+  // OCCT RTTI
+  DEFINE_STANDARD_RTTI_INLINE(asiAlgo_FeatureAttrOuterWire, asiAlgo_FeatureAttr)
 
 public:
 
-  //! \return the max deviation of the converted surface
-  //!         from the original surface.
-  asiAlgo_EXPORT double
-    GetFitError() const;
+  //! Ctor.
+  asiAlgo_FeatureAttrOuterWire()
+  //
+  : asiAlgo_FeatureAttr()
+  {}
 
-  //! Performs conversion.
-  asiAlgo_EXPORT Handle(Geom_Surface)
-    Perform(const double tol);
+  //! Complete ctor.
+  asiAlgo_FeatureAttrOuterWire(const TopoDS_Wire& _wire)
+  : asiAlgo_FeatureAttr (),
+    wire                (_wire)
+  {}
 
-private:
+  //! \return static GUID associated with this type of attribute.
+  static const Standard_GUID& GUID()
+  {
+    static Standard_GUID guid("8DD0E0C0-481E-4370-A319-6A75D87FBF2E");
+    return guid;
+  }
 
-  Handle(Geom_Surface) m_surf; //!< Surface to convert.
-  double               m_fGap; //!< Fitting error.
+  //! \return GUID associated with this type of attribute.
+  virtual const Standard_GUID& GetGUID() const override
+  {
+    return GUID();
+  }
+
+  //! \return human-friendly name of the attribute.
+  virtual const char* GetName() const override
+  {
+    return "Outer wire";
+  }
+
+public:
+
+  TopoDS_Wire wire;
 
 };
 

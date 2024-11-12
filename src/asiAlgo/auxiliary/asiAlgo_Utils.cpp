@@ -65,6 +65,7 @@ typedef rapidjson::Document::Object    t_jsonObject;
 #include <asiAlgo_IGES.h>
 #include <asiAlgo_FeatureAttrAngle.h>
 #include <asiAlgo_FeatureAttrArea.h>
+#include <asiAlgo_FeatureAttrOuterWire.h>
 #include <asiAlgo_FeatureAttrUVBounds.h>
 #include <asiAlgo_FeatureFaces.h>
 #include <asiAlgo_PLY.h>
@@ -151,6 +152,7 @@ typedef rapidjson::Document::Object    t_jsonObject;
 #include <Poly_CoherentTriangulation.hxx>
 #include <Precision.hxx>
 #include <RWStl.hxx>
+#include <ShapeAnalysis_Curve.hxx>
 #include <ShapeAnalysis_Edge.hxx>
 #include <ShapeAnalysis_ShapeTolerance.hxx>
 #include <ShapeAnalysis_Surface.hxx>
@@ -2287,6 +2289,45 @@ double asiAlgo_Utils::ComputeArea(const TopoDS_Shape& shape)
   BRepGProp::SurfaceProperties(shape, props, 1.0e-2);
   //
   return props.Mass();
+}
+
+//-----------------------------------------------------------------------------
+
+void asiAlgo_Utils::ComputeWireUVBounds(const TopoDS_Face&  F,
+                                        const TopoDS_Wire&  W,
+                                        double&             umin,
+                                        double&             umax,
+                                        double&             vmin,
+                                        double&             vmax,
+                                        ActAPI_PlotterEntry plotter)
+{
+  TopoDS_Face FF = F;
+  TopoDS_Wire WW = W;
+  FF.Orientation(TopAbs_FORWARD);
+  WW.Orientation(TopAbs_FORWARD);
+
+  TopExp_Explorer ex(WW,TopAbs_EDGE);
+  if ( !ex.More() )
+  {
+    return;
+  }
+
+  Bnd_Box2d B;
+  ShapeAnalysis_Edge sae;
+  ShapeAnalysis_Curve sac;
+  for ( ;ex.More(); ex.Next() )
+  {
+    const TopoDS_Edge& edge = TopoDS::Edge( ex.Current() );
+    Handle(Geom2d_Curve) c2d;
+    double f, l;
+    //
+    if ( !sae.PCurve(edge, F, c2d, f, l, false) )
+      continue;
+
+    sac.FillBndBox(c2d, f, l, 20, false, B);
+  }
+
+  B.Get(umin, vmin, umax, vmax);
 }
 
 //-----------------------------------------------------------------------------
@@ -5130,6 +5171,81 @@ TopoDS_Wire asiAlgo_Utils::OuterWire(const TopoDS_Face& face)
     }
   }
   return Wres;
+}
+
+//-----------------------------------------------------------------------------
+
+TopoDS_Wire asiAlgo_Utils::ComputeOuterWire(const TopoDS_Face&  face,
+                                            ActAPI_PlotterEntry plotter)
+{
+  const double prec = Precision::PConfusion();
+
+  TopoDS_Wire Wres;
+  TopExp_Explorer expw(face, TopAbs_WIRE);
+  //
+  if ( expw.More() )
+  {
+    Wres = TopoDS::Wire( expw.Current() );
+    expw.Next();
+    if ( expw.More() )
+    {
+      double UMin, UMax, VMin, VMax;
+      double umin, umax, vmin, vmax;
+      ComputeWireUVBounds(face, Wres, UMin, UMax, VMin, VMax);
+
+      plotter.DRAW_RECT( gp_Pnt2d(UMin, VMin), gp_Pnt2d(UMax, VMax), Color_White, "uvBounds" );
+
+      while ( expw.More() )
+      {
+        const TopoDS_Wire& W = TopoDS::Wire( expw.Current() );
+        ComputeWireUVBounds(face, W, umin, umax, vmin, vmax);
+
+        plotter.DRAW_RECT( gp_Pnt2d(umin, vmin), gp_Pnt2d(umax, vmax), Color_White, "uvBounds" );
+
+        if ( (umin < UMin || Abs(umin - UMin) < prec) &&
+             (umax > UMax || Abs(umax - UMax) < prec) &&
+             (vmin < VMin || Abs(vmin - VMin) < prec) &&
+             (vmax > VMax || Abs(vmax - VMax) < prec) )
+        {
+          Wres = W;
+          UMin = umin;
+          UMax = umax;
+          VMin = vmin;
+          VMax = vmax;
+        }
+        expw.Next();
+      }
+    }
+  }
+  return Wres;
+}
+
+//-----------------------------------------------------------------------------
+
+TopoDS_Wire asiAlgo_Utils::CacheOuterWire(const int                  fid,
+                                          const Handle(asiAlgo_AAG)& aag)
+{
+  // Access the AAG attribute.
+  Handle(asiAlgo_FeatureAttrOuterWire)
+    owAttr = aag->ATTR_NODE<asiAlgo_FeatureAttrOuterWire>(fid);
+
+  // Compute or use the cached value.
+  TopoDS_Wire owire;
+  //
+  if ( owAttr.IsNull() )
+  {
+    owire = ComputeOuterWire( aag->GetFace(fid) );
+    aag->SetNodeAttribute( fid, new asiAlgo_FeatureAttrOuterWire(owire) );
+  }
+  else
+  {
+    if ( owAttr->wire.IsNull() )
+    {
+      owAttr->wire = ComputeOuterWire( aag->GetFace(fid) );
+    }
+    owire = owAttr->wire;
+  }
+  return owire;
 }
 
 //-----------------------------------------------------------------------------
