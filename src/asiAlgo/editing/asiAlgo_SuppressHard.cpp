@@ -32,7 +32,7 @@
 #include <asiAlgo_SuppressHard.h>
 
 // OpenCascade includes
-#include <BRepAlgoAPI_Defeaturing.hxx>
+#include <asiAlgo_Defeaturing.h>
 
 #undef COUT_DEBUG
 #if defined COUT_DEBUG
@@ -68,7 +68,7 @@ bool asiAlgo_SuppressHard::Perform(const asiAlgo_Feature& faceIndices)
   }
 
   // Prepare tool.
-  BRepAlgoAPI_Defeaturing API;
+  asiAlgo_Defeaturing API(m_plotter);
   //
   API.SetShape         ( m_aag->GetMasterShape() );
   API.AddFacesToRemove ( faces2Kill );

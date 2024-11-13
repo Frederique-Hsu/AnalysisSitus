@@ -367,6 +367,7 @@ set (features_H_FILES
   features/asiAlgo_CheckInsertion.h
   features/asiAlgo_CheckVertexVexity.h
   features/asiAlgo_ConvexHull.h
+  features/asiAlgo_Defeaturing.h
   features/asiAlgo_ExtractFeatures.h
   features/asiAlgo_ExtractFeaturesResult.h
   features/asiAlgo_FeatureAngleType.h
@@ -396,6 +397,7 @@ set (features_H_FILES
   features/asiAlgo_RecognizeIsolated.h
   features/asiAlgo_Recognizer.h
   features/asiAlgo_RecognizeShafts.h
+  features/asiAlgo_RemoveFaces.h
   features/asiAlgo_Shaft.h
   features/asiAlgo_ShapePartnerHasher.h
   features/asiAlgo_TopoAttr.h
@@ -411,6 +413,7 @@ set (features_CPP_FILES
   features/asiAlgo_CheckDihedralAngle.cpp
   features/asiAlgo_CheckInsertion.cpp
   features/asiAlgo_CheckVertexVexity.cpp
+  features/asiAlgo_Defeaturing.cpp
   features/asiAlgo_ExtractFeatures.cpp
   features/asiAlgo_ExtractFeaturesResult.cpp
   features/asiAlgo_FeatureFaces.cpp
@@ -425,6 +428,7 @@ set (features_CPP_FILES
   features/asiAlgo_RecognizeIsolated.cpp
   features/asiAlgo_Recognizer.cpp
   features/asiAlgo_RecognizeShafts.cpp
+  features/asiAlgo_RemoveFaces.cpp
   features/asiAlgo_Shaft.cpp
   features/asiAlgo_TopoGraph.cpp
 )
