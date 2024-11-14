@@ -61,6 +61,7 @@ Milestone "ver 2024.2": https://gitlab.com/ssv/AnalysisSitus/-/milestones/2
 
 - Make it possible to transform the entire assembly by `asm-xde-transform` command.
 - Introduce a dialog mode for asm-xde-unload command.
+- Add `FindDirtyParts` algorithm.
 
 ## Data Model
 

@@ -435,6 +435,31 @@ The <span class="code-inline"><a href='../commands.html#asm-xde-transform'>asm-x
 
 <!-- ========================================================================== -->
 
+<h2 id="toc-asm-xde-find-dirty-parts">asm-xde-find-dirty-parts</h2>
+
+<p>
+The <span class="code-inline"><a href='../commands.html#asm-xde-find-dirty-parts'>asm-xde-find-dirty-parts</a></span> function returns the IDs of all parts having no "meaningful" (i.e., surface or solid) geometry. The following script finds all such "junk" parts and eliminates them from the assembly document.
+</p>
+
+<pre class="code">
+set pids [asm-xde-find-dirty-parts -model M]
+asm-xde-remove-parts -model M -parts {*}$pids
+</pre>
+
+<p>
+  The following screenshot illustrates a realistic assembly containing many "junk" geometries, such as untrimmed faces having no vertices and edges.
+</p>
+
+<div align="center"><a href="../imgs/asm/asm-dirty-model.png"><img src="../imgs/asm/asm-dirty-model.png" width="50%"/></a></div>
+
+<p>
+  After cleaning, this model becomes more compact and can be safely passed to downstream workflows.
+</p>
+
+<div align="center"><a href="../imgs/asm/asm-cleaned-model.png"><img src="../imgs/asm/asm-cleaned-model.png" width="50%"/></a></div>
+
+<!-- ========================================================================== -->
+
 <h1 id="toc-asm-xde-examples">Examples</h1>
 
 <!-- ========================================================================== -->
@@ -455,12 +480,6 @@ foreach pid $pids {
   incr i
 }
 </pre>
-
-<div class="navigation">
-  <a href="./features_asm-load-step.html">&lt;&lt;&lt; Previous chapter</a>
-  &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-  <a href="./features_asm-json-hierarchy.html">Next chapter &gt;&gt;&gt;</a>
-</div>
 
 <!-- [END] contents -->
 </div>

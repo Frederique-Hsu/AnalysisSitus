@@ -42,6 +42,7 @@
 #include <asiAsm_SceneTree.h>
 #include <asiAsm_XdeBreakDown.h>
 #include <asiAsm_XdeDocIterator.h>
+#include <asiAsm_XdeFindDirtyParts.h>
 
 // asiEngine includes
 #include <asiEngine_Part.h>
@@ -1498,13 +1499,14 @@ int ASMXDE_RemoveParts(const Handle(asiTcl_Interp)& interp,
   //
   Handle(Doc) xdeDoc = Handle(cmdAsm_XdeModel)::DownCast(var)->GetDocument();
 
-  // Get items.
+  // Get items or parts.
   AssemblyItemIds items, leaves;
-  int itemsIdx = -1;
+  PartIds         parts;
+  int             elementIdx = -1;
   //
-  if ( interp->HasKeyword(argc, argv, "items", itemsIdx) )
+  if ( interp->HasKeyword(argc, argv, "items", elementIdx) )
   {
-    for ( int ii = itemsIdx + 1; ii < argc; ++ii )
+    for ( int ii = elementIdx + 1; ii < argc; ++ii )
     {
       if ( interp->IsKeyword(argv[ii]) )
         break;
@@ -1514,6 +1516,16 @@ int ASMXDE_RemoveParts(const Handle(asiTcl_Interp)& interp,
 
     xdeDoc->GetLeafAssemblyItems(items, leaves);
   }
+  else if ( interp->HasKeyword(argc, argv, "parts", elementIdx) )
+  {
+    for ( int ii = elementIdx + 1; ii < argc; ++ii )
+    {
+      if ( interp->IsKeyword(argv[ii]) )
+        break;
+
+      parts.Append( PartId(argv[ii]) );
+    }
+  }
   else
   {
     xdeDoc->GetLeafAssemblyItems(leaves);
@@ -1521,7 +1533,11 @@ int ASMXDE_RemoveParts(const Handle(asiTcl_Interp)& interp,
 
   // Get parts to remove.
   PartIds partsPassed, parts2Remove;
-  xdeDoc->GetParts(leaves, partsPassed, true);
+  //
+  if ( !interp->HasKeyword(argc, argv, "parts") )
+    xdeDoc->GetParts(leaves, partsPassed, true);
+  else
+    partsPassed = parts;
 
   // Check whether the selection of parts to remove should be inverted.
   if ( interp->HasKeyword(argc, argv, "invert") )
@@ -1821,6 +1837,73 @@ int ASMXDE_Unload(const Handle(asiTcl_Interp)& interp,
 
 //-----------------------------------------------------------------------------
 
+int ASMXDE_FindDirtyParts(const Handle(asiTcl_Interp)& interp,
+                          int                          argc,
+                          const char**                 argv)
+{
+  // Get model name.
+  std::string name;
+  //
+  if ( !interp->GetKeyValue(argc, argv, "model", name) )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Model name is not specified.");
+    return TCL_ERROR;
+  }
+
+  // Get the XDE document.
+  Handle(asiTcl_Variable) var = interp->GetVar(name);
+  //
+  if ( var.IsNull() || !var->IsKind( STANDARD_TYPE(cmdAsm_XdeModel) ) )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "There is no XDE model named '%1'."
+                                                        << name);
+    return TCL_ERROR;
+  }
+  //
+  Handle(cmdAsm_XdeModel) xdeModel = Handle(cmdAsm_XdeModel)::DownCast(var);
+  Handle(Doc)             xdeDoc   = xdeModel->GetDocument();
+
+  TIMER_NEW
+  TIMER_GO
+
+  // Find "dirty" parts.
+  PartIds pids;
+  //
+  FindDirtyParts finder( xdeDoc,
+                         true,
+                         true,
+                         false,
+                         true,
+                         interp->GetProgress() );
+  //
+  if ( !finder.Perform(pids) )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Failed to find \"dirty\" parts in the model '%1'."
+                                                        << name);
+    return TCL_ERROR;
+  }
+
+  TIMER_FINISH
+  TIMER_COUT_RESULT_NOTIFIER(interp->GetProgress(), "asm-xde-find-dirty-parts")
+
+  // Add part IDs to the interpreter.
+  int pid = 1;
+  //
+  for ( PartIds::Iterator pit(pids); pit.More(); pit.Next(), ++pid )
+  {
+    *interp << pit.Value().Entry.ToCString();
+
+    std::cout << "\t" << pit.Value().Entry.ToCString() << "\n";
+
+    if ( pid < pids.Length() )
+      *interp << " ";
+  }
+
+  return TCL_OK;
+}
+
+//-----------------------------------------------------------------------------
+
 void cmdAsm::Commands_XDE(const Handle(asiTcl_Interp)&      interp,
                           const Handle(Standard_Transient)& cmdAsm_NotUsed(data))
 {
@@ -2019,11 +2102,16 @@ void cmdAsm::Commands_XDE(const Handle(asiTcl_Interp)&      interp,
   //-------------------------------------------------------------------------//
   interp->AddCommand("asm-xde-remove-parts",
     //
-    "asm-xde-remove-parts -model <M> [-items <item_1> ... <item_k>] [-invert]\n"
-    "\t Removes parts corresponding to the passed assembly items with all\n"
+    "asm-xde-remove-parts"
+    " -model <M>"
+    " [-items <item_1> ... <item_k>]"
+    " [-parts <part_1> ... <part_k>]"
+    " [-invert]"
+    "\n"
+    "\t Removes parts corresponding to the passed assembly items/parts with all\n"
     "\t their occurrences in the model. If the '-invert' flag is passed, the\n"
-    "\t passed items along with all their children will remain in the model,\n"
-    "\t while all other parts will be removed instead.",
+    "\t passed items/parts will remain in the model while all other parts will\n"
+    "\t be removed instead.",
     //
     __FILE__, group, ASMXDE_RemoveParts);
 
@@ -2070,4 +2158,14 @@ void cmdAsm::Commands_XDE(const Handle(asiTcl_Interp)&      interp,
     "\t The default format for the exported part files is STEP.",
     //
     __FILE__, group, ASMXDE_Unload);
+
+  //-------------------------------------------------------------------------//
+  interp->AddCommand("asm-xde-find-dirty-parts",
+    //
+    "asm-xde-find-dirty-parts -model <M>\n"
+    "\t Finds \"dirty\" parts in the model <M>. These are the parts having no\n"
+    "\t solid or surface geometry, e.g., parts composed of dangling primitives or\n"
+    "\t construction lines.",
+    //
+    __FILE__, group, ASMXDE_FindDirtyParts);
 }
