@@ -83,14 +83,14 @@
 <div class="content-body">
 <!-- [BEGIN] contents -->
 
-<h1 id="toc-scene-tree">K-factor</h1>
+<h1 id="toc-scene-tree">Mastering k-factor</h1>
 
 <p>
-  Folding causes material deformations that are all concentrated at bend features. These deformations must be taken into account when unfolding a sheet metal part. The K-factor is a fundamental coefficient used to calculate bend allowances and predict material distortion. The K-factor defines the relative position of the "neutral axis" within the material's thickness. While unstressed (and flat), the neutral axis is located at 50% of the material thickness. During bending, the neutral axis shifts to the inside of the material. The neutral axis position is determined by the bend angle, inner bend radius, and method of forming.
+  Folding causes material deformations that are all concentrated at bend features. These deformations must be taken into account when unfolding a sheet metal part. The k-factor is a fundamental coefficient used to calculate bend allowances and predict material distortion. The k-factor defines the relative position of the "neutral axis" within the material's thickness. While unstressed (and flat), the neutral axis is located at 50% of the material thickness. During bending, the neutral axis shifts to the inside of the material. The neutral axis position is determined by the bend angle, inner bend radius, and method of forming.
 </p>
 
 <p>
-  The default value of K-factor in SMRU is 0.4468. This value is customizable by inheritance from the base class named <span class="code-inline">kFactorFunc</span>. The provided interface assumes that K-factor is a function of the inner bend radius and the material thickness, i.e., $k = k(r,t)$.
+  The default value of k-factor in SMRU is 0.4468, which is used in most bending applications. Usually, k-factor takes values from 0.5 all the way down to 0.33. The used k-factor values are customizable by inheritance from the base class named <span class="code-inline">kFactorFunc</span>. The provided interface assumes that k-factor is a function of the inner bend radius and the material thickness, i.e., $k = k(r,t)$.
 </p>
 
 <pre><code>class kFactorFunc : public Standard_Transient
@@ -108,7 +108,7 @@ public:
 </code></pre>
 
 <p>
-  The following default implementations of the K-factor function are shipped with SMRU:
+  The following default implementations of the k-factor function are shipped with SMRU:
 </p>
 
 <ul>
@@ -117,7 +117,7 @@ public:
 </ul>
 
 <p>
-  The client application is free to define its custom K-factor by subclassing the base <span class="code-inline">kFactorFunc</span>, which can be implemented in whatever way. To set the custom K-factor function in SMRU, use the corresponding setter method of <span class="code-inline">InspectFile</span> class as the following code snippet shows:
+  The client application is free to define its custom k-factor by subclassing the base <span class="code-inline">kFactorFunc</span>, which can be implemented in whatever way. To set the custom k-factor function in SMRU, use the corresponding setter method of <span class="code-inline">InspectFile</span> class as the following code snippet shows:
 </p>
 
 <pre><code>// Prepare inspector.
@@ -133,7 +133,7 @@ inspector.SetKFactorFunc(kFactorFunc);</code></pre>
 <div class="mg">
   <div class="mg-headline">Community reading:</div>
   <ul>
-    <li class="fancy_ul_item">MG // <a href="https://quaoar.su/blog/page/on-sheet-metal-unfolding-part-3">On sheet metal unfolding (Part 3): mastering K-factor</a>.</li>
+    <li class="fancy_ul_item">MG // <a href="https://quaoar.su/blog/page/on-sheet-metal-unfolding-part-3">On sheet metal unfolding (Part 3): mastering k-factor</a>.</li>
   </ul>
 </div>
 
