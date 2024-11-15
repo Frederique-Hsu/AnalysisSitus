@@ -89,6 +89,8 @@
   Folding causes material deformations that are all concentrated at bend features. These deformations must be taken into account when unfolding a sheet metal part. The k-factor is a fundamental coefficient used to calculate bend allowances and predict material distortion. The k-factor defines the relative position of the "neutral axis" within the material's thickness. While unstressed (and flat), the neutral axis is located at 50% of the material thickness. During bending, the neutral axis shifts to the inside of the material. The neutral axis position is determined by the bend angle, inner bend radius, and method of forming.
 </p>
 
+<div align="center"><a href="../imgs/ext/smru-k-factor_02.png"><img src="../imgs/ext/smru-k-factor_02.png" width="50%"/></a></div>
+
 <p>
   The default value of k-factor in SMRU is 0.4468, which is used in most bending applications. Usually, k-factor takes values from 0.5 all the way down to 0.33. The used k-factor values are customizable by inheritance from the base class named <span class="code-inline">kFactorFunc</span>. The provided interface assumes that k-factor is a function of the inner bend radius and the material thickness, i.e., $k = k(r,t)$.
 </p>
@@ -117,6 +119,12 @@ public:
 </ul>
 
 <p>
+  For the reference, each bend is reported in the JSON outcome together with the k-factor used for unfolding that bend.
+</p>
+
+<div align="center"><a href="../imgs/ext/smru-k-factor_01.png"><img src="../imgs/ext/smru-k-factor_01.png" width="50%"/></a></div>
+
+<p>
   The client application is free to define its custom k-factor by subclassing the base <span class="code-inline">kFactorFunc</span>, which can be implemented in whatever way. To set the custom k-factor function in SMRU, use the corresponding setter method of <span class="code-inline">InspectFile</span> class as the following code snippet shows:
 </p>
 
@@ -127,6 +135,12 @@ inspector.SetKFactorFunc(kFactorFunc);</code></pre>
 
 <p>
   Bend allowance $b_a$ is computed as $b_a = r_n \phi$, where $r_n$ is the bend radius at the neutral axis and $\phi$ is the bend angle in radians. Here $r_n = r_i + k(r,t) \cdot t$, where $r_i$ is the inner radius of the bend. Therefore, bend allowance is nothing but the length of the circular arc at the neutral axis.
+</p>
+
+<pre><code>> sm-perform -filename azv_clamp.stp -k 0.33</code></pre>
+
+<p>
+  To configure the k-factor used in the <span class="code-inline">sm-perform</span> command, pass the <span class="code-inline">-k</span> parameter followed by the desired value of this coefficient.
 </p>
 
 <!-- Optional references to Manifold Geometry -->
