@@ -2,7 +2,7 @@
 <html>
  <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>Analysis Situs: detect inaccessible faces</title>
+  <title>Analysis Situs: DFM diagnostic codes</title>
   <link rel="shortcut icon" type="image/png" href="../imgs/favicon.png"/>
   <link rel="stylesheet" type="text/css" href="../css/situ-main-style.css">
 
@@ -17,6 +17,12 @@
   </script>
   <!-- [end] Google Analytics -->
 
+  <!--
+    Quick navigation script. Use a div with "toc-panel" class having a
+    nested div with "toc" id to place the navigation panel.
+  -->
+  <script src="../js/jquery-3.5.1.min.js"></script>
+  <script src="../js/toc.js"></script>
 
   <!-- [begin] Code highlight -->
   <link rel="stylesheet" href="../css/highlight.min.css">
@@ -51,7 +57,7 @@
   <td align="left" class="header">
     <span class="header-logo"><a href="../index.html" class="header-href">Analysis&nbsp;Situs</a></span>
     &nbsp;
-    ./<a class="header-href" href="../featuresext.html">extensions</a>/detect inaccessible faces
+    ./<a class="header-href" href="../featuresext.html">extensions</a>/DFM diagnostic codes
   </td>
 </tr>
 </table>
@@ -77,54 +83,53 @@
 <div class="content-body">
 <!-- [BEGIN] contents -->
 
-<h1>Detect inaccessible faces</h1>
+<h1 id="toc-cnc">DFM diagnostic codes</h1>
 
 <p>
-  Inaccessible faces are detected for milling features by raycasting the part's geometry in the specified ("approach") directions. To enable this test, pass the optional <span class="code-inline">-fx</span> argument to <span class="code-inline">cnc-check</span> or <span class="code-inline">cnc-perform</span> command in the <a href="../features/features_active-script.html">Active Script</a> session:
-</p>
-  
-<pre><code>> clear; load-part ex-milling_01.stp
-> cnc-check -fx</code></pre>
-
-<div align="center"><a href="../imgs/ext/dfm-fx_02.png"><img src="../imgs/ext/dfm-fx_02.png" width="70%"/></a></div>
-
-<p>
-  The results of this test depend on the specified inspection directions. E.g., faces may appear partially inaccessible if they are angled w.r.t. the global coordinate axes and if those axes are used for the check:
+  The following table provides all diagnostic (semantic) codes reported by DFM functions.
 </p>
 
-<div align="center"><a href="../imgs/ext/dfm-fx_01.png"><img src="../imgs/ext/dfm-fx_01.png" width="60%"/></a></div>
-
-<p>
-  The analysis begins with choosing the candidate "approach" axes.
-</p>
-
-<div align="center"><a href="../imgs/ext/dfm-fx_03.png"><img src="../imgs/ext/dfm-fx_03.png" width="40%"/></a></div>
-
-<p>
-  Like other "heavy" DFM checks, face accessibility analysis employs mesh-based representation of the part. Uniform surface paneling technique is used to obtain dense-enough triangulations.
-</p>
-
-<div align="center"><a href="../imgs/ext/dfm-fx_04.png"><img src="../imgs/ext/dfm-fx_04.png" width="40%"/></a></div>
-
-<p>
-  Each triangle is raycasted in the directions opposite to the specified "approach" directions.
-</p>
-
-<div align="center"><a href="../imgs/ext/dfm-fx_05.png"><img src="../imgs/ext/dfm-fx_05.png" width="40%"/></a></div>
-
-<p>
-  The facets that remain "hidden" from all the "approach" directions are reported. Their corresponding face IDs are reported as well. The warning code used for face accessibility issues is <span class="code-inline">cncCode_PartBody_Warn_InaccessibleFaces</span>.
-</p>
-
-<div align="center"><a href="../imgs/ext/dfm-fx_06.png"><img src="../imgs/ext/dfm-fx_06.png" width="40%"/></a></div>
-
-<!-- Optional references to Manifold Geometry -->
-<div class="mg">
-  <div class="mg-headline">Community reading:</div>
-  <ul>
-    <li class="fancy_ul_item">MG // <a href="https://quaoar.su/blog/page/a-note-on-netgen">A note on NetGen</a>.</li>
-  </ul>
-</div>
+<table align="center" style="border: 1px solid rgb(100, 100, 100);" cellpadding="5" cellspacing="0" width="100%">
+  <tr>
+    <td align="center" class="table-content-header" width="160px">
+      <span class="code-inline"><small>cncCode_PartBody_Warn_ImpossibleCorner</small></span>
+    </td>
+    <td align="center" class="table-content-block">
+      <span class="code-inline">2201</span>
+    </td>
+    <td class="table-content-block">
+      <p>
+        Sharp concave vertex.
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" class="table-content-header" width="160px">
+      <span class="code-inline"><small>cncCode_PartBody_Warn_InaccessibleFaces</small></span>
+    </td>
+    <td align="center" class="table-content-block">
+      <span class="code-inline">2202</span>
+    </td>
+    <td class="table-content-block">
+      <p>
+        A face cannot be approached because it is occluded by other model features.
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" class="table-content-header" width="160px">
+      <span class="code-inline"><small>cncCode_PartBody_Warn_InaccessibleEdges</small></span>
+    </td>
+    <td align="center" class="table-content-block">
+      <span class="code-inline">2203</span>
+    </td>
+    <td class="table-content-block">
+      <p>
+        An edge cannot be approached along its neighbor faces because it is occluded by other model features.
+      </p>
+    </td>
+  </tr>
+</table>
 
 <!-- [END] contents -->
 </div>

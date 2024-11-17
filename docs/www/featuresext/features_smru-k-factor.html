@@ -83,7 +83,11 @@
 <div class="content-body">
 <!-- [BEGIN] contents -->
 
-<h1 id="toc-scene-tree">Mastering k-factor</h1>
+<h1 id="toc-k-factor">Mastering k-factor</h1>
+
+<div class="toc-panel"><div id="toc"></div></div>
+
+<h2 id="toc-k-factor-overview">Overview</h2>
 
 <p>
   Folding causes material deformations that are all concentrated at bend features. These deformations must be taken into account when unfolding a sheet metal part. The k-factor is a fundamental coefficient used to calculate bend allowances and predict material distortion. The k-factor defines the relative position of the "neutral axis" within the material's thickness. While unstressed (and flat), the neutral axis is located at 50% of the material thickness. During bending, the neutral axis shifts to the inside of the material. The neutral axis position is determined by the bend angle, inner bend radius, and method of forming.
@@ -137,10 +141,96 @@ inspector.SetKFactorFunc(kFactorFunc);</code></pre>
   Bend allowance $b_a$ is computed as $b_a = r_n \phi$, where $r_n$ is the bend radius at the neutral axis and $\phi$ is the bend angle in radians. Here $r_n = r_i + k(r,t) \cdot t$, where $r_i$ is the inner radius of the bend. Therefore, bend allowance is nothing but the length of the circular arc at the neutral axis.
 </p>
 
+<h2 id="toc-k-factor-pass">Pass k-factor to SMRU</h2>
+
+<p>
+  To configure the k-factor used in the <span class="code-inline">sm-perform</span> command or in the <span class="code-inline">asiSheetMetalExe</span> executable, pass the <span class="code-inline">-k</span> parameter followed by the desired value.
+</p>
+
 <pre><code>> sm-perform -filename azv_clamp.stp -k 0.33</code></pre>
 
 <p>
-  To configure the k-factor used in the <span class="code-inline">sm-perform</span> command, pass the <span class="code-inline">-k</span> parameter followed by the desired value of this coefficient.
+  A simple set of materials that specify empirical laws for k-factor are included with SMRU for rapid prototyping. Our goal was to provide a means of quick testing for people who know the material of the part but are not familiar with the concept of k-factor. The following basic materials are defined with their short names:
+</p>
+
+<ol>
+  <li class="fancy_ul_item">"SOFT_ALU"</li>
+  <li class="fancy_ul_item">"HARD_ALU"</li>
+  <li class="fancy_ul_item">"STEEL"</li>
+  <li class="fancy_ul_item">"STAINLESS"</li>
+  <li class="fancy_ul_item">"BRASS"</li>
+  <li class="fancy_ul_item">"COPPER"</li>
+</ol>
+
+<p>
+  Each item from the list comes with its associated coefficients $a$ and $b$ used in the functional definition of k-factor as $k(t,r) = a \frac{r}{t} + b$. Therefore, for the fixed material and thickness, k-factor is a linear function of the inner radius $r$.
+</p>
+
+<table align="center" style="border: 1px solid rgb(100, 100, 100);" cellpadding="5" cellspacing="0" width="100%">
+  <tr>
+    <td align="center" class="table-content-header" width="160px">
+      <span class="code-inline">SOFT_ALU</span>
+    </td>
+    <td class="table-content-block">
+      <p>
+        $a = 0.185, b = 0.2875$
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" class="table-content-header" width="160px">
+      <span class="code-inline">HARD_ALU</span>
+    </td>
+    <td class="table-content-block">
+      <p>
+        $a = -0.005786, b = 0.4156$
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" class="table-content-header" width="160px">
+      <span class="code-inline">STEEL</span>
+    </td>
+    <td class="table-content-block">
+      <p>
+        $a = -0.03395, b = 0.4831$
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" class="table-content-header" width="160px">
+      <span class="code-inline">STAINLESS</span>
+    </td>
+    <td class="table-content-block">
+      <p>
+        $a = -0.068, b = 0.4980$
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" class="table-content-header" width="160px">
+      <span class="code-inline">BRASS</span>
+    </td>
+    <td class="table-content-block">
+      <p>
+        $a = -0.005786, b = 0.4156$
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" class="table-content-header" width="160px">
+      <span class="code-inline">COPPER</span>
+    </td>
+    <td class="table-content-block">
+      <p>
+        $a = -0.005786, b = 0.4156$
+      </p>
+    </td>
+  </tr>
+</table>
+
+<p>
+  The <span class="code-inline">kFactorTabularFunc</span> definition is used for those provided materials. The above technique illustrates how an embedded k-factor "calculator" that takes into account the "know how" of a particular manufacturing shop may be used with the unfolding algorithm.
 </p>
 
 <!-- Optional references to Manifold Geometry -->
