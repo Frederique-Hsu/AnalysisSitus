@@ -97,6 +97,10 @@ asiAlgo_FeatureAngleType
   const double pprec = Precision::PConfusion();
 
   V = asiAlgo_Utils::GetCommonVertex(E1, E2);
+  //
+  if ( V.IsNull() )
+    return FeatureAngleType_Undefined;
+
   TopoDS_Edge ePrev, eNext;
 
   const double p1 = BRep_Tool::Parameter(V, E1);
