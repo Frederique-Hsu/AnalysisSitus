@@ -231,6 +231,13 @@ public:
                 const t_extString&) {}
 
   virtual void
+    DRAW_POINTS(const Handle(HRealArray)&,
+                const float,
+                const bool,
+                const ActAPI_Color&,
+                const t_extString&) {}
+
+  virtual void
     DRAW_POINTS(const std::vector<gp_XYZ>&,
                 const ActAPI_Color&,
                 const t_extString&) {}
@@ -238,6 +245,13 @@ public:
   virtual void
     REDRAW_POINTS(const t_extString&,
                   const Handle(HRealArray)&,
+                  const ActAPI_Color&) {}
+
+  virtual void
+    REDRAW_POINTS(const t_extString&,
+                  const Handle(HRealArray)&,
+                  const float,
+                  const bool,
                   const ActAPI_Color&) {}
 
   virtual void
@@ -855,6 +869,20 @@ public:
 //---------------------------------------------------------------------------//
 
   void
+    DRAW_POINTS(const Handle(HRealArray)& coords,
+                const float               size,
+                const bool                labels,
+                const ActAPI_Color&       color,
+                const t_extString&        name = "")
+  {
+    if ( m_iv.IsNull() ) return;
+    //
+    m_iv->DRAW_POINTS(coords, size, labels, color, name);
+  }
+
+//---------------------------------------------------------------------------//
+
+  void
     DRAW_POINTS(const std::vector<gp_XYZ>& pts,
                 const ActAPI_Color&        color,
                 const t_extString&         name = "")
@@ -874,6 +902,20 @@ public:
     if ( m_iv.IsNull() ) return;
     //
     m_iv->REDRAW_POINTS(name, coords, color);
+  }
+
+//---------------------------------------------------------------------------//
+
+  void
+    REDRAW_POINTS(const t_extString&        name,
+                  const Handle(HRealArray)& coords,
+                  const float               size,
+                  const bool                labels,
+                  const ActAPI_Color&       color)
+  {
+    if ( m_iv.IsNull() ) return;
+    //
+    m_iv->REDRAW_POINTS(name, coords, size, labels, color);
   }
 
 //---------------------------------------------------------------------------//

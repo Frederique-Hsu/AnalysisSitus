@@ -62,6 +62,9 @@
 #include <asiData_FeaturesNode.h>
 #include <asiData_MeshNormsNode.h>
 #include <asiData_MetadataNode.h>
+#include <asiData_Nesting3dContainerNode.h>
+#include <asiData_Nesting3dCursorNode.h>
+#include <asiData_Nesting3dNode.h>
 #include <asiData_OctreeNode.h>
 #include <asiData_Partition.h>
 #include <asiData_PartNode.h>
@@ -553,6 +556,24 @@ public:
     return Handle(asiData_Partition<asiData_ClearanceNode>)::DownCast( this->Partition(Partition_Clearance) );
   }
 
+  //! \return Partition of Nesting 3D Nodes.
+  Handle(asiData_Partition<asiData_Nesting3dNode>) GetNesting3dPartition() const
+  {
+    return Handle(asiData_Partition<asiData_Nesting3dNode>)::DownCast( this->Partition(Partition_Nesting3d) );
+  }
+
+  //! \return Partition of Nesting 3D Container Nodes.
+  Handle(asiData_Partition<asiData_Nesting3dContainerNode>) GetNesting3dContainerPartition() const
+  {
+    return Handle(asiData_Partition<asiData_Nesting3dContainerNode>)::DownCast( this->Partition(Partition_Nesting3dContainer) );
+  }
+
+  //! \return Partition of Nesting 3D Cursor Nodes.
+  Handle(asiData_Partition<asiData_Nesting3dCursorNode>) GetNesting3dCursorPartition() const
+  {
+    return Handle(asiData_Partition<asiData_Nesting3dCursorNode>)::DownCast( this->Partition(Partition_Nesting3dCursor) );
+  }
+
 protected:
 
   asiEngine_EXPORT virtual void
@@ -656,6 +677,10 @@ protected:
     Partition_SurfDeviation,
     Partition_Thickness,
     Partition_Clearance,
+  //---------------------------------------------------------------------------
+    Partition_Nesting3d,
+    Partition_Nesting3dContainer,
+    Partition_Nesting3dCursor,
   //---------------------------------------------------------------------------
     Partition_LAST
   };

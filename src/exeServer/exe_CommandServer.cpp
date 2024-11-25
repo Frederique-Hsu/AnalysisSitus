@@ -106,6 +106,7 @@ void exe_CommandServer::onStarted()
   EXE_LOAD_MODULE("cmdRE")
   EXE_LOAD_MODULE("cmdDDF")
   EXE_LOAD_MODULE("cmdAsm")
+  EXE_LOAD_MODULE("cmdNesting")
 
   //---------------------------------------------------------------------------
   // Load plugins

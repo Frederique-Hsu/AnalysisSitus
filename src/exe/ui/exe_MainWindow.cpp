@@ -490,6 +490,7 @@ void exe_MainWindow::createDockWindows()
   EXE_LOAD_MODULE("cmdDDF")
   EXE_LOAD_MODULE("cmdAsm")
   EXE_LOAD_MODULE("cmdTest")
+  EXE_LOAD_MODULE("cmdNesting")
   //
 #ifdef USE_MOBIUS
   EXE_LOAD_MODULE("cmdMobius")

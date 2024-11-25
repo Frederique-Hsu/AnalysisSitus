@@ -128,6 +128,11 @@ public:
   asiUI_EXPORT virtual int
     CurrentProgress() const;
 
+  //! Callback to let the algorithmic thread pause so that
+  //! UI events can be processed.
+  asiUI_EXPORT virtual void
+    ProcessEvents() const;
+
 // Methods to be used by parallel algorithms (should be thread-safe):
 public:
 

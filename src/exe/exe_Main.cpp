@@ -71,6 +71,7 @@
 #include <asiVisu_IVTextItemPrs.h>
 #include <asiVisu_IVTopoItemPrs.h>
 #include <asiVisu_IVVectorFieldPrs.h>
+#include <asiVisu_Nesting3dCursorPrs.h>
 #include <asiVisu_OctreePrs.h>
 #include <asiVisu_PartPrs.h>
 #include <asiVisu_ReCoedgePrs.h>
@@ -225,6 +226,7 @@ int main(int argc, char** argv)
   REGISTER_PRESENTATION(asiVisu_ReVertexPrs)
   REGISTER_PRESENTATION(asiVisu_ThicknessPrs)
   REGISTER_PRESENTATION(asiVisu_ClearancePrs)
+  REGISTER_PRESENTATION(asiVisu_Nesting3dCursorPrs)
 
   // Imperative viewer.
   REGISTER_PRESENTATION(asiVisu_IVAxesPrs)
@@ -437,6 +439,7 @@ int main(int argc, char** argv)
     EXE_LOAD_MODULE(cf, "cmdDDF")
     EXE_LOAD_MODULE(cf, "cmdAsm")
     EXE_LOAD_MODULE(cf, "cmdTest")
+    EXE_LOAD_MODULE(cf, "cmdNesting")
     //
 #ifdef USE_MOBIUS
     EXE_LOAD_MODULE(cf, "cmdMobius")

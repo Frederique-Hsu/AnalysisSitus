@@ -15,6 +15,7 @@ set (H_FILES
   asiEngine_IV.h
   asiEngine_IVTopoItemSTEPWriterInput.h
   asiEngine_Model.h
+  asiEngine_Nesting3d.h
   asiEngine_Octree.h
   asiEngine_Part.h
   asiEngine_PatchJointAdaptor.h
@@ -36,6 +37,7 @@ set (CPP_FILES
   asiEngine_IV.cpp
   asiEngine_IVTopoItemSTEPWriterInput.cpp
   asiEngine_Model.cpp
+  asiEngine_Nesting3d.cpp
   asiEngine_Octree.cpp
   asiEngine_Part.cpp
   asiEngine_PatchJointAdaptor.cpp

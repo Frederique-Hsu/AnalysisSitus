@@ -31,6 +31,9 @@
 // Own include
 #include <asiUI_ProgressNotifier.h>
 
+// Qt includes
+#include <QCoreApplication>
+
 //! ctor.
 asiUI_ProgressNotifier::asiUI_ProgressNotifier()
 {
@@ -160,15 +163,18 @@ bool asiUI_ProgressNotifier::IsFailed()
   return (m_status == Progress_Failed);
 }
 
-/* =========================================================================
- *  Section: Thread-safe methods
- * ========================================================================= */
-
 //! \return current progress.
 int asiUI_ProgressNotifier::CurrentProgress() const
 {
   return m_iProgress;
 }
+
+//! Lets the UI thread process all pending events.
+void asiUI_ProgressNotifier::ProcessEvents() const
+{
+  QCoreApplication::processEvents();
+}
+
 
 //! Use this method to report the next progress value.
 //! \param stepProgress [in] next progress value.

@@ -189,6 +189,25 @@ set (misc_CPP_FILES
 )
 
 #------------------------------------------------------------------------------
+# Nesting
+#------------------------------------------------------------------------------
+
+set (nesting_H_FILES
+  nesting/asiData_Nesting3dContainerNode.h
+  nesting/asiData_Nesting3dCursorNode.h
+  nesting/asiData_Nesting3dNbhAttr.h
+  nesting/asiData_Nesting3dNbhParameter.h
+  nesting/asiData_Nesting3dNode.h
+)
+set (nesting_CPP_FILES
+  nesting/asiData_Nesting3dContainerNode.cpp
+  nesting/asiData_Nesting3dCursorNode.cpp
+  nesting/asiData_Nesting3dNbhAttr.cpp
+  nesting/asiData_Nesting3dNbhParameter.cpp
+  nesting/asiData_Nesting3dNode.cpp
+)
+
+#------------------------------------------------------------------------------
 # RE
 #------------------------------------------------------------------------------
 
@@ -314,6 +333,14 @@ foreach (FILE ${misc_CPP_FILES})
   source_group ("Source Files\\Misc" FILES "${FILE}")
 endforeach (FILE)
 
+foreach (FILE ${nesting_H_FILES})
+  source_group ("Header Files\\Nesting" FILES "${FILE}")
+endforeach (FILE)
+
+foreach (FILE ${nesting_CPP_FILES})
+  source_group ("Source Files\\Nesting" FILES "${FILE}")
+endforeach (FILE)
+
 foreach (FILE ${re_H_FILES})
   source_group ("Header Files\\RE" FILES "${FILE}")
 endforeach (FILE)
@@ -332,7 +359,8 @@ set (asiData_include_dir_loc "${CMAKE_CURRENT_SOURCE_DIR};\
   ${CMAKE_CURRENT_SOURCE_DIR}/mesh;\
   ${CMAKE_CURRENT_SOURCE_DIR}/iv;\
   ${CMAKE_CURRENT_SOURCE_DIR}/re;\
-  ${CMAKE_CURRENT_SOURCE_DIR}/misc;")
+  ${CMAKE_CURRENT_SOURCE_DIR}/misc;\
+  ${CMAKE_CURRENT_SOURCE_DIR}/nesting;")
 #
 set (asiData_include_dir ${asiData_include_dir_loc} PARENT_SCOPE)
 
@@ -361,12 +389,13 @@ COPY_RESOURCES_TO_BINARY_DIRS(resources/Resources)
 #------------------------------------------------------------------------------
 
 add_library (asiData SHARED
-  ${H_FILES}      ${CPP_FILES}
-  ${part_H_FILES} ${part_CPP_FILES}
-  ${mesh_H_FILES} ${mesh_CPP_FILES}
-  ${iv_H_FILES}   ${iv_CPP_FILES}
-  ${re_H_FILES}   ${re_CPP_FILES}
-  ${misc_H_FILES} ${misc_CPP_FILES}
+  ${H_FILES}         ${CPP_FILES}
+  ${part_H_FILES}    ${part_CPP_FILES}
+  ${mesh_H_FILES}    ${mesh_CPP_FILES}
+  ${iv_H_FILES}      ${iv_CPP_FILES}
+  ${re_H_FILES}      ${re_CPP_FILES}
+  ${misc_H_FILES}    ${misc_CPP_FILES}
+  ${nesting_H_FILES} ${nesting_CPP_FILES}
 )
 
 #------------------------------------------------------------------------------
@@ -449,12 +478,13 @@ if (MSVC)
   install (FILES ${PROJECT_BINARY_DIR}/../../${PLATFORM}${COMPILER_BITNESS}/${COMPILER}/bind/asiData.pdb DESTINATION ${SDK_INSTALL_SUBDIR}bind CONFIGURATIONS Debug)
 endif()
 
-install (FILES ${H_FILES}      DESTINATION ${SDK_INSTALL_SUBDIR}include)
-install (FILES ${part_H_FILES} DESTINATION ${SDK_INSTALL_SUBDIR}include)
-install (FILES ${mesh_H_FILES} DESTINATION ${SDK_INSTALL_SUBDIR}include)
-install (FILES ${iv_H_FILES}   DESTINATION ${SDK_INSTALL_SUBDIR}include)
-install (FILES ${re_H_FILES}   DESTINATION ${SDK_INSTALL_SUBDIR}include)
-install (FILES ${misc_H_FILES} DESTINATION ${SDK_INSTALL_SUBDIR}include)
+install (FILES ${H_FILES}         DESTINATION ${SDK_INSTALL_SUBDIR}include)
+install (FILES ${part_H_FILES}    DESTINATION ${SDK_INSTALL_SUBDIR}include)
+install (FILES ${mesh_H_FILES}    DESTINATION ${SDK_INSTALL_SUBDIR}include)
+install (FILES ${iv_H_FILES}      DESTINATION ${SDK_INSTALL_SUBDIR}include)
+install (FILES ${re_H_FILES}      DESTINATION ${SDK_INSTALL_SUBDIR}include)
+install (FILES ${misc_H_FILES}    DESTINATION ${SDK_INSTALL_SUBDIR}include)
+install (FILES ${nesting_H_FILES} DESTINATION ${SDK_INSTALL_SUBDIR}include)
 
 install (FILES resources/Plugin    CONFIGURATIONS Release DESTINATION bin/resources)
 install (FILES resources/Resources CONFIGURATIONS Release DESTINATION bin/resources)

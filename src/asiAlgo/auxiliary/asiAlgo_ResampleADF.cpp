@@ -51,11 +51,11 @@ class ParallelEvalFunctor
 public:
 
   //! Ctor initializing the functor.
-  ParallelEvalFunctor(poly_SVO*                             pSVO,
-                      const T                               xStep,
-                      const T                               yStep,
-                      const T                               zStep,
-                      const Handle(asiAlgo_UniformGrid<T>)& grid)
+  ParallelEvalFunctor(poly_SVO*                                                               pSVO,
+                      const T                                                                 xStep,
+                      const T                                                                 yStep,
+                      const T                                                                 zStep,
+                      const opencascade::handle< asiAlgo_UniformGrid<T, asiAlgo_FaceProbe> >& grid)
   {
     m_pSVO = pSVO;
 
@@ -101,7 +101,7 @@ public:
           const T s = (T) m_pSVO->Eval( t_xyz(x, y, z), false );
 
           // Put in the grid.
-          m_grid->pArray[i][j][k] = s;
+          m_grid->pArray[i][j][k].s = s;
         }
       }
     }
@@ -135,7 +135,7 @@ private:
   T m_fXMin, m_fYMin, m_fZMin;
 
   /* The three-dimensional array of scalars to populate. */
-  Handle(asiAlgo_UniformGrid<T>) m_grid;
+  opencascade::handle< asiAlgo_UniformGrid<T, asiAlgo_FaceProbe> > m_grid;
 
 };
 

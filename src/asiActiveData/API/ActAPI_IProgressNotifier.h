@@ -157,6 +157,11 @@ public:
   virtual Standard_Integer
     CurrentProgress() const = 0;
 
+  //! Callback to let the algorithmic thread pause so that
+  //! UI events can be processed.
+  virtual void
+    ProcessEvents() const = 0;
+
 // Tread-safe methods to be used by algorithms:
 public:
 
@@ -345,6 +350,13 @@ public:
       return m_PNotifier->CurrentProgress();
 
     return 0;
+  }
+
+  //! Null-safe accessor for the `ProcessEvents()` method.
+  void ProcessEvents() const
+  {
+    if ( !m_PNotifier.IsNull() )
+      m_PNotifier->ProcessEvents();
   }
 
   //! Accessor for the underlying Progress Notifier.

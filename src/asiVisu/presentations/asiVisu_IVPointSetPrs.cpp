@@ -246,6 +246,9 @@ void asiVisu_IVPointSetPrs::afterInitPipelines()
 
 void asiVisu_IVPointSetPrs::renderPipelines(vtkRenderer* renderer) const
 {
+  Handle(asiData_IVPointSetNode)
+    pointsNode = Handle(asiData_IVPointSetNode)::DownCast( this->GetNode() );
+
   /* Take care of selection pipelines */
 
   Handle(asiVisu_HPipelineList) detectPls = this->GetDetectionPipelineList();
@@ -264,16 +267,23 @@ void asiVisu_IVPointSetPrs::renderPipelines(vtkRenderer* renderer) const
   Handle(asiVisu_IVPointSetDataProvider)
     DP = Handle(asiVisu_IVPointSetDataProvider)::DownCast( this->dataProvider(PrimaryPipeline_Main) );
 
-  if ( DP->GetPoints()->GetNumberOfElements() > 1 )
+  if ( pointsNode->HasLabel() )
   {
-    if ( !m_textWidget->GetCurrentRenderer() )
+    if ( DP->GetPoints()->GetNumberOfElements() > 1 )
     {
-      m_textWidget->SetInteractor      ( renderer->GetRenderWindow()->GetInteractor() );
-      m_textWidget->SetDefaultRenderer ( renderer );
-      m_textWidget->SetCurrentRenderer ( renderer );
-      m_textWidget->On                 ( );
-      m_textWidget->ReleaseFocus       ( );
+      if ( !m_textWidget->GetCurrentRenderer() )
+      {
+        m_textWidget->SetInteractor      ( renderer->GetRenderWindow()->GetInteractor() );
+        m_textWidget->SetDefaultRenderer ( renderer );
+        m_textWidget->SetCurrentRenderer ( renderer );
+        m_textWidget->On                 ( );
+        m_textWidget->ReleaseFocus       ( );
+      }
     }
+  }
+  else
+  {
+    m_textWidget->Off();
   }
 }
 

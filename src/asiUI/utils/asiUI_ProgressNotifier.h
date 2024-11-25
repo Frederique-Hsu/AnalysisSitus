@@ -107,6 +107,9 @@ public:
   asiUI_EXPORT virtual bool
     IsFailed();
 
+  asiUI_EXPORT virtual void
+    ProcessEvents() const;
+
 public:
 
   //! \return internal algorithmic Logger instance.

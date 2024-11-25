@@ -796,6 +796,12 @@ public:
     return (Abs(d) < tol);
   }
 
+  bool IsInOn(const gp_XYZ& pt, const double tol)
+  {
+    const double d = m_dist->Eval( pt.X(), pt.Y(), pt.Z() );
+    return (d < 0) && (Abs(d) > tol) || (Abs(d) < tol);
+  }
+
   bool IsOut(const gp_XYZ& pt, const double tol)
   {
     const double d = m_dist->Eval( pt.X(), pt.Y(), pt.Z() );

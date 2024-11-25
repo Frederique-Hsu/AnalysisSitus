@@ -36,6 +36,8 @@
 #include <asiUI_ObjectBrowser.h>
 
 // asiVisu includes
+#include <asiVisu_MeshContourPipeline.h>
+#include <asiVisu_MeshPipeline.h>
 #include <asiVisu_PrsManager.h>
 
 // asiEngine includes
@@ -44,6 +46,7 @@
 
 // asiVisu includes
 #include <asiVisu_IVPointSetPrs.h>
+#include <asiVisu_IVTessItemPrs.h>
 #include <asiVisu_IVTopoItemPrs.h>
 #include <asiVisu_PointsPipeline.h>
 #include <asiVisu_ShapePipeline.h>
@@ -63,6 +66,11 @@
 #include <vtkProperty.h>
 #include <vtkTextActor.h>
 #include <vtkTextProperty.h>
+#pragma warning(pop)
+
+// Qt includes
+#pragma warning(push, 0)
+#include <QCoreApplication>
 #pragma warning(pop)
 
 //---------------------------------------------------------------------------//
@@ -466,7 +474,7 @@ void asiUI_IV::REDRAW_POINT(const t_extString&  name,
   coords->ChangeValue(1) = coord.Y();
   coords->ChangeValue(2) = coord.Z();
 
-  this->draw_points(coords, color, name, false);
+  this->draw_points(coords, 8, false, color, name, false);
 }
 
 //---------------------------------------------------------------------------//
@@ -484,7 +492,18 @@ void asiUI_IV::DRAW_POINTS(const Handle(HRealArray)& coords,
                            const ActAPI_Color&       color,
                            const t_extString&        name)
 {
-  this->draw_points(coords, color, name, true);
+  this->draw_points(coords, 8, false, color, name, true);
+}
+
+//---------------------------------------------------------------------------//
+
+void asiUI_IV::DRAW_POINTS(const Handle(HRealArray)& coords,
+                           const float               size,
+                           const bool                labels,
+                           const ActAPI_Color&       color,
+                           const t_extString&        name)
+{
+  this->draw_points(coords, size, labels, color, name, true);
 }
 
 //---------------------------------------------------------------------------//
@@ -502,7 +521,18 @@ void asiUI_IV::REDRAW_POINTS(const t_extString&        name,
                              const Handle(HRealArray)& coords,
                              const ActAPI_Color&       color)
 {
-  this->draw_points(coords, color, name, false);
+  this->draw_points(coords, 8, false, color, name, false);
+}
+
+//---------------------------------------------------------------------------//
+
+void asiUI_IV::REDRAW_POINTS(const t_extString&        name,
+                             const Handle(HRealArray)& coords,
+                             const float               size,
+                             const bool                labels,
+                             const ActAPI_Color&       color)
+{
+  this->draw_points(coords, size, labels, color, name, false);
 }
 
 //---------------------------------------------------------------------------//
@@ -1467,12 +1497,26 @@ void asiUI_IV::visualize(const bool                  is2d,
 
       if ( edgeWidth )
         pl->Actor()->GetProperty()->SetLineWidth(edgeWidth);
+
+      // Hide links for meshes (for the sake of better FPS).
+      if ( prs->IsKind( STANDARD_TYPE(asiVisu_IVTessItemPrs) ) )
+      {
+        Handle(asiVisu_IVTessItemPrs)
+          tess_prs = Handle(asiVisu_IVTessItemPrs)::DownCast(prs);
+        //
+        Handle(asiVisu_MeshContourPipeline)
+          contour_pl = Handle(asiVisu_MeshContourPipeline)::DownCast( tess_prs->GetPipeline(asiVisu_IVTessItemPrs::Pipeline_MeshContour) );
+        //
+        contour_pl->Actor()->SetVisibility(false);
+      }
     }
   }
 
   // Visualize (trihedron is not adjusted for better performance).
   if ( m_bVisuOn )
     this->prsManager(is2d)->Actualize(node.get(), false, false, m_bRepaintOn, false);
+
+  QCoreApplication::processEvents(QEventLoop::AllEvents, 10000);
 }
 
 //---------------------------------------------------------------------------//
@@ -1536,6 +1580,8 @@ void asiUI_IV::draw_point(const gp_XY&        coord,
 //---------------------------------------------------------------------------//
 
 void asiUI_IV::draw_points(const Handle(HRealArray)& coords,
+                           const float               size,
+                           const bool                labels,
                            const ActAPI_Color&       color,
                            const t_extString&        name,
                            const bool                newPrimitive)
@@ -1574,10 +1620,11 @@ void asiUI_IV::draw_points(const Handle(HRealArray)& coords,
     m_lastObj = points_n;
   }
 
-  // Update persistent color.
-  points_n->SetHasColor(true);
-  points_n->SetColor(ActAPI_Color::ColorToInt( color.Red(), color.Green(), color.Blue() ) );
-  points_n->SetPointSize(8);
+  // Update persistent props.
+  points_n->SetHasColor  (true);
+  points_n->SetColor     (ActAPI_Color::ColorToInt( color.Red(), color.Green(), color.Blue() ) );
+  points_n->SetPointSize (size);
+  points_n->SetHasLabel  (labels);
 
   // Commit transaction.
   if ( isTx )
@@ -1602,7 +1649,7 @@ void asiUI_IV::draw_points(const std::vector<gp_XYZ>& pts,
   for ( const auto& pt : pts )
     ptsCloud->AddElement(pt);
 
-  this->draw_points(ptsCloud->GetCoordsArray(), color, name, newPrimitive);
+  this->draw_points(ptsCloud->GetCoordsArray(), 8, false, color, name, newPrimitive);
 }
 
 //---------------------------------------------------------------------------//

@@ -167,6 +167,13 @@ public:
                 const t_extString&) override;
 
   asiUI_EXPORT virtual void
+    DRAW_POINTS(const Handle(HRealArray)&,
+                const float,
+                const bool,
+                const ActAPI_Color&,
+                const t_extString&) override;
+
+  asiUI_EXPORT virtual void
     DRAW_POINTS(const std::vector<gp_XYZ>&,
                 const ActAPI_Color&,
                 const t_extString&) override;
@@ -174,6 +181,13 @@ public:
   asiUI_EXPORT virtual void
     REDRAW_POINTS(const t_extString&,
                   const Handle(HRealArray)&,
+                  const ActAPI_Color&) override;
+
+  asiUI_EXPORT virtual void
+    REDRAW_POINTS(const t_extString&,
+                  const Handle(HRealArray)&,
+                  const float,
+                  const bool,
                   const ActAPI_Color&) override;
 
   asiUI_EXPORT virtual void
@@ -690,6 +704,8 @@ protected:
 
   asiUI_EXPORT void
     draw_points(const Handle(HRealArray)& coords,
+                const float               size,
+                const bool                labels,
                 const ActAPI_Color&       color,
                 const t_extString&        name,
                 const bool                newPrimitive);

@@ -77,6 +77,7 @@ set (pipelines_H_FILES
   pipelines/asiVisu_MeshNScalarPipeline.h
   pipelines/asiVisu_MeshPipeline.h
   pipelines/asiVisu_MeshPipelineBase.h
+  pipelines/asiVisu_Nesting3dNbhPipeline.h
   pipelines/asiVisu_OctreePipeline.h
   pipelines/asiVisu_OctreeVectorsPipeline.h
   pipelines/asiVisu_PartEdgesPipeline.h
@@ -125,6 +126,7 @@ set (pipelines_CPP_FILES
   pipelines/asiVisu_MeshNScalarPipeline.cpp
   pipelines/asiVisu_MeshPipeline.cpp
   pipelines/asiVisu_MeshPipelineBase.cpp
+  pipelines/asiVisu_Nesting3dNbhPipeline.cpp
   pipelines/asiVisu_OctreePipeline.cpp
   pipelines/asiVisu_OctreeVectorsPipeline.cpp
   pipelines/asiVisu_PartEdgesPipeline.cpp
@@ -174,6 +176,7 @@ set (presentations_H_FILES
   presentations/asiVisu_IVTextItemPrs.h
   presentations/asiVisu_IVTopoItemPrs.h
   presentations/asiVisu_IVVectorFieldPrs.h
+  presentations/asiVisu_Nesting3dCursorPrs.h
   presentations/asiVisu_OctreePrs.h
   presentations/asiVisu_PartPrs.h
   presentations/asiVisu_Prs.h
@@ -216,6 +219,7 @@ set (presentations_CPP_FILES
   presentations/asiVisu_IVTextItemPrs.cpp
   presentations/asiVisu_IVTopoItemPrs.cpp
   presentations/asiVisu_IVVectorFieldPrs.cpp
+  presentations/asiVisu_Nesting3dCursorPrs.cpp
   presentations/asiVisu_OctreePrs.cpp
   presentations/asiVisu_PartPrs.cpp
   presentations/asiVisu_Prs.cpp
@@ -269,6 +273,7 @@ set (providers_H_FILES
   providers/asiVisu_MeshDataProvider.h
   providers/asiVisu_MeshEScalarDataProvider.h
   providers/asiVisu_MeshNScalarDataProvider.h
+  providers/asiVisu_Nesting3dNbhDataProvider.h
   providers/asiVisu_OctreeDataProvider.h
   providers/asiVisu_PartDataProvider.h
   providers/asiVisu_PointsDataProvider.h
@@ -381,6 +386,7 @@ set (sources_H_FILES
   sources/asiVisu_FuncUnivariateSource.h
   sources/asiVisu_Grid2dSource.h
   sources/asiVisu_MeshSource.h
+  sources/asiVisu_Nesting3dNbhSource.h
   sources/asiVisu_OctreeSource.h
   sources/asiVisu_PCurveSource.h
   sources/asiVisu_PDomainSource.h
@@ -414,6 +420,7 @@ set (sources_CPP_FILES
   sources/asiVisu_FuncUnivariateSource.cpp
   sources/asiVisu_Grid2dSource.cpp
   sources/asiVisu_MeshSource.cpp
+  sources/asiVisu_Nesting3dNbhSource.cpp
   sources/asiVisu_OctreeSource.cpp
   sources/asiVisu_PCurveSource.cpp
   sources/asiVisu_PDomainSource.cpp

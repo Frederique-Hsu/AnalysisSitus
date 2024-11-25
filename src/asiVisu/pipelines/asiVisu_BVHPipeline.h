@@ -59,7 +59,7 @@ public:
 
 public:
 
-  //! \return octree source.
+  //! \return BVH visualization source.
   const vtkSmartPointer<asiVisu_BVHSource>& GetSource() const
   {
     return m_source;
