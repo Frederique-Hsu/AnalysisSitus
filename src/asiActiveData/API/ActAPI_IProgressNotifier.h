@@ -157,10 +157,12 @@ public:
   virtual Standard_Integer
     CurrentProgress() const = 0;
 
+public:
+
   //! Callback to let the algorithmic thread pause so that
   //! UI events can be processed.
   virtual void
-    ProcessEvents() const = 0;
+    ProcessEvents() const {}
 
 // Tread-safe methods to be used by algorithms:
 public:
