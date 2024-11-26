@@ -49,6 +49,7 @@ asiData_IVPointSetNode::asiData_IVPointSetNode() : ActData_BaseNode()
   REGISTER_PARAMETER(Bool,      PID_HasColor);
   REGISTER_PARAMETER(Int,       PID_Color);
   REGISTER_PARAMETER(Real,      PID_PointSize);
+  REGISTER_PARAMETER(Bool,      PID_HasLabel);
 }
 
 //! Returns new DETACHED instance of the Node ensuring its correct
@@ -74,6 +75,7 @@ void asiData_IVPointSetNode::Init()
   this->SetPointSize (4);
   this->SetHasColor  (false);
   this->SetColor     (16711680);
+  this->SetHasLabel  (false);
 }
 
 //-----------------------------------------------------------------------------
@@ -170,4 +172,19 @@ double asiData_IVPointSetNode::GetPointSize() const
 void asiData_IVPointSetNode::SetPointSize(const double sz)
 {
   ActParamTool::AsReal( this->Parameter(PID_PointSize) )->SetValue(sz);
+}
+
+//! Sets the Boolean value indicating whether the point cloud is labeled.
+//! \param[in] hasLabel value to set.
+void asiData_IVPointSetNode::SetHasLabel(const bool hasLabel)
+{
+  ActParamTool::AsBool( this->Parameter(PID_HasLabel) )->SetValue(hasLabel);
+}
+
+//! Accessor for the value of the Boolean Parameter indicating whether the
+//! point cloud is labeled.
+//! \return true/false.
+bool asiData_IVPointSetNode::HasLabel() const
+{
+  return ActParamTool::AsBool( this->Parameter(PID_HasLabel) )->GetValue();
 }

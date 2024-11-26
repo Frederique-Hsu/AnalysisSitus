@@ -171,13 +171,18 @@ bool asiAlgo_ProgressNotifier::IsFailed()
   return (m_status == Progress_Failed);
 }
 
-/* =========================================================================
- *  Section: Thread-safe methods
- * ========================================================================= */
+//-----------------------------------------------------------------------------
 
 int asiAlgo_ProgressNotifier::CurrentProgress() const
 {
   return m_iProgress;
+}
+
+//-----------------------------------------------------------------------------
+
+void asiAlgo_ProgressNotifier::ProcessEvents() const
+{
+  // Do nothing.
 }
 
 //-----------------------------------------------------------------------------

@@ -80,6 +80,7 @@ set (aux_H_FILES
   auxiliary/asiAlgo_BVHBuilderType.h
   auxiliary/asiAlgo_BVHFacets.h
   auxiliary/asiAlgo_BVHIterator.h
+  auxiliary/asiAlgo_BVHIterator2.h
   auxiliary/asiAlgo_CheckClearance.h
   auxiliary/asiAlgo_CheckThickness.h
   auxiliary/asiAlgo_CheckToler.h
@@ -141,6 +142,7 @@ set (aux_CPP_FILES
   auxiliary/asiAlgo_BVHAlgo.cpp
   auxiliary/asiAlgo_BVHFacets.cpp
   auxiliary/asiAlgo_BVHIterator.cpp
+  auxiliary/asiAlgo_BVHIterator2.cpp
   auxiliary/asiAlgo_CheckClearance.cpp
   auxiliary/asiAlgo_CheckThickness.cpp
   auxiliary/asiAlgo_CheckToler.cpp
@@ -535,6 +537,19 @@ if (USE_MOBIUS)
 endif()
 
 #------------------------------------------------------------------------------
+# Collision detection
+#------------------------------------------------------------------------------
+
+set (collision_H_FILES
+  collision/asiAlgo_CollideUtils.h
+  collision/asiAlgo_IntersectMeshMesh.h
+)
+set (collision_CPP_FILES
+  collision/asiAlgo_CollideUtils.cpp
+  collision/asiAlgo_IntersectMeshMesh.cpp
+)
+
+#------------------------------------------------------------------------------
 # Optimization
 #------------------------------------------------------------------------------
 
@@ -819,6 +834,14 @@ foreach (FILE ${canrec_CPP_FILES})
   source_group ("Source Files\\Canonical" FILES "${FILE}")
 endforeach (FILE)
 
+foreach (FILE ${collision_H_FILES})
+  source_group ("Header Files\\Collision" FILES "${FILE}")
+endforeach (FILE)
+
+foreach (FILE ${collision_CPP_FILES})
+  source_group ("Source Files\\Collision" FILES "${FILE}")
+endforeach (FILE)
+
 foreach (FILE ${dict_H_FILES})
   source_group ("Header Files\\Dictionary" FILES "${FILE}")
 endforeach (FILE)
@@ -925,6 +948,7 @@ set (asiAlgo_include_dir_loc "${CMAKE_CURRENT_SOURCE_DIR};\
   ${CMAKE_CURRENT_SOURCE_DIR}/auxiliary;\
   ${CMAKE_CURRENT_SOURCE_DIR}/blends;\
   ${CMAKE_CURRENT_SOURCE_DIR}/canrec;\
+  ${CMAKE_CURRENT_SOURCE_DIR}/collision;\
   ${CMAKE_CURRENT_SOURCE_DIR}/discr;\
   ${CMAKE_CURRENT_SOURCE_DIR}/dict;\
   ${CMAKE_CURRENT_SOURCE_DIR}/dict/salome;\
@@ -988,6 +1012,7 @@ add_library (asiAlgo SHARED
   ${aux_H_FILES}         ${aux_CPP_FILES}
   ${blends_H_FILES}      ${blends_CPP_FILES}
   ${canrec_H_FILES}      ${canrec_CPP_FILES}
+  ${collision_H_FILES}   ${collision_CPP_FILES}
   ${dict_H_FILES}        ${dict_CPP_FILES}
   ${dict_salome_H_FILES} ${dict_salome_CPP_FILES}
   ${editing_H_FILES}     ${editing_CPP_FILES}
@@ -1115,6 +1140,7 @@ install (FILES ${appsurf_H_FILES}     DESTINATION ${SDK_INSTALL_SUBDIR}include)
 install (FILES ${aux_H_FILES}         DESTINATION ${SDK_INSTALL_SUBDIR}include)
 install (FILES ${blends_H_FILES}      DESTINATION ${SDK_INSTALL_SUBDIR}include)
 install (FILES ${canrec_H_FILES}      DESTINATION ${SDK_INSTALL_SUBDIR}include)
+install (FILES ${collision_H_FILES}   DESTINATION ${SDK_INSTALL_SUBDIR}include)
 install (FILES ${dict_H_FILES}        DESTINATION ${SDK_INSTALL_SUBDIR}include)
 install (FILES ${dict_salome_H_FILES} DESTINATION ${SDK_INSTALL_SUBDIR}include)
 install (FILES ${editing_H_FILES}     DESTINATION ${SDK_INSTALL_SUBDIR}include)

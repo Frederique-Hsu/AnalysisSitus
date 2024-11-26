@@ -66,6 +66,7 @@ public:
     PID_HasColor,     //!< Indicates whether the Color Parameter is active.
     PID_Color,        //!< Color.
     PID_PointSize,    //!< Point size for visualization.
+    PID_HasLabel,     //!< Indicates whether to show a label.
   //------------------//
     PID_Last = PID_Name + ActData_BaseNode::RESERVED_PARAM_RANGE
   };
@@ -116,6 +117,12 @@ public:
 
   asiData_EXPORT void
     SetPointSize(const double sz);
+
+  asiData_EXPORT void
+    SetHasLabel(const bool);
+
+  asiData_EXPORT bool
+    HasLabel() const;
 
 // Initialization:
 public:

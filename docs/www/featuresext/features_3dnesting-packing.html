@@ -1,0 +1,188 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Analysis Situs: 3D packing</title>
+  <link rel="shortcut icon" type="image/png" href="../imgs/favicon.png"/>
+  <link rel="stylesheet" type="text/css" href="../css/situ-main-style.css">
+
+  <!-- [begin] Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-112292727-2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-112292727-2');
+  </script>
+  <!-- [end] Google Analytics -->
+  
+  <!--
+    Quick navigation script. Use a div with "toc-panel" class having a
+    nested div with "toc" id to place the navigation panel.
+  -->
+  <script src="../js/jquery-3.5.1.min.js"></script>
+  <script src="../js/toc.js"></script>
+
+  <!-- [begin] Code highlight -->
+  <link rel="stylesheet" href="../css/highlight.min.css">
+  <script src="../js/highlight.min.js"></script>
+  <!-- [end] Code highlight -->
+
+  <!-- [begin] Pseudocode -->
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS_CHTML"
+          integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw="
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [['$','$'], ['\\(','\\)']],
+            displayMath: [['$$','$$'], ['\\[','\\]']],
+            processEscapes: true,
+            processEnvironments: true,
+        }
+    });
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.js"></script>
+  <!-- [end] Pseudocode -->
+
+</head>
+<body>
+
+<a name="top"></a> <!-- anchor for 'back to top' link -->
+<table width="100%"><tr><td>
+<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+  <td align="left" class="header">
+    <span class="header-logo"><a href="../index.html" class="header-href">Analysis&nbsp;Situs</a></span>
+    &nbsp;
+    ./<a class="header-href" href="../featuresext.html">extensions</a>/3D packing
+  </td>
+</tr>
+</table>
+<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+  <td class="header-menu"><a href='https://analysissitus.org/forum/index.php?resources/analysis-situs.6/'>Download</a></td>
+  <td class="header-menu">
+    <div class="dropdown">
+      <button class="dropbtn">Features ...</button>
+      <div class="dropdown-content">
+        <a href="../features.html">Open source</a>
+        <!-- <a href="../featuresext.html">Commercial</a> -->
+      </div>
+    </div>
+  </td>
+  <td class="header-menu"><a href="https://gitlab.com/ssv/AnalysisSitus">Source code</a></td>
+  <td class="header-menu"><a href="http://analysissitus.org/forum/index.php">Forum</a></td>
+  <td class="header-menu"><a href="http://quaoar.su/blog/contact">Ask for support</a></td>
+</tr>
+</table>
+</td></tr></table>
+
+<div class="content-body">
+<!-- [BEGIN] contents -->
+
+<h1 id="toc-simulation">3D packing</h1>
+
+<!-- <div class="toc-panel"><div id="toc"></div></div>-->
+
+<h2 id="toc-simulation-dblf">DBLF algorithm</h2>
+
+<p>
+  A part occurrence $S$ that is nested stores the last nested location for the entire family of the same parts. This allows the family to bypass previously examined spots, which is one of the simplest optimization approaches used. The pseudocode below illustrates a simple logic for DBLF in which parts cannot freely rotate.
+</p>
+
+<div align="center"><a href="../imgs/ext/3dnesting-grid-numbering.png"><img src="../imgs/ext/3dnesting-grid-numbering.png" width="70%"/></a></div>
+
+<p>
+  In the algorithm, all grid points are numbered in the order of DBLF visiting. Therefore, each grid point has two addresses: the serial index $r$ and the coordinates $i,j,k$.
+</p>
+
+<!-- pseudocode.js -->
+<pre id="find-sequence" class="pseudocode">
+  % DBLF packing algorithm (www.analysissitus.org).
+  \begin{algorithm}
+  \caption{Deepest-Bottom-Left-Fill (DBLF)}
+  \begin{algorithmic}
+  \PROCEDURE{DBLF}{$S, C$}
+    \STATE \Comment{$S$ is a part to nest.}
+    \STATE \Comment{$C$ is a target container.}
+    \STATE \CALL{ComputePointPattern}{$S$} \Comment{Prepare point pattern for the solid $S$.}
+    \STATE \CALL{ComputeBBox}{$S$} \Comment{Compute AABB of the part.}
+    \STATE \CALL{ComputeAnchorPoint}{$S$} \Comment{Compute anchor point of the part.}
+    \STATE \CALL{Unlock}{$C$} \Comment{Unlock all grid points in the container.}
+    \STATE stop $\gets$ false
+    \STATE nested $\gets$ false
+    \STATE $M$ $\gets$ \CALL{GetNumOfPoints}{$C$} \Comment{Number of grid points in the container.}
+    \REPEAT
+      \STATE $G_{r}$ $\gets$ -1 \Comment{Next placement to try (serial index).}
+      \STATE $G_{i,j,k}$ $\gets$ $\{-1,-1,-1\}$ \Comment{Next placement to try (triplet).}
+      \STATE $P_s$ $\gets$ \CALL{LastNestedPos}{$S$} \Comment{Get the last nested position's index of the $S$ family.}
+      \FOR{$r \in [P_s,M)$}
+        \STATE $P$ $\gets$ $C[r]$
+        \IF{$P$ is not occupied and not locked}
+          \STATE $G_{r}$ $\gets$ $r$
+          \STATE $G_{i,j,k}$ $\gets$ \CALL{FromPlain}{$r$, $C$} \Comment{Turn serial index $r$ to triplet $i,j,k$.}
+          \BREAK
+        \ENDIF
+      \ENDFOR
+      \IF{$G_{r}$ = -1} \Comment{No position to try.}
+        \STATE stop $\gets$ true
+        \CONTINUE
+      \ENDIF
+      \STATE $C[G_{r}]$.locked $= true$ \Comment{Lock current snapping point.}
+      \STATE $N \gets$ \CALL{GetNeighborhood}{$G_{r}$}
+      \STATE $N$.isRoomy $\gets$ \CALL{IsCursorPromising}{$N$, $S$}
+      \IF{ !$N$.isRoomy }
+        \CONTINUE
+      \ENDIF
+      \STATE \CALL{MovePart}{$S$, $C[G_{r}]$} \Comment{Snap anchor point to the grid point.}
+      \IF{ \CALL{HaveCollisions}{$S$, $C$} }
+      \STATE \CALL{SetLastNestedPos}{$S$, $G_{i,j,k}$} \Comment{Continue from here.}
+        \CONTINUE
+      \ENDIF
+      \STATE $R \gets$ \CALL{GetSpannedPoints}{$S$} \Comment{Find grid points enclosed by the moved part.}
+      \STATE \CALL{SetOccupied}{$R$} \Comment{All spanned point become occupied.}
+      \STATE \CALL{SetLastNestedPos}{$S$, $G_{i,j,k}$}
+      \STATE stop $\gets$ true
+      \STATE nested $\gets$ true
+    \UNTIL{ !stop }
+    \RETURN nested
+  \ENDPROCEDURE
+  \end{algorithmic}
+  \end{algorithm}
+</pre>
+
+<p>
+  The algorithm first finds the next vacant position $G_r \equiv G_{i,j,k}$ and analyzes its neighborhood $N$. If the neighborhood is "roomy" enough, then the candidate part is moved to this vacant position and collisions are tested. If no collisions are found, the points enclosed by the part are marked as "occupied," and the process finishes. If there are collisions, then the process continues, given that the current point is temporarily "locked," so it will not be visited again.
+</p>
+
+<!-- Optional references to Manifold Geometry -->
+<div class="mg">
+  <div class="mg-headline">Community reading:</div>
+  <ul>
+    <li class="fancy_ul_item">MG // <a href="https://quaoar.su/blog/page/true-shape-nesting-07-dblf-for-3d-packing">True Shape Nesting 07: DBLF for 3D packing</a>.</li>
+    <li class="fancy_ul_item">MG // <a href="https://quaoar.su/blog/page/true-shape-nesting-08-dblf-cursor">True Shape Nesting 08: DBLF cursor</a>.</li>
+    
+  </ul>
+</div>
+
+<!-- [END] contents -->
+</div>
+<br/>
+<table class="footer" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+  <td>
+    <small>&copy; Quaoar&nbsp;Studio&nbsp;LLC 2015-present &nbsp; (Yerevan, Armenia)</small> | &nbsp; <a class="footer-href" href="#top">^^^</a>  &nbsp; | &nbsp; <a href="http://quaoar.su/blog/contact" class="footer-href">contact us</a> &nbsp; | &nbsp; <a href="https://www.youtube.com/channel/UCc0exKIoqbeOSqKoc1RnfBQ" class="icon brands fa-youtube"></a> &nbsp; | &nbsp; <a href="https://quaoar.su" class="icon brands fa-medium"></a> &nbsp; | &nbsp; <a href="https://www.linkedin.com/in/sergey-slyadnev-277496b1" class="icon brands fa-linkedin"></a>
+  </td>
+</tr>
+</table>
+
+<script>
+hljs.highlightAll();
+pseudocode.renderClass("pseudocode");
+</script>
+
+</body>
+</html>

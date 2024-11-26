@@ -2861,6 +2861,60 @@ int ENGINE_MoveTriangulation(const Handle(asiTcl_Interp)& interp,
 
 //-----------------------------------------------------------------------------
 
+int ENGINE_ScaleTriangulation(const Handle(asiTcl_Interp)& interp,
+                              int                          argc,
+                              const char**                 argv)
+{
+#if defined USE_MOBIUS
+  (void) argc;
+
+  // Get mesh from the Triangulation Node.
+  Handle(Poly_Triangulation)
+    poly = cascade::GetOpenCascadeMesh( cmdEngine::model->GetTriangulationNode()->GetTriangulation() );
+  //
+  if ( poly.IsNull() )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Triangulation is empty.");
+    return TCL_ERROR;
+  }
+
+  // Read input scale factor.
+  const double coeff = atof(argv[1]);
+
+  // Create transformed vertices.
+  Handle(TColgp_HArray1OfPnt) oldNodes = poly->MapNodeArray();
+  TColgp_Array1OfPnt newNodes( oldNodes->Lower(), oldNodes->Upper() );
+  //
+  for ( int nidx = oldNodes->Lower(); nidx <= oldNodes->Upper(); ++nidx )
+    newNodes.SetValue( nidx, oldNodes->Value(nidx).XYZ() * coeff );
+
+  // Create new triangulation.
+  Handle(Poly_Triangulation)
+    newPoly = new Poly_Triangulation( newNodes, poly->MapTriangleArray()->Array1() );
+
+  // Update Data Model.
+  cmdEngine::model->OpenCommand();
+  {
+    cmdEngine::model->GetTriangulationNode()->SetTriangulation( cascade::GetMobiusMesh(newPoly) );
+  }
+  cmdEngine::model->CommitCommand();
+
+  // Actualize.
+  if ( cmdEngine::cf->ViewerPart )
+    cmdEngine::cf->ViewerPart->PrsMgr()->Actualize( cmdEngine::model->GetTriangulationNode() );
+
+  return TCL_OK;
+#else
+  (void) argc;
+  (void) argv;
+
+  interp->GetProgress().SendLogMessage(LogErr(Normal) << "Mobius is not available.");
+  return TCL_ERROR;
+#endif
+}
+
+//-----------------------------------------------------------------------------
+
 int ENGINE_MovePart(const Handle(asiTcl_Interp)& interp,
                     int                          argc,
                     const char**                 argv)
@@ -4607,6 +4661,15 @@ void cmdEngine::Commands_Editing(const Handle(asiTcl_Interp)&      interp,
     "\t to the global X, Y, Z axes.",
     //
     __FILE__, group, ENGINE_MoveTriangulation);
+
+  //-------------------------------------------------------------------------//
+  interp->AddCommand("scale-triangulation",
+    //
+    "scale-triangulation <coeff>\n"
+    "\t Scales the active triangulation by applying the passed <coeff> multiplier\n"
+    "\t to all nodes",
+    //
+    __FILE__, group, ENGINE_ScaleTriangulation);
 
   //-------------------------------------------------------------------------//
   interp->AddCommand("move-part",

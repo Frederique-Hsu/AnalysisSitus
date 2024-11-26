@@ -361,12 +361,12 @@ COPY_RESOURCES_TO_BINARY_DIRS(resources/Resources)
 #------------------------------------------------------------------------------
 
 add_library (asiData SHARED
-  ${H_FILES}      ${CPP_FILES}
-  ${part_H_FILES} ${part_CPP_FILES}
-  ${mesh_H_FILES} ${mesh_CPP_FILES}
-  ${iv_H_FILES}   ${iv_CPP_FILES}
-  ${re_H_FILES}   ${re_CPP_FILES}
-  ${misc_H_FILES} ${misc_CPP_FILES}
+  ${H_FILES}         ${CPP_FILES}
+  ${part_H_FILES}    ${part_CPP_FILES}
+  ${mesh_H_FILES}    ${mesh_CPP_FILES}
+  ${iv_H_FILES}      ${iv_CPP_FILES}
+  ${re_H_FILES}      ${re_CPP_FILES}
+  ${misc_H_FILES}    ${misc_CPP_FILES}
 )
 
 #------------------------------------------------------------------------------

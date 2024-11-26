@@ -312,7 +312,6 @@ double SignedDistance(const gp_Pln& pln, const gp_Pnt& P)
   return D;
 }
 
-
 //-----------------------------------------------------------------------------
 
 int MISC_TestPentagon(const Handle(asiTcl_Interp)& interp,
