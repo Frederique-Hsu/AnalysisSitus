@@ -172,6 +172,17 @@ void asiVisu_Utils::ResetCamera(vtkRenderer* renderer)
 
 //-----------------------------------------------------------------------------
 
+//! Zooms the active camera.
+void asiVisu_Utils::Zoom(vtkRenderer* renderer,
+                         const double factor)
+{
+  vtkCamera* pActiveCamera = renderer->GetActiveCamera();
+  //
+  pActiveCamera->Zoom(factor);
+}
+
+//-----------------------------------------------------------------------------
+
 //! Sets camera's options in order for the presented scene to fit all the
 //! applicable viewport.
 //! \param theRenderer    [in] renderer instance.

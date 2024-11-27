@@ -79,6 +79,8 @@
   #pragma message("===== warning: COUT_DEBUG is enabled")
 #endif
 
+#define ZOOM_FACTOR 0.1
+
 namespace
 {
   void MakeHLR(const Handle(asiEngine_Model)&             model,
@@ -928,6 +930,24 @@ void asiUI_ViewerPart::onTopView()
 
 //-----------------------------------------------------------------------------
 
+void asiUI_ViewerPart::onZoomIn()
+{
+  asiVisu_Utils::Zoom( m_prs_mgr->GetRenderer(), 1 + ZOOM_FACTOR );
+  //
+  this->Repaint();
+}
+
+//-----------------------------------------------------------------------------
+
+void asiUI_ViewerPart::onZoomOut()
+{
+  asiVisu_Utils::Zoom( m_prs_mgr->GetRenderer(), 1 - ZOOM_FACTOR );
+  //
+  this->Repaint();
+}
+
+//-----------------------------------------------------------------------------
+
 void asiUI_ViewerPart::onSelectAll()
 {
   asiEngine_Part partApi(m_model, m_prs_mgr, m_progress, m_plotter);
@@ -999,6 +1019,8 @@ void asiUI_ViewerPart::createActions()
   QAction* pLeftViewAction   = new QAction("Left",   this);
   QAction* pRightViewAction  = new QAction("Right",  this);
   QAction* pTopViewAction    = new QAction("Top",    this);
+  QAction* pZoomInAction     = new QAction("+",      this);
+  QAction* pZoomOutAction    = new QAction("-",      this);
   //
   connect( pFitAllAction,     SIGNAL( triggered() ), this, SLOT( onFitAll      () ) );
   connect( pResetViewAction,  SIGNAL( triggered() ), this, SLOT( onDefaultView () ) );
@@ -1008,6 +1030,8 @@ void asiUI_ViewerPart::createActions()
   connect( pLeftViewAction,   SIGNAL( triggered() ), this, SLOT( onLeftView    () ) );
   connect( pRightViewAction,  SIGNAL( triggered() ), this, SLOT( onRightView   () ) );
   connect( pTopViewAction,    SIGNAL( triggered() ), this, SLOT( onTopView     () ) );
+  connect( pZoomInAction,     SIGNAL( triggered() ), this, SLOT( onZoomIn      () ) );
+  connect( pZoomOutAction,    SIGNAL( triggered() ), this, SLOT( onZoomOut     () ) );
 
   // Add action to the toolbar
   m_toolBar->addAction(pFitAllAction);
@@ -1018,4 +1042,6 @@ void asiUI_ViewerPart::createActions()
   m_toolBar->addAction(pLeftViewAction);
   m_toolBar->addAction(pRightViewAction);
   m_toolBar->addAction(pTopViewAction);
+  m_toolBar->addAction(pZoomInAction);
+  m_toolBar->addAction(pZoomOutAction);
 }
