@@ -18,8 +18,8 @@
 
 //-----------------------------------------------------------------------------
 
-const static double REAL_MIN = std::numeric_limits<double>::min();
-const static double REAL_MAX = std::numeric_limits<double>::max();
+constexpr double REAL_MIN = std::numeric_limits<double>::min();
+constexpr double REAL_MAX = std::numeric_limits<double>::max();
 
 //-----------------------------------------------------------------------------
 
@@ -34,6 +34,22 @@ public:
     this->Initialize(seed);
   }
 
+  //! Copy constructor.
+
+  BullardRNG(const BullardRNG& rng)
+  {
+    this->m_iLo = rng.m_iLo;
+    this->m_iHi = rng.m_iHi;
+  }
+
+  //! Assignment operator.
+  BullardRNG& operator=(const BullardRNG& rng)
+  {
+    this->m_iLo = rng.m_iLo;
+    this->m_iHi = rng.m_iHi;
+    return *this;
+  }
+
   void Initialize(const unsigned seed)
   {
     m_iHi = seed;
@@ -42,7 +58,7 @@ public:
 
   unsigned RandInt()
   {
-    static const int shift = sizeof(int) / 2;
+    constexpr int shift = sizeof(int) / 2;
     m_iHi = (m_iHi >> shift) + (m_iHi << shift);
     m_iHi += m_iLo;
     m_iLo += m_iHi;
@@ -74,6 +90,28 @@ public:
     t_facet()               : FaceIndex(-1) {}
     t_facet(const int fidx) : FaceIndex(fidx) {}
 
+
+    //! Copy constructor.
+    t_facet(const t_facet& tf)
+    {
+      this->P0 = tf.P0;
+      this->P1 = tf.P1;
+      this->P2 = tf.P2;
+      this->N = tf.N;
+      this->FaceIndex = tf.FaceIndex;
+    }
+
+    //! Assignment operator.
+    t_facet& operator=(const t_facet& tf)
+    {
+      this->P0 = tf.P0;
+      this->P1 = tf.P1;
+      this->P2 = tf.P2;
+      this->N = tf.N;
+      this->FaceIndex = tf.FaceIndex;
+      return *this;
+    }
+
     BVH_Vec3d P0, P1, P2; //!< Triangle nodes.
     gp_Vec    N;          //!< Cached normal calculated by nodes.
     int       FaceIndex;  //!< Index of the host face.
@@ -99,6 +137,34 @@ public:
   {
     this->init(mesh);
     this->MarkDirty();
+  }
+
+  //! Ctor.
+  ModelBvh()
+    : BVH_PrimitiveSet<double, 3>(),
+      m_fBoundingDiag(0.0)
+  {}
+
+  //! Copy constructor.
+
+  ModelBvh(const ModelBvh& modelBVH)
+    : BVH_PrimitiveSet<double, 3>(new BVH_BinnedBuilder<double, 3, 32>(5, 32))
+  {
+    this->MarkDirty();
+    this->m_faces = modelBVH.m_faces;
+    this->m_facets = modelBVH.m_facets;
+    this->m_fBoundingDiag = modelBVH.m_fBoundingDiag;
+  }
+
+  //! Assignment operator.
+  ModelBvh& operator=(const ModelBvh& modelBVH)
+  {
+    myBuilder = new BVH_BinnedBuilder<double, 3, 32>(5, 32);
+    this->MarkDirty();
+    this->m_faces = modelBVH.m_faces;
+    this->m_facets = modelBVH.m_facets;
+    this->m_fBoundingDiag = modelBVH.m_fBoundingDiag;
+    return *this;
   }
 
 public:
@@ -332,6 +398,21 @@ public:
     //! Creates a new ray with the given origin and direction.
     t_ray(const BVH_Vec3d& O,
           const BVH_Vec3d& D) : Origin(O), Direct(D) {}
+
+    //! Copy constructor.
+    t_ray(const t_ray& tray)
+    {
+      this->Origin = tray.Origin;
+      this->Direct = tray.Direct;
+    }
+
+    //! Assignment operator.
+    t_ray& operator=(const t_ray& tray)
+    {
+      this->Origin = tray.Origin;
+      this->Direct = tray.Direct;
+      return *this;
+    }
   };
 
 public:
@@ -346,6 +427,26 @@ public:
     this->Init(facets);
   }
 
+  //! Ctor.
+  MeshDist() : m_RNG(128) {}
+
+  //! Copy constructor.
+  MeshDist(const MeshDist& meshDist)
+  {
+    this->m_facets   = new ModelBvh(*meshDist.m_facets);
+    this->m_iNumRays = meshDist.m_iNumRays;
+    this->m_RNG      = meshDist.m_RNG;
+  }
+
+  //! Assignment operator.
+  MeshDist& operator=(const MeshDist& meshDist)
+  {
+    this->m_facets = new ModelBvh(*meshDist.m_facets);
+    this->m_iNumRays = meshDist.m_iNumRays;
+    this->m_RNG = meshDist.m_RNG;
+    return *this;
+  }
+
   //! Initializes the distance function with the existing mesh.
   bool Init(const Handle(ModelBvh)& facets)
   {
@@ -356,22 +457,31 @@ public:
     return true;
   }
 
-  //! Evaluates function for the given coordinates.
+//! Evaluates function for the given coordinates.
   //! \return evaluated distance.
-  virtual double Eval(const double x, const double y, const double z) const
+  virtual double Eval(const double x, const double y, const double z, const bool isUsedDist = true) const
   {
     // Project point on mesh.
     gp_Pnt P(x, y, z);
 
     // Get unsigned distance.
-    const double
-      d2 = squaredDistanceToMesh( m_facets.get(), BVH_Vec3d(x, y, z) );
-    //
-    if ( d2 == REAL_MAX )
-      return REAL_MAX;
+    double d2 = REAL_MAX;
+    if (isUsedDist)
+    {
+      d2 = squaredDistanceToMesh(m_facets.get(), BVH_Vec3d(x, y, z));
+      //
+      if (d2 == REAL_MAX)
+      {
+        return REAL_MAX;
+      }
+    }
 
     // Get the unsigned distance.
-    const double ud = Sqrt(d2);
+    double ud = 1.0;
+    if (isUsedDist)
+    {
+      ud = Sqrt(d2);
+    }
 
     // Check sign by ray casting several times with random direction.
     bool isOutside = true;
@@ -403,15 +513,21 @@ public:
 
     isOutside = vote > 0;
 
-    return (isOutside ? 1 : -1) * ud;
+    double evalValue = isOutside ? 1.0 : -1.0;
+    if (isUsedDist)
+    {
+      evalValue *= ud;
+    }
+
+    return evalValue;
   }
 
 protected:
 
-  static double intersectTriangle(const t_ray&     ray,
-                                  const BVH_Vec3d& P0,
-                                  const BVH_Vec3d& P1,
-                                  const BVH_Vec3d& P2)
+  double intersectTriangle(const t_ray&     ray,
+                           const BVH_Vec3d& P0,
+                           const BVH_Vec3d& P1,
+                           const BVH_Vec3d& P2) const
   {
     const BVH_Vec3d E0 = P1 - P0;
     const BVH_Vec3d E1 = P0 - P2;
@@ -446,7 +562,7 @@ protected:
   }
 
   //! Computes number of ray-mesh intersections.
-  static int rayMeshHitCount(ModelBvh* pMesh, const t_ray& ray)
+  int rayMeshHitCount(ModelBvh* pMesh, const t_ray& ray) const
   {
     const BVH_Tree<double, 3>* pBVH = (pMesh != nullptr) ? pMesh->BVH().get() : nullptr;
     if ( pBVH == nullptr )
@@ -555,10 +671,10 @@ protected:
     }
   }
 
-  static double squaredDistanceToTriangle(const BVH_Vec3d& P,
-                                          const BVH_Vec3d& A,
-                                          const BVH_Vec3d& B,
-                                          const BVH_Vec3d& C)
+  double squaredDistanceToTriangle(const BVH_Vec3d& P,
+                                   const BVH_Vec3d& A,
+                                   const BVH_Vec3d& B,
+                                   const BVH_Vec3d& C) const
   {
     // Special case 1.
     const BVH_Vec3d AB = B - A;
@@ -624,9 +740,9 @@ protected:
     return (P - (A*VA + B*VB + C*VC)/norm).SquareModulus();
   }
 
-  static double squaredDistanceToBox(const BVH_Vec3d& P,
-                                     const BVH_Vec3d& boxMin,
-                                     const BVH_Vec3d& boxMax)
+  double squaredDistanceToBox(const BVH_Vec3d& P,
+                              const BVH_Vec3d& boxMin,
+                              const BVH_Vec3d& boxMax) const
   {
     double nearestX = std::min( std::max( P.x(), boxMin.x() ), boxMax.x() );
     double nearestY = std::min( std::max( P.y(), boxMin.y() ), boxMax.y() );
@@ -642,9 +758,9 @@ protected:
     return nearestX*nearestX + nearestY*nearestY + nearestZ*nearestZ;
   }
 
-  static double squaredDistanceToMesh(ModelBvh*        pMesh,
-                                      const BVH_Vec3d& P,
-                                      const double     upperDist = REAL_MAX)
+  double squaredDistanceToMesh(ModelBvh*        pMesh,
+                               const BVH_Vec3d& P,
+                               const double     upperDist = REAL_MAX) const
   {
     const BVH_Tree<double, 3>* pBVH = pMesh != nullptr ? pMesh->BVH().get() : nullptr;
     if ( pBVH == nullptr )
@@ -775,10 +891,38 @@ public:
     m_dist = new MeshDist(m_bvh);
   }
 
-  bool IsIn(const gp_XYZ& pt, const double tol)
+  //! Ctor.
+  asiAlgo_ClassifyPointSolid() {}
+
+  //! Copy constructor.
+
+  asiAlgo_ClassifyPointSolid(const asiAlgo_ClassifyPointSolid& cps)
   {
-    const double d = m_dist->Eval( pt.X(), pt.Y(), pt.Z() );
-    return (d < 0) && (Abs(d) > tol);
+    this->m_tris = cps.m_tris->Copy();
+    this->m_bvh  = new ModelBvh(*cps.m_bvh);
+    this->m_dist = new MeshDist(m_bvh);
+  }
+
+  //! Assignment operator.
+  asiAlgo_ClassifyPointSolid& operator=(const asiAlgo_ClassifyPointSolid& cps)
+  {
+    this->m_tris = cps.m_tris->Copy();
+    this->m_bvh = new ModelBvh(*cps.m_bvh);
+    this->m_dist = new MeshDist(m_bvh);
+    return *this;
+  }
+
+  bool IsIn(const gp_XYZ& pt, const double tol, const bool isUsedDist = true)
+  {
+    const double d = m_dist->Eval( pt.X(), pt.Y(), pt.Z(), isUsedDist );
+
+    bool isIn = (d < 0);
+    if (isUsedDist)
+    {
+      isIn = isIn && (Abs(d) > tol);
+    }
+
+    return isIn;
   }
 
   bool IsOn(const gp_XYZ& pt, const double tol)
@@ -787,10 +931,23 @@ public:
     return (Abs(d) < tol);
   }
 
-  bool IsOut(const gp_XYZ& pt, const double tol)
+  bool IsInOn(const gp_XYZ& pt, const double tol)
   {
     const double d = m_dist->Eval( pt.X(), pt.Y(), pt.Z() );
-    return (d > 0) && (Abs(d) > tol);
+    return (d < 0) && (Abs(d) > tol) || (Abs(d) < tol);
+  }
+
+  bool IsOut(const gp_XYZ& pt, const double tol, const bool isUsedDist = true)
+  {
+    const double d = m_dist->Eval( pt.X(), pt.Y(), pt.Z(), isUsedDist );
+
+    bool isOut = (d > 0);
+    if (isUsedDist)
+    {
+      isOut = isOut && (Abs(d) > tol);
+    }
+
+    return isOut;
   }
 
 protected:
