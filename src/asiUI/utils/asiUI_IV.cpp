@@ -1949,6 +1949,8 @@ void asiUI_IV::draw_shape(const TopoDS_Shape& shape,
     //
     topo_n->SetHasColor(hasColor);
     topo_n->SetColor( ActAPI_Color::ColorToInt( color.Red(), color.Green(), color.Blue() ) );
+    topo_n->SetDisplayMode(isWireframe ? ShapeDisplayMode_WireframeAndVertices
+                                       : ShapeDisplayMode_ShadedAndWireframe);
   }
 
   // Commit transaction.

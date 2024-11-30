@@ -2,9 +2,9 @@
 <html>
  <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>Analysis Situs: history</title>
-  <link rel="shortcut icon" type="image/png" href="./imgs/favicon.png"/>
-  <link rel="stylesheet" type="text/css" href="./css/situ-main-style.css">
+  <title>Analysis Situs: CNC recognition FAQ</title>
+  <link rel="shortcut icon" type="image/png" href="../imgs/favicon.png"/>
+  <link rel="stylesheet" type="text/css" href="../css/situ-main-style.css">
 
   <!-- [begin] Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-112292727-2"></script>
@@ -19,8 +19,8 @@
 
 
   <!-- [begin] Code highlight -->
-  <link rel="stylesheet" href="./css/highlight.min.css">
-  <script src="./js/highlight.min.js"></script>
+  <link rel="stylesheet" href="../css/highlight.min.css">
+  <script src="../js/highlight.min.js"></script>
   <!-- [end] Code highlight -->
 
   <!-- [begin] Pseudocode -->
@@ -49,9 +49,9 @@
 <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%">
 <tr>
   <td align="left" class="header">
-    <span class="header-logo"><a href="./index.html" class="header-href">Analysis&nbsp;Situs</a></span>
+    <span class="header-logo"><a href="../index.html" class="header-href">Analysis&nbsp;Situs</a></span>
     &nbsp;
-    ./FAQ
+    ./<a class="header-href" href="../featuresext.html">extensions</a>/read DXF file
   </td>
 </tr>
 </table>
@@ -62,8 +62,8 @@
     <div class="dropdown">
       <button class="dropbtn">Features ...</button>
       <div class="dropdown-content">
-        <a href="./features.html">Open source</a>
-        <!-- <a href="./featuresext.html">Commercial</a> -->
+        <a href="../features.html">Open source</a>
+        <!-- <a href="../featuresext.html">Commercial</a> -->
       </div>
     </div>
   </td>
@@ -77,35 +77,42 @@
 <div class="content-body">
 <!-- [BEGIN] contents -->
 
-<p class="faq">
-  <b>Q:</b> Can I use Analysis Situs in my commercial software?
-  <br>
-  <b>A:</b> Yes, following the <a href="./license.html">3-clause BSD license</a> terms, commercial use is perfectly allowed.
-</p>
+<h1>CNC recognition FAQ</h1>
 
-<p class="faq">
-  <b>Q:</b> What is Analysis Situs?
-  <br>
-  <b>A:</b> It is an open-sourced framework for the development of CAD applications.
-</p>
+<div class="faq">
+  <b>Question:</b> What is the purpose of <span class="code-inline">milledFaces3Axes</span> array in JSON and why the faces reported there are repeated in feature objects of the same JSON?
+  <hr>
+  <b>Answer:</b> In <span class="code-inline">milledFaces3Axes</span>, we present an entire universum of faces and their basic attributes. The faces from the universum are then organized in the feature objects according to their machining axes. Please keep in mind that just because a face is reported in the <span class="code-inline">milledFaces3Axes</span> array doesn't mean it shouldn't be mentioned in its respective feature. The <span class="code-inline">milledFaces3Axes</span> array is not a feature array; rather, it provides supplemental information for faces to report their self properties. If you are only interested in the features, you can ignore this array.
+</div>
 
-<p class="faq">
-  <b>Q:</b> Why such an old-schoolish website?
-  <br>
-  <b>A:</b> This website is delivered (installed) as a part of the application. Since we do not want to deploy any server (such as Tomcat) to run documentation, static HTML pages are our choice.
-</p>
+<br/>
 
-<p class="faq">
-  <b>Q:</b> Do you have any user forum?
-  <br>
-  <b>A:</b> Yes: <a href="http://analysissitus.org/forum/index.php">Analysis Situs Forums</a>. You can also check the discussion in the <a href="https://forum.freecadweb.org/viewtopic.php?f=8&t=23620">dedicated topic</a> of FreeCAD for some history.
-</p>
+<div class="faq">
+  <b>Question:</b> What is the purpose of <span class="code-inline">isMachinable</span> and <span class="code-inline">isAccessible</span> flags reported for faces?
+  <hr>
+  <b>Answer:</b> The Boolean flags <span class="code-inline">isMachinable</span> and <span class="code-inline">isAccessible</span> are reported per each machining axis, and not per individual face. You can verify those flags by running <span class="code-inline">cnc-recognize-axes</span> command in Analysis Situs UI.
+</div>
 
-<p class="faq">
-  <b>Q:</b> How many users does Analysis Situs have?
-  <br>
-  <b>A:</b> That's hard to calculate as we do not trace our users back. The software is also a bit specific as it is intended for CAD practitioners, researchers, engineers, and programmers. Some people use it once to solve their particular problem. Some others give Analysis Situs a slot in their daily business, e.g., to heal CAD geometry before numerical simulation. The most advanced use is to employ Analysis Situs as a framework to build up custom CAD applications. That happened several times by the moment I write this (autumn 2020).
-</p>
+<br/>
+
+<div class="faq">
+  <b>Question:</b> For turned parts, what does <span class="code-inline">maximumTurnedState</span> property indicate?
+  <hr>
+  <b>Answer:</b>
+  <p>
+    Let's take the following simple part as an example:
+  </p>
+  <div align="center"><a href="../imgs/ext/cnc-faq_turned-part-with-bore.png"><img src="../imgs/ext/cnc-faq_turned-part-with-bore.png" width="60%"/></a></div>
+  <p>
+    For this part, two max turned states (MTS) are approximated: for the turned faces and for the bore faces separately:
+  </p>
+  <div align="center"><a href="../imgs/ext/cnc-faq_turned-mts.png"><img src="../imgs/ext/cnc-faq_turned-mts.png" width="60%"/></a></div>
+  <div align="center"><a href="../imgs/ext/cnc-faq_bored-mts.png"><img src="../imgs/ext/cnc-faq_bored-mts.png" width="60%"/></a></div>
+  <p>
+    Each MTS is reported in JSON with its volume. To obtain the approximative total turned volume it is therefore necessary to subtract all bore MTS volumes from the turned volume.
+  </p>
+</div>
+
 
 <!-- [END] contents -->
 </div>
