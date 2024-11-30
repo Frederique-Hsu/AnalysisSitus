@@ -1323,7 +1323,7 @@ void asiUI_IV::DRAW_ASI_POINTSF(const Handle(asiAlgo_BaseCloud<float>)& points,
     m_model->CommitCommand();
 
   // Visualize
-  this->visualize(false, points_n, true, color, 1.0, false);
+  this->visualize(false, points_n, true, color, 1.0, 0);
 }
 
 //---------------------------------------------------------------------------//
@@ -1347,7 +1347,7 @@ void asiUI_IV::DRAW_ASI_POINTS(const std::vector<gp_Pnt2d>& points,
     m_model->CommitCommand();
 
   // Visualize
-  this->visualize(true, points_n, true, color, 1.0, false);
+  this->visualize(true, points_n, true, color, 1.0, 0);
 }
 
 //---------------------------------------------------------------------------//
@@ -1419,7 +1419,6 @@ void asiUI_IV::visualize(const bool                  is2d,
                          const bool                  hasColor,
                          const ActAPI_Color&         color,
                          const double                opacity,
-                         const bool                  isWireframe,
                          const double                edgeWidth) const
 {
   if ( m_bBrowserOn && m_pBrowser )
@@ -1452,12 +1451,6 @@ void asiUI_IV::visualize(const bool                  is2d,
     {
       std::cout << "IV error: pipeline is null." << std::endl;
       return;
-    }
-
-    // Configure shape visualization.
-    if ( isWireframe )
-    {
-      pl->GetDisplayModeFilter()->SetDisplayMode(ShapeDisplayMode_WireframeAndVertices);
     }
 
     // Process color.
@@ -1574,7 +1567,7 @@ void asiUI_IV::draw_point(const gp_XY&        coord,
     m_model->CommitCommand();
 
   // Visualize
-  this->visualize(true, points_n, true, color, 1.0, false);
+  this->visualize(true, points_n, true, color, 1.0, 0);
 }
 
 //---------------------------------------------------------------------------//
@@ -1631,7 +1624,7 @@ void asiUI_IV::draw_points(const Handle(HRealArray)& coords,
     m_model->CommitCommand();
 
   // Visualize.
-  this->visualize(false, points_n, true, color, 1.0, false);
+  this->visualize(false, points_n, true, color, 1.0, 0);
 }
 
 //---------------------------------------------------------------------------//
@@ -1715,7 +1708,7 @@ void asiUI_IV::draw_vectors(const Handle(HRealArray)& points,
     m_model->CommitCommand();
 
   // Visualize
-  this->visualize(false, vf_n, true, color, 1.0, false);
+  this->visualize(false, vf_n, true, color, 1.0, 0);
 }
 
 //---------------------------------------------------------------------------//
@@ -1770,7 +1763,7 @@ void asiUI_IV::draw_curve(const Handle(Geom_Curve)& curve,
     m_model->CommitCommand();
 
   // Visualize
-  this->visualize(is2dViewer, curve_n, true, color, 1.0, false);
+  this->visualize(is2dViewer, curve_n, true, color, 1.0, 0);
 }
 
 //---------------------------------------------------------------------------//
@@ -1827,7 +1820,7 @@ void asiUI_IV::draw_curve2d(const Handle(Geom2d_Curve)& curve,
     m_model->CommitCommand();
 
   // Visualize
-  this->visualize(true, curve_n, true, color, 1.0, false);
+  this->visualize(true, curve_n, true, color, 1.0, 0);
 }
 
 //---------------------------------------------------------------------------//
@@ -1889,7 +1882,7 @@ void asiUI_IV::draw_surface(const Handle(Geom_Surface)& surface,
     m_model->CommitCommand();
 
   // Visualize
-  this->visualize(false, surface_n, true, color, opacity, false);
+  this->visualize(false, surface_n, true, color, opacity, 0);
 }
 
 //---------------------------------------------------------------------------//
@@ -1949,8 +1942,8 @@ void asiUI_IV::draw_shape(const TopoDS_Shape& shape,
     //
     topo_n->SetHasColor(hasColor);
     topo_n->SetColor( ActAPI_Color::ColorToInt( color.Red(), color.Green(), color.Blue() ) );
-    topo_n->SetDisplayMode(isWireframe ? ShapeDisplayMode_WireframeAndVertices
-                                       : ShapeDisplayMode_ShadedAndWireframe);
+    topo_n->SetDisplayMode(isWireframe ? ShapeDisplayMode_Wireframe
+                                       : ShapeDisplayMode_Shaded);
   }
 
   // Commit transaction.
@@ -1958,7 +1951,7 @@ void asiUI_IV::draw_shape(const TopoDS_Shape& shape,
     m_model->CommitCommand();
 
   // Visualize.
-  this->visualize(false, shape_n, hasColor, color, opacity, isWireframe);
+  this->visualize(false, shape_n, hasColor, color, opacity, 0);
 }
 
 //---------------------------------------------------------------------------//
@@ -2170,7 +2163,7 @@ void asiUI_IV::draw_triangulation(const Handle(Poly_Triangulation)& tris,
     m_model->CommitCommand();
 
   // Visualize
-  this->visualize(false, item_n, true, color, opacity, false);
+  this->visualize(false, item_n, true, color, opacity, 0);
 }
 
 //---------------------------------------------------------------------------//
@@ -2220,7 +2213,7 @@ void asiUI_IV::draw_mesh(const Handle(ActData_Mesh)& mesh,
     m_model->CommitCommand();
 
   // Visualize
-  this->visualize(false, item_n, true, color, opacity, false, edgeWidth);
+  this->visualize(false, item_n, true, color, opacity, edgeWidth);
 }
 
 //---------------------------------------------------------------------------//
@@ -2265,7 +2258,7 @@ void asiUI_IV::draw_text(const t_extString& text,
     m_model->CommitCommand();
 
   // Visualize
-  this->visualize(false, item_n, false, ActAPI_Color(), 0.0, false);
+  this->visualize(false, item_n, false, ActAPI_Color(), 0.0, 0);
 }
 
 //---------------------------------------------------------------------------//
@@ -2314,5 +2307,5 @@ void asiUI_IV::draw_axes(const gp_Pnt&      origin,
     m_model->CommitCommand();
 
   // Visualize
-  this->visualize(false, axes_n, true, Color_Default, 1.0, false);
+  this->visualize(false, axes_n, true, Color_Default, 1.0, 0);
 }

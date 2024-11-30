@@ -90,7 +90,14 @@
 <div class="faq">
   <b>Question:</b> What is the purpose of <span class="code-inline">isMachinable</span> and <span class="code-inline">isAccessible</span> flags reported for faces?
   <hr>
-  <b>Answer:</b> The Boolean flags <span class="code-inline">isMachinable</span> and <span class="code-inline">isAccessible</span> are reported per each machining axis, and not per individual face. You can verify those flags by running <span class="code-inline">cnc-recognize-axes</span> command in Analysis Situs UI.
+  <b>Answer:</b>
+  <p>
+    The Boolean flags <span class="code-inline">isMachinable</span> and <span class="code-inline">isAccessible</span> are reported per each machining axis. These axes are used to group faces into features and have no direct use in the client applications. You can verify those flags by running <span class="code-inline">cnc-recognize-axes</span> command in Analysis Situs UI.
+  </p>
+  <div align="center"><a href="../imgs/ext/cnc-faq_milling axes.png"><img src="../imgs/ext/cnc-faq_milling axes.png" width="60%"/></a></div>
+  <p>
+    Green color means the axis is machinable, red &mdash; not.
+  </p>
 </div>
 
 <br/>

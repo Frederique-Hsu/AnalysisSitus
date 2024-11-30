@@ -688,8 +688,7 @@ protected:
               const bool                  hasColor,
               const ActAPI_Color&         color,
               const double                opacity,
-              const bool                  isWireframe,
-              const double                edgeWidth = 0.) const;
+              const double                edgeWidth) const;
 
   asiUI_EXPORT const vtkSmartPointer<asiVisu_PrsManager>&
     prsManager(const bool is2d) const;

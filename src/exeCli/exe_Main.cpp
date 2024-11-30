@@ -109,7 +109,6 @@ DWORD WINAPI Thread_Interp(LPVOID)
   EXE_LOAD_MODULE("cmdRE")
   EXE_LOAD_MODULE("cmdDDF")
   EXE_LOAD_MODULE("cmdAsm")
-  EXE_LOAD_MODULE("cmdNesting")
   //
 #ifdef USE_MOBIUS
   EXE_LOAD_MODULE("cmdMobius")
