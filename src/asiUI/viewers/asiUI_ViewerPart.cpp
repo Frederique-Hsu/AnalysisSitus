@@ -150,7 +150,7 @@ namespace
     TIMER_COUT_RESULT_NOTIFIER(progress, "HLR projection")
 
     // Draw the result with the default color.
-    plotter.REDRAW_SHAPE(name, buildHLR.GetResult(), color);
+    plotter.REDRAW_SHAPE(name, buildHLR.GetResult(), color, 1., true);
   }
 
   void MakeHLRBox(const Handle(asiEngine_Model)& model,
@@ -186,7 +186,10 @@ namespace
     // Create bounding box to draw it.
     TopoDS_Shape bndbox = BRepPrimAPI_MakeBox( gp_Pnt(xMin, yMin, zMin), gp_Pnt(xMax, yMax, zMax) );
     //
-    plotter.REDRAW_SHAPE("bbox", bndbox, ActAPI_Color(40./255., 40./255., 40./255., Quantity_TOC_RGB), 1.0);
+    plotter.REDRAW_SHAPE( "bbox",
+                           bndbox,
+                           ActAPI_Color(40./255., 40./255., 40./255., Quantity_TOC_RGB),
+                           1.0 );
 
     // Projection directions.
     std::vector<gp_Dir> dirs;
@@ -267,7 +270,11 @@ namespace
       projName += asiAlgo_Utils::DirectionName(dir);
 
       // Draw the result with the default color.
-      plotter.REDRAW_SHAPE(projName.c_str(), proj, color);
+      plotter.REDRAW_SHAPE( projName.c_str(),
+                            proj,
+                            color,
+                            1.,
+                            true );
     }
 
     TIMER_FINISH

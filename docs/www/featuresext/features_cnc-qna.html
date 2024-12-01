@@ -120,6 +120,20 @@
   </p>
 </div>
 
+<br/>
+
+<div class="faq">
+  <b>Question:</b> For turned parts, internal grooves are harder to fabricate. Do you have accessibility analysis for internal grooves?
+  <hr>
+  <b>Answer:</b>
+  <p>
+    Accessibility tests are only performed on milling features since they work under the assumption that a cylindrical mill is approaching a face along one of the identified axes. Such "visibility" checks are not performed for turning because they would clearly result in false-positive errors. Instead, each detected negative cell is classified with respect to the stock and MTS geometries.
+  </p>
+  <div align="center"><a href="../imgs/ext/cnc-faq_internal-grooves.png"><img src="../imgs/ext/cnc-faq_internal-grooves.png" width="60%"/></a></div>
+  <p>
+    We are not aware of any machining issues for such grooves: our customers are satisfied with the properties that are currently reported. However, we are open to adding more DFM checks for lathed parts if they are formalized.
+  </p>
+</div>
 
 <!-- [END] contents -->
 </div>
