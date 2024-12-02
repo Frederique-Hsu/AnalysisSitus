@@ -79,8 +79,112 @@
 
 <h1>Release notes</h1>
 
+<h2>ver. 2024.2</h2>
+
+<ul>
+  <li class="fancy_ul_item">[DFM] Improve performance of the horizontal tessellator algorithm for turned parts.
+  <li class="fancy_ul_item">[SMRU] Add `axialCuttingRange` property for tubes/profiles (Fix #663).
+  <li class="fancy_ul_item">[DFM] Get rid of width-based filtering for false-positive thickness spots.
+  <li class="fancy_ul_item">[CSHARP/DXF] Added CSharp wrapper for DXF library (#661).
+  <li class="fancy_ul_item">[CNC] Fix #692 with a bored sphere misrecognized as a turned feature.
+  <li class="fancy_ul_item">[SMRU] Report `bends` for TUBE_OTHER type; fix segments reporting for flat shapes.
+  <li class="fancy_ul_item">[SMRU] Analyze accessibility of engravings on tubes.
+  <li class="fancy_ul_item">[DXF] Do not mix text contours edges with the normal one. (#691)
+  <li class="fancy_ul_item">[CNC,DFM] Rework prismatic configurations.
+  <li class="fancy_ul_item">[SMRU] Compute bbox dimensions of the entire assembly (Fix #712).
+  <li class="fancy_ul_item">[CNC] #695: Incomplete counterbore with chamfer.
+  <li class="fancy_ul_item">[SMRU] #715: report `closestParallel` and `closestParallelFaceId` props for inner cutouts on tubes.
+  <li class="fancy_ul_item">[SMRU] Introduce closest parallel length.
+  <li class="fancy_ul_item">[SMRU,CNC] #675 Enrich glTF output with colors of detected features
+  <li class="fancy_ul_item">[SMRU,CNC] #713 Output .step with colored feature faces
+  <li class="fancy_ul_item">[DFM] Fix #643: `maxConcaveCurvature` is always null as it seems to be never computed for surface types other than cylinders and cones
+  <li class="fancy_ul_item">[CNC,DFM] Add recognition strategy parameter to `InspectFile`.
+  <li class="fancy_ul_item">[SMRU] Recognize rolled cylinders and generalized cylinders #708.
+  <li class="fancy_ul_item">[CNC] #721: pass domain to all recognizers.
+  <li class="fancy_ul_item">[CNC] Add '-type' flag for setting the recognition strategy in asiCncExe.
+  <li class="fancy_ul_item">[SMRU] Improve `isLeaf` property determination for rolled flanges.
+  <li class="fancy_ul_item">[DFM,CNC] Export MTS in DFM (#579)
+  <li class="fancy_ul_item">[SMRU] Introduce another (topological) finder for boundary cuts in round tubes.
+  <li class="fancy_ul_item">[CNC] Add protection against null or parallel vectors on computing milling axes for blends.
+  <li class="fancy_ul_item">[SMRU] Make asiSheetMetalExe dump part images (introduce '-imagesForParts' flag).
+  <li class="fancy_ul_item">[SMRU] Introduce '-expandCompounds' parameters for automatic break down of compound parts into elementary shapes (Fix #732).
+  <li class="fancy_ul_item">[SMRU] CAD-729: Modification of K-factor does not affect `totalCuttingLength`
+  <li class="fancy_ul_item">[SMRU] ToPerform flag of ProfileParams is vague for users (#718):
+  <li class="fancy_ul_item">[SMRU] Revise diagnostic codes and extend the `-lookup` mechanics for searching codes in ref files.
+  <li class="fancy_ul_item">[Common] Create a signing key for c# projects.
+  <li class="fancy_ul_item">[CNC] Add -aag option to CNC recognition SDK (#743):
+  <li class="fancy_ul_item">[CNC] #742: Add reorientation option.
+  <li class="fancy_ul_item">[CNC] Fix #674: add `-allowSharp` flag to allow for the recognition of walls with sharp corners.
+  <li class="fancy_ul_item">[SMRU] Introduce welding spots detection prototype.
+  <li class="fancy_ul_item">[SMRU] Get rid of paddings in SVG images exported from SMRU.
+  <li class="fancy_ul_item">[Utils] Add `makeProjectionExe` mockup utility.
+  <li class="fancy_ul_item">[Utils] Prepare an executable to generate drawings in batch mode.
+  <li class="fancy_ul_item">[Utils] If no direction is passed but the DXF filename is given, use the guessed direction.
+  <li class="fancy_ul_item">[SMRU] Make drawings aligned smartly in SVG export.
+  <li class="fancy_ul_item">[SMRU] Fix #795: introduce non-uniform thickness check.
+  <li class="fancy_ul_item">[SMRU] Fix #788: make sure to generate JSON for broken STEP files.
+  <li class="fancy_ul_item">[SMRU] Fix #798: Problem with floating point separator for `cornerRadius` property of tubes.
+  <li class="fancy_ul_item">[CNC,SMRU] #796: Fix broken indices for a featured glTF
+  <li class="fancy_ul_item">[CNC] #752: Output ids of unrecognized faces to JSON.
+  <li class="fancy_ul_item">[SMRU] Restore the priority of engraving color over inner feature color.
+  <li class="fancy_ul_item">[CNC] Fix #724: Output original units and scale factor.
+  <li class="fancy_ul_item">[SMRU] Introduce `-expand` flag in `sm-perform`.
+  <li class="fancy_ul_item">[CNC] Fix ambiuity in feature color sorting; do not use non-side milling axes in side contour grouping.
+  <li class="fancy_ul_item">[SMRU] Fix #252: do not report 3208 for tubes.
+  <li class="fancy_ul_item">[SMRU] Use a more reliable way of defeaturing that does not corrupt shapes.
+  <li class="fancy_ul_item">[CNC] Introduce computation of inaccessible vertices in CNC.
+  <li class="fancy_ul_item">[SMRU] Fix #864: report `area` for each `cutout` object.
+  <li class="fancy_ul_item">[SMRU] Provide an API to analyze an existing shape.
+  <li class="fancy_ul_item">[SMRU] Recognize non-isolated cutouts (Fix #739, Fix #876, Fix #601).
+  <li class="fancy_ul_item">[SMRU] Compute area for folded cutouts.
+  <li class="fancy_ul_item">[SMRU] Fix #878: Why 3302 "Abnormal bending" is reported for a seemingly valid tube?
+  <li class="fancy_ul_item">[SMRU] Fix #645: compute bend length for rolled flanges.
+  <li class="fancy_ul_item">[CNC] Fix #887: Make cncCode_PartBody_Warn_ImpossibleCorner also report face IDs.
+  <li class="fancy_ul_item">[CNC] #753: moving DFM logic for pointwise depths from DFM to CNC.
+  <li class="fancy_ul_item">[CNC] Make 3-axes milled faces a standard CNC function.
+  <li class="fancy_ul_item">[SMRU] #875: Add `cutInBend` property for cutouts.
+  <li class="fancy_ul_item">[SMRU] Attempt to speed up hole info collection by getting rid of heavy dtors.
+  <li class="fancy_ul_item">[SMRU] Fix the incorrectly recognized engraving (#881)
+  <li class="fancy_ul_item">[SMRU] Fix #861: File is not recognized as rectangular tube because of small redundant faces.
+  <li class="fancy_ul_item">[SMRU] Add test cases for bend simulation.
+  <li class="fancy_ul_item">[DXF] #891: introduce `evaluateDxfExe` utility to assess the complexity of DXF files.
+  <li class="fancy_ul_item">[SMRU] Fix #890 by reworking the alignment check for flat parts and redesigning the alignment logic to the same algorithm as used in the `cnc-orient` command.
+  <li class="fancy_ul_item">[SMRU] #619: make automatic welding identification between assembly components an optional model of SMRU.
+  <li class="fancy_ul_item">[SMRU] #619: dump glTF files for welding pathways.
+  <li class="fancy_ul_item">[SMRU] Fix #928: incorrect computation of closest cutout distance.
+  <li class="fancy_ul_item">[SMRU] Introduce bent pipes recognition (#744).
+  <li class="fancy_ul_item">[SMRU] Rename props for bent pipes and update ref data.
+  <li class="fancy_ul_item">[SMRU] Recognize straight wires.
+  <li class="fancy_ul_item" style="background-color: yellow;">[SMRU] Unify `partLength` property for straight tubes and wires.
+  <li class="fancy_ul_item">[DXF] Make tolerance an argument of `dxf-read` to control contouring precision.
+  <li class="fancy_ul_item">[SMRU] Unify `sectionDiameter` and `diameter` for round tubes and wires.
+  <li class="fancy_ul_item">[DXF] Print $ACADVER (DXF version) on `dxf-read` execution.
+  <li class="fancy_ul_item">[SMRU] Improve recognition of round tube by disabling unsuitable check for isolated freeform thickness faces.
+  <li class="fancy_ul_item">[SMRU] Add protection against empty flat patterns where their dimensions are computed.
+  <li class="fancy_ul_item">[SMRU] Fix #948: use absolute engraving depths (2 mm default).
+  <li class="fancy_ul_item">[SMRU] Fix #950: complex hole reported for a countersink hole.
+  <li class="fancy_ul_item">[SMRU] Initialize flags in ctor of `InspectFile`.
+  <li class="fancy_ul_item">[Faceter] Add executable for the Faceter.
+  <li class="fancy_ul_item">[SMRU] Report `countersinkDiameterOpposite` and `countersinkAngleOpposite` for double countersunk holes (#949).
+  <li class="fancy_ul_item">[Utils] Make `colorizeExe` independent of `asiDfm`.
+  <li class="fancy_ul_item">[CNC] Fix #965: do not let the algorithm set any limits on hole diameters.
+  <li class="fancy_ul_item">[Utils] Convert DXF files to SVG files (#954).
+  <li class="fancy_ul_item">[CNC] Rework CNC testing assets; introduce `cnc-run-tests` command.
+  <li class="fancy_ul_item">[SMRU] Fix #987: Add max engraving depth as an option for asiSheetMetalExe.
+  <li class="fancy_ul_item">[SMRU] Fix #989: Introduce "thickness hint" argument.
+  <li class="fancy_ul_item">[DXF] #945: fixed slot-like cutouts shape corruption
+  <li class="fancy_ul_item">[SMRU] Update default k-factor.
+  <li class="fancy_ul_item">[Common] Fix #995: "Debug error: abort() has been called".
+  <li class="fancy_ul_item">[DXF] Dump JSON to UI dialog in `dxf-perform` command if JSON filename is omitted.
+  <li class="fancy_ul_item">[CNC] Make feature comparator symmetric to prevent debug assertion crash due to disrespecting cpp reference.
+  <li class="fancy_ul_item">[CNC] Get rid of useless `asiCncTest` package.
+</ul>
+
 <p>
-  TODO
+Remaining:
+  - Automatic canonical conversion in SMRU
+  - CNC + DFM merge
+  - DXF translator + bend lines
 </p>
 
 <!-- [END] contents -->
