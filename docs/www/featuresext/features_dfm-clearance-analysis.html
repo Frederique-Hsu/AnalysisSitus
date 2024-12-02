@@ -80,8 +80,15 @@
 <h1>Part clearance analysis</h1>
 
 <p>
-  TODO
+  Clearance analysis aims at detecting narrow features that can be hard to machine. The algorithm behind clearance analysis is similar to that of the <a href="./features_dfm-thickness-analysis.html">thickness check</a>. To perform clearance analysis together with CNC recognition, pass additional <span class="code-inline">-cx</span> argument followed by the minimal allowed value of clearance. E.g., the following example sets 2 [mm] as the minimal allowed clearance:
 </p>
+
+<pre><code>> clear; load-part ex-milling_04.stp
+> cnc-check -cx 2</code></pre>
+</p>
+
+<div align="center"><a href="../imgs/ext/clearance-check_01.png"><img src="../imgs/ext/clearance-check_01.png" width="80%"/></a></div>
+<div align="center"><a href="../imgs/ext/clearance-check_02.png"><img src="../imgs/ext/clearance-check_02.png" width="80%"/></a></div>
 
 <!-- [END] contents -->
 </div>

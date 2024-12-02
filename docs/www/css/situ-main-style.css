@@ -305,6 +305,16 @@ h3 {
     letter-spacing: 0px;
 }
 
+.commit-msg {
+  color: black;
+  font-size: 14px;
+  font-family: Menlo, Monaco, "Courier New", Courier, monospace;
+  background-color: rgb(240, 240, 240);
+  margin-bottom: 5px;
+  padding: 3px;
+  font-weight: normal;
+}
+
 /* ================
  *  Drop-down menu.
 /* ================ */
