@@ -358,20 +358,29 @@ public:
 
   //! Evaluates function for the given coordinates.
   //! \return evaluated distance.
-  virtual double Eval(const double x, const double y, const double z) const
+  virtual double Eval(const double x, const double y, const double z, const bool isUsedDist = true) const
   {
     // Project point on mesh.
     gp_Pnt P(x, y, z);
 
     // Get unsigned distance.
-    const double
-      d2 = squaredDistanceToMesh( m_facets.get(), BVH_Vec3d(x, y, z) );
-    //
-    if ( d2 == REAL_MAX )
-      return REAL_MAX;
+    double d2 = REAL_MAX;
+    if (isUsedDist)
+    {
+      d2 = squaredDistanceToMesh(m_facets.get(), BVH_Vec3d(x, y, z));
+      //
+      if (d2 == REAL_MAX)
+      {
+        return REAL_MAX;
+      }
+    }
 
     // Get the unsigned distance.
-    const double ud = Sqrt(d2);
+    double ud = 1.0;
+    if (isUsedDist)
+    {
+      ud = Sqrt(d2);
+    }
 
     // Check sign by ray casting several times with random direction.
     bool isOutside = true;
@@ -403,7 +412,13 @@ public:
 
     isOutside = vote > 0;
 
-    return (isOutside ? 1 : -1) * ud;
+    double evalValue = isOutside ? 1.0 : -1.0;
+    if (isUsedDist)
+    {
+      evalValue *= ud;
+    }
+
+    return evalValue;
   }
 
 protected:
@@ -775,10 +790,17 @@ public:
     m_dist = new MeshDist(m_bvh);
   }
 
-  bool IsIn(const gp_XYZ& pt, const double tol)
+  bool IsIn(const gp_XYZ& pt, const double tol, const bool isUsedDist = true)
   {
-    const double d = m_dist->Eval( pt.X(), pt.Y(), pt.Z() );
-    return (d < 0) && (Abs(d) > tol);
+    const double d = m_dist->Eval( pt.X(), pt.Y(), pt.Z(), isUsedDist );
+
+    bool isIn = (d < 0);
+    if (isUsedDist)
+    {
+      isIn = isIn && (Abs(d) > tol);
+    }
+
+    return isIn;
   }
 
   bool IsOn(const gp_XYZ& pt, const double tol)
@@ -787,10 +809,17 @@ public:
     return (Abs(d) < tol);
   }
 
-  bool IsOut(const gp_XYZ& pt, const double tol)
+  bool IsOut(const gp_XYZ& pt, const double tol, const bool isUsedDist = true)
   {
-    const double d = m_dist->Eval( pt.X(), pt.Y(), pt.Z() );
-    return (d > 0) && (Abs(d) > tol);
+    const double d = m_dist->Eval( pt.X(), pt.Y(), pt.Z(), isUsedDist );
+
+    bool isOut = (d > 0);
+    if (isUsedDist)
+    {
+      isOut = isOut && (Abs(d) > tol);
+    }
+
+    return isOut;
   }
 
 protected:
