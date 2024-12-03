@@ -72,6 +72,7 @@ enum asiTest_CaseID
   CaseID_FindIsomorphisms,
   CaseID_AppSurf,
   CaseID_BuildGordonSurf,
+  CaseID_ClassifyPointSolid,
   CaseID_UntrimSurf,
   CaseID_JoinSurf,
   CaseID_ReapproxContour,

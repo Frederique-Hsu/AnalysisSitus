@@ -35,6 +35,7 @@
 #include <asiTest_JoinEdges.h>
 #include <asiTest_BuildQuickHull.h>
 #include <asiTest_ChangeColor.h>
+#include <asiTest_ClassifyPointSolid.h>
 #include <asiTest_ConcatPCurves.h>
 #include <asiTest_CommonFacilities.h>
 #include <asiTest_ComputeNegativeVolume.h>
@@ -155,6 +156,7 @@ int main(int argc, char* argv[])
   CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<asiTest_JoinSurf>              );
   CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<asiTest_UntrimSurf>            );
   CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<asiTest_BuildGordonSurf>       );
+  CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<asiTest_ClassifyPointSolid>    );
   CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<asiTest_JoinEdges>             );
   CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<asiTest_ConcatPCurves>         );
   CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<asiTest_InvertShells>          );
