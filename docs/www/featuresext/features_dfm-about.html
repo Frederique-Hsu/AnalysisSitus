@@ -215,6 +215,189 @@
   </tr>
 </table>
 
+<h1 id="dfm-executable">Executable</h1>
+
+<p>
+  Full CAD model inspection including CNC recognition and DFM checks can be launched via the <span class="code-inline">asiCncExe</span> executable with the following signature:
+</p>
+
+<pre>
+&lt;input-filename&gt; &lt;output-filename&gt;
+   [-nv]
+    [-blendRadius <r>]
+    [-holeRadius <r>]
+    [-type {lathing|milling|default}]
+    [-step] [-stepWithColors]                                          
+    [-gltf] [-gltfWithColors]
+    [-image]
+    [-orient]
+    [-fx]
+    [-ex]
+    [-tx &lt;minThickness&gt;]
+    [-cx &lt;minClearance&gt;]
+</pre>
+
+<table align="center" style="border: 1px solid rgb(100, 100, 100);" cellpadding="5" cellspacing="0" width="100%">
+  <tr>
+    <td align="center" class="table-content-header" width="260px">
+      <span class="code-inline">&lt;input-filename&gt;</span>
+    </td>
+    <td class="table-content-block">
+      <p>
+        Input filename of a CAD design to inspect.
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" class="table-content-header" width="260px">
+      <span class="code-inline">&lt;output-filename&gt;</span>
+    </td>
+    <td class="table-content-block">
+      <p>
+        Output filename of a JSON file to generate.
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" class="table-content-header" width="260px">
+      <span class="code-inline">-nv</span>
+    </td>
+    <td class="table-content-block">
+      <p>
+        Indicates whether to approximate negative volumes for the recognized features.
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" class="table-content-header" width="260px">
+      <span class="code-inline">-blendRadius</span>
+    </td>
+    <td class="table-content-block">
+      <p>
+        The max allowed radius of a blend (fillet) feature.
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" class="table-content-header" width="260px">
+      <span class="code-inline">-holeRadius</span>
+    </td>
+    <td class="table-content-block">
+      <p>
+        The max allowed radius of a hole (drill) feature.
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" class="table-content-header" width="260px">
+      <span class="code-inline">-type</span>
+    </td>
+    <td class="table-content-block">
+      <p>
+        The enforced production type to recognize: milling, lathing or default (lathing + milling).
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" class="table-content-header" width="260px">
+      <span class="code-inline">-step</span><br>
+      <span class="code-inline">-stepWithColors</span>
+    </td>
+    <td class="table-content-block">
+      <p>
+        Indicates whether to resave the processed part in STEP format (optionally, with colors). The following image illustrates the processed part saved as a STEP file with colors and imported in Catia V5:
+      </p>
+      <div align="center"><a href="../imgs/ext/cnc-colored-step.png"><img src="../imgs/ext/cnc-colored-step.png" width="60%"/></a></div>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" class="table-content-header" width="260px">
+      <span class="code-inline">-gltf</span><br>
+      <span class="code-inline">-gltfWithColors</span>
+    </td>
+    <td class="table-content-block">
+      <p>
+        Indicates whether to export the processed part in glTF format (optionally, with colors). If one of those flags is specified, the detected DFM issues (if any) are also exported in a separate glTF file. The following image illustrates the recognized milled part loaded from a colored glTF file to a Three.js scene:
+      </p>
+      <div align="center"><a href="../imgs/ext/cnc-gltf_01.png"><img src="../imgs/ext/cnc-gltf_01.png" width="60%"/></a></div>
+      <p>
+        A separate glTF file with the detected manufacturability issues can be loaded into the same scene. This file provides a hierarchically arranged structure of all problems detected:
+      </p>
+      <div align="center"><a href="../imgs/ext/cnc-gltf_02.png"><img src="../imgs/ext/cnc-gltf_02.png" width="60%"/></a></div>
+      <p>
+        A glTF file with the manufacturability issues will only be generated if either <span class="code-inline">-gltf</span> or
+        <span class="code-inline">-gltfWithColors</span> parameter is passed.
+      </p>
+      <div align="center"><a href="../imgs/ext/dfm-threejs.gif"><img src="../imgs/ext/dfm-threejs.gif" width="60%"/></a></div>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" class="table-content-header" width="260px">
+      <span class="code-inline">-image</span>
+    </td>
+    <td class="table-content-block">
+      <p>
+        Indicates whether to make a preview PNG image for the CAD design before processing. The filename of the preview image will be chosen automatically with the base name of <span class="code-inline">&lt;output-filename&gt;</span> and extension of <span class="code-inline">.png</span>.
+      </p>
+      <div align="center"><a href="../imgs/ext/cnc-preview-ex.png"><img src="../imgs/ext/cnc-preview-ex.png" width="40%"/></a></div>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" class="table-content-header" width="260px">
+      <span class="code-inline">-orient</span>
+    </td>
+    <td class="table-content-block">
+      <p>
+        Indicates whether to automatically reorient the part before feature recognition to better fit a hypothetical parallepiped stock.
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" class="table-content-header" width="260px">
+      <span class="code-inline">-tx</span>
+      <span class="code-inline">-cx</span>
+      <span class="code-inline">-fx</span>
+      <span class="code-inline">-ex</span>
+    </td>
+    <td class="table-content-block">
+      <p>
+        DFM checker switches.
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" class="table-content-header" width="260px">
+      <span class="code-inline">-dir</span>
+    </td>
+    <td class="table-content-block">
+      <p>
+        The list of inspection directions to be passed to the face accessibility test.
+      </p>
+    </td>
+  </tr>
+</table>
+
+<p>
+  The executable prints all the passed parameters at the beginning of processing. This execution log can be shared with us if something goes wrong on inspection:
+</p>
+
+<pre class="code">
+  ...      info: File to process:          '../NX-Mill-1.stp'.
+  ...      info: Output JSON filename:     '../outcome.json'.
+  ...      info: Max hole radius:           2e+100.
+  ...      info: Max blend radius:          2e+100.
+  ...      info: Dump STEP:                 true.
+  ...      info: Dump glTF:                 true.
+  ...      info: Dump image:                false.
+  ...      info: Reorient:                  false.
+  ...      info: Face accessibility:        true.
+  ...      info: Edge accessibility:        true.
+  ...      info: Thickness analysis:        true.
+  ...      info: Min thickness:             2.
+  ...      info: Clearance analysis:        true.
+  ...      info: Min clearance:             2.
+</pre>
+
 <!-- [END] contents -->
 </div>
 <br/>
