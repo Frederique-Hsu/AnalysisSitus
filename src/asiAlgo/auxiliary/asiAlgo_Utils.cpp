@@ -4077,10 +4077,54 @@ TopoDS_Shape asiAlgo_Utils::BooleanFuse(const TopTools_ListOfShape& objects,
 
 //-----------------------------------------------------------------------------
 
-//! Performs Boolean intersection operation on the passed objects.
-//! \param[in] objects shapes to intersect.
-//! \return result of intersection.
-TopoDS_Shape asiAlgo_Utils::BooleanIntersect(const TopTools_ListOfShape& objects)
+TopoDS_Shape
+  asiAlgo_Utils::BooleanCommon(const TopoDS_Shape& object1,
+                               const TopoDS_Shape& object2,
+                               const double        fuzz)
+{
+  // Prepare the arguments
+  TopTools_ListOfShape BOP_args;
+  BOP_args.Append(object1);
+  BOP_args.Append(object2);
+
+  // Prepare data structure (calculate interferences)
+  Handle(NCollection_BaseAllocator) Alloc = new NCollection_IncAllocator;
+  //
+  BOPAlgo_PaveFiller DSFiller(Alloc);
+  DSFiller.SetArguments(BOP_args);
+  DSFiller.SetRunParallel(0);
+  DSFiller.SetFuzzyValue(fuzz);
+  DSFiller.Perform();
+
+  // Check data structure
+  bool hasErr = DSFiller.HasErrors();
+  if ( hasErr )
+  {
+    std::cout << "Error: cannot intersect" << std::endl;
+    return TopoDS_Shape();
+  }
+
+  // Run BOP
+  BOPAlgo_BOP BOP(Alloc);
+  BOP.AddArgument(object1);
+  BOP.AddTool(object2);
+  BOP.SetRunParallel(0);
+  BOP.SetOperation(BOPAlgo_COMMON);
+  BOP.PerformWithFiller(DSFiller);
+  hasErr = BOP.HasErrors();
+  if ( hasErr )
+  {
+    std::cout << "Error: cannot intersect argument shapes" << std::endl;
+    return TopoDS_Shape();
+  }
+
+  return BOP.Shape();
+}
+
+//-----------------------------------------------------------------------------
+
+TopoDS_Shape
+  asiAlgo_Utils::BooleanCommon(const TopTools_ListOfShape& objects)
 {
   TopTools_ListIteratorOfListOfShape it(objects);
   TopoDS_Shape result = it.Value();

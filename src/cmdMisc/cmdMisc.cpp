@@ -402,7 +402,7 @@ int MISC_TestPentagon(const Handle(asiTcl_Interp)& interp,
     tools.Append(facets[k]);
     tools.Append(facets[(k == 4) ? 0 : (k + 1)]);
 
-    paves[k] = asiAlgo_Utils::BooleanIntersect(tools);
+    paves[k] = asiAlgo_Utils::BooleanCommon(tools);
   }
 
   for ( int k = 0; k < 5; ++k )

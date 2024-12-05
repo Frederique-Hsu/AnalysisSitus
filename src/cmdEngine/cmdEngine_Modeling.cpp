@@ -1252,6 +1252,51 @@ int ENGINE_BOPFuseGen(const Handle(asiTcl_Interp)& interp,
 
 //-----------------------------------------------------------------------------
 
+int ENGINE_BOPCommon(const Handle(asiTcl_Interp)& interp,
+                     int                          argc,
+                     const char**                 argv)
+{
+  if ( argc != 4 && argc != 5 )
+  {
+    return interp->ErrorOnWrongArgs(argv[0]);
+  }
+
+  // Get topological items which are the operands.
+  Handle(asiData_IVTopoItemNode)
+    topoItem1 = Handle(asiData_IVTopoItemNode)::DownCast( cmdEngine::model->FindNodeByName(argv[2]) );
+  //
+  Handle(asiData_IVTopoItemNode)
+    topoItem2 = Handle(asiData_IVTopoItemNode)::DownCast( cmdEngine::model->FindNodeByName(argv[3]) );
+  //
+  if ( topoItem1.IsNull() )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Cannot find topological object with name %1." << argv[2]);
+    return TCL_OK;
+  }
+  //
+  if ( topoItem2.IsNull() )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Cannot find topological object with name %1." << argv[3]);
+    return TCL_OK;
+  }
+
+  // Read fuzzy value.
+  double fuzz = 0.0;
+  if ( argc == 5 )
+    fuzz = atof(argv[4]);
+
+  // Common.
+  TopoDS_Shape
+    result = asiAlgo_Utils::BooleanCommon( topoItem1->GetShape(),
+                                           topoItem2->GetShape(), fuzz );
+  //
+  interp->GetPlotter().REDRAW_SHAPE(argv[1], result);
+
+  return TCL_OK;
+}
+
+//-----------------------------------------------------------------------------
+
 int ENGINE_DefineGeom(const Handle(asiTcl_Interp)& interp,
                       int                          argc,
                       const char**                 argv)
@@ -2611,6 +2656,15 @@ void cmdEngine::Commands_Modeling(const Handle(asiTcl_Interp)&      interp,
     "\t to try gluing option to speed up computations.",
     //
     __FILE__, group, ENGINE_BOPFuseGen);
+
+  //-------------------------------------------------------------------------//
+  interp->AddCommand("bop-common",
+    //
+    "bop-common <result> <op1> <op2> [<fuzz>]\n"
+    "\t Intersects <op1> and <op2> using Boolean Common operation. Use <fuzz> value\n"
+    "\t to control the 'fuzzy tolerance'.",
+    //
+    __FILE__, group, ENGINE_BOPCommon);
 
   //-------------------------------------------------------------------------//
   interp->AddCommand("define-geom",

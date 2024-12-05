@@ -1857,8 +1857,21 @@ namespace asiAlgo_Utils
                 const bool                  maximizeFaces,
                 Handle(BRepTools_History)&  history);
 
+  //! Performs Boolean Common for the passed pair of shapes.
+  //! \param object1 [in] the first object.
+  //! \param object2 [in] the second object.
+  //! \param fuzzy   [in] the value of fuzzy tolerance.
+  //! \return result shape.
   asiAlgo_EXPORT TopoDS_Shape
-    BooleanIntersect(const TopTools_ListOfShape& objects);
+    BooleanCommon(const TopoDS_Shape& object1,
+                  const TopoDS_Shape& object2,
+                  const double        fuzz = 0.0);
+
+  //! Performs Boolean intersection operation on the passed objects.
+  //! \param[in] objects the shapes to intersect.
+  //! \return the result of intersection.
+  asiAlgo_EXPORT TopoDS_Shape
+    BooleanCommon(const TopTools_ListOfShape& objects);
 
   asiAlgo_EXPORT TopoDS_Shape
     BooleanGeneralFuse(const TopTools_ListOfShape& objects,

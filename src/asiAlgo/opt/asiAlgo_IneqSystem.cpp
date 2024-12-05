@@ -251,7 +251,7 @@ void asiAlgo_IneqSystem::Dump(ActAPI_PlotterEntry            plotter,
   //
   if ( m_iN == 2 || m_iN == 3 )
   {
-    TopoDS_Shape polytope = asiAlgo_Utils::BooleanIntersect(halfSpaces);
+    TopoDS_Shape polytope = asiAlgo_Utils::BooleanCommon(halfSpaces);
 
     plotter.REDRAW_SHAPE(name, polytope, color, 1.0, isWireframe);
   }
