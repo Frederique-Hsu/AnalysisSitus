@@ -2,7 +2,7 @@
 <html>
  <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>Analysis Situs: DBLF (deep-bottom-left-fill) part placement</title>
+  <title>Analysis Situs: 3D packing overview</title>
   <link rel="shortcut icon" type="image/png" href="../imgs/favicon.png"/>
   <link rel="stylesheet" type="text/css" href="../css/situ-main-style.css">
 
@@ -16,6 +16,13 @@
     gtag('config', 'UA-112292727-2');
   </script>
   <!-- [end] Google Analytics -->
+  
+  <!--
+    Quick navigation script. Use a div with "toc-panel" class having a
+    nested div with "toc" id to place the navigation panel.
+  -->
+  <script src="../js/jquery-3.5.1.min.js"></script>
+  <script src="../js/toc.js"></script>
 
   <!-- [begin] Code highlight -->
   <link rel="stylesheet" href="../css/highlight.min.css">
@@ -50,7 +57,7 @@
   <td align="left" class="header">
     <span class="header-logo"><a href="../index.html" class="header-href">Analysis&nbsp;Situs</a></span>
     &nbsp;
-    ./<a class="header-href" href="../features.html">features</a>/DBLF part placement
+    ./<a class="header-href" href="../featuresext.html">extensions</a>/3D packing overview
   </td>
 </tr>
 </table>
@@ -76,10 +83,57 @@
 <div class="content-body">
 <!-- [BEGIN] contents -->
 
-<h1>DBLF part placement</h1>
+<h1 id="toc-3dnesting-overview">3D packing overview</h1>
+
+<h2 id="toc-3dnesting-input">Input</h2>
 
 <p>
+  3D nesting reads its inputs from a JSON file.
 </p>
+
+<pre><code>{
+  "outputDir": "./out",
+  "container": {
+    "name": "c",
+    "xDim": 400,
+    "yDim": 300,
+    "zDim": 200,
+    "cellSize": 10
+  },
+  "settings": {
+    "enablePartDecimation": true
+  },
+  "parts": [
+    {
+      "filename": "alm/blade.obj-out.stl",
+      "count": 6
+    },
+    {
+      "filename": "alm/armchair.obj-out.stl",
+      "count": 5
+    }
+  ]
+}  
+</code></pre>
+
+<h2 id="toc-3dnesting-output">Output</h2>
+
+<p>
+  The results of 3D nesting are dumped to the directory defined with the <span class="code-inline">outputDir</span> key in the input JSON.
+</p>
+
+<pre><code>{
+  "processingTime": 9.2336539999996603,
+  "sdk": "Analysis Situs / Nesting",
+  "sdkVersion": "2024.2dev",
+  "sdkHash": "0d281821da",
+  "file": "../input.json",
+  "summary": {
+    "numNestedParts": 100,
+    "zHeight": 321.5
+  }
+}  
+</code></pre>
 
 <!-- [END] contents -->
 </div>

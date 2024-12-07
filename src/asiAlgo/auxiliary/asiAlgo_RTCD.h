@@ -202,7 +202,7 @@ namespace RTCD
 
   //! A plane in 3D space can be thought of as a flat surface extending indefinitely
   //! in all directions. This structure defines plane in the "constant-normal" form
-  //! according to the sec. 3.6 of RTCD ook.
+  //! according to the sec. 3.6 of RTCD book.
   struct Plane
   {
     Vector              n;      //!< Plane normal. Points `x` on the plane satisfy `Dot(n,x) = d`.
