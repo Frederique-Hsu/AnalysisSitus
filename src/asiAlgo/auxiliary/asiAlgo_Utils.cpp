@@ -2049,7 +2049,7 @@ bool asiAlgo_Utils::IsToroidal(const TopoDS_Face& face,
 
   bool isToroidal = false;
   Handle(Geom_Surface) surf = BRep_Tool::Surface(face);
-  Handle(Geom_ToroidalSurface) torsurf;  
+  Handle(Geom_ToroidalSurface) torsurf;
 
   if( surf.IsNull() ) {
     return false;
@@ -2476,6 +2476,18 @@ TopoDS_Shape
   }
 
   return theShape.Moved(theTransform);
+}
+
+//-----------------------------------------------------------------------------
+
+void
+  asiAlgo_Utils::ApplyTransformation(const Handle(Poly_Triangulation)& mesh,
+                                     const gp_Trsf&                    T)
+{
+  for ( int node_idx = 1; node_idx <= mesh->NbNodes(); ++node_idx )
+  {
+    mesh->SetNode( node_idx, mesh->Node(node_idx).Transformed(T) );
+  }
 }
 
 //-----------------------------------------------------------------------------

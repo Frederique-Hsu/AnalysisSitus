@@ -125,34 +125,34 @@ namespace hlrAux
     TopoDS_Compound C;
     BRep_Builder().MakeCompound(C);
     //
-    if ( !V.IsNull() && visibility.OutputVisibleSharpEdges)
+    if ( !V.IsNull() && visibility.OutputVisibleSharpEdges )
       BRep_Builder().Add(C, V);
     //
-    if ( !V1.IsNull() && visibility.OutputVisibleSmoothEdges)
+    if ( !V1.IsNull() && visibility.OutputVisibleSmoothEdges )
       BRep_Builder().Add(C, V1);
     //
-    if ( !VN.IsNull() && visibility.OutputVisibleOutlineEdges)
+    if ( !VN.IsNull() && visibility.OutputVisibleOutlineEdges )
       BRep_Builder().Add(C, VN);
     //
-    if ( !VO.IsNull() && visibility.OutputVisibleSewnEdges)
+    if ( !VO.IsNull() && visibility.OutputVisibleSewnEdges )
       BRep_Builder().Add(C, VO);
     //
-    if ( !VI.IsNull() && visibility.OutputVisibleIsoLines)
+    if ( !VI.IsNull() && visibility.OutputVisibleIsoLines )
       BRep_Builder().Add(C, VI);
     //
-    if ( !H.IsNull() && visibility.OutputHiddenSharpEdges)
+    if ( !H.IsNull() && visibility.OutputHiddenSharpEdges )
       BRep_Builder().Add(C, H);
     //
-    if ( !H1.IsNull() && visibility.OutputHiddenSmoothEdges)
+    if ( !H1.IsNull() && visibility.OutputHiddenSmoothEdges )
       BRep_Builder().Add(C, H1);
     //
-    if ( !HN.IsNull() && visibility.OutputHiddenOutlineEdges)
+    if ( !HN.IsNull() && visibility.OutputHiddenOutlineEdges )
       BRep_Builder().Add(C, HN);
     //
-    if ( !HO.IsNull() && visibility.OutputHiddenSewnEdges)
+    if ( !HO.IsNull() && visibility.OutputHiddenSewnEdges )
       BRep_Builder().Add(C, HO);
     //
-    if ( !HI.IsNull() && visibility.OutputHiddenIsoLines)
+    if ( !HI.IsNull() && visibility.OutputHiddenIsoLines )
       BRep_Builder().Add(C, HI);
 
     gp_Trsf T;
@@ -217,28 +217,28 @@ namespace hlrAux
     TopoDS_Compound C;
     BRep_Builder().MakeCompound(C);
     //
-    if ( !V.IsNull() && visibility.OutputVisibleSharpEdges)
+    if ( !V.IsNull() && visibility.OutputVisibleSharpEdges )
       BRep_Builder().Add(C, V);
     //
-    if ( !V1.IsNull() && visibility.OutputVisibleSmoothEdges)
+    if ( !V1.IsNull() && visibility.OutputVisibleSmoothEdges )
       BRep_Builder().Add(C, V1);
     //
-    if ( !VN.IsNull() && visibility.OutputVisibleOutlineEdges)
+    if ( !VN.IsNull() && visibility.OutputVisibleOutlineEdges )
       BRep_Builder().Add(C, VN);
     //
-    if ( !VO.IsNull() && visibility.OutputVisibleSewnEdges)
+    if ( !VO.IsNull() && visibility.OutputVisibleSewnEdges )
       BRep_Builder().Add(C, VO);
     //
-    if ( !H.IsNull() && visibility.OutputHiddenSharpEdges)
+    if ( !H.IsNull() && visibility.OutputHiddenSharpEdges )
       BRep_Builder().Add(C, H);
     //
-    if ( !H1.IsNull() && visibility.OutputHiddenSmoothEdges)
+    if ( !H1.IsNull() && visibility.OutputHiddenSmoothEdges )
       BRep_Builder().Add(C, H1);
     //
-    if ( !HN.IsNull() && visibility.OutputHiddenOutlineEdges)
+    if ( !HN.IsNull() && visibility.OutputHiddenOutlineEdges )
       BRep_Builder().Add(C, HN);
     //
-    if ( !HO.IsNull() && visibility.OutputHiddenSewnEdges)
+    if ( !HO.IsNull() && visibility.OutputHiddenSewnEdges )
       BRep_Builder().Add(C, HO);
 
     gp_Trsf T;

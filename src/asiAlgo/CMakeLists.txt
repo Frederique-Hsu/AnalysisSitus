@@ -507,6 +507,7 @@ set (mesh_H_FILES
   mesh/asiAlgo_MeshMergeNodes.h
   mesh/asiAlgo_MeshOBB.h
   mesh/asiAlgo_MeshOffset.h
+  mesh/asiAlgo_MeshOrient.h
   mesh/asiAlgo_MeshParams.h
   mesh/asiAlgo_MeshProjectLine.h
   mesh/asiAlgo_MeshSlice.h
@@ -525,6 +526,7 @@ set (mesh_CPP_FILES
   mesh/asiAlgo_MeshMergeNodes.cpp
   mesh/asiAlgo_MeshOBB.cpp
   mesh/asiAlgo_MeshOffset.cpp
+  mesh/asiAlgo_MeshOrient.cpp
   mesh/asiAlgo_MeshParams.cpp
   mesh/asiAlgo_MeshProjectLine.cpp
   mesh/asiAlgo_MeshSlice.cpp

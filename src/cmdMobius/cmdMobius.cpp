@@ -41,6 +41,7 @@
 #include <asiAlgo_MeshComputeNorms.h>
 #include <asiAlgo_MeshGen.h>
 #include <asiAlgo_MeshMerge.h>
+#include <asiAlgo_MeshOrient.h>
 #include <asiAlgo_MeshSmooth.h>
 #include <asiAlgo_RTCD.h>
 #include <asiAlgo_Timer.h>
@@ -58,6 +59,7 @@
 #endif
 
 // OpenCascade includes
+#include <BRepBuilderAPI_Transform.hxx>
 #include <gp_Pln.hxx>
 #include <Intf_InterferencePolygon2d.hxx>
 #include <Intf_Polygon2d.hxx>
@@ -109,7 +111,7 @@ namespace
     }
 
   protected:
- 
+
     std::vector<gp_Pnt2d> m_poles;
 
   };
@@ -2325,6 +2327,73 @@ int MOBIUS_POLY_MakePlane(const Handle(asiTcl_Interp)& interp,
 
 //-----------------------------------------------------------------------------
 
+int MOBIUS_POLY_Orient(const Handle(asiTcl_Interp)& interp,
+                       int                          argc,
+                       const char**                 argv)
+{
+#if defined USE_MOBIUS
+  // Get triangulation.
+  Handle(asiData_TriangulationNode)
+    tris_n = cmdMobius::model->GetTriangulationNode();
+
+  asiEngine_Triangulation trisApi( cmdMobius::model,
+                                   cmdMobius::cf->ViewerPart->PrsMgr(),
+                                   interp->GetProgress(),
+                                   interp->GetPlotter() );
+
+  // Get the active mesh.
+  t_ptr<t_mesh>
+    mesh = cmdMobius::model->GetTriangulationNode()->GetTriangulation();
+  //
+  Handle(Poly_Triangulation)
+    tris = cascade::GetOpenCascadeMesh(mesh);
+
+  TIMER_NEW
+  TIMER_GO
+
+  asiAlgo_MeshOrient orient( tris, interp->GetProgress(), interp->GetPlotter() );
+  //
+  if ( !orient.Perform() )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Mesh orientation failed.");
+    return TCL_ERROR;
+  }
+
+  gp_Trsf T = orient.GetTrsf();
+
+  TIMER_FINISH
+  TIMER_COUT_RESULT_NOTIFIER(interp->GetProgress(), "Orient mesh")
+
+  // Transform the mesh.
+  asiAlgo_Utils::ApplyTransformation(tris, T);
+
+  // Update data model.
+  cmdMobius::model->OpenCommand();
+  {
+    tris_n->SetTriangulation( cascade::GetMobiusMesh(tris) );
+  }
+  cmdMobius::model->CommitCommand();
+
+  if ( !cmdMobius::cf.IsNull() )
+  {
+    // Update UI.
+    cmdMobius::cf->ViewerPart->PrsMgr()->Actualize(tris_n);
+    cmdMobius::cf->ObjectBrowser->Populate();
+  }
+
+  return TCL_OK;
+#else
+  (void) argc;
+  (void) argv;
+
+  interp->GetProgress().SendLogMessage(LogErr(Normal) << "Mobius is not available.");
+
+  return TCL_ERROR;
+#endif
+}
+
+//-----------------------------------------------------------------------------
+
 void cmdMobius::Factory(const Handle(asiTcl_Interp)&      interp,
                         const Handle(Standard_Transient)& data)
 {
@@ -2550,6 +2619,14 @@ void cmdMobius::Factory(const Handle(asiTcl_Interp)&      interp,
     "\t Constructs a plane on the selected facet.",
     //
     __FILE__, group, MOBIUS_POLY_MakePlane);
+
+  //-------------------------------------------------------------------------//
+  interp->AddCommand("poly-orient",
+    //
+    "poly-orient\n"
+    "\t Reorients the active triangulation so it gets more suitable axes frame.",
+    //
+    __FILE__, group, MOBIUS_POLY_Orient);
 }
 
 // Declare entry point PLUGINFACTORY

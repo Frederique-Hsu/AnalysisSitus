@@ -1366,6 +1366,13 @@ namespace asiAlgo_Utils
                         const gp_Trsf&      theTransform,
                         const bool          doCopy);
 
+  //! Applies the passed transformation to the given mesh.
+  //! \param mesh [in, out] the mesh to transform.
+  //! \param T    [in]      the transformation to apply.
+  asiAlgo_EXPORT void
+    ApplyTransformation(const Handle(Poly_Triangulation)& mesh,
+                        const gp_Trsf&                    T);
+
   //! Prepares one shape out of the passed collection of subshapes. Is there
   //! is only one subshape passed, it will be returned without any changes.
   //! For multiple subshapes, a compound is constructed and returned. This
