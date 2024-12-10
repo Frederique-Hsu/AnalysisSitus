@@ -76,7 +76,7 @@ asiAlgo_FileFormat
 {
   TCollection_AsciiString ext = GetFileExtension(path);
 
-  if ( ext == "brep" || ext == "rle" )
+  if ( ext == "brep" || ext == "rle" || ext == "brp" )
   {
     return FileFormat_BREP;
   }

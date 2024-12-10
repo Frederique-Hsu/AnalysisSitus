@@ -61,8 +61,8 @@ Root: HKCR; Subkey: ".STP";                                     ValueType: strin
 Root: HKCR; Subkey: ".step";                                    ValueType: string; ValueName: ""; ValueData: "AnalysisSitys"; Flags: uninsdeletevalue; Tasks: flagFileAssoc
 Root: HKCR; Subkey: ".STEP";                                    ValueType: string; ValueName: ""; ValueData: "AnalysisSitys"; Flags: uninsdeletevalue; Tasks: flagFileAssoc
 Root: HKCR; Subkey: ".brep";                                    ValueType: string; ValueName: ""; ValueData: "AnalysisSitys"; Flags: uninsdeletevalue; Tasks: flagFileAssoc
+Root: HKCR; Subkey: ".brp";                                     ValueType: string; ValueName: ""; ValueData: "AnalysisSitys"; Flags: uninsdeletevalue; Tasks: flagFileAssoc
 Root: HKCR; Subkey: ".rle";                                     ValueType: string; ValueName: ""; ValueData: "AnalysisSitys"; Flags: uninsdeletevalue; Tasks: flagFileAssoc
-Root: HKCR; Subkey: ".bin";                                     ValueType: string; ValueName: ""; ValueData: "AnalysisSitys"; Flags: uninsdeletevalue; Tasks: flagFileAssoc
 Root: HKCR; Subkey: ".binbrep";                                 ValueType: string; ValueName: ""; ValueData: "AnalysisSitys"; Flags: uninsdeletevalue; Tasks: flagFileAssoc
 Root: HKCR; Subkey: ".cbf";                                     ValueType: string; ValueName: ""; ValueData: "AnalysisSitys"; Flags: uninsdeletevalue; Tasks: flagFileAssoc
 Root: HKCR; Subkey: "AnalysisSitys";                            ValueType: string; ValueName: ""; ValueData: "AnalysisSitus"; Flags: uninsdeletekey
