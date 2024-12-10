@@ -41,6 +41,7 @@
 #include <asiAlgo_PointWithAttr.h>
 #include <asiAlgo_PurifyCloud.h>
 #include <asiAlgo_QuickHull2d.h>
+#include <asiAlgo_Timer.h>
 
 // asiTcl includes
 #include <asiTcl_PluginMacro.h>
@@ -231,7 +232,7 @@ int TEST_BuildAABBPoints(const Handle(asiTcl_Interp)& interp,
     }
   }
 
-  interp->GetPlotter().REDRAW_POINTS(argv[1], pts->GetCoordsArray(), Color_Green);
+  interp->GetPlotter().REDRAW_POINTS(argv[1], pts->GetCoordsArray(), Color_White);
 
   return TCL_OK;
 }
@@ -354,6 +355,9 @@ int TEST_ClassifyPointSolid(const Handle(asiTcl_Interp)& interp,
   const double maxTol = tolerChecker.Tolerance(partShape, 1);  // 1 means max.
   const double onToler = Max(Max(maxTol, Precision::Confusion()), PmcOnTol);
 
+  TIMER_NEW
+  TIMER_GO
+
   asiAlgo_ClassifyPointSolid SC(shapeTris->GetTriangulation());
 
   // Get output points.
@@ -392,6 +396,9 @@ int TEST_ClassifyPointSolid(const Handle(asiTcl_Interp)& interp,
       ptsOut->AddElement(pnt.X(), pnt.Y(), pnt.Z());
     }
   }
+
+  TIMER_FINISH
+  TIMER_COUT_RESULT_NOTIFIER(interp->GetProgress(), "PMC")
 
   interp->GetPlotter().REDRAW_POINTS(argv[2], ptsOut->GetCoordsArray(), Color_Green);
 
@@ -472,8 +479,8 @@ void cmdTest::Commands_Points(const Handle(asiTcl_Interp)&      interp,
   //-------------------------------------------------------------------------//
   interp->AddCommand("test-number-of-points",
     //
-    "test-number-of-points <pointsName> <nbPoinst>\n"
-    "\t Check number of points",
+    "test-number-of-points <pointsName> <nbPoints>\n"
+    "\t Checks the number of points",
     //
     __FILE__, group, TEST_NumberOfPoints);
 }

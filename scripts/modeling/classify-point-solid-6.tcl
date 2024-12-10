@@ -8,6 +8,6 @@ load-step $datadir/$datafile
 
 test-build-aabb-points "boxPoints" 100 100 100
 
-test-classify-point-solid "boxPoints" "boxPointsOut" 1 0
+test-classify-point-solid "boxPoints" "boxPointsFiltered" 1 0
 
-test-number-of-points "boxPointsOut" 488334
+test-number-of-points "boxPointsFiltered" 488334
