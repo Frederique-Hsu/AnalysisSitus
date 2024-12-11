@@ -131,6 +131,12 @@ void asiData_PartNode::ResetToDefault(const bool resetNaming)
   this->SetBVHBuilder            (0);
   this->SetRenderBVHWireframe    (false);
 
+  // Set if not initialized.
+  if ( !this->Parameter(PID_RenderEdgesAsTubes)->IsWellFormed() )
+  {
+    this->SetRenderEdgesAsTubes(false);
+  }
+
   // Set identity transformation.
   ActParamTool::AsRealArray( this->Parameter(PID_TrsfMx) )->SetArray( new HRealArray(0, 11, 0.) );
   //
