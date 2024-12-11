@@ -175,7 +175,7 @@ QCompleter* asiUI_Console::completer() const
 QSize asiUI_Console::sizeHint() const
 {
   QDesktopWidget desktop;
-  const int side   = std::min( desktop.height(), desktop.width() );
+  const int side   = Min( desktop.height(), desktop.width() );
   const int width  = (int) (side*0.25);
   const int height = (int) (side*0.1);
 

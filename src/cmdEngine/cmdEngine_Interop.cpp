@@ -1759,36 +1759,6 @@ int ENGINE_LoadAstra(const Handle(asiTcl_Interp)& interp,
 
 //-----------------------------------------------------------------------------
 
-int ENGINE_GlInfo(const Handle(asiTcl_Interp)& interp,
-                  int                          argc,
-                  const char**                 argv)
-{
-  if (argc != 1)
-  {
-    return interp->ErrorOnWrongArgs(argv[0]);
-  }
-
-  vtkSmartPointer<vtkRenderWindow>
-    window = vtkSmartPointer<vtkRenderWindow>::New();
-  //
-  vtkOpenGLRenderWindow*
-    oglwin = vtkOpenGLRenderWindow::SafeDownCast(window);
-
-  interp->GetProgress().SendLogMessage( LogInfo(Normal) << "OpenGL supported: %1."
-                                                        << oglwin->SupportsOpenGL() );
-  interp->GetProgress().SendLogMessage( LogInfo(Normal) << "Backend: %1."
-                                                        << oglwin->GetRenderingBackend() );
-
-  int vmaj = 0, vmin = 0;
-  oglwin->GetOpenGLVersion(vmaj, vmin);
-  interp->GetProgress().SendLogMessage(LogInfo(Normal) << "OpenGL version: %1.%2."
-                                                       << vmaj << vmin);
-
-  return TCL_OK;
-}
-
-//-----------------------------------------------------------------------------
-
 void cmdEngine::Commands_Interop(const Handle(asiTcl_Interp)&      interp,
                                  const Handle(Standard_Transient)& cmdEngine_NotUsed(data))
 {
@@ -2020,12 +1990,4 @@ void cmdEngine::Commands_Interop(const Handle(asiTcl_Interp)&      interp,
     "\t Saves curves and surfaces to ASTRA file.",
     //
     __FILE__, group, ENGINE_SaveAstra);
-
-  //-------------------------------------------------------------------------//
-  interp->AddCommand("vglinfo",
-    //
-    "vglinfo\n"
-    "\t Prints information about OpenGL.\n",
-    //
-    __FILE__, group, ENGINE_GlInfo);
 }

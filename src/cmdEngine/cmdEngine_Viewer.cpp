@@ -28,6 +28,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-----------------------------------------------------------------------------
 
+// Win-specific, goes first
+#include <WinCheckOpenGlVersion.h>
+
 // cmdEngine includes
 #include <cmdEngine.h>
 
@@ -365,6 +368,36 @@ int ENGINE_UnfreezeViewer(const Handle(asiTcl_Interp)& interp,
 
 //-----------------------------------------------------------------------------
 
+int ENGINE_GlInfo(const Handle(asiTcl_Interp)& interp,
+                  int                          /*argc*/,
+                  const char**                 /*argv*/)
+{
+#if defined WIN32
+  HINSTANCE hInstance = (HINSTANCE)::GetModuleHandle(NULL);
+
+  WinCheckOpenGlVersion checker( hInstance );
+
+  bool hasGlVer_3_2 = checker.hasVersion_3_2();
+
+  std::ostringstream toString;
+  toString << "OpenGL 3.2:" << (!hasGlVer_3_2 ? " not" : "") << " found\n"
+           << "Version "    << checker.version               << "\n"
+           << "Renderer "   << checker.renderer              << "\n"
+           << "Vendor "     << checker.vendor;
+
+  interp->GetProgress().SendLogMessage( LogNotice(Normal) << "\n%1"
+                                                          << toString.str() );
+
+  return TCL_OK;
+#else
+  interp->GetProgress().SendLogMessage( LogErr(Normal) << "This command is windows-only." );
+
+  return TCL_ERROR;
+#endif
+}
+
+//-----------------------------------------------------------------------------
+
 void cmdEngine::Commands_Viewer(const Handle(asiTcl_Interp)&      interp,
                                 const Handle(Standard_Transient)& cmdEngine_NotUsed(data))
 {
@@ -483,4 +516,12 @@ void cmdEngine::Commands_Viewer(const Handle(asiTcl_Interp)&      interp,
     "\t Enables all events in the 3D viewer.",
     //
     __FILE__, group, ENGINE_UnfreezeViewer);
+
+  //-------------------------------------------------------------------------//
+  interp->AddCommand("vglinfo",
+    //
+    "vglinfo\n"
+    "\t Prints information about OpenGL.\n",
+    //
+    __FILE__, group, ENGINE_GlInfo);
 }

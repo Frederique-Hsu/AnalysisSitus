@@ -28,6 +28,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-----------------------------------------------------------------------------
 
+// Win-specific, goes first
+#include <WinCheckOpenGlVersion.h>
+
 // Own include
 #include <asiUI_BatchFacilities.h>
 
@@ -59,6 +62,17 @@ asiUI_BatchFacilities::asiUI_BatchFacilities(const bool initModel,
     this->Model->DisableTransactions();
     {
       this->Model->Populate();
+
+#if defined WIN32
+      WinCheckOpenGlVersion checker( (HINSTANCE)::GetModuleHandle(NULL) );
+
+      t_asciiString vendorStr( checker.vendor.c_str() );
+      vendorStr.LowerCase();
+      const bool isIntegratedGPU = (vendorStr.Search("intel") != -1);
+
+      // Make sure to disable shaders.
+      this->Model->GetPartNode()->SetRenderEdgesAsTubes(!isIntegratedGPU);
+#endif
     }
     this->Model->EnableTransactions();
   }

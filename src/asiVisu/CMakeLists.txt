@@ -436,12 +436,14 @@ set (utils_H_FILES
   utils/asiVisu_MeshResultUtils.h
   utils/asiVisu_MeshUtils.h
   utils/asiVisu_Utils.h
+  utils/WinCheckOpenGlVersion.h
 )
 set (utils_CPP_FILES
   utils/asiVisu_GeomUtils.cpp
   utils/asiVisu_MeshResultUtils.cpp
   utils/asiVisu_MeshUtils.cpp
   utils/asiVisu_Utils.cpp
+  utils/WinCheckOpenGlVersion.cpp
 )
 
 #------------------------------------------------------------------------------
@@ -708,6 +710,10 @@ foreach (LIB_FILE ${VTK_LIB_FILES})
     target_link_libraries (asiVisu ${3RDPARTY_vtk_LIBRARY_DIR}/${LIB_FILENAME})
   endif()
 endforeach()
+
+if (WIN32)
+  target_link_libraries(asiVisu opengl32)
+endif()
 
 #------------------------------------------------------------------------------
 # Installation of Analysis Situs as a software
