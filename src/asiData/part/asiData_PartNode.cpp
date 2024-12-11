@@ -123,7 +123,6 @@ void asiData_PartNode::ResetToDefault(const bool resetNaming)
   this->SetHasVertices           (false);
   this->SetHasBackface           (true);
   this->SetShowFaultyFaces       (true);
-  this->SetRenderEdgesAsTubes    (true);
   this->SetOriginalUnits         ("mm"); // Default.
   this->SetRenderAAG             (false);
   this->SetRenderBVH             (false);
