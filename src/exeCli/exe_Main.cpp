@@ -188,7 +188,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
   // Create common facilities out of threads.
   Handle(asiUI_BatchFacilities)
-    cf = asiUI_BatchFacilities::Instance(true, true, false);
+    cf = asiUI_BatchFacilities::Instance(true, true, false, false, false);
 
   // Create thread for Interpreter
   HANDLE hInterpThread = CreateThread(NULL, 0, Thread_Interp, NULL, 0, NULL);

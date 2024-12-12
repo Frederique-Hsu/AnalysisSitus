@@ -46,7 +46,8 @@
 asiUI_BatchFacilities::asiUI_BatchFacilities(const bool initModel,
                                              const bool initBatch,
                                              const bool initInterp,
-                                             const bool overrideTclChannels)
+                                             const bool overrideTclChannels,
+                                             const bool testOpenGl)
 //
 : Standard_Transient()
 {
@@ -64,14 +65,17 @@ asiUI_BatchFacilities::asiUI_BatchFacilities(const bool initModel,
       this->Model->Populate();
 
 #if defined WIN32
-      WinCheckOpenGlVersion checker( (HINSTANCE)::GetModuleHandle(NULL) );
+      if ( testOpenGl )
+      {
+        WinCheckOpenGlVersion checker( (HINSTANCE)::GetModuleHandle(NULL) );
 
-      t_asciiString vendorStr( checker.vendor.c_str() );
-      vendorStr.LowerCase();
-      const bool isIntegratedGPU = (vendorStr.Search("intel") != -1);
+        t_asciiString vendorStr( checker.vendor.c_str() );
+        vendorStr.LowerCase();
+        const bool isIntegratedGPU = (vendorStr.Search("intel") != -1);
 
-      // Make sure to disable shaders.
-      this->Model->GetPartNode()->SetRenderEdgesAsTubes(!isIntegratedGPU);
+        // Make sure to disable shaders.
+        this->Model->GetPartNode()->SetRenderEdgesAsTubes(!isIntegratedGPU);
+      }
 #endif
     }
     this->Model->EnableTransactions();
@@ -102,10 +106,10 @@ asiUI_BatchFacilities::asiUI_BatchFacilities(const bool initModel,
     if ( initInterp )
     {
       this->Interp = new asiTcl_Interp;
-      this->Interp->Init(overrideTclChannels);
-      this->Interp->SetModel(this->Model);
-      this->Interp->SetProgress(this->Progress);
-      this->Interp->SetPlotter(this->Plotter);
+      this->Interp->Init        (overrideTclChannels);
+      this->Interp->SetModel    (this->Model);
+      this->Interp->SetProgress (this->Progress);
+      this->Interp->SetPlotter  (this->Plotter);
     }
   }
 }
@@ -116,10 +120,15 @@ Handle(asiUI_BatchFacilities)
   asiUI_BatchFacilities::Instance(const bool initModel,
                                   const bool initBatch,
                                   const bool initInterp,
-                                  const bool overrideTclChannels)
+                                  const bool overrideTclChannels,
+                                  const bool testOpenGl)
 {
   static Handle(asiUI_BatchFacilities)
-    ref = new asiUI_BatchFacilities(initModel, initBatch, initInterp, overrideTclChannels);
+    ref = new asiUI_BatchFacilities(initModel,
+                                    initBatch,
+                                    initInterp,
+                                    overrideTclChannels,
+                                    testOpenGl);
 
   return ref;
 }

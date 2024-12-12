@@ -129,7 +129,7 @@ int main(int argc, char** argv)
 
   // Create common facilities out of threads.
   Handle(asiUI_BatchFacilities)
-    cf = asiUI_BatchFacilities::Instance(true, true, false);
+    cf = asiUI_BatchFacilities::Instance(true, true, false, false, false);
 
   //---------------------------------------------------------------------------
   // Create server thread
