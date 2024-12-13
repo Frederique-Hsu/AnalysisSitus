@@ -2328,10 +2328,13 @@ int MOBIUS_POLY_MakePlane(const Handle(asiTcl_Interp)& interp,
 //-----------------------------------------------------------------------------
 
 int MOBIUS_POLY_Orient(const Handle(asiTcl_Interp)& interp,
-                       int                          /*argc*/,
-                       const char**                 /*argv*/)
+                       int                          argc,
+                       const char**                 argv)
 {
 #if defined USE_MOBIUS
+  (void) argc;
+  (void) argv;
+
   // Get triangulation.
   Handle(asiData_TriangulationNode)
     tris_n = cmdMobius::model->GetTriangulationNode();
