@@ -90,14 +90,38 @@
 <h2 id="toc-cnc-finishing">Surface finishing</h2>
 
 <p>
-  TODO
+  The recognition process begins by finding all rotational symmetries in the part. All faces "vote" for a candidate turning axis, and the axis with the highest number of votes is chosen. Faces that voted for the winning axis are grouped according to their geometric type. Other faces are tagged as unrecognized and bypassed for future milling recognition.
 </p>
+
+<p>
+  The following image illustrates a complex turned+milled part with the "coating" that corresponds to all three possible recognition outcomes: lathed ("cold" and "hot" colors), milled (shades of green), and unrecognized (gray).
+</p>
+
+<div align="center"><a href="../imgs/ext/cnc-lathing_surfaces.png"><img src="../imgs/ext/cnc-lathing_surfaces.png" width="60%"/></a></div>
+
+<p>
+  The detected milled and unrecognized features are all spanned by the constructed minimal turned state (MTS) of geometry:
+</p>
+
+<div align="center"><a href="../imgs/ext/cnc-lathing_05.png"><img src="../imgs/ext/cnc-lathing_05.png" width="60%"/></a></div>
+
+<p>
+  This minimal turned state is used to decompose the entire "delta volume" of the turned part onto the elementary negative volume cells (which we also call "negative cells" for brevity).
+</p>
+
+<div align="center"><a href="../imgs/ext/cnc-lathing_06.png"><img src="../imgs/ext/cnc-lathing_06.png" width="60%"/></a></div>
 
 <h2 id="toc-cnc-roughing">Negative volumes</h2>
 
 <p>
-  TODO
+  The following types of negative cells are extracted from the stock bar and the constructed MTS:
 </p>
+
+<ul>
+  <li class="fancy_ul_item">Steps</li>
+  <li class="fancy_ul_item">Grooves</li>
+  <li class="fancy_ul_item">Central holes</li>
+</ul>
 
 <div align="center"><a href="../imgs/ext/cnc-lathing_negative-cells.png"><img src="../imgs/ext/cnc-lathing_negative-cells.png" width="60%"/></a></div>
 

@@ -85,25 +85,25 @@
   <li class="fancy_ul_item commit-msg">[DFM] Improve performance of the horizontal tessellator algorithm for turned parts.
   <li class="fancy_ul_item commit-msg">[SMRU] Add `axialCuttingRange` property for tubes/profiles (Fix #663).
   <li class="fancy_ul_item commit-msg">[DFM] Get rid of width-based filtering for false-positive thickness spots.
-  <li class="fancy_ul_item commit-msg">[CSHARP/DXF] Added CSharp wrapper for DXF library (#661).
+  <li class="fancy_ul_item commit-msg">[DXF] Added CSharp wrapper for DXF library (#661).
   <li class="fancy_ul_item commit-msg">[CNC] Fix #692 with a bored sphere misrecognized as a turned feature.
   <li class="fancy_ul_item commit-msg">[SMRU] Report `bends` for TUBE_OTHER type; fix segments reporting for flat shapes.
   <li class="fancy_ul_item commit-msg">[SMRU] Analyze accessibility of engravings on tubes.
   <li class="fancy_ul_item commit-msg">[DXF] Do not mix text contours edges with the normal one. (#691)
-  <li class="fancy_ul_item commit-msg">[CNC,DFM] Rework prismatic configurations.
+  <li class="fancy_ul_item commit-msg">[CNC, DFM] Rework prismatic configurations.
   <li class="fancy_ul_item commit-msg">[SMRU] Compute bbox dimensions of the entire assembly (Fix #712).
   <li class="fancy_ul_item commit-msg">[CNC] #695: Incomplete counterbore with chamfer.
   <li class="fancy_ul_item commit-msg">[SMRU] #715: report `closestParallel` and `closestParallelFaceId` props for inner cutouts on tubes.
   <li class="fancy_ul_item commit-msg">[SMRU] Introduce closest parallel length.
-  <li class="fancy_ul_item commit-msg">[SMRU,CNC] #675 Enrich glTF output with colors of detected features
-  <li class="fancy_ul_item commit-msg">[SMRU,CNC] #713 Output .step with colored feature faces
+  <li class="fancy_ul_item commit-msg">[SMRU, CNC] #675 Enrich glTF output with colors of detected features
+  <li class="fancy_ul_item commit-msg">[SMRU, CNC] #713 Output .step with colored feature faces
   <li class="fancy_ul_item commit-msg">[DFM] Fix #643: `maxConcaveCurvature` is always null as it seems to be never computed for surface types other than cylinders and cones
-  <li class="fancy_ul_item commit-msg">[CNC,DFM] Add recognition strategy parameter to `InspectFile`.
+  <li class="fancy_ul_item commit-msg">[CNC, DFM] Add recognition strategy parameter to `InspectFile`.
   <li class="fancy_ul_item commit-msg">[SMRU] Recognize rolled cylinders and generalized cylinders #708.
   <li class="fancy_ul_item commit-msg">[CNC] #721: pass domain to all recognizers.
   <li class="fancy_ul_item commit-msg">[CNC] Add '-type' flag for setting the recognition strategy in asiCncExe.
   <li class="fancy_ul_item commit-msg">[SMRU] Improve `isLeaf` property determination for rolled flanges.
-  <li class="fancy_ul_item commit-msg">[DFM,CNC] Export MTS in DFM (#579)
+  <li class="fancy_ul_item commit-msg">[DFM, CNC] Export MTS in DFM (#579)
   <li class="fancy_ul_item commit-msg">[SMRU] Introduce another (topological) finder for boundary cuts in round tubes.
   <li class="fancy_ul_item commit-msg">[CNC] Add protection against null or parallel vectors on computing milling axes for blends.
   <li class="fancy_ul_item commit-msg">[SMRU] Make asiSheetMetalExe dump part images (introduce '-imagesForParts' flag).
@@ -124,7 +124,7 @@
   <li class="fancy_ul_item commit-msg">[SMRU] Fix #795: introduce non-uniform thickness check.
   <li class="fancy_ul_item commit-msg">[SMRU] Fix #788: make sure to generate JSON for broken STEP files.
   <li class="fancy_ul_item commit-msg">[SMRU] Fix #798: Problem with floating point separator for `cornerRadius` property of tubes.
-  <li class="fancy_ul_item commit-msg">[CNC,SMRU] #796: Fix broken indices for a featured glTF
+  <li class="fancy_ul_item commit-msg">[CNC, SMRU] #796: Fix broken indices for a featured glTF
   <li class="fancy_ul_item commit-msg">[CNC] #752: Output ids of unrecognized faces to JSON.
   <li class="fancy_ul_item commit-msg">[SMRU] Restore the priority of engraving color over inner feature color.
   <li class="fancy_ul_item commit-msg">[CNC] Fix #724: Output original units and scale factor.
@@ -155,7 +155,7 @@
   <li class="fancy_ul_item commit-msg">[SMRU] Introduce bent pipes recognition (#744).
   <li class="fancy_ul_item commit-msg">[SMRU] Rename props for bent pipes and update ref data.
   <li class="fancy_ul_item commit-msg">[SMRU] Recognize straight wires.
-  <li class="fancy_ul_item commit-msg" style="background-color: yellow;">[SMRU] Unify `partLength` property for straight tubes and wires.
+  <li class="fancy_ul_item commit-msg">[SMRU] Unify `partLength` property for straight tubes and wires.
   <li class="fancy_ul_item commit-msg">[DXF] Make tolerance an argument of `dxf-read` to control contouring precision.
   <li class="fancy_ul_item commit-msg">[SMRU] Unify `sectionDiameter` and `diameter` for round tubes and wires.
   <li class="fancy_ul_item commit-msg">[DXF] Print $ACADVER (DXF version) on `dxf-read` execution.
@@ -178,9 +178,11 @@
   <li class="fancy_ul_item commit-msg">[DXF] Dump JSON to UI dialog in `dxf-perform` command if JSON filename is omitted.
   <li class="fancy_ul_item commit-msg">[CNC] Make feature comparator symmetric to prevent debug assertion crash due to disrespecting cpp reference.
   <li class="fancy_ul_item commit-msg">[CNC] Get rid of useless `asiCncTest` package.
-  <li class="fancy_ul_item commit-msg">[CNC,DFM] Merge DFM checks to the CNC recognition toolset.
+  <li class="fancy_ul_item commit-msg">[CNC, DFM] Merge DFM checks to the CNC recognition toolset.
   <li class="fancy_ul_item commit-msg">[SMRU] Fix #1022: Introduce global planarity check to filter out false-positive "folded" parts, which are actually flat.
   <li class="fancy_ul_item commit-msg">[SMRU] Fix #1027, Fix #1023: Report unrecognized faces as a separate semantic code.
+  <li class="fancy_ul_item commit-msg">[SMRU] Fix #1009: Improve the heuristic for assigning "bend" attributes to profile's sheet faces.
+  <li class="fancy_ul_item commit-msg">[CNC] #1013: Report unrecognized faces for turned+milled parts.
 </ul>
 
 <p>
