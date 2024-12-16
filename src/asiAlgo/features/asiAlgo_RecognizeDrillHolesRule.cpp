@@ -382,7 +382,7 @@ bool asiAlgo_RecognizeDrillHolesRule::recognize(TopTools_IndexedMapOfShape& feat
     return false;
 
   // Traverse toroidal surfaces.
-  // Such surfaces are not drillable feature, but the external calling 
+  // Such surfaces are not drillable feature, but the external calling
   // feature solving algorithm relies on both drilling and hole milling operations
   // to find the most optimal solution.
   asiAlgo_Feature radii;
@@ -671,11 +671,11 @@ bool asiAlgo_RecognizeDrillHolesRule::isConical(const int  fid,
 //-----------------------------------------------------------------------------
 
 void asiAlgo_RecognizeDrillHolesRule::visitNeighborCylinders(const int        sid,
-                                                            const int        fid,
-                                                            const double     refRadius,
-                                                            const gp_Ax1&    refAxis,
-                                                            double&          sumAng,
-                                                            asiAlgo_Feature& collected)
+                                                             const int        fid,
+                                                             const double     refRadius,
+                                                             const gp_Ax1&    refAxis,
+                                                             double&          sumAng,
+                                                             asiAlgo_Feature& collected)
 {
   const TopoDS_Face& face = m_it->GetGraph()->GetFace(fid);
 
