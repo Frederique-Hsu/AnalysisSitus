@@ -306,14 +306,41 @@ h3 {
   font-family: Menlo, Monaco, "Courier New", Courier, monospace;
 }
 
+.release-notes {
+  border: 1px dashed rgb(10,70,140);
+  border-radius: 4px;
+  padding: 10px;
+  margin: 5px;
+}
+
+.release-notes-current {
+  border: 1px solid rgb(0, 131, 2);
+  border-radius: 4px;
+  background-color: rgb(196, 255, 154);
+  padding: 10px;
+  margin: 5px;
+}
+
 .commit-msg {
   color: black;
   font-size: 14px;
   font-family: Menlo, Monaco, "Courier New", Courier, monospace;
   background-color: rgb(240, 240, 240);
   margin-bottom: 5px;
-  padding: 3px;
+  padding: 5px;
   font-weight: normal;
+  border-radius: 4px;
+}
+
+.commit-msg-i {
+  color: black;
+  font-size: 14px;
+  font-family: Menlo, Monaco, "Courier New", Courier, monospace;
+  background-color: rgb(255, 190, 244);
+  margin-bottom: 5px;
+  padding: 5px;
+  font-weight: normal;
+  border-radius: 4px;
 }
 
 /* ================

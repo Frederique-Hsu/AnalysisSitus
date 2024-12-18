@@ -99,6 +99,29 @@
 
 <br/>
 
+<div class="faq">
+  <b>Question:</b> Is there a way to adjust the hole sizes in the flat pattern?
+  <hr>
+  <b>Answer:</b>
+  <p>
+    That is doable through the underlying OpenCascade API. We use such functionality to report correctly sized circles for machined holes with countersinks and counterbores. Read more about this feature on our blog: "<a href="https://quaoar.su/blog/page/on-sheet-metal-unfolding-part-7-drilled-holes">On sheet metal unfolding. Part 7: drilled holes</a>".
+  </p>
+</div>
+
+<br/>
+
+<div class="faq">
+  <b>Question:</b> Is there a way to save each body as its own STEP file?
+  <hr>
+  <b>Answer:</b>
+  <p>
+    Yes, there is a dedicated flag "-step" that activates dumping each body to a STEP file. E.g.:
+  </p>
+  <pre><code> > sm-perform -filename test.stp -json outcome.json -step</code></pre>
+</div>
+
+<br/>
+
 <!-- [END] contents -->
 </div>
 <br/>

@@ -2,7 +2,7 @@
 <html>
  <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>Analysis Situs: CNC turning features</title>
+  <title>Analysis Situs: SMRU glTF output</title>
   <link rel="shortcut icon" type="image/png" href="../imgs/favicon.png"/>
   <link rel="stylesheet" type="text/css" href="../css/situ-main-style.css">
 
@@ -16,7 +16,7 @@
     gtag('config', 'UA-112292727-2');
   </script>
   <!-- [end] Google Analytics -->
-
+  
   <!--
     Quick navigation script. Use a div with "toc-panel" class having a
     nested div with "toc" id to place the navigation panel.
@@ -57,7 +57,7 @@
   <td align="left" class="header">
     <span class="header-logo"><a href="../index.html" class="header-href">Analysis&nbsp;Situs</a></span>
     &nbsp;
-    ./<a class="header-href" href="../featuresext.html">extensions</a>/CNC turning features
+    ./<a class="header-href" href="../featuresext.html">extensions</a>/SMRU glTF output
   </td>
 </tr>
 </table>
@@ -83,47 +83,25 @@
 <div class="content-body">
 <!-- [BEGIN] contents -->
 
-<h1 id="toc-cnc">CNC turning features</h1>
-
-<div class="toc-panel"><div id="toc"></div></div>
-
-<h2 id="toc-cnc-finishing">Surface finishing</h2>
+<h1 id="toc-scene-tree">SMRU glTF output</h1>
 
 <p>
-  The recognition process begins by finding all rotational symmetries in the part. All faces "vote" for a candidate turning axis, and the axis with the highest number of votes is chosen. Faces that voted for the winning axis are grouped according to their geometric type. Other faces are tagged as unrecognized and bypassed for future milling recognition.
+  SMRU automatically converts the input B-rep geometries to a lightweight surface mesh for visualization. To output a glTF file with meshes, pass the <span class="code-inline">-gltf</span> or <span class="code-inline">-gltfWithColors</span> key to the <span class="code-inline">sm-perform</span> command or in the <span class="code-inline">asiSheetMetalExe</span> executable.
 </p>
+
+<pre><code> > sm-perform -filename test.stp -json outcome.json -gltf</code></pre>
+
+<div align="center"><a href="../imgs/ext/smru-gltf_01.png"><img src="../imgs/ext/smru-gltf_01.png" width="60%"/></a></div>
 
 <p>
-  The following image illustrates a complex turned+milled part with the "coating" that corresponds to all three possible recognition outcomes: lathed ("cold" and "hot" colors), milled (shades of green), and unrecognized (gray).
+  The outcome glTF preserves the indexation of the original CAD faces in its structure. E.g., to find a face n.35, search for the submesh with the suffix "_35" in the glTF structure like it is shown in the following image:
 </p>
 
-<div align="center"><a href="../imgs/ext/cnc-lathing_surfaces.png"><img src="../imgs/ext/cnc-lathing_surfaces.png" width="60%"/></a></div>
+<div align="center"><a href="../imgs/ext/smru-gltf_02.png"><img src="../imgs/ext/smru-gltf_02.png" width="60%"/></a></div>
 
 <p>
-  The detected milled and unrecognized features are all spanned by the constructed minimal turned state (MTS) of geometry:
+  Keeping this associativity allows the SMRU users to add in some interaction in their frontends, first of all, checking the properties of the reported features and highlighting the detected design flaws.
 </p>
-
-<div align="center"><a href="../imgs/ext/cnc-lathing_05.png"><img src="../imgs/ext/cnc-lathing_05.png" width="60%"/></a></div>
-
-<p>
-  This minimal turned state is used to decompose the entire "delta volume" of the turned part onto the elementary negative volume cells (which we also call "negative cells" for brevity).
-</p>
-
-<div align="center"><a href="../imgs/ext/cnc-lathing_06.png"><img src="../imgs/ext/cnc-lathing_06.png" width="60%"/></a></div>
-
-<h2 id="toc-cnc-roughing">Negative volumes</h2>
-
-<p>
-  The following types of negative cells are extracted from the stock bar and the constructed MTS:
-</p>
-
-<ul>
-  <li class="fancy_ul_item">Steps: <span class='code-inline'>nvStep</span></li>
-  <li class="fancy_ul_item">Grooves: <span class='code-inline'>nvGroove</span></li>
-  <li class="fancy_ul_item">Central holes: <span class='code-inline'>nvHole</span></li>
-</ul>
-
-<div align="center"><a href="../imgs/ext/cnc-lathing_negative-cells.png"><img src="../imgs/ext/cnc-lathing_negative-cells.png" width="60%"/></a></div>
 
 <!-- [END] contents -->
 </div>

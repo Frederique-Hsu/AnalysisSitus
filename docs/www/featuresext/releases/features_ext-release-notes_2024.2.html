@@ -1,0 +1,216 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Analysis Situs: Extensions ver.2024.2</title>
+  <link rel="shortcut icon" type="image/png" href="../../imgs/favicon.png"/>
+  <link rel="stylesheet" type="text/css" href="../../css/situ-main-style.css">
+
+  <!-- [begin] Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-112292727-2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-112292727-2');
+  </script>
+  <!-- [end] Google Analytics -->
+
+
+  <!-- [begin] Code highlight -->
+  <link rel="stylesheet" href="../../css/highlight.min.css">
+  <script src="../../js/highlight.min.js"></script>
+  <!-- [end] Code highlight -->
+
+  <!-- [begin] Pseudocode -->
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS_CHTML"
+          integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw="
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [['$','$'], ['\\(','\\)']],
+            displayMath: [['$$','$$'], ['\\[','\\]']],
+            processEscapes: true,
+            processEnvironments: true,
+        }
+    });
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.js"></script>
+  <!-- [end] Pseudocode -->
+
+</head>
+<body>
+
+<a name="top"></a> <!-- anchor for 'back to top' link -->
+<table width="100%"><tr><td>
+<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+  <td align="left" class="header">
+    <span class="header-logo"><a href="../../index.html" class="header-href">Analysis&nbsp;Situs</a></span>
+    &nbsp;
+    ./<a class="header-href" href="../../featuresext.html">extensions</a>/Extensions ver.2024.2
+  </td>
+</tr>
+</table>
+<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+  <td class="header-menu"><a href='https://analysissitus.org/forum/index.php?resources/analysis-situs.6/'>Download</a></td>
+  <td class="header-menu">
+    <div class="dropdown">
+      <button class="dropbtn">Features ...</button>
+      <div class="dropdown-content">
+        <a href="../../features.html">Open source</a>
+        <!-- <a href="../../featuresext.html">Commercial</a> -->
+      </div>
+    </div>
+  </td>
+  <td class="header-menu"><a href="https://gitlab.com/ssv/AnalysisSitus">Source code</a></td>
+  <td class="header-menu"><a href="http://analysissitus.org/forum/index.php">Forum</a></td>
+  <td class="header-menu"><a href="http://quaoar.su/blog/contact">Ask for support</a></td>
+</tr>
+</table>
+</td></tr></table>
+
+<div class="content-body">
+<!-- [BEGIN] contents -->
+
+<h1>Release notes ver.2024.2</h1>
+
+<p>
+  Analysis Situs Extensions ver.2024.2 accumulate hundreds of patches in the SMRU, CNC and DXF software development kits. The most important updates are <span class="commit-msg-i">highlighed</span> in the corresponding changelogs below. <a href="https://quaoar.su/blog/contact">Contact us</a> for more information on licensing the SDKs.
+</p>
+
+<h2>CNC, DFM</h2>
+
+<ul>
+  <li class="fancy_ul_item commit-msg">[DFM] Improve performance of the horizontal tessellator algorithm for turned parts.
+  <li class="fancy_ul_item commit-msg">[DFM] Get rid of width-based filtering for false-positive thickness spots.
+  <li class="fancy_ul_item commit-msg">[CNC] Fix #692 with a bored sphere misrecognized as a turned feature.
+  <li class="fancy_ul_item commit-msg-i">[CNC, DFM] Rework prismatic configurations.
+  <li class="fancy_ul_item commit-msg">[CNC] #695: Fix incomplete counterbores with chamfers.
+  <li class="fancy_ul_item commit-msg">[DFM] Fix #643: `maxConcaveCurvature` is always null as it seems to be never computed for surface types other than cylinders and cones.
+  <li class="fancy_ul_item commit-msg">[CNC, DFM] Add "recognition strategy" parameter to `InspectFile`.
+  <li class="fancy_ul_item commit-msg">[CNC] #721: Pass "domain" face IDs to all recognizers.
+  <li class="fancy_ul_item commit-msg">[CNC] Add '-type' flag for setting the recognition strategy in `asiCncExe`.
+  <li class="fancy_ul_item commit-msg-i">[DFM, CNC] Export MTS in DFM (#579).
+  <li class="fancy_ul_item commit-msg">[CNC] Add '-aag' option to the CNC recognition SDK (#743).
+  <li class="fancy_ul_item commit-msg-i">[CNC] #742: Add reorientation option for automatic alignment of parts.
+  <li class="fancy_ul_item commit-msg-i">[CNC] Fix #674: Add `-allowSharp` flag to allow for the recognition of pocket walls with sharp corners.
+  <li class="fancy_ul_item commit-msg">[CNC] Add protection against null or parallel vectors on computing milling axes for blends.
+  <li class="fancy_ul_item commit-msg-i">[CNC] #752: Output IDs of the unrecognized faces to JSON.
+  <li class="fancy_ul_item commit-msg-i">[CNC] #556, #975, #977, #1010: Improve the recognition logic for axial grooves to prevent boring/turning global inversion.
+  <li class="fancy_ul_item commit-msg-i">[CNC] #1013: Report the unrecognized faces for turned+milled parts.
+  <li class="fancy_ul_item commit-msg">[CNC] #1013: Check for global outliers between turned faces to improve accuracy of turning recognition.
+  <li class="fancy_ul_item commit-msg">[CNC] Speed up detection of global obstructions for turned faces by caching the maps of vertices and ranges.
+  <li class="fancy_ul_item commit-msg-i">[CNC] Fix #724: Output original units and scale factor.
+  <li class="fancy_ul_item commit-msg">[CNC] Fix ambiguity in feature color sorting; do not use non-side milling axes in side contour grouping.
+  <li class="fancy_ul_item commit-msg-i">[CNC] Introduce computation of inaccessible vertices in CNC.
+  <li class="fancy_ul_item commit-msg">[CNC] Fix #887: Make `cncCode_PartBody_Warn_ImpossibleCorner` also report face IDs.
+  <li class="fancy_ul_item commit-msg">[CNC] #753: Move DFM logic for pointwise depths from the DFM to CNC package.
+  <li class="fancy_ul_item commit-msg-i">[CNC] Make 3-axes milled faces a standard CNC function.
+  <li class="fancy_ul_item commit-msg">[CNC] Fix #965: Do not let the algorithm set any limits on hole diameters on recognition if the user has not provided any.
+  <li class="fancy_ul_item commit-msg">[CNC] Rework CNC testing assets; introduce the novel `cnc-run-tests` command.    
+  <li class="fancy_ul_item commit-msg">[CNC] Make feature comparator symmetric to prevent debug assertion crash due to disrespecting cpp reference.
+  <li class="fancy_ul_item commit-msg">[CNC] Get rid of useless `asiCncTest` package.
+  <li class="fancy_ul_item commit-msg-i">[CNC, DFM] Merge DFM checks to the CNC recognition toolset.      
+</ul>
+
+<h2>SMRU, DXF</h2>
+
+<ul>
+  <li class="fancy_ul_item commit-msg-i">[DXF] Add C# wrapper for the DXF library (#661).
+  <li class="fancy_ul_item commit-msg">[SMRU] Add `axialCuttingRange` property for tubes/profiles (Fix #663).
+  <li class="fancy_ul_item commit-msg">[SMRU] Report `bends` for the `TUBE_OTHER` type; fix segments reporting for flat shapes.
+  <li class="fancy_ul_item commit-msg">[SMRU] Analyze accessibility of engravings on tubes.
+  <li class="fancy_ul_item commit-msg-i">[DXF] Do not mix text contours edges with the normal cutting contours (#691).
+  <li class="fancy_ul_item commit-msg">[SMRU] Compute bbox dimensions of the entire assembly (Fix #712).
+  <li class="fancy_ul_item commit-msg">[SMRU] #715: Report the `closestParallel` and `closestParallelFaceId` properties for inner cutouts on tubes.
+  <li class="fancy_ul_item commit-msg">[SMRU] Introduce the closest parallel length.
+  <li class="fancy_ul_item commit-msg-i">[SMRU] Recognize rolled cylinders and generalized cylinders (#708).
+  <li class="fancy_ul_item commit-msg">[SMRU] Improve `isLeaf` property determination for rolled flanges.
+  <li class="fancy_ul_item commit-msg">[SMRU] Introduce another (topological) finder for boundary cuts in round tubes.
+  <li class="fancy_ul_item commit-msg">[SMRU] Make `asiSheetMetalExe` dump part images (introduce '-imagesForParts' flag).
+  <li class="fancy_ul_item commit-msg">[SMRU] Introduce '-expandCompounds' parameters for automatic break down of compound parts into elementary shapes (Fix #732).
+  <li class="fancy_ul_item commit-msg-i">[SMRU] CAD-729: Modification of K-factor does not affect `totalCuttingLength`
+  <li class="fancy_ul_item commit-msg">[SMRU] Get rid of the `ToPerform` flag in `ProfileParams` which has been unclear for the SDK users (#718).
+  <li class="fancy_ul_item commit-msg">[SMRU] Revise diagnostic codes and extend the '-lookup' mechanics for searching diagnostic codes in the reference files.
+  <li class="fancy_ul_item commit-msg">[SMRU] Get rid of paddings in SVG images exported from SMRU.
+  <li class="fancy_ul_item commit-msg">[SMRU] Make drawings aligned smartly in SVG export.
+  <li class="fancy_ul_item commit-msg">[SMRU] Fix #795: Introduce non-uniform thickness check.
+  <li class="fancy_ul_item commit-msg-i">[SMRU] Fix #788: Make sure to generate JSON for broken STEP files.
+  <li class="fancy_ul_item commit-msg">[SMRU] Fix #798: Fix problem with floating point separator for the `cornerRadius` property of tubes.
+  <li class="fancy_ul_item commit-msg">[SMRU] Restore the priority of engraving color over inner feature color.
+  <li class="fancy_ul_item commit-msg">[SMRU] Introduce '-expand' flag in `sm-perform`.
+  <li class="fancy_ul_item commit-msg">[SMRU] Fix #252: do not report 3208 for tubes.
+  <li class="fancy_ul_item commit-msg">[SMRU] Use a more reliable way of defeaturing that does not corrupt shapes.
+  <li class="fancy_ul_item commit-msg">[SMRU] Fix #864: Report `area` for each `cutout` object.
+  <li class="fancy_ul_item commit-msg-i">[SMRU] Provide API to analyze an existing `TopoDS` shape passed to the recognition from the client code.
+  <li class="fancy_ul_item commit-msg-i">[SMRU] Recognize non-isolated cutouts (Fix #739, Fix #876, Fix #601).
+  <li class="fancy_ul_item commit-msg">[SMRU] Compute area for folded cutouts.
+  <li class="fancy_ul_item commit-msg">[SMRU] Fix #878: Why 3302 "Abnormal bending" is reported for a seemingly valid tube?
+  <li class="fancy_ul_item commit-msg">[SMRU] Fix #645: Compute bend length for rolled flanges.
+  <li class="fancy_ul_item commit-msg">[SMRU] #875: Add `cutInBend` property for cutouts.
+  <li class="fancy_ul_item commit-msg">[SMRU] Speed up hole info collection by getting rid of heavy dtors.
+  <li class="fancy_ul_item commit-msg">[SMRU] Fix the incorrectly recognized engraving (#881).
+  <li class="fancy_ul_item commit-msg">[SMRU] Fix #861: File is not recognized as rectangular tube because of small redundant faces.
+  <li class="fancy_ul_item commit-msg">[SMRU] Add test cases for bend simulation.
+  <li class="fancy_ul_item commit-msg-i">[DXF] #891: Introduce `evaluateDxfExe` utility to assess the complexity of DXF files.
+  <li class="fancy_ul_item commit-msg">[SMRU] Fix #890 by reworking the alignment check for flat parts and redesigning the alignment logic to the same algorithm as used in the `cnc-orient` command.
+  <li class="fancy_ul_item commit-msg">[SMRU] Fix #928: Incorrect computation of closest cutout distance.
+  <li class="fancy_ul_item commit-msg">[SMRU] Unify `partLength` property for straight tubes and wires.
+  <li class="fancy_ul_item commit-msg">[DXF] Make tolerance an argument of `dxf-read` to control contouring precision.
+  <li class="fancy_ul_item commit-msg">[SMRU] Unify the `sectionDiameter` and the `diameter` properties for round tubes and wires.
+  <li class="fancy_ul_item commit-msg">[DXF] Print $ACADVER (DXF version) on `dxf-read` execution.
+  <li class="fancy_ul_item commit-msg">[SMRU] Improve recognition of round tubes by disabling unsuitable check for isolated freeform thickness faces.
+  <li class="fancy_ul_item commit-msg">[SMRU] Add protection against empty flat patterns where their dimensions are computed.
+  <li class="fancy_ul_item commit-msg">[SMRU] Fix #948: Use absolute engraving depths (2 mm default).
+  <li class="fancy_ul_item commit-msg">[SMRU] Fix #950: Complex hole reported for a countersink hole.
+  <li class="fancy_ul_item commit-msg">[SMRU] Initialize flags in ctor of `InspectFile`.
+  <li class="fancy_ul_item commit-msg-i">[SMRU] Report `countersinkDiameterOpposite` and `countersinkAngleOpposite` for double countersunk holes (#949).
+  <li class="fancy_ul_item commit-msg">[SMRU] Fix #987: Add max engraving depth as an option for `asiSheetMetalExe`.
+  <li class="fancy_ul_item commit-msg">[SMRU] Fix #989: Introduce "thickness hint" argument.
+  <li class="fancy_ul_item commit-msg">[DXF] #945: Fix slot-like cutouts shape corruption.
+  <li class="fancy_ul_item commit-msg">[SMRU] Update the default k-factor to 0.4468.
+  <li class="fancy_ul_item commit-msg">[DXF] Dump JSON to UI dialog in `dxf-perform` command if JSON filename is omitted.
+  <li class="fancy_ul_item commit-msg-i">[SMRU] Fix #1022: Introduce global planarity check to filter out false-positive "folded" parts, which are actually flat.
+  <li class="fancy_ul_item commit-msg-i">[SMRU] Fix #1027, Fix #1023: Report unrecognized faces as a separate semantic code.
+  <li class="fancy_ul_item commit-msg">[SMRU] Fix #1009: Improve the heuristic for assigning "bend" attributes to profile's sheet faces.
+  <li class="fancy_ul_item commit-msg">[DXF] #1025: Disable replacement of invalid contours by qhull.
+</ul>
+
+<h2>Common</h2>
+
+<ul>
+  <li class="fancy_ul_item commit-msg-i">[SMRU, CNC] #675 Enrich glTF output with colors of detected features.
+  <li class="fancy_ul_item commit-msg-i">[SMRU, CNC] #713 Output STEP files with colored feature faces.
+  <li class="fancy_ul_item commit-msg">[Common] Create a signing key for C# projects.
+  <li class="fancy_ul_item commit-msg">[Utils] Make `colorizeExe` utility independent of `asiDfm` (retired) package.
+  <li class="fancy_ul_item commit-msg">[Utils] Convert DXF files to SVG files (#954).
+  <li class="fancy_ul_item commit-msg">[Common] Fix #995: "Debug error: abort() has been called" on installed version of the SDK.
+  <li class="fancy_ul_item commit-msg">[Utils] Add `makeProjectionExe` utility.
+  <li class="fancy_ul_item commit-msg">[Utils] Prepare an executable to generate drawings in batch mode.
+  <li class="fancy_ul_item commit-msg">[Utils] If no direction is passed but the DXF filename is given, use the guessed direction.
+  <li class="fancy_ul_item commit-msg">[Faceter] Add executable for the Faceter.
+</ul>
+
+<!-- [END] contents -->
+</div>
+<br/>
+<table class="footer" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+  <td>
+    <small>&copy; Quaoar&nbsp;Studio&nbsp;LLC 2015-present &nbsp; (Yerevan, Armenia)</small> | &nbsp; <a class="footer-href" href="#top">^^^</a>  &nbsp; | &nbsp; <a href="http://quaoar.su/blog/contact" class="footer-href">contact us</a> &nbsp; | &nbsp; <a href="https://www.youtube.com/channel/UCc0exKIoqbeOSqKoc1RnfBQ" class="icon brands fa-youtube"></a> &nbsp; | &nbsp; <a href="https://quaoar.su" class="icon brands fa-medium"></a> &nbsp; | &nbsp; <a href="https://www.linkedin.com/in/sergey-slyadnev-277496b1" class="icon brands fa-linkedin"></a>
+  </td>
+</tr>
+</table>
+
+<script>
+hljs.highlightAll();
+pseudocode.renderClass("pseudocode");
+</script>
+
+</body>
+</html>
