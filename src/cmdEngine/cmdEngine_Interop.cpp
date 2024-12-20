@@ -351,7 +351,7 @@ int ENGINE_SaveBrep(const Handle(asiTcl_Interp)& interp,
       return TCL_ERROR;
     }
     //
-    shape = partNode->GetShape();
+    shape = partNode->GetShape(true);
   }
   else
   {

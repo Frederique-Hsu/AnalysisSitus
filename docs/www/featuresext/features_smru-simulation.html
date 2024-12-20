@@ -148,11 +148,32 @@
 
 <h2 id="toc-simulation-tooling">Tooling</h2>
 
+<h3 id="toc-simulation-tooling-punches">Punches</h3>
+
 <p>
   SMRU provides data-driven architecture for specifying the geometry of punches used in simulation. The geometry of a punch is stored in a BREP file as a closed contour. The simulator reads all available contours from the directory with punches and builds swept solids (prisms) out of them. The height of the prism is chosen with respect to the corresponding bend length. Precomputed punch solids are cached for reuse in other bends having the same length.
 </p>
 
 <div align="center"><a href="../imgs/ext/smru-simulation-punch_01.png"><img src="../imgs/ext/smru-simulation-punch_01.png" width="60%"/></a></div>
+
+<p>
+  For each punch loaded in, the corresponding mirrored version is automatically generated. This is done to simulate a part being turned 180 degrees by an operator. After punch placement, the flanges to the left and to the right w.r.t. the bend line are rotated symmetrically. For example, if the bend angle is 90 degrees, the left and right sides of the part will go 45 degrees each.
+</p>
+
+<h3 id="toc-simulation-tooling-swivel-machines">Swivel machines</h3>
+
+<p>
+  Swivel bending machines are different from press brakes, so the punch-oriented collision simulation is not directly available for them. The following differences are to be taken into account:
+</p>
+
+<ul>
+  <li class="fancy_ul_item">The flanges do not rotate symmetrically: while one side is fixed, the other makes the whole bending angle.</li>
+  <li class="fancy_ul_item">There is no punch tool as such, but the upper part of the machine can be employed as a "punch" for collision testing (with different rules of placement).</li>
+</ul>
+
+<p>
+  Simulation of swivel bending is out of scope of SMRU as of now.
+</p>
 
 <h2 id="toc-simulation-commands">Simulation commands</h2>
 

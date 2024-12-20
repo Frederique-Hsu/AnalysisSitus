@@ -47,14 +47,14 @@
 //! Services to save a drawing as an SVG file.
 namespace asiAlgo_WriteSVG
 {
-  //! Auxiliary structure to control drawing settings. 
+  //! Auxiliary structure to control drawing settings.
   struct t_drawingStyle
   {
     int    CanvasPadding       = 25;
-    double PaddingScaleCoeff   = 0.01f;  //!< Coeff controlling a ratio between padding and canvas size.
-    double LineWidthScaleCoeff = 0.3f;   //!< Coeff controlling a line width which is defined as a ratio between image and canvas sizes
-    double DiscrCurveLinDefl   = 0.001f;
-    double DiscrCurveAngDefl   = (float)(0.5 * M_PI / 180.0);
+    double PaddingScaleCoeff   = 0.01f; //!< Coeff controlling a ratio between padding and canvas size.
+    double LineWidthScaleCoeff = 0.3f;  //!< Coeff controlling a line width which is defined as a ratio between image and canvas sizes
+    double DiscrCurveLinDefl   = 0.1f;
+    double DiscrCurveAngDefl   = (float)(1.0 * M_PI / 180.0);
 
     tl::optional<double> CanvasMaxDim; //!< Max canvas dimension (optional).
   };

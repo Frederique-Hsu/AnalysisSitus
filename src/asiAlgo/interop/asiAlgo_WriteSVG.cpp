@@ -325,7 +325,7 @@ bool asiAlgo_WriteSVG::Write(const TopoDS_Shape&            shape,
                              ActAPI_PlotterEntry            plotter)
 {
   double xMin, yMin, zMin, xMax, yMax, zMax;
-  asiAlgo_Utils::Bounds(shape, xMin, yMin, zMin, xMax, yMax, zMax, tol, true);
+  asiAlgo_Utils::Bounds(shape, xMin, yMin, zMin, xMax, yMax, zMax, tol, false);
 
   // Compute scaling (if any).
   double scaleCoeff = 1.;
