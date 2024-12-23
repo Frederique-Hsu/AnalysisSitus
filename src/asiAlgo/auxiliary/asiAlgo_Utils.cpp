@@ -6568,10 +6568,11 @@ bool asiAlgo_Utils::IsInternal(const TopoDS_Face& face,
 //-----------------------------------------------------------------------------
 
 Handle(Image_AlienPixMap)
-  asiAlgo_Utils::Graphics::GeneratePixmap(const TopoDS_Shape&   shape,
-                                          const int             width,
-                                          const int             height,
-                                          const Quantity_Color& shapeColor)
+  asiAlgo_Utils::Graphics::GeneratePixmap(const TopoDS_Shape&                shape,
+                                          const int                          width,
+                                          const int                          height,
+                                          const Quantity_Color&              shapeColor,
+                                          const Graphic3d_TypeOfShadingModel dm)
 {
   Handle(Aspect_DisplayConnection)
     displayConnection = new Aspect_DisplayConnection();
@@ -6648,8 +6649,11 @@ Handle(Image_AlienPixMap)
   //* Dump
   Handle(Image_AlienPixMap) pixmap = new Image_AlienPixMap;
 
+  // Configure local "aspects"
   Handle(AIS_Shape) shapePrs = new AIS_Shape(shape);
+  //
   shapePrs->SetColor(shapeColor);
+  shapePrs->Attributes()->ShadingAspect()->Aspect()->SetShadingModel(dm);
 
   context->Display(shapePrs, false);
   view->FitAll(0.1, true);
@@ -6661,19 +6665,20 @@ Handle(Image_AlienPixMap)
 
 //-----------------------------------------------------------------------------
 
-bool asiAlgo_Utils::Graphics::GeneratePicture(const TopoDS_Shape&   shape,
-                                              const int             width,
-                                              const int             height,
-                                              const std::string&    filename,
-                                              const Quantity_Color& shapeColor)
+bool asiAlgo_Utils::Graphics::GeneratePicture(const TopoDS_Shape&                shape,
+                                              const int                          width,
+                                              const int                          height,
+                                              const std::string&                 filename,
+                                              const Quantity_Color&              shapeColor,
+                                              const Graphic3d_TypeOfShadingModel dm)
 {
   Handle(Image_AlienPixMap)
-    pixmap = GeneratePixmap(shape, width, height, shapeColor);
+    pixmap = GeneratePixmap(shape, width, height, shapeColor, dm);
 
-  if (pixmap.IsNull())
+  if ( pixmap.IsNull() )
     return false;
 
-  return pixmap->Save(filename.c_str());
+  return pixmap->Save( filename.c_str() );
 }
 
 //-----------------------------------------------------------------------------

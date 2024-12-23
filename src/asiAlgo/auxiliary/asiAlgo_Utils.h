@@ -75,6 +75,7 @@
 #include <Geom2d_TrimmedCurve.hxx>
 #include <gp_Lin2d.hxx>
 #include <gp_Trsf.hxx>
+#include <Graphic3d_TypeOfShadingModel.hxx>
 #include <math_BullardGenerator.hxx>
 #include <math_Function.hxx>
 #include <TopoDS.hxx>
@@ -531,16 +532,18 @@ namespace asiAlgo_Utils
     //! \param[in] shape      the shape to screeenshot.
     //! \param[in] width      the target width of the output image.
     //! \param[in] height     the target height of the output image.
-    //! \param[in] shapeColor color of shape [0, 1].
+    //! \param[in] shapeColor the color of the shape in RGB.
+    //! \param[in] dm         the shading display mode.
     //! \return the generated in-memory pixmap.
     asiAlgo_EXPORT Handle(Image_AlienPixMap)
-      GeneratePixmap(const TopoDS_Shape&   shape,
-                     const int             width,
-                     const int             height,
-                     const Quantity_Color& shapeColor = Quantity_Color(CompColorOfShape(),
-                                                                       CompColorOfShape(),
-                                                                       CompColorOfShape(),
-                                                                       Quantity_TOC_RGB));
+      GeneratePixmap(const TopoDS_Shape&                shape,
+                     const int                          width,
+                     const int                          height,
+                     const Quantity_Color&              shapeColor = Quantity_Color(CompColorOfShape(),
+                                                                                    CompColorOfShape(),
+                                                                                    CompColorOfShape(),
+                                                                                    Quantity_TOC_RGB),
+                     const Graphic3d_TypeOfShadingModel dm = Graphic3d_TypeOfShadingModel_DEFAULT);
 
     //! Generates the picture of the given shape from the axonometric camera view.
     //! The off-screen rendering technique is used.
@@ -548,17 +551,19 @@ namespace asiAlgo_Utils
     //! \param[in] width      the target width of the output image.
     //! \param[in] height     the target height of the output image.
     //! \param[in] filename   the outcome filename.
-    //! \param[in] shapeColor color of shape [0, 1].
+    //! \param[in] shapeColor the color of the shape in RGB.
+    //! \param[in] dm         the shading display mode.
     //! \return true in case of success, false -- otherwise.
     asiAlgo_EXPORT bool
-      GeneratePicture(const TopoDS_Shape&   shape,
-                      const int             width,
-                      const int             height,
-                      const std::string&    filename,
-                      const Quantity_Color& shapeColor = Quantity_Color(CompColorOfShape(),
-                                                                        CompColorOfShape(),
-                                                                        CompColorOfShape(),
-                                                                        Quantity_TOC_RGB));
+      GeneratePicture(const TopoDS_Shape&                shape,
+                      const int                          width,
+                      const int                          height,
+                      const std::string&                 filename,
+                      const Quantity_Color&              shapeColor = Quantity_Color(CompColorOfShape(),
+                                                                                     CompColorOfShape(),
+                                                                                     CompColorOfShape(),
+                                                                                     Quantity_TOC_RGB),
+                      const Graphic3d_TypeOfShadingModel dm = Graphic3d_TypeOfShadingModel_DEFAULT);
   } // Graphics namespace.
 
   //! Functions for working with 1-dimensional ranges.
