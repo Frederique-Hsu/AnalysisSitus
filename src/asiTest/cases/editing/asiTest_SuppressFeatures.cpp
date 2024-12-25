@@ -63,3 +63,94 @@ outcome asiTest_SuppressFeatures::test002(const int funcID, const bool)
 {
   return runTestScript(funcID, "editing/suppress-features/suppress-features_002.tcl");
 }
+
+//-----------------------------------------------------------------------------
+
+outcome asiTest_SuppressFeatures::test003(const int funcID, const bool)
+{
+  return runTestScript(funcID, "editing/suppress-features/suppress-features_003.tcl");
+}
+
+//-----------------------------------------------------------------------------
+
+outcome asiTest_SuppressFeatures::test004(const int funcID, const bool)
+{
+  return runTestScript(funcID, "editing/suppress-features/suppress-features_004.tcl");
+}
+
+//-----------------------------------------------------------------------------
+
+outcome asiTest_SuppressFeatures::test005(const int funcID, const bool)
+{
+  return runTestScript(funcID, "editing/suppress-features/suppress-features_005.tcl");
+}
+
+//-----------------------------------------------------------------------------
+
+outcome asiTest_SuppressFeatures::test006(const int funcID, const bool)
+{
+  return runTestScript(funcID, "editing/suppress-features/suppress-features_006.tcl");
+}
+
+//-----------------------------------------------------------------------------
+
+outcome asiTest_SuppressFeatures::test007(const int funcID, const bool)
+{
+  return runTestScript(funcID, "editing/suppress-features/suppress-features_007.tcl");
+}
+
+//-----------------------------------------------------------------------------
+
+outcome asiTest_SuppressFeatures::test008(const int funcID, const bool)
+{
+  return runTestScript(funcID, "editing/suppress-features/suppress-features_008.tcl");
+}
+
+//-----------------------------------------------------------------------------
+
+outcome asiTest_SuppressFeatures::test009(const int funcID, const bool)
+{
+  return runTestScript(funcID, "editing/suppress-features/suppress-features_009.tcl");
+}
+
+//-----------------------------------------------------------------------------
+
+outcome asiTest_SuppressFeatures::test010(const int funcID, const bool)
+{
+  return runTestScript(funcID, "editing/suppress-features/suppress-features_010.tcl");
+}
+
+//-----------------------------------------------------------------------------
+
+outcome asiTest_SuppressFeatures::test011(const int funcID, const bool)
+{
+  return runTestScript(funcID, "editing/suppress-features/suppress-features_011.tcl");
+}
+
+//-----------------------------------------------------------------------------
+
+outcome asiTest_SuppressFeatures::test012(const int funcID, const bool)
+{
+  return runTestScript(funcID, "editing/suppress-features/suppress-features_012.tcl");
+}
+
+//-----------------------------------------------------------------------------
+
+outcome asiTest_SuppressFeatures::test013(const int funcID, const bool)
+{
+  return runTestScript(funcID, "editing/suppress-features/suppress-features_013.tcl");
+}
+
+//-----------------------------------------------------------------------------
+
+outcome asiTest_SuppressFeatures::test014(const int funcID, const bool)
+{
+  return runTestScript(funcID, "editing/suppress-features/suppress-features_014.tcl");
+}
+
+//-----------------------------------------------------------------------------
+
+outcome asiTest_SuppressFeatures::test015(const int funcID, const bool)
+{
+  return runTestScript(funcID, "editing/suppress-features/suppress-features_015.tcl");
+}

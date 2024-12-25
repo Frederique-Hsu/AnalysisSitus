@@ -14,8 +14,6 @@
 
 #include <asiAlgo_RemoveFaces.h>
 
-#include <asiAlgo_ClassifyPointFace.h>
-
 #include <BOPAlgo_Alerts.hxx>
 #include <BOPAlgo_BOP.hxx>
 #include <BOPAlgo_Builder.hxx>
@@ -29,23 +27,15 @@
 
 #include <Bnd_Box.hxx>
 
-#include <BRepAdaptor_Surface.hxx>
-
 #include <BRep_Builder.hxx>
 
 #include <BRepBndLib.hxx>
 
 #include <BRepLib.hxx>
 
-#include <BRepTools.hxx>
-
-#include <IntTools_FaceFace.hxx>
-
 #include <NCollection_Vector.hxx>
 
 #include <ShapeUpgrade_UnifySameDomain.hxx>
-
-#include <ShapeAnalysis_Surface.hxx>
 
 #include <TopAbs_ShapeEnum.hxx>
 
@@ -58,7 +48,8 @@
 #include <TopoDS_Face.hxx>
 
 #include <TopTools_IndexedDataMapOfShapeShape.hxx>
-
+#include <BRepAdaptor_Surface.hxx>
+#include <IntTools_FaceFace.hxx>
 
 //=======================================================================
 // static methods declaration
@@ -194,14 +185,14 @@ void asiAlgo_RemoveFaces::Perform(const Message_ProgressRange& theRange)
       return;
     }
 
-    // Simplify the result
-    SimplifyResult(aPS.Next(aSteps.GetStep(PIOperation_SimplifyResult)));
+    // Update history with the removed features
+    UpdateHistory();
     if (HasErrors())
     {
       return;
     }
-    // Update history with the removed features
-    UpdateHistory();
+    // Simplify the result
+    SimplifyResult(aPS.Next(aSteps.GetStep(PIOperation_SimplifyResult)));
     if (HasErrors())
     {
       return;
@@ -558,19 +549,19 @@ private: //! @name Private methods performing the operation
       BRepAdaptor_Surface adapt(aFExt, Standard_False);
       switch (adapt.GetType())
       {
-      case GeomAbs_Plane:
-      case GeomAbs_Cylinder:
-      case GeomAbs_Cone:
-      case GeomAbs_Sphere:
-      case GeomAbs_Torus:
-      {break; }
-      default:
-      {
-        IntTools_FaceFace faceIntersect;
-        faceIntersect.Perform(aFExt, aFExt, myRunParallel);
-        if (faceIntersect.Lines().Length() > 0 || faceIntersect.Points().Length() > 0)
-          continue;
-      }
+        case GeomAbs_Plane:
+        case GeomAbs_Cylinder:
+        case GeomAbs_Cone:
+        case GeomAbs_Sphere:
+        case GeomAbs_Torus:
+        {break;}
+        default:
+        {
+          IntTools_FaceFace faceIntersect;
+          faceIntersect.Perform (aFExt, aFExt, myRunParallel);
+          if (faceIntersect.Lines().Length() > 0 || faceIntersect.Points().Length() > 0)
+            continue;
+        }
       }
 
       theFaceExtFaceMap.Add(aF, aFExt);
@@ -1165,35 +1156,6 @@ void asiAlgo_RemoveFaces::RemoveFeature
 }
 
 //=======================================================================
-// function: GetFaceNormal
-// purpose: Calculate face normal.
-//=======================================================================
-bool asiAlgo_RemoveFaces::GetFaceNormal(const TopoDS_Face& face,
-                                        const gp_Pnt2d&    uv,
-                                        gp_Dir&            normal,
-                                        gp_Pnt&            p3d)
-{
-  gp_Vec aDU, aDV;
-  TopLoc_Location aLoc;
-  const Handle(Geom_Surface)& surf1 = BRep_Tool::Surface(face, aLoc);
-  surf1->D1(uv.X(), uv.Y(), p3d, aDU, aDV);
-  //
-  // Compute normal
-  gp_Vec aVNormal = aDU.Crossed(aDV);
-  if (aVNormal.Magnitude() < Precision::Confusion()) {
-    return false;
-  }
-  //
-  if (face.Orientation() == TopAbs_REVERSED) {
-    aVNormal.Reverse();
-  }
-  //
-  aVNormal.Transform(aLoc.Transformation());
-  gp_Dir curNormal = gp_Dir(aVNormal);
-  return true;
-}
-
-//=======================================================================
 // function: UpdateHistory
 // purpose: Update history with the removed features
 //=======================================================================
@@ -1201,77 +1163,41 @@ void asiAlgo_RemoveFaces::UpdateHistory()
 {
   if (!HasHistory())
     return;
-  //
-  // Map the result.
-  TopTools_IndexedMapOfShape faces;
-  TopExp::MapShapes(myShape, TopAbs_FACE, faces);
 
-  // Collect the history.
+  // Map the result
+  myMapShape.Clear();
+  TopExp::MapShapes(myShape, myMapShape);
+
+  // Update the history
   BRepTools_History aHistory;
 
-  // Get for the init face interior point;
-  // Find the face in the result shape that also
-  // contains that point;
-  // Find the normal for this to faces;
-  // Compare them: normals must be parallel and the point must be the same.
   const Standard_Integer aNbS = myInputsMap.Extent();
-  // Remember already traversed faces in the result shape to ease the process.
-  TopTools_ListOfShape traversed;
   for (Standard_Integer i = 1; i <= aNbS; ++i)
   {
     const TopoDS_Shape& aS = myInputsMap(i);
     if (!BRepTools_History::IsSupportedType(aS))
       continue;
 
-    if (aS.ShapeType() != TopAbs_FACE)
+    if (myHistory->IsRemoved(aS))
       continue;
 
-    TopoDS_Face face = TopoDS::Face(aS);
-    gp_Pnt2d uv;
-    gp_Pnt   xyz;
-
-    if (!asiAlgo_Utils::GetFaceAnyInteriorPoint(face, uv, xyz))
+    // Check if the shape has any trace in the result
+    const TopTools_ListOfShape& aLSIm = myHistory->Modified(aS);
+    if (aLSIm.IsEmpty())
     {
-      aHistory.Remove(aS);
-      continue;
+      if (!myMapShape.Contains(aS))
+        aHistory.Remove(aS);
     }
-    //
-    gp_Pnt p3d;
-    gp_Dir normal;
-    if (!GetFaceNormal(face, uv, normal, p3d))
-      continue;
-    //
-    for (TopTools_IndexedMapOfShape::Iterator it(faces); it.More(); it.Next())
+
+    TopTools_ListIteratorOfListOfShape itLSIm(aLSIm);
+    for (; itLSIm.More(); itLSIm.Next())
     {
-      if (traversed.Contains(it.Value()))
-        continue;
-      //
-      TopoDS_Face curFace = TopoDS::Face(it.Value());
-      //
-      asiAlgo_ClassifyPointFace classifier(curFace, BRep_Tool::Tolerance(curFace), 0.01, false);
-      //
-      ShapeAnalysis_Surface sas(BRep_Tool::Surface(curFace));
-      uv = sas.ValueOfUV(xyz, Precision::Confusion());
-      //
-      if (classifier(uv) & Membership_In)
-      {
-        gp_Dir curNormal;
-        if (!GetFaceNormal(curFace, uv, curNormal, p3d))
-          continue;
-        //
-        if (!normal.IsParallel(curNormal, Precision::Angular()) ||
-            !p3d.IsEqual(xyz, Precision::Confusion()))
-          continue;
-        //
-        if (aHistory.Modified(aS).Contains(curFace))
-          continue;
-        aHistory.AddModified(aS, curFace);
-        traversed.Append(curFace);
-      }
+      if (!myMapShape.Contains(itLSIm.Value()))
+        aHistory.Remove(itLSIm.Value());
     }
   }
-  //
-  myHistory = new BRepTools_History(aHistory);
+
+  myHistory->Merge(aHistory);
 }
 
 //=======================================================================

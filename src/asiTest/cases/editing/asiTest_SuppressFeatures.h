@@ -73,6 +73,20 @@ public:
   {
     functions << &test001
               << &test002
+              << &test003
+              << &test004
+              << &test005
+              << &test006
+              << &test007
+              << &test008
+              << &test009
+              << &test010
+              << &test011
+              << &test012
+              << &test013
+              << &test014
+              << &test015
+
     ; // Put semicolon here for convenient adding new functions above ;)
   }
 
@@ -85,6 +99,19 @@ private:
 
   static outcome test001(const int funcID, const bool);
   static outcome test002(const int funcID, const bool);
+  static outcome test003(const int funcID, const bool);
+  static outcome test004(const int funcID, const bool);
+  static outcome test005(const int funcID, const bool);
+  static outcome test006(const int funcID, const bool);
+  static outcome test007(const int funcID, const bool);
+  static outcome test008(const int funcID, const bool);
+  static outcome test009(const int funcID, const bool);
+  static outcome test010(const int funcID, const bool);
+  static outcome test011(const int funcID, const bool);
+  static outcome test012(const int funcID, const bool);
+  static outcome test013(const int funcID, const bool);
+  static outcome test014(const int funcID, const bool);
+  static outcome test015(const int funcID, const bool);
 
 };
 
