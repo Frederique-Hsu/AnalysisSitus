@@ -37,13 +37,16 @@
 #include <asiAlgo_Utils.h>
 
 // OpenCascade includes
+#include <Approx_Curve3d.hxx>
 #include <BRep_Builder.hxx>
 #include <BRep_Tool.hxx>
 #include <BRepAdaptor_Curve.hxx>
+#include <BRepBuilderAPI_MakeEdge.hxx>
 #include <BRepBuilderAPI_Transform.hxx>
 #include <BRepLib.hxx>
 #include <BRepMesh_IncrementalMesh.hxx>
 #include <GCPnts_TangentialDeflection.hxx>
+#include <GeomConvert_BSplineCurveToBezierCurve.hxx>
 #include <gp_Circ.hxx>
 #include <Poly_Polygon3D.hxx>
 #include <TopExp_Explorer.hxx>
@@ -177,7 +180,9 @@ namespace svg
     else
     {
       GCPnts_TangentialDeflection pntGen(bac, angDef, linDef);
+
       const int nbPnt = pntGen.NbPoints();
+
       if ( nbPnt > 1 )
       {
         char c = 'M';
@@ -200,6 +205,310 @@ namespace svg
 
   //-----------------------------------------------------------------------------
 
+  TopoDS_Edge asBSpline(const BRepAdaptor_Curve& c,
+                        int                      maxDegree)
+  {
+    double tol3D = 0.001;
+    int maxSegment = 50;
+
+    Handle(BRepAdaptor_Curve) hCurve = new BRepAdaptor_Curve(c);
+
+    // Approximate the curve using a tolerance.
+    Approx_Curve3d approx( hCurve, tol3D, GeomAbs_C0, maxSegment, maxDegree );
+
+    if ( approx.IsDone() && approx.HasResult() )
+    {
+        Handle(Geom_BSplineCurve) spline = approx.Curve();
+
+        BRepBuilderAPI_MakeEdge mkEdge( spline, spline->FirstParameter(), spline->LastParameter() );
+
+        return mkEdge.Edge();
+    }
+
+    return TopoDS_Edge();
+  }
+
+  //-----------------------------------------------------------------------------
+
+  void printBSpline(const BRepAdaptor_Curve& c,
+                    int                      id,
+                    const double             angDef,
+                    const double             linDef,
+                    const double             scale,
+                    std::ostream&            out,
+                    ActAPI_PlotterEntry      plotter = nullptr)
+  {
+    try
+    {
+      std::stringstream str;
+
+      Handle(Geom_BSplineCurve) spline;
+
+      double tol3D = 0.001;
+      int maxDegree = 3, maxSegment = 100;
+
+      Handle(BRepAdaptor_Curve) Curve = new BRepAdaptor_Curve(c);
+
+      // Approximate.
+      Approx_Curve3d approx( Curve, tol3D, GeomAbs_C0, maxSegment, maxDegree );
+
+      if ( approx.IsDone() && approx.HasResult() )
+      {
+        spline = approx.Curve();
+      }
+      else
+      {
+        printGeneric( c, id, angDef, linDef, scale, out, plotter );
+
+        return;
+      }
+
+      GeomConvert_BSplineCurveToBezierCurve crt( spline );
+
+      int arcs = crt.NbArcs();
+
+      str << "<path d=\"M";
+
+      for ( int i = 1; i <= arcs; i++ )
+      {
+        Handle(Geom_BezierCurve) bezier = crt.Arc(i);
+
+        int poles = bezier->NbPoles();
+
+        if ( i == 1 )
+        {
+          gp_Pnt p1 = bezier->Pole(1);
+
+          str << p1.X() << ", " << -p1.Y();
+        }
+        if ( bezier->Degree() == 3 )
+        {
+          if ( poles != 4 )
+          {
+            Standard_Failure::Raise( "Failed to export BSpline curve to SVG. Will be done in generic way." );
+          }
+
+          gp_Pnt p2 = bezier->Pole(2);
+          gp_Pnt p3 = bezier->Pole(3);
+          gp_Pnt p4 = bezier->Pole(4);
+
+          str << " C"
+              << p2.X() << ", " << -p2.Y() << " "
+              << p3.X() << ", " << -p3.Y() << " "
+              << p4.X() << ", " << -p4.Y() << " ";
+        }
+        else if ( bezier->Degree() == 2 )
+        {
+          if ( poles != 3 )
+          {
+            Standard_Failure::Raise( "Failed to export BSpline curve to SVG. Will be done in generic way." );
+          }
+
+          gp_Pnt p2 = bezier->Pole(2);
+          gp_Pnt p3 = bezier->Pole(3);
+
+          str << " Q"
+              << p2.X() << ", " << -p2.Y() << " "
+              << p3.X() << ", " << -p3.Y() << " ";
+        }
+        else if ( bezier->Degree() == 1 )
+        {
+          if ( poles != 2 )
+          {
+            Standard_Failure::Raise( "Failed to export BSpline curve to SVG. Will be done in generic way." );
+          }
+
+          gp_Pnt p2 = bezier->Pole(2);
+
+          str << " L" << p2.X() << ", " << -p2.Y() << " ";
+        }
+        else
+        {
+          Standard_Failure::Raise( "Failed to export BSpline curve to SVG. Will be done in generic way." );
+        }
+      }
+
+      str << "\" />";
+
+      out << str.str();
+    }
+    catch ( Standard_Failure& )
+    {
+      printGeneric( c, id, angDef, linDef, scale, out, plotter );
+    }
+  }
+
+  //-----------------------------------------------------------------------------
+
+  void printBezier(const BRepAdaptor_Curve& c,
+                   int                      id,
+                   const double             angDef,
+                   const double             linDef,
+                   const double             scale,
+                   std::ostream&            out,
+                   ActAPI_PlotterEntry      plotter = nullptr)
+  {
+    try
+    {
+      std::stringstream str;
+
+      str << "<path d=\"M";
+
+      Handle(Geom_BezierCurve) bezier = c.Bezier();
+
+      int poles = bezier->NbPoles();
+
+      // If its a bezier with degree higher than 3 convert it into a B-spline.
+      if ( bezier->Degree() > 3 || bezier->IsRational() )
+      {
+        TopoDS_Edge edge = asBSpline( c, 3 );
+
+        if ( !edge.IsNull() )
+        {
+          BRepAdaptor_Curve spline( edge );
+
+          printBSpline( spline, id, angDef, linDef, scale, out, plotter );
+        }
+        else
+        {
+          Standard_Failure::Raise( "Failed to export Bezier curve to SVG. Will be done in generic way." );
+        }
+
+        return;
+      }
+
+      gp_Pnt p1 = bezier->Pole(1);
+
+      str << p1.X() << ", " << -p1.Y();
+
+      if ( bezier->Degree() == 3 )
+      {
+        if ( poles != 4 )
+        {
+          Standard_Failure::Raise( "Failed to export Bezier curve to SVG. Will be done in generic way." );
+        }
+
+        gp_Pnt p2 = bezier->Pole(2);
+        gp_Pnt p3 = bezier->Pole(3);
+        gp_Pnt p4 = bezier->Pole(4);
+
+        str << " C"
+            << p2.X() << ", " << -p2.Y() << " "
+            << p3.X() << ", " << -p3.Y() << " "
+            << p4.X() << ", " << -p4.Y() << " ";
+      }
+      else if ( bezier->Degree() == 2 )
+      {
+        if ( poles != 3 )
+        {
+          Standard_Failure::Raise( "Failed to export Bezier curve to SVG. Will be done in generic way." );
+        }
+
+        gp_Pnt p2 = bezier->Pole(2);
+        gp_Pnt p3 = bezier->Pole(3);
+
+        str << " Q"
+            << p2.X() << ", " << -p2.Y() << " "
+            << p3.X() << ", " << -p3.Y() << " ";
+      }
+      else if ( bezier->Degree() == 1 )
+      {
+        if ( poles != 2 )
+        {
+          Standard_Failure::Raise( "Failed to export Bezier curve to SVG. Will be done in generic way." );
+        }
+
+        gp_Pnt p2 = bezier->Pole(2);
+
+        str << " L" << p2.X() << ", " << -p2.Y() << " ";
+      }
+      else
+      {
+        Standard_Failure::Raise( "Failed to export Bezier curve to SVG. Will be done in generic way." );
+      }
+
+      str << "\" />";
+
+      out << str.str();
+    }
+    catch (Standard_Failure&)
+    {
+      printGeneric( c, id, angDef, linDef, scale, out, plotter );
+    }
+  }
+
+  //-----------------------------------------------------------------------------
+
+  void printEllipse(const BRepAdaptor_Curve& c,
+                    int                      id,
+                    const double             angDef,
+                    const double             linDef,
+                    const double             scale,
+                    std::ostream&            out,
+                    ActAPI_PlotterEntry      plotter = nullptr)
+  {
+    gp_Elips ellp = c.Ellipse();
+
+    const gp_Pnt& p= ellp.Location();
+
+    double r1 = ellp.MajorRadius();
+    double r2 = ellp.MinorRadius();
+
+    double f = c.FirstParameter();
+    double l = c.LastParameter();
+
+    gp_Pnt s = c.Value(f);
+    gp_Pnt m = c.Value((l+f)/2.0);
+    gp_Pnt e = c.Value(l);
+
+    // If the minor radius is very small compared to the major radius
+    // the geometry actually degenerates to a line.
+    double ratio = std::min(r1, r2)/std::max(r1, r2);
+
+    if ( ratio < 0.001 )
+    {
+      printGeneric( c, id, angDef, linDef, scale, out, plotter );
+
+      return;
+    }
+
+    gp_Vec v1(m, s);
+    gp_Vec v2(m, e);
+    gp_Vec v3(0, 0,1);
+
+    double a = v3.DotCross(v1, v2);
+
+    // A full ellipse.
+    // See also https://developer.mozilla.org/en/SVG/Tutorial/Paths
+    gp_Dir xaxis = ellp.XAxis().Direction();
+
+    double angle = xaxis.AngleWithRef( gp_Dir(1, 0,0), gp_Dir(0, 0,-1) );
+
+    // To degrees.
+    angle = ( angle / M_PI ) * 180.0;
+
+    if ( fabs( l-f ) > 1.0 && s.SquareDistance(e) < 0.001 )
+    {
+      out << "<g transform = \"rotate(" << angle << ", " << p.X() << ", " << -p.Y() << ")\">" << std::endl;
+      out << "<ellipse cx =\"" << p.X() << "\" cy =\""
+          << -p.Y() << "\" rx =\"" << r1 << "\"  ry =\"" << r2 << "\"/>" << std::endl;
+      out << "</g>" << std::endl;
+    }
+    else // Arc of ellipse.
+    {
+      char las = (l-f > M_PI) ? '1' : '0'; // Large-arc-flag.
+
+      char swp = (a < 0) ? '1' : '0'; // Sweep-flag, i.e. clockwise (0) or counter-clockwise (1).
+
+      out << "<path d=\"M" << s.X() <<  " " << -s.Y()
+          << " A" << r1 << " " << r2 << " "
+          << angle << " " << las << " " << swp << " "
+          << e.X() << " " << -e.Y() << "\" />" << std::endl;
+    }
+  }
+
+  //-----------------------------------------------------------------------------
+
   std::string exportEdges(const TopoDS_Shape& input,
                           const double        angDef,
                           const double        linDef,
@@ -217,11 +526,23 @@ namespace svg
       BRepAdaptor_Curve adapt( edge );
       if ( adapt.GetType() == GeomAbs_Circle )
       {
-        printCircle(adapt, s, result, plotter);
+        printCircle( adapt, s, result, plotter );
+      }
+      else if ( adapt.GetType() == GeomAbs_Ellipse )
+      {
+        printEllipse( adapt, i, angDef, linDef, s, result, plotter );
+      }
+      else if ( adapt.GetType() == GeomAbs_BSplineCurve )
+      {
+        printBSpline( adapt, i, angDef, linDef, s, result, plotter );
+      }
+      else if ( adapt.GetType() == GeomAbs_BezierCurve )
+      {
+        printBezier( adapt, i, angDef, linDef, s, result, plotter );
       }
       else
       {
-        printGeneric(adapt, i, angDef, linDef, s, result, plotter );
+        printGeneric( adapt, i, angDef, linDef, s, result, plotter );
       }
     }
 
@@ -262,8 +583,6 @@ namespace svg
       " stroke-linecap=\"round\""
       " stroke-linejoin=\"round\""
       " stroke-width=\"" + std::to_string(lineWidth) + "\">\n";
-
-    BRepMesh_IncrementalMesh(shape, linDef);
 
     result << style.c_str()
            << exportEdges(shape, angDef, linDef, s, plotter)
