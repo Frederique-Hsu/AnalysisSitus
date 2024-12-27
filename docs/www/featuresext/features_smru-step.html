@@ -2,9 +2,9 @@
 <html>
  <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>Analysis Situs: Extensions ver.2025.1</title>
-  <link rel="shortcut icon" type="image/png" href="../../imgs/favicon.png"/>
-  <link rel="stylesheet" type="text/css" href="../../css/situ-main-style.css">
+  <title>Analysis Situs: SMRU STEP output</title>
+  <link rel="shortcut icon" type="image/png" href="../imgs/favicon.png"/>
+  <link rel="stylesheet" type="text/css" href="../css/situ-main-style.css">
 
   <!-- [begin] Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-112292727-2"></script>
@@ -16,11 +16,17 @@
     gtag('config', 'UA-112292727-2');
   </script>
   <!-- [end] Google Analytics -->
-
+  
+  <!--
+    Quick navigation script. Use a div with "toc-panel" class having a
+    nested div with "toc" id to place the navigation panel.
+  -->
+  <script src="../js/jquery-3.5.1.min.js"></script>
+  <script src="../js/toc.js"></script>
 
   <!-- [begin] Code highlight -->
-  <link rel="stylesheet" href="../../css/highlight.min.css">
-  <script src="../../js/highlight.min.js"></script>
+  <link rel="stylesheet" href="../css/highlight.min.css">
+  <script src="../js/highlight.min.js"></script>
   <!-- [end] Code highlight -->
 
   <!-- [begin] Pseudocode -->
@@ -49,9 +55,9 @@
 <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%">
 <tr>
   <td align="left" class="header">
-    <span class="header-logo"><a href="../../index.html" class="header-href">Analysis&nbsp;Situs</a></span>
+    <span class="header-logo"><a href="../index.html" class="header-href">Analysis&nbsp;Situs</a></span>
     &nbsp;
-    ./<a class="header-href" href="../../featuresext.html">extensions</a>/Extensions ver.2025.1
+    ./<a class="header-href" href="../featuresext.html">extensions</a>/SMRU STEP output
   </td>
 </tr>
 </table>
@@ -62,8 +68,8 @@
     <div class="dropdown">
       <button class="dropbtn">Features ...</button>
       <div class="dropdown-content">
-        <a href="../../features.html">Open source</a>
-        <!-- <a href="../../featuresext.html">Commercial</a> -->
+        <a href="../features.html">Open source</a>
+        <!-- <a href="../featuresext.html">Commercial</a> -->
       </div>
     </div>
   </td>
@@ -77,33 +83,33 @@
 <div class="content-body">
 <!-- [BEGIN] contents -->
 
-<h1>Release notes ver. 2025.1</h1>
+<h1 id="toc-smru-step">SMRU STEP output</h1>
 
-<h2>CNC, DFM</h2>
+<h2 id="toc-smru-step-body">Export body</h2>
 
-<ul>
-  
-</ul>
+<p>
+  SMRU may slightly alter the input part's topology by applying face maximization or <a href="../features/features_convert-canonical.html">canonical conversion</a> operators. Such modifications are regarded as "normalization" stage and are necessary for proper feature recognition. To get the normalized geometry upon completion of the recognition process, pass <span class="code-inline">-step</span> key to the <span class="code-inline">sm-perform</span> command or in the <span class="code-inline">asiSheetMetalExe</span> executable. Each body will be reexported as a STEP file as a result.
+</p>
 
-<h2>SMRU, DXF</h2>
+<pre><code> > sm-perform -filename test.stp -json outcome.json -step</code></pre>
 
-<ul>
-  <li class="fancy_ul_item commit-msg">[SMRU] Introduce welding spots detection prototype.
-  <li class="fancy_ul_item commit-msg">[SMRU] #619: Make automatic welding identification between assembly components an optional mode of SMRU.
-  <li class="fancy_ul_item commit-msg">[SMRU] #619: Dump glTF files for welding pathways.
-  <li class="fancy_ul_item commit-msg">[SMRU] Introduce bent pipes recognition (#744).
-  <li class="fancy_ul_item commit-msg">[SMRU] Rename props for bent pipes and update ref data.
-  <li class="fancy_ul_item commit-msg">[SMRU] Recognize straight wires.
-  <li class="fancy_ul_item commit-msg">[DXF] Revamp DXF writer to support layers.
-  <li class="fancy_ul_item commit-msg">[SMRU, DXF] Report bend lines as a separate layer in SMRU.
-  <li class="fancy_ul_item commit-msg">[SMRU] Fix #1035: Save thick solid of the flat shape as a STEP file.
-  <li class="fancy_ul_item commit-msg">[SMRU] Fix #1038: SVG export is unreasonably slow (make SVG export orders of magnitude faster).
-</ul>
+<p>
+  It should be noted that the face IDs reported in the output JSON file are the indices of faces in the normalized state of geometry, not the initial shape.
+</p>
 
-<h2>Common</h2>
+<h2 id="toc-smru-step-flat">Export flat pattern</h2>
 
-<ul>
-</ul>
+<p>
+  To export the flat pattern in the STEP format, pass the <span class="code-inline">-flat</span> key to the <span class="code-inline">sm-perform</span> command or in the <span class="code-inline">asiSheetMetalExe</span> executable. As a result, the flat pattern's geometry will be exported in all supported formats, including STEP.
+</p>
+
+<pre><code> > sm-perform -filename test.stp -json outcome.json -flat</code></pre>
+
+<p>
+  The flat pattern generated by the unfolding algorithm will be automatically extruded by the determined thickness value and exported to a STEP file.
+</p>
+
+<div align="center"><a href="../imgs/ext/smru-fp-step.png"><img src="../imgs/ext/smru-fp-step.png" width="60%"/></a></div>
 
 <!-- [END] contents -->
 </div>

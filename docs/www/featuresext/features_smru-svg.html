@@ -2,9 +2,9 @@
 <html>
  <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>Analysis Situs: Extensions ver.2025.1</title>
-  <link rel="shortcut icon" type="image/png" href="../../imgs/favicon.png"/>
-  <link rel="stylesheet" type="text/css" href="../../css/situ-main-style.css">
+  <title>Analysis Situs: SMRU SVG output</title>
+  <link rel="shortcut icon" type="image/png" href="../imgs/favicon.png"/>
+  <link rel="stylesheet" type="text/css" href="../css/situ-main-style.css">
 
   <!-- [begin] Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-112292727-2"></script>
@@ -16,11 +16,17 @@
     gtag('config', 'UA-112292727-2');
   </script>
   <!-- [end] Google Analytics -->
-
+  
+  <!--
+    Quick navigation script. Use a div with "toc-panel" class having a
+    nested div with "toc" id to place the navigation panel.
+  -->
+  <script src="../js/jquery-3.5.1.min.js"></script>
+  <script src="../js/toc.js"></script>
 
   <!-- [begin] Code highlight -->
-  <link rel="stylesheet" href="../../css/highlight.min.css">
-  <script src="../../js/highlight.min.js"></script>
+  <link rel="stylesheet" href="../css/highlight.min.css">
+  <script src="../js/highlight.min.js"></script>
   <!-- [end] Code highlight -->
 
   <!-- [begin] Pseudocode -->
@@ -49,9 +55,9 @@
 <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%">
 <tr>
   <td align="left" class="header">
-    <span class="header-logo"><a href="../../index.html" class="header-href">Analysis&nbsp;Situs</a></span>
+    <span class="header-logo"><a href="../index.html" class="header-href">Analysis&nbsp;Situs</a></span>
     &nbsp;
-    ./<a class="header-href" href="../../featuresext.html">extensions</a>/Extensions ver.2025.1
+    ./<a class="header-href" href="../featuresext.html">extensions</a>/SMRU SVG output
   </td>
 </tr>
 </table>
@@ -62,8 +68,8 @@
     <div class="dropdown">
       <button class="dropbtn">Features ...</button>
       <div class="dropdown-content">
-        <a href="../../features.html">Open source</a>
-        <!-- <a href="../../featuresext.html">Commercial</a> -->
+        <a href="../features.html">Open source</a>
+        <!-- <a href="../featuresext.html">Commercial</a> -->
       </div>
     </div>
   </td>
@@ -77,33 +83,25 @@
 <div class="content-body">
 <!-- [BEGIN] contents -->
 
-<h1>Release notes ver. 2025.1</h1>
+<h1 id="toc-smru-svg">SMRU SVG output</h1>
 
-<h2>CNC, DFM</h2>
+<p>
+  To export the flat pattern in the SVG format, pass the <span class="code-inline">-flat</span> key to the <span class="code-inline">sm-perform</span> command or in the <span class="code-inline">asiSheetMetalExe</span> executable. As a result, the flat pattern's geometry will be exported in all supported formats, including SVG.
+</p>
 
-<ul>
-  
-</ul>
+<pre><code> > sm-perform -filename test.stp -json outcome.json -flat</code></pre>
 
-<h2>SMRU, DXF</h2>
+<div align="center"><a href="../imgs/ext/smru_outcome_0-1-1-1_1_flat.svg"><img src="../imgs/ext/smru_outcome_0-1-1-1_1_flat.svg" width="60%"/></a></div>
 
-<ul>
-  <li class="fancy_ul_item commit-msg">[SMRU] Introduce welding spots detection prototype.
-  <li class="fancy_ul_item commit-msg">[SMRU] #619: Make automatic welding identification between assembly components an optional mode of SMRU.
-  <li class="fancy_ul_item commit-msg">[SMRU] #619: Dump glTF files for welding pathways.
-  <li class="fancy_ul_item commit-msg">[SMRU] Introduce bent pipes recognition (#744).
-  <li class="fancy_ul_item commit-msg">[SMRU] Rename props for bent pipes and update ref data.
-  <li class="fancy_ul_item commit-msg">[SMRU] Recognize straight wires.
-  <li class="fancy_ul_item commit-msg">[DXF] Revamp DXF writer to support layers.
-  <li class="fancy_ul_item commit-msg">[SMRU, DXF] Report bend lines as a separate layer in SMRU.
-  <li class="fancy_ul_item commit-msg">[SMRU] Fix #1035: Save thick solid of the flat shape as a STEP file.
-  <li class="fancy_ul_item commit-msg">[SMRU] Fix #1038: SVG export is unreasonably slow (make SVG export orders of magnitude faster).
-</ul>
+<p>
+  SVG export is optimized for complex parts and preserves analytical representation of curves, such as circular arcs and splines.
+</p>
 
-<h2>Common</h2>
+<div align="center"><a href="../imgs/ext/smru_outcome_0-1-1-1_2_flat.svg"><img src="../imgs/ext/smru_outcome_0-1-1-1_2_flat.svg" width="40%"/></a></div>
 
-<ul>
-</ul>
+<p>
+  It remains the responsibility of the client application to adjust further settings of the dumped image, e.g., paddings, colors or line width.
+</p>
 
 <!-- [END] contents -->
 </div>
