@@ -53,43 +53,47 @@
 //! \ingroup ASI_MODELING
 //!
 //! Services to convert mesh from one format to another.
-namespace asiAlgo_MeshConvert
+class asiAlgo_MeshConvert
 {
-  asiAlgo_EXPORT bool
+public:
+
+  asiAlgo_EXPORT static bool
     ToPersistent(const TopoDS_Shape&   source,
                  Handle(ActData_Mesh)& result);
 
-  asiAlgo_EXPORT bool
+  asiAlgo_EXPORT static bool
     ToPersistent(const Handle(Poly_Triangulation)& source,
                  Handle(ActData_Mesh)&             result);
 
-  asiAlgo_EXPORT bool
+  asiAlgo_EXPORT static bool
     FromPersistent(const Handle(ActData_Mesh)& source,
                    Handle(Poly_Triangulation)& result);
 
 #if defined USE_VTK
-  asiAlgo_EXPORT bool
+  asiAlgo_EXPORT static bool
     ToPersistent(vtkPolyData*          source,
                  Handle(ActData_Mesh)& result);
 
-  asiAlgo_EXPORT bool
+  asiAlgo_EXPORT static bool
     FromVTK(vtkPolyData*                source,
             Handle(Poly_Triangulation)& result);
 
-  asiAlgo_EXPORT bool
+  asiAlgo_EXPORT static bool
     ToVTK(const Handle(Poly_Triangulation)& source,
           vtkSmartPointer<vtkPolyData>&     result);
 
-  asiAlgo_EXPORT bool
+  asiAlgo_EXPORT static bool
     ToBRep(const Handle(Poly_Triangulation)& source,
            TopoDS_Shape&                     result);
+
+private:
 
   //! Translates the passed mesh element to VTK polygonal cell.
   //! \param[in]      source   source mesh.
   //! \param[in]      elem     mesh element to translate.
   //! \param[in, out] polyData output polygonal data.
   //! \param[in, out] nodeRepo already processed nodes.
-  void
+  static void
     __translateElement(const Handle(Poly_Triangulation)&    source,
                        const Poly_Triangle&                 elem,
                        vtkPolyData*                         polyData,
@@ -104,7 +108,7 @@ namespace asiAlgo_MeshConvert
   //! \param[in, out] polyData polygonal data being populated.
   //! \param[in, out] nodeRepo registered nodes.
   //! \return ID of the just added VTK cell.
-  vtkIdType
+  static vtkIdType
     __registerMeshFace(const Handle(Poly_Triangulation)&    source,
                        const void*                          nodes,
                        const int                            nbNodes,
@@ -117,7 +121,7 @@ namespace asiAlgo_MeshConvert
   //! \param[in,out] polyData output polygonal data.
   //! \param[in,out] nodeRepo registered nodes.
   //! \return internal VTK ID for the newly added point.
-  vtkIdType
+  static vtkIdType
     __registerMeshNode(const Handle(Poly_Triangulation)&    source,
                        const int                            nodeID,
                        vtkPolyData*                         polyData,
