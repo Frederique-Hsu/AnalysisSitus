@@ -34,6 +34,11 @@
 // Analysis Situs includes
 #include <asiAlgo_BVHBuilderType.h>
 
+// Active Data includes
+#include <ActAPI_IPlotter.h>
+#include <ActAPI_IProgressNotifier.h>
+#include <ActData_Mesh.h>
+
 // OCCT includes
 #include <BVH_Types.hxx>
 #include <BVH_PrimitiveSet.hxx>
@@ -43,10 +48,6 @@
 
 // STL includes
 #include <vector>
-
-// Active Data includes
-#include <ActAPI_IPlotter.h>
-#include <ActAPI_IProgressNotifier.h>
 
 #if defined USE_MOBIUS
 // Mobius includes
@@ -87,10 +88,10 @@ public:
 public:
 
   //! Creates the accelerating structure with immediate initialization.
-  //! \param[in] model       CAD model to create the accelerating structure for.
-  //! \param[in] builderType type of builder to use.
-  //! \param[in] progress    progress notifier.
-  //! \param[in] plotter     imperative plotter.
+  //! \param[in] model       the CAD model to create the accelerating structure for.
+  //! \param[in] builderType the type of the builder to use.
+  //! \param[in] progress    the progress notifier.
+  //! \param[in] plotter     the imperative plotter.
   asiAlgo_EXPORT
     asiAlgo_BVHFacets(const TopoDS_Shape&          model,
                       const asiAlgo_BVHBuilderType builderType = BVHBuilder_Binned,
@@ -98,23 +99,35 @@ public:
                       ActAPI_PlotterEntry          plotter     = nullptr);
 
   //! Creates the accelerating structure with immediate initialization.
-  //! \param[in] mesh        triangulation to create the accelerating structure for.
-  //! \param[in] builderType type of builder to use.
-  //! \param[in] progress    progress notifier.
-  //! \param[in] plotter     imperative plotter.
+  //! \param[in] mesh        the triangulation to create the accelerating structure for.
+  //! \param[in] builderType the type of the builder to use.
+  //! \param[in] progress    the progress notifier.
+  //! \param[in] plotter     the imperative plotter.
   asiAlgo_EXPORT
     asiAlgo_BVHFacets(const Handle(Poly_Triangulation)& mesh,
                       const asiAlgo_BVHBuilderType      builderType = BVHBuilder_Binned,
                       ActAPI_ProgressEntry              progress    = nullptr,
                       ActAPI_PlotterEntry               plotter     = nullptr);
 
+  //! Creates a triangle set from OMFDS data structure.
+  //! \param[in] mesh        the mesh to turn into a BVH primitive set.
+  //! \param[in] builderType the type of the builder to use.
+  //! \param[in] progress    the progress notifier.
+  //! \param[in] plotter     the imperative plotter.
+  asiAlgo_EXPORT
+    asiAlgo_BVHFacets(const Handle(ActData_Mesh)&  mesh,
+                      const asiAlgo_BVHBuilderType builderType = BVHBuilder_Binned,
+                      ActAPI_ProgressEntry         progress    = nullptr,
+                      ActAPI_PlotterEntry          plotter     = nullptr);
+
 #if defined USE_MOBIUS
   //! Creates the accelerating structure with immediate initialization.
-  //! \param[in] mesh        triangulation to create the accelerating structure for.
-  //! \param[in] builderType type of builder to use.
-  //! \param[in] useFaceRefs indicates whether to use face IDs as back-refs from BVH-stored facets.
-  //! \param[in] progress    progress notifier.
-  //! \param[in] plotter     imperative plotter.
+  //! \param[in] mesh        the triangulation to create the accelerating structure for.
+  //! \param[in] builderType the type of the builder to use.
+  //! \param[in] useFaceRefs the Boolean flag that indicates whether to use face IDs as
+  //!                        the back-refs from BVH-stored facets.
+  //! \param[in] progress    the progress notifier.
+  //! \param[in] plotter     the imperative plotter.
   asiAlgo_EXPORT
     asiAlgo_BVHFacets(const mobius::t_ptr<mobius::t_mesh>& mesh,
                       const asiAlgo_BVHBuilderType         builderType = BVHBuilder_Binned,
@@ -209,26 +222,35 @@ public:
 protected:
 
   //! Initializes the accelerating structure with the given CAD model.
-  //! \param[in] model       CAD model to prepare the accelerating structure for.
-  //! \param[in] builderType type of builder to use.
+  //! \param[in] model       the CAD model to prepare the accelerating structure for.
+  //! \param[in] builderType the type of the builder to use.
   //! \return true in case of success, false -- otherwise.
   asiAlgo_EXPORT bool
     init(const TopoDS_Shape&          model,
          const asiAlgo_BVHBuilderType builderType);
 
   //! Initializes the accelerating structure with the given triangulation.
-  //! \param[in] model       triangulation to prepare the accelerating structure for.
-  //! \param[in] builderType type of builder to use.
+  //! \param[in] model       the triangulation to prepare the accelerating structure for.
+  //! \param[in] builderType the type of the builder to use.
   //! \return true in case of success, false -- otherwise.
   asiAlgo_EXPORT bool
     init(const Handle(Poly_Triangulation)& mesh,
          const asiAlgo_BVHBuilderType      builderType);
 
+  //! Initializes the accelerating structure with the given OMFDS mesh.
+  //! \param[in] model       the mesh to prepare the accelerating structure for.
+  //! \param[in] builderType the type of the builder to use.
+  //! \return true in case of success, false -- otherwise.
+  asiAlgo_EXPORT bool
+    init(const Handle(ActData_Mesh)&  mesh,
+         const asiAlgo_BVHBuilderType builderType);
+
 #if defined USE_MOBIUS
   //! Initializes the accelerating structure with the given mesh.
-  //! \param[in] model       mesh model to prepare the accelerating structure for.
-  //! \param[in] builderType type of builder to use.
-  //! \param[in] useFaceRefs indicates whether to use face IDs as back-refs from BVH-stored facets.
+  //! \param[in] model       the mesh model to prepare the accelerating structure for.
+  //! \param[in] builderType the type of the builder to use.
+  //! \param[in] useFaceRefs the Boolean flag that indicates whether to use face IDs as
+  //!                        the back-refs from BVH-stored facets.
   //! \return true in case of success, false -- otherwise.
   asiAlgo_EXPORT bool
     init(const mobius::t_ptr<mobius::t_mesh>& mesh,

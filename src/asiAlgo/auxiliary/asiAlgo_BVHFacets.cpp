@@ -34,6 +34,10 @@
 // asiAlgo includes
 #include <asiAlgo_BVHIterator.h>
 
+// Active Data includes
+#include <ActData_Mesh_ElementsIterator.h>
+#include <ActData_Mesh_Triangle.h>
+
 // OCCT includes
 #include <Bnd_Box.hxx>
 #include <BRep_Builder.hxx>
@@ -59,6 +63,32 @@ using namespace mobius;
 
 //-----------------------------------------------------------------------------
 
+namespace {
+
+  void ElemNodes(const Handle(ActData_Mesh)&             mesh,
+                 const Handle(ActData_Mesh_Element)&     elem,
+                 std::vector<Handle(ActData_Mesh_Node)>& nodes)
+  {
+    nodes.clear();
+    int  numNodes = elem->NbNodes();
+    int* nodeIDs  = nullptr;
+
+    if ( numNodes == 3 )
+    {
+      const Handle(ActData_Mesh_Triangle)&
+        tri = Handle(ActData_Mesh_Triangle)::DownCast(elem);
+      //
+      nodeIDs = (int*) tri->GetConnections();
+
+      // Populate output collection.
+      for ( int n = 0; n < numNodes; ++n )
+        nodes.push_back( mesh->FindNode(nodeIDs[n]) );
+    }
+  }
+}
+
+//-----------------------------------------------------------------------------
+
 asiAlgo_BVHFacets::asiAlgo_BVHFacets(const TopoDS_Shape&          model,
                                      const asiAlgo_BVHBuilderType builderType,
                                      ActAPI_ProgressEntry         progress,
@@ -78,6 +108,21 @@ asiAlgo_BVHFacets::asiAlgo_BVHFacets(const Handle(Poly_Triangulation)& mesh,
                                      const asiAlgo_BVHBuilderType      builderType,
                                      ActAPI_ProgressEntry              progress,
                                      ActAPI_PlotterEntry               plotter)
+: BVH_PrimitiveSet<double, 3> (),
+  m_fBoundingDiag             (0.0),
+  m_progress                  (progress),
+  m_plotter                   (plotter)
+{
+  this->init(mesh, builderType);
+  this->MarkDirty();
+}
+
+//-----------------------------------------------------------------------------
+
+asiAlgo_BVHFacets::asiAlgo_BVHFacets(const Handle(ActData_Mesh)&  mesh,
+                                     const asiAlgo_BVHBuilderType builderType,
+                                     ActAPI_ProgressEntry         progress,
+                                     ActAPI_PlotterEntry          plotter)
 : BVH_PrimitiveSet<double, 3> (),
   m_fBoundingDiag             (0.0),
   m_progress                  (progress),
@@ -361,6 +406,46 @@ bool asiAlgo_BVHFacets::init(const Handle(Poly_Triangulation)& mesh,
   BRepBndLib::Add(F, aabb);
   //
   m_fBoundingDiag = ( aabb.CornerMax().XYZ() - aabb.CornerMin().XYZ() ).Modulus();
+
+  return true;
+}
+//-----------------------------------------------------------------------------
+
+bool asiAlgo_BVHFacets::init(const Handle(ActData_Mesh)&  mesh,
+                             const asiAlgo_BVHBuilderType builderType)
+{
+  for ( ActData_Mesh_ElementsIterator it(mesh, ActData_Mesh_ET_Face); it.More(); it.Next() )
+  {
+    const Handle(ActData_Mesh_Element)& elem = it.GetValue();
+
+    if ( !elem->IsKind( STANDARD_TYPE(ActData_Mesh_Triangle) ) )
+      continue;
+
+    // Get element's nodes.
+    std::vector<Handle(ActData_Mesh_Node)> elemNodes;
+    ElemNodes(mesh, elem, elemNodes);
+
+    gp_Pnt pnt1 = elemNodes[0]->Pnt();
+    gp_Pnt pnt2 = elemNodes[1]->Pnt();
+    gp_Pnt pnt3 = elemNodes[2]->Pnt();
+
+    t_facet td;
+    td.P0 = BVH_Vec3d( pnt1.X(), pnt1.Y(), pnt1.Z() );
+    td.P1 = BVH_Vec3d( pnt2.X(), pnt2.Y(), pnt2.Z() );
+    td.P2 = BVH_Vec3d( pnt3.X(), pnt3.Y(), pnt3.Z() );
+
+    gp_Vec v1(pnt1, pnt2); v1.Normalize();
+    gp_Vec v2(pnt1, pnt3); v2.Normalize();
+    gp_Vec n = v1.Crossed(v2);
+    //
+    if ( n.SquareMagnitude() < Precision::SquareConfusion() )
+      continue;
+
+    td.FaceIndex = 0;
+    td.N         = n;
+    //
+    m_facets.push_back(td);
+  }
 
   return true;
 }
