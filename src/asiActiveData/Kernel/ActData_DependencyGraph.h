@@ -118,7 +118,7 @@ public:
         aKey ^= (aKey >> 6);
         aKey += (aKey << 3);
         aKey ^= (aKey >> 11);
-        return (aKey & 0x7fffffff) % 100;
+        return (aKey & 0x7fffffff) % sizeof(size_t);
       }
 
       //! Checks whether two oriented links are the same.

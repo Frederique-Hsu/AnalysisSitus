@@ -65,10 +65,9 @@ public:
 
     struct Hasher
     {
-      size_t operator()(const t_parameterRef&  theObject) const noexcept
+      size_t operator()(const t_parameterRef& theObject) const noexcept
       {
-        std::hash<ActAPI_DataObjectId> hash;
-        return hash(theObject.id);
+        return std::hash<ActAPI_DataObjectId>{}(theObject.id);
       }
 
       bool operator()(const t_parameterRef& theObject1,

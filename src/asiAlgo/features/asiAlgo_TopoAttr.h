@@ -70,10 +70,9 @@ public:
   //! Hasher for sets.
   struct t_hasher
   {
-    size_t operator()(const Handle(asiAlgo_TopoAttr)& attr, const int upper) const noexcept
+    size_t operator()(const Handle(asiAlgo_TopoAttr)& attr) const noexcept
     {
-      std::hash<Standard_GUID> hash;
-      return hash(attr->GetGUID());
+      return std::hash<Standard_GUID>{}(attr->GetGUID());
     }
 
     bool operator()(const Handle(asiAlgo_TopoAttr)& attr, const Handle(asiAlgo_TopoAttr)& other) const noexcept

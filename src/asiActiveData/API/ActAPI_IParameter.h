@@ -484,10 +484,9 @@ struct ActAPI_ParameterGID
     size_t operator()(const ActAPI_ParameterGID& theGID) const noexcept
     {
       TCollection_AsciiString
-        aUniqueName = TCollection_AsciiString(theGID.NID).Cat("_").Cat(theGID.PID);
+        uniqueName = TCollection_AsciiString(theGID.NID).Cat("_").Cat(theGID.PID);
 
-      std::hash<TCollection_AsciiString> hash;
-      return hash(aUniqueName);
+      return std::hash<TCollection_AsciiString>{}(uniqueName);
     }
 
     //! Checks whether two GIDs are equal.

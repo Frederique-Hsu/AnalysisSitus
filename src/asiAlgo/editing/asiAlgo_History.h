@@ -154,11 +154,7 @@ public:
 
       size_t operator()(const t_item* pItem) const noexcept
       {
-        const int I  = (int) ptrdiff_t(pItem);
-        std::hash<Standard_Integer> hash;
-        const int HS = hash(I);
-        //
-        return HS;
+        return std::hash<Standard_Integer>{}((int)ptrdiff_t(pItem));
       }
 
       bool operator()(const t_item* pItem1, const t_item* pItem2) const noexcept

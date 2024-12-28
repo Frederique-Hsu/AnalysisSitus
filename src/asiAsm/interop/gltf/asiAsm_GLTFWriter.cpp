@@ -825,6 +825,7 @@ void glTFWriter::writeNodalPositions(const glTFPrimitive& gltfPrm)
 
   m_jsonWriter->EndObject();
 #else
+  asiAsm_NotUsed(gltfPrm)
   m_progress.SendLogMessage(LogErr(High) << "glTF export is impossible: you have to build "
                                             "Analysis Situs with rapidjson.");
 #endif
@@ -860,6 +861,7 @@ void glTFWriter::writeNodalNormals(const glTFPrimitive& gltfPrm)
 
   m_jsonWriter->EndObject();
 #else
+  asiAsm_NotUsed(gltfPrm)
   m_progress.SendLogMessage(LogErr(High) << "glTF export is impossible: you have to build "
                                             "Analysis Situs with rapidjson.");
 #endif
@@ -895,6 +897,7 @@ void glTFWriter::writeNodalTextCoords(const glTFPrimitive& gltfPrm)
 
   m_jsonWriter->EndObject();
 #else
+  asiAsm_NotUsed(gltfPrm)
   m_progress.SendLogMessage(LogErr(High) << "glTF export is impossible: you have to build "
                                             "Analysis Situs with rapidjson.");
 #endif
@@ -928,8 +931,9 @@ void glTFWriter::writeNodalColors(const glTFPrimitive& gltfPrm)
 
   m_jsonWriter->EndObject();
 #else
+  asiAsm_NotUsed(gltfPrm)
   m_progress.SendLogMessage(LogErr(High) << "glTF export is impossible: you have to build "
-    "Analysis Situs with rapidjson.");
+                                            "Analysis Situs with rapidjson.");
 #endif
 }
 
@@ -961,6 +965,7 @@ void glTFWriter::writeNodalIndices (const glTFPrimitive& gltfPrm)
 
   m_jsonWriter->EndObject();
 #else
+  asiAsm_NotUsed(gltfPrm)
   m_progress.SendLogMessage(LogErr(High) << "glTF export is impossible: you have to build "
                                             "Analysis Situs with rapidjson.");
 #endif

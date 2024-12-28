@@ -1467,60 +1467,60 @@ int ENGINE_SaveXYZ(const Handle(asiTcl_Interp)& interp,
 
 //-----------------------------------------------------------------------------
 
-static void SimplifyCurve(Handle(Geom_BSplineCurve)& BS,
-                          const double               Tol,
-                          const int                  MultMin)
-
-{
-  double    tol = Tol;
-  int       Mult, ii;
-  const int NbK = BS->NbKnots();
-
-  for ( Mult = BS->Degree(); Mult > MultMin; Mult-- )
-  {
-    for ( ii = NbK; ii > 1; ii-- )
-    {
-      if ( BS->Multiplicity(ii) == Mult )
-        BS->RemoveKnot(ii, Mult - 1, tol);
-    }
-  }
-}
+//static void SimplifyCurve(Handle(Geom_BSplineCurve)& BS,
+//                          const double               Tol,
+//                          const int                  MultMin)
+//
+//{
+//  double    tol = Tol;
+//  int       Mult, ii;
+//  const int NbK = BS->NbKnots();
+//
+//  for ( Mult = BS->Degree(); Mult > MultMin; Mult-- )
+//  {
+//    for ( ii = NbK; ii > 1; ii-- )
+//    {
+//      if ( BS->Multiplicity(ii) == Mult )
+//        BS->RemoveKnot(ii, Mult - 1, tol);
+//    }
+//  }
+//}
 
 //-----------------------------------------------------------------------------
 
-static void SimplifySurface(Handle(Geom_BSplineSurface)& BS,
-                            const double                 Tol,
-                            const int                    MultMin)
-
-{
-  int  multU, multV, ii;
-  bool Ok;
-
-  const TColStd_Array1OfReal&    U  = BS->UKnots();
-  const TColStd_Array1OfReal&    V  = BS->VKnots();
-  const TColStd_Array1OfInteger& UM = BS->UMultiplicities();
-  const TColStd_Array1OfInteger& VM = BS->VMultiplicities();
-
-  for ( ii = U.Length() - 1; ii > 1; ii-- )
-  {
-    Ok    = true;
-    multU = UM.Value(ii) - 1;
-    for  ( ; Ok && multU > MultMin; multU-- )
-    {
-      Ok = BS->RemoveUKnot(ii, multU, Tol);
-    }
-  }
-
-  for ( ii = V.Length() - 1; ii > 1; ii-- )
-  {
-    Ok    = true;
-    multV = VM.Value(ii) - 1;
-    for  ( ; Ok && multV > MultMin; multV-- )
-    {
-      Ok = BS->RemoveVKnot(ii, multV, Tol);
-    }
-  }
-}
+//static void SimplifySurface(Handle(Geom_BSplineSurface)& BS,
+//                            const double                 Tol,
+//                            const int                    MultMin)
+//
+//{
+//  int  multU, multV, ii;
+//  bool Ok;
+//
+//  const TColStd_Array1OfReal&    U  = BS->UKnots();
+//  const TColStd_Array1OfReal&    V  = BS->VKnots();
+//  const TColStd_Array1OfInteger& UM = BS->UMultiplicities();
+//  const TColStd_Array1OfInteger& VM = BS->VMultiplicities();
+//
+//  for ( ii = U.Length() - 1; ii > 1; ii-- )
+//  {
+//    Ok    = true;
+//    multU = UM.Value(ii) - 1;
+//    for  ( ; Ok && multU > MultMin; multU-- )
+//    {
+//      Ok = BS->RemoveUKnot(ii, multU, Tol);
+//    }
+//  }
+//
+//  for ( ii = V.Length() - 1; ii > 1; ii-- )
+//  {
+//    Ok    = true;
+//    multV = VM.Value(ii) - 1;
+//    for  ( ; Ok && multV > MultMin; multV-- )
+//    {
+//      Ok = BS->RemoveVKnot(ii, multV, Tol);
+//    }
+//  }
+//}
 
 //-----------------------------------------------------------------------------
 

@@ -53,11 +53,8 @@ public:
 
   size_t operator()(const TopoDS_Shape& S) const noexcept
   {
-    const int I  = (int) ptrdiff_t( S.TShape().operator->() );
-    std::hash<Standard_Integer> hash;
-    const int HS = hash(I);
-    //
-    return HS;
+    const int I  = (int)ptrdiff_t( S.TShape().operator->() );
+    return std::hash<Standard_Integer>{}(I);
   }
 
   bool operator()(const TopoDS_Shape& S1, const TopoDS_Shape& S2) const noexcept

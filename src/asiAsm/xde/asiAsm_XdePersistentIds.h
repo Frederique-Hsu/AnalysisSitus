@@ -124,8 +124,7 @@ public:
     //! \return hash code.
     size_t operator()(const AssemblyItemId& item) const noexcept
     {
-      std::hash<TCollection_AsciiString> hash;
-      return hash( item.ToString() );
+      return std::hash<TCollection_AsciiString>{}( item.ToString() );
     }
 
     //! IsEqual() function for items to be used in OCCT Data Maps.
@@ -549,8 +548,7 @@ struct PartId
     //! \return hash code.
     size_t operator()(const PartId& entry) const noexcept
     {
-      std::hash<PersistentId> hash;
-      return hash(entry.Entry);
+      return std::hash<PersistentId>{}(entry.Entry);
     }
 
     //! IsEqual() function for entries to be used in OCCT Data Maps.

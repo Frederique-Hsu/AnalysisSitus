@@ -97,9 +97,7 @@ public:
       if ( theDC.IsNull() )
         return 0;
 
-      ActAPI_DataObjectId anObjectId = theDC->GetId();
-      std::hash<ActAPI_DataObjectId> hash;
-      return hash(anObjectId);
+      return std::hash<ActAPI_DataObjectId>{}(theDC->GetId());
     }
 
     //! IsEqual() function for Data Cursors to be used in OCCT Data Maps.

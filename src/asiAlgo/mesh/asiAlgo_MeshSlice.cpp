@@ -90,7 +90,7 @@ namespace {
         key ^= (key >> 6);
         key += (key << 3);
         key ^= (key >> 11);
-        return (key & 0x7fffffff) % sizeof(int);
+        return (key & 0x7fffffff) % sizeof(size_t);
       }
 
       //! \return true if two links are equal.
@@ -151,7 +151,8 @@ namespace {
     public:
 
       Selector_OverlappedFaces(std::vector< faceInfo >& faces)
-        : m_faces( faces )
+        : m_faces( faces ),
+          m_index( -1 )
       {}
 
       void Define(const int& i)

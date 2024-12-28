@@ -67,8 +67,7 @@ public:
     //! \return hash code.
     size_t operator()(const Handle(asiUI_DataAdaptor)& Adt) const noexcept
     {
-      std::hash<Standard_Integer> hash;
-      return hash(Adt->ID());
+      return std::hash<Standard_Integer>{}(Adt->ID());
     }
 
     //! Checks whether two Data Adaptors represent the same data. It is

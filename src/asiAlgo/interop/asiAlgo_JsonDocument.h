@@ -245,9 +245,8 @@ protected:
   bool         m_bToRelease; //!< Whether to release instead of reuse memory.
   bool         m_bIsDoc;     //!< Indicates whether this object is a document or a property.
   bool         m_bIsPretty;  //!< Indicates whether a "pretty" output format is enabled.
-
 #endif
 
 };
-
+#endif
 #endif

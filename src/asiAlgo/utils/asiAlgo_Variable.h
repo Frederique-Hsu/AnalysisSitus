@@ -74,8 +74,7 @@ public:
     //! \return hash code.
     size_t operator()(const asiAlgo_Variable& var) const noexcept
     {
-      std::hash<TCollection_AsciiString> hash;
-      return hash(var.Name);
+      return std::hash<TCollection_AsciiString>{}(var.Name);
     }
 
     //! IsEqual() function for variables to be used in OCCT Data Maps.

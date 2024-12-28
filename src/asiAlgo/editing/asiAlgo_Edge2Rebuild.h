@@ -114,8 +114,7 @@ struct asiAlgo_Edge2Rebuild
   {
     size_t operator()(const asiAlgo_Edge2Rebuild& e) const noexcept
     {
-      std::hash<TopoDS_Edge> hash;
-      return hash(e.edge);
+      return std::hash<TopoDS_Edge>{}(e.edge);
     }
 
     bool operator()(const asiAlgo_Edge2Rebuild& e1, const asiAlgo_Edge2Rebuild& e2) const noexcept

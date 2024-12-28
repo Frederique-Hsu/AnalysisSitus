@@ -712,6 +712,9 @@ bool
 
   return true;
 #else
+  asiEngine_NotUsed(patch)
+  asiEngine_NotUsed(region)
+
   m_progress.SendLogMessage(LogErr(Normal) << "Mobius is not available.");
   return false;
 #endif

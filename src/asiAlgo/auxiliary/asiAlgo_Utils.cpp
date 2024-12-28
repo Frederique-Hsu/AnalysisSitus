@@ -993,6 +993,9 @@ void asiAlgo_Utils::Json::ReadPair(void*                                pJsonBlo
     else
       break;
   }
+#else
+  asiAlgo_NotUsed(pJsonBlock)
+  asiAlgo_NotUsed(pair)
 #endif
 }
 
@@ -1011,6 +1014,9 @@ void asiAlgo_Utils::Json::ReadCoords(void*   pJsonBlock,
   {
     coords.SetCoord( i++, it->GetDouble() );
   }
+#else
+  asiAlgo_NotUsed(pJsonBlock)
+  asiAlgo_NotUsed(coords)
 #endif
 }
 

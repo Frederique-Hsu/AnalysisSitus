@@ -109,8 +109,7 @@ class SegAddress
 //! @param theSegmentAddress the given segment address of the face boundary which hash code is to be computed
 //! @param theUpperBound the upper bound of the range a computing hash code must be within
 //! @return a computed hash code, in the range [1, theUpperBound]
-inline size_t HashCode(const SegAddress& theSegmentAddress,
-                    const int       theUpperBound)
+inline size_t HashCode(const SegAddress& theSegmentAddress)
 {
   std::hash<Standard_Integer> hash;
   return hash(((theSegmentAddress.WireIndex()    & 255)  + 1) *

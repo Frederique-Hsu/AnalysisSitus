@@ -379,6 +379,14 @@ void
 
   plotter.REDRAW_POINT("bndMaxDevPt",   bndMaxDevPt,   Color_Red);
   plotter.REDRAW_POINT("innerMaxDevPt", innerMaxDevPt, Color_Violet);
+#else
+  asiAlgo_NotUsed(surf)
+  asiAlgo_NotUsed(uEdges)
+  asiAlgo_NotUsed(vEdges)
+  asiAlgo_NotUsed(bndDev)
+  asiAlgo_NotUsed(innerDev)
+  asiAlgo_NotUsed(maxDev)
+  asiAlgo_NotUsed(plotter)
 #endif
 }
 
