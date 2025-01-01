@@ -1039,27 +1039,26 @@ std::string
 
 std::string asiAlgo_Utils::Json::FromDirAsTuple(const gp_Dir& dir)
 {
-  std::stringstream out;
-
-  out << "[";
-  out << dir.X();
-  out << ", " << dir.Y();
-  out << ", " << dir.Z();
-  out << "]";
-
-  return out.str();
+  return FromCoordsAsTuple( dir.XYZ() );
 }
 
 //-----------------------------------------------------------------------------
 
 std::string asiAlgo_Utils::Json::FromPointAsTuple(const gp_Pnt& pnt)
 {
+  return FromCoordsAsTuple( pnt.XYZ() );
+}
+
+//-----------------------------------------------------------------------------
+
+std::string asiAlgo_Utils::Json::FromCoordsAsTuple(const gp_XYZ& xyz)
+{
   std::stringstream out;
 
   out << "[";
-  out << pnt.X();
-  out << ", " << pnt.Y();
-  out << ", " << pnt.Z();
+  out << xyz.X();
+  out << ", " << xyz.Y();
+  out << ", " << xyz.Z();
   out << "]";
 
   return out.str();

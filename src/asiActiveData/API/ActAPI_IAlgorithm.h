@@ -34,8 +34,40 @@
 #define ActAPI_IAlgorithm_HeaderFile
 
 // Active Data (API) includes
+#include <ActAPI_INode.h>
 #include <ActAPI_IPlotter.h>
 #include <ActAPI_IProgressNotifier.h>
+
+//-----------------------------------------------------------------------------
+
+//! \ingroup AD_DF
+//!
+//! Client code can subclass this abstract "drawer" base class to provide
+//! specific drawing logic to an algorithm. Unlike "plotter", this one is
+//! not limited to predefined types of entities and allows for more efficient
+//! visualization if used properly. E.g., an algorithm may store its data in
+//! a specific Data Node, which would need its own presentation logic. This
+//! interface is designed for such "deep prototyping" use cases, see
+//! https://quaoar.su/blog/page/two-ways-of-data-model-design.
+//!
+//! Some examples where we exploit custom visualization objects instead of
+//! the besic IV entities include:
+//!
+//! - Drawing dimensioning for sheet metal (SMRU): `asiSheetMetal`.
+//! - 3D nesting: `asiNesting`.
+//! - Bending simulation for sheet metal (SMRU): `asiSheetMetal`.
+class ActAPI_IDrawer : public Standard_Transient
+{
+  // OCCT RTTI
+  DEFINE_STANDARD_RTTI_INLINE(ActAPI_IDrawer, Standard_Transient)
+
+public:
+
+  //! Draws the passed Node. The default implementation does nothing.
+  virtual void
+    DrawNode(const Handle(ActAPI_INode)&) {}
+
+};
 
 //-----------------------------------------------------------------------------
 
@@ -59,34 +91,49 @@ public:
 
 public:
 
+  //! Sets a custom drawer to the algorithm.
+  //! \param[in] drawer the drawer to set.
+  void SetDrawer(const Handle(ActAPI_IDrawer)& drawer)
+  {
+    m_drawer = drawer;
+  }
+
+  //! \return the used custom drawer.
+  const Handle(ActAPI_IDrawer)& GetDrawer() const
+  {
+    return m_drawer;
+  }
+
+public:
+
   //! Sets status code as an integer.
-  //! \param[in] status code to set.
-  void SetStatusFlags(const Standard_Integer status)
+  //! \param[in] status the code to set.
+  void SetStatusFlags(const int status)
   {
     m_iStatusFlags = status;
   }
 
   //! \return integer status code.
-  Standard_Integer GetStatusFlags() const
+  int GetStatusFlags() const
   {
     return m_iStatusFlags;
   }
 
-  //! Adds status to the currently stored one. The derived classes take
-  //! responsibility to implement status codes as bitmasks like 0x01, 0x02,
-  //! 0x04, 0x08, 0x10, 0x20, 0x40, etc. This may we can store several statuses
-  //! in one integer variable.
-  //! \param[in] statBit status bit to add to the current status.
-  void AddStatusFlag(const Standard_Integer statBit)
+  //! Adds a status to the currently stored one. The derived classes take
+  //! responsibility to implement status codes as bitmasks like `0x01`, `0x02`,
+  //! `0x04`, `0x08`, `0x10`, `0x20`, `0x40`, etc. This way, we can store several
+  //! statuses in one integer variable.
+  //! \param[in] statBit the status bit to add to the current status.
+  void AddStatusFlag(const int statBit)
   {
     m_iStatusFlags |= statBit;
   }
 
   //! Checks whether the stored status code contains bits for the passed
   //! status.
-  //! \param[in] statBit bits to check.
+  //! \param[in] statBit the bits to check.
   //! \return true/false.
-  Standard_Boolean HasStatusFlag(const Standard_Integer statBit) const
+  bool HasStatusFlag(const int statBit) const
   {
     return (m_iStatusFlags & statBit) > 0;
   }
@@ -102,9 +149,12 @@ protected:
   mutable ActAPI_ProgressEntry m_progress; //!< Progress Notifier.
   mutable ActAPI_PlotterEntry  m_plotter;  //!< Imperative Plotter.
 
+  //! Drawer interface for advanced visual debugging.
+  Handle(ActAPI_IDrawer) m_drawer;
+
   //! Status flags that can be an error code, warning code or any other
   //! status giving more detalisation on the algorithm's execution state.
-  Standard_Integer m_iStatusFlags;
+  int m_iStatusFlags;
 
 private:
 
