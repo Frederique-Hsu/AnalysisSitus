@@ -447,19 +447,10 @@ namespace svg
                     std::ostream&            out,
                     ActAPI_PlotterEntry      plotter = nullptr)
   {
-    gp_Elips ellp = c.Ellipse();
-
-    const gp_Pnt& p= ellp.Location();
+    gp_Elips ellp = c.Ellipse().Mirrored( gp::OX() ); // Flip Y-direction of ellipse.
 
     double r1 = ellp.MajorRadius();
     double r2 = ellp.MinorRadius();
-
-    double f = c.FirstParameter();
-    double l = c.LastParameter();
-
-    gp_Pnt s = c.Value(f);
-    gp_Pnt m = c.Value((l+f)/2.0);
-    gp_Pnt e = c.Value(l);
 
     // If the minor radius is very small compared to the major radius
     // the geometry actually degenerates to a line.
@@ -472,9 +463,23 @@ namespace svg
       return;
     }
 
+    gp_Pnt p = ellp.Location();
+
+    double f = c.FirstParameter();
+    double l = c.LastParameter();
+
+    gp_Pnt s = c.Value(f);
+    gp_Pnt m = c.Value((l+f)/2.0);
+    gp_Pnt e = c.Value(l);
+
+    // Flip Y-direction of curve's points.
+    s.SetY( -s.Y() );
+    m.SetY( -m.Y() );
+    e.SetY( -e.Y() );
+
     gp_Vec v1(m, s);
     gp_Vec v2(m, e);
-    gp_Vec v3(0, 0,1);
+    gp_Vec v3(0, 0, 1);
 
     double a = v3.DotCross(v1, v2);
 
@@ -482,16 +487,16 @@ namespace svg
     // See also https://developer.mozilla.org/en/SVG/Tutorial/Paths
     gp_Dir xaxis = ellp.XAxis().Direction();
 
-    double angle = xaxis.AngleWithRef( gp_Dir(1, 0,0), gp_Dir(0, 0,-1) );
+    double angle = xaxis.AngleWithRef( gp_Dir(1, 0, 0), gp_Dir(0, 0, -1) );
 
     // To degrees.
     angle = ( angle / M_PI ) * 180.0;
 
     if ( fabs( l-f ) > 1.0 && s.SquareDistance(e) < 0.001 )
     {
-      out << "<g transform = \"rotate(" << angle << ", " << p.X() << ", " << -p.Y() << ")\">" << std::endl;
+      out << "<g transform = \"rotate(" << angle << ", " << p.X() << ", " << p.Y() << ")\">" << std::endl;
       out << "<ellipse cx =\"" << p.X() << "\" cy =\""
-          << -p.Y() << "\" rx =\"" << r1 << "\"  ry =\"" << r2 << "\"/>" << std::endl;
+          << p.Y() << "\" rx =\"" << r1 << "\"  ry =\"" << r2 << "\"/>" << std::endl;
       out << "</g>" << std::endl;
     }
     else // Arc of ellipse.
@@ -500,10 +505,10 @@ namespace svg
 
       char swp = (a < 0) ? '1' : '0'; // Sweep-flag, i.e. clockwise (0) or counter-clockwise (1).
 
-      out << "<path d=\"M" << s.X() <<  " " << -s.Y()
+      out << "<path d=\"M" << s.X() <<  " " << s.Y()
           << " A" << r1 << " " << r2 << " "
           << angle << " " << las << " " << swp << " "
-          << e.X() << " " << -e.Y() << "\" />" << std::endl;
+          << e.X() << " " << e.Y() << "\" />" << std::endl;
     }
   }
 
