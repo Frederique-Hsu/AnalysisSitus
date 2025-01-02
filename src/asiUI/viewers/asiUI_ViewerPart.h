@@ -32,6 +32,7 @@
 #define asiUI_ViewerPart_h
 
 // asiUI includes
+#include <asiUI_ICommand.h>
 #include <asiUI_PartCallback.h>
 #include <asiUI_PickCallback.h>
 #include <asiUI_RotationCallback.h>
@@ -70,6 +71,13 @@ public:
 
   asiUI_EXPORT virtual
     ~asiUI_ViewerPart();
+
+public:
+
+  void AddPickCommand(const Handle(asiUI_ICommand)& command)
+  {
+    m_pickCommands.push_back(command);
+  }
 
 public:
 
@@ -151,6 +159,9 @@ protected:
 
   //! Toolbar.
   QToolBar* m_toolBar;
+
+  //! Selection commands.
+  std::vector<Handle(asiUI_ICommand)> m_pickCommands;
 
 };
 

@@ -13,6 +13,7 @@ set (H_FILES
 #------------------------------------------------------------------------------
 
 set (controls_H_FILES
+  controls/asiUI_ICommand.h
   controls/asiUI_IParamEditor.h
   controls/asiUI_IStatusBar.h
   controls/asiUI_ItemRoles.h

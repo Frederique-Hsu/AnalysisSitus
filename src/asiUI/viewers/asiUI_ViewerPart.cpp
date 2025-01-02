@@ -570,6 +570,10 @@ void asiUI_ViewerPart::onWhateverPicked()
   const asiVisu_ActualSelection&          sel      = m_prs_mgr->GetCurrentSelection();
   const Handle(asiVisu_CellPickerResult)& pick_res = sel.GetCellPickerResult(SelectionNature_Persistent);
 
+  // Let commands do custom job.
+  for ( const auto& cmd : m_pickCommands )
+    cmd->Exec();
+
   // We don't care of picking logic here and let the listener react.
   emit whateverPicked( pick_res.get() );
 }
