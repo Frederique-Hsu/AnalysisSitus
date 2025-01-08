@@ -579,7 +579,7 @@ public:
                       const bool            doTransform = true) const;
 
   //! Returns own (without parent's) location for the given assembly item.
-  //! \param[in] item        assembly item of interest.
+  //! \param[in] item assembly item of interest.
   //! \return location.
   asiAsm_EXPORT TopLoc_Location
     GetOwnLocation(const AssemblyItemId& item) const;
@@ -919,15 +919,15 @@ public:
   asiAsm_EXPORT void
     ExpandCompounds(const AssemblyItemIds& items);
 
-  //! \Create new part with empty compound as shape.
+  //! Creates new part with empty compound as shape.
   asiAsm_EXPORT TDF_Label
     CreateEmptyPart();
 
-  //! \Create new empty assembly.
+  //! Creates new empty assembly.
   asiAsm_EXPORT TDF_Label
     CreateEmptyAssembly();
 
-  //! Adda a new component with the given location to the passed assembly.
+  //! Adds a new component with the given location to the passed assembly.
   //! \param[in] assemblyLabel the target assembly's label.
   //! \param[in] compLabel     the component to add.
   //! \param[in] location      the location to attach to the added instance.
@@ -992,7 +992,7 @@ public:
   asiAsm_EXPORT void
     RemoveAllEmptyAssemblies();
 
-  //! Applies tranformation to the given assembly item.
+  //! Applies transformation to the given assembly item.
   asiAsm_EXPORT void
     TransformItem(const AssemblyItemId& item,
                   const double          tx,
@@ -1003,7 +1003,7 @@ public:
                   const double          rz,
                   const bool            doUpdateAssemblies = true);
 
-  //! Applies tranformation to the entire assembly.
+  //! Applies transformation to the entire assembly.
   asiAsm_EXPORT void
     TransformRoot(const double tx,
                   const double ty,

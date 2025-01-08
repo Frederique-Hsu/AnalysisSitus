@@ -60,7 +60,7 @@ using namespace asiAsm::xde;
 //-----------------------------------------------------------------------------
 
 glTFXdeDataSourceProvider::glTFXdeDataSourceProvider(const Handle(TDocStd_Document)& doc,
-                                                       const TColStd_MapOfAsciiString& filter)
+                                                     const TColStd_MapOfAsciiString& filter)
   : m_doc(doc),
     m_filter(filter),
     m_sceneStructure(),
@@ -238,9 +238,10 @@ void glTFXdeDataSourceProvider::processSceneMeshes(t_Node2Label&         solids,
 }
 
 //-----------------------------------------------------------------------------
-TCollection_AsciiString glTFXdeDataSourceProvider::readNameAttribute(const Handle(XCAFDoc_ShapeTool)& ST,
-                                                                      const TDF_Label&                refLabel,
-                                                                      const bool                      usePrototypeNames)
+TCollection_AsciiString
+  glTFXdeDataSourceProvider::readNameAttribute(const Handle(XCAFDoc_ShapeTool)& ST,
+                                               const TDF_Label&                 refLabel,
+                                               const bool                       usePrototypeNames)
 {
   TDF_Label lab;
 
