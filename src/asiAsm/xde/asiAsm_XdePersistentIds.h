@@ -458,7 +458,7 @@ typedef NCollection_IndexedMap<AssemblyItemId,
 //! \ingroup ASIASM
 //!
 //! Shared collection of assembly items.
-typedef NCollection_Shared<AssemblyItemIds> HAssemblyItemIdss;
+typedef NCollection_Shared<AssemblyItemIds> HAssemblyItemIds;
 
 //! \ingroup ASIASM
 //!
@@ -497,7 +497,7 @@ struct PartId
   PartId(const PersistentId& objectId) { Entry = objectId; }
 
   //! \param[in] other entry to check.
-  //! \return true, if entry is is equal to theOther
+  //! \return true, if entry is is equal to other
   bool IsEqual(const PartId& other) const
   {
     return Entry.IsEqual(other.Entry);

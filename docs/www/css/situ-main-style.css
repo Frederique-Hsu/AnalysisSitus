@@ -343,6 +343,14 @@ h3 {
   border-radius: 4px;
 }
 
+.ui-control {
+  background-color: rgb(44, 48, 50);
+  border-radius: 4px;
+  color: white;
+  padding: 5px;
+  font-family: Menlo, Monaco, "Courier New", Courier, monospace;
+}
+
 /* ================
  *  Drop-down menu.
 /* ================ */
