@@ -147,6 +147,18 @@
   <div align="center"><a href="../imgs/ext/cnc-gltf-serial-ids.png"><img src="../imgs/ext/cnc-gltf-serial-ids.png" width="80%"/></a></div>
 </div>
 
+
+<br/>
+
+<div class="faq">
+  <b>Question:</b> In the JSON output, is there a value that indicates the number of faces that need to be machined? For example, some shapes might require machining on only two faces, while others might require machining on all four faces. Since machining costs increase with the number of faces to process, I'd like to understand if this information is available.
+  <hr>
+  <b>Answer:</b>
+  <p>
+    We assume that all faces are machined because the CNC recognizer makes no predictions about the stock shape. Even if some faces overlap with a bounding box of a "virtual" stock, they are still recognized to expose all of the properties needed for finishing. If you want to skip some faces (e.g., <a href="https://quaoar.su/blog/page/why-convex-hull-attribute">belonging to the convex hull</a>), you can do so programmatically (with the SDK's C++ functions) filtering out the corresponding AAG attributes. However, the presence of the CH attributes does not impact the JSON output if the recognition is performed through the executable.
+  </p>
+</div>
+
 <!-- [END] contents -->
 </div>
 <br/>
