@@ -439,7 +439,13 @@ class asiAsm_SceneTree_Instance : public asiAsm_SceneTree_Object
       Handle(asiAsm_SceneTree_Instance)
         otherCasted = Handle(asiAsm_SceneTree_Instance)::DownCast( other );
 
-      return prototype == otherCasted->prototype;
+      if ( this->prototype != otherCasted->prototype )
+        return false;
+
+      if ( this->assemblyItemId != otherCasted->assemblyItemId )
+        return false;
+
+      return true;
     }
 };
 
@@ -765,11 +771,11 @@ void asiAsm_SceneTree::populate(const Handle(asiAsm::xde::Doc)&   doc,
         {
           Handle(asiAsm_SceneTree_Assembly) assembly = new asiAsm_SceneTree_Assembly;
 
-          getChildInfo( doc, graph, assembly, childId, path + "/" + name );
+          getChildInfo( doc, graph, assembly, childId, path/* + "/" + name*/ );
 
           m_assemblies.push_back( assembly );
 
-          populate( doc, graph, childId, assembly, path + "/" + name, doDumpShapes);
+          populate( doc, graph, childId, assembly, path/* + "/" + name*/, doDumpShapes);
         }
         //
         if ( ( nodeType == asiAsm::xde::Graph::NodeType_PartOccurrence ) ||
@@ -788,11 +794,11 @@ void asiAsm_SceneTree::populate(const Handle(asiAsm::xde::Doc)&   doc,
         {
           Handle(asiAsm_SceneTree_Part) part = new asiAsm_SceneTree_Part;
 
-          getChildInfo( doc, graph, part, childId, path + "/" + name );
+          getChildInfo( doc, graph, part, childId, path/* + "/" + name*/ );
 
           m_parts.push_back( part );
 
-          populate( doc, graph, childId, part, path + "/" + name, doDumpShapes);
+          populate( doc, graph, childId, part, path/* + "/" + name*/, doDumpShapes);
         }
       }
       // If parent is an assembly, collect its child id.

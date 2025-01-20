@@ -333,10 +333,21 @@ h3 {
 }
 
 .commit-msg-i {
-  color: black;
+  color: rgb(255, 255, 255);
   font-size: 14px;
   font-family: Menlo, Monaco, "Courier New", Courier, monospace;
-  background-color: rgb(255, 190, 244);
+  background-color: rgb(66, 87, 0);
+  margin-bottom: 5px;
+  padding: 5px;
+  font-weight: normal;
+  border-radius: 4px;
+}
+
+.commit-msg-wip {
+  color: rgb(255, 255, 255);
+  font-size: 14px;
+  font-family: Menlo, Monaco, "Courier New", Courier, monospace;
+  background-color: rgb(139, 16, 0);
   margin-bottom: 5px;
   padding: 5px;
   font-weight: normal;

@@ -51,7 +51,7 @@
   <td align="left" class="header">
     <span class="header-logo"><a href="../../index.html" class="header-href">Analysis&nbsp;Situs</a></span>
     &nbsp;
-    ./<a class="header-href" href="../../featuresext.html">extensions</a>/Extensions ver.2025.1
+    ./<a class="header-href" href="../../featuresext.html">extensions</a>/<a class="header-href" href="../features_extensions-release-notes.html">releases</a>/ver.2025.1
   </td>
 </tr>
 </table>
@@ -79,31 +79,61 @@
 
 <h1>Release notes ver. 2025.1</h1>
 
-<h2>CNC, DFM</h2>
+<table>
+  <tr>
+    <td class="code-cell commit-msg-wip">Work in progress</td>
+  </tr>
+  <tr>
+    <td class="code-cell commit-msg-i">Important enhancement</td>
+  </tr>
+  <tr>
+    <td class="code-cell commit-msg">Ordinary enhancement</td>
+  </tr>
+</table>
+
+<h2>WIP</h2>
 
 <ul>
-  
+  <li class="fancy_ul_item commit-msg-wip">[SMRU] #1049: Report distances between parallel bend lines.
+  <li class="fancy_ul_item commit-msg-wip">[SMRU] #1050: Refer to a part ID from a welding candidate object reported in JSON.
 </ul>
 
 <h2>SMRU, DXF</h2>
 
 <ul>
-  <li class="fancy_ul_item commit-msg">[SMRU] Introduce welding spots detection prototype.
-  <li class="fancy_ul_item commit-msg">[SMRU] #619: Make automatic welding identification between assembly components an optional mode of SMRU.
-  <li class="fancy_ul_item commit-msg">[SMRU] #619: Dump glTF files for welding pathways.
-  <li class="fancy_ul_item commit-msg">[SMRU] Introduce bent pipes recognition (#744).
-  <li class="fancy_ul_item commit-msg">[SMRU] Rename props for bent pipes and update ref data.
-  <li class="fancy_ul_item commit-msg">[SMRU] Recognize straight wires.
-  <li class="fancy_ul_item commit-msg">[DXF] Revamp DXF writer to support layers.
-  <li class="fancy_ul_item commit-msg">[SMRU, DXF] Report bend lines as a separate layer in SMRU.
+  <li class="fancy_ul_item commit-msg-i">[SMRU] Introduce welding spots detection prototype.
+  <li class="fancy_ul_item commit-msg-i">[SMRU] #619: Make automatic welding identification between assembly components an optional mode of SMRU.
+  <li class="fancy_ul_item commit-msg-i">[SMRU] #619: Dump glTF files for welding pathways.
+  <li class="fancy_ul_item commit-msg-i">[SMRU] #744: Introduce bent pipes recognition.
+  <li class="fancy_ul_item commit-msg">[SMRU] Rename props for bent pipes and update reference data.
+  <li class="fancy_ul_item commit-msg-i">[SMRU] Recognize straight wires.
+  <li class="fancy_ul_item commit-msg-i">[DXF] Revamp DXF writer to support layers.
+  <li class="fancy_ul_item commit-msg-i">[SMRU, DXF] Report bend lines as a separate layer in SMRU.
   <li class="fancy_ul_item commit-msg">[SMRU] Fix #1035: Save thick solid of the flat shape as a STEP file.
-  <li class="fancy_ul_item commit-msg">[SMRU] Fix #1038: SVG export is unreasonably slow (make SVG export orders of magnitude faster).
-  <li class="fancy_ul_item commit-msg">[SMRU] Fix #1046: glTF meshes are not located optimally.
+  <li class="fancy_ul_item commit-msg-i">[SMRU] Fix #1038: SVG export is unreasonably slow (make SVG export orders of magnitude faster).
+  <li class="fancy_ul_item commit-msg-i">[SMRU] Fix #1046: glTF meshes are not located optimally.
+  <li class="fancy_ul_item commit-msg">[DXF] #640: `dxf-perform` hangs on the provided part.
+  <li class="fancy_ul_item commit-msg">[SMRU] Fix #1036: Calibrate meshing parameters for dumping artifacts.
+  <li class="fancy_ul_item commit-msg">[SMRU] Fix #1050: Remove prototype IDs from the `assemblyItemId` paths in the instance objects reported in a Scene Tree.
 </ul>
 
-<h2>Common</h2>
+<h2>CNC</h2>
 
 <ul>
+  <li class="fancy_ul_item commit-msg">[CNC] Fix #1040: Free radial faces are not reported for a turned+milled part.
+  <li class="fancy_ul_item commit-msg-i">[CNC] Dump turning profile and negative cells to glTF.
+</ul>
+
+<h2>Nesting</h2>
+
+<ul>
+  <li class="fancy_ul_item commit-msg-i">[Nesting] #927: Introduce 3D nesting algorithm based on DBLF placement rule and AABB-based collision checker.
+</ul>
+
+<h2>ALM</h2>
+
+<ul>
+  <li class="fancy_ul_item commit-msg-i">[ALM] #1042: Extract summary, build preview image and dump JSON for 3D printed parts.
 </ul>
 
 <!-- [END] contents -->
