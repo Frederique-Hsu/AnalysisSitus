@@ -156,7 +156,7 @@ void asiUI_ControlsPartListener::onSelectionFacesOn()
   // Clean tool viewers
   if ( m_domainViewer )
   {
-    m_domainViewer->PrsMgr()->DeRenderAllPresentations();
+    m_domainViewer->PrsMgr()->DeRenderPresentation( m_model->GetPartNode()->GetContourRepresentation() );
     m_domainViewer->Repaint();
   }
   //
@@ -184,7 +184,7 @@ void asiUI_ControlsPartListener::onSelectionEdgesOn()
   // Clean tool viewers
   if ( m_domainViewer )
   {
-    m_domainViewer->PrsMgr()->DeleteAllPresentations();
+    m_domainViewer->PrsMgr()->DeRenderPresentation( m_model->GetPartNode()->GetContourRepresentation() );
     m_domainViewer->Repaint();
   }
   //
@@ -212,7 +212,7 @@ void asiUI_ControlsPartListener::onSelectionVerticesOn()
   // Clean tool viewers
   if ( m_domainViewer )
   {
-    m_domainViewer->PrsMgr()->DeleteAllPresentations();
+    m_domainViewer->PrsMgr()->DeRenderPresentation( m_model->GetPartNode()->GetContourRepresentation() );
     m_domainViewer->Repaint();
   }
   //
