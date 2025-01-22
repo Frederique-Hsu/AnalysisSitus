@@ -115,6 +115,69 @@
 
 //-----------------------------------------------------------------------------
 
+namespace
+{
+  //! Improves the continuity of the passed surface by knot removal.
+  static void SimplifySurface(Handle(Geom_BSplineSurface)& BS,
+                              const double                 Tol,
+                              const int                    MultMin)
+
+  {
+    int  multU, multV, ii;
+    bool Ok;
+
+    const TColStd_Array1OfReal&    U  = BS->UKnots();
+    const TColStd_Array1OfReal&    V  = BS->VKnots();
+    const TColStd_Array1OfInteger& UM = BS->UMultiplicities();
+    const TColStd_Array1OfInteger& VM = BS->VMultiplicities();
+
+    for ( ii = U.Length() - 1; ii > 1; ii-- )
+    {
+      Ok    = true;
+      multU = UM.Value(ii);
+      for  ( ; Ok && multU > MultMin; multU-- )
+      {
+        Ok = BS->RemoveUKnot(ii, 1, Tol);
+      }
+    }
+
+    for ( ii = V.Length() - 1; ii > 1; ii-- )
+    {
+      Ok    = true;
+      multV = VM.Value(ii);
+      for  ( ; Ok && multV > MultMin; multV-- )
+      {
+        Ok = BS->RemoveVKnot(ii, 1, Tol);
+      }
+    }
+  }
+
+  //! Improves the continuity of the passed curve by knot removal.
+  static void SimplifyCurve(Handle(Geom_BSplineCurve)& BC,
+                            const double               Tol,
+                            const int                  MultMin)
+
+  {
+    int  mult, ii;
+    bool Ok;
+
+    const TColStd_Array1OfReal&    U = BC->Knots();
+    const TColStd_Array1OfInteger& M = BC->Multiplicities();
+
+    for ( ii = U.Length() - 1; ii > 1; ii-- )
+    {
+      Ok   = true;
+      mult = M.Value(ii);
+      for  ( ; Ok && mult > MultMin; mult-- )
+      {
+        Ok = BC->RemoveKnot(ii, 1, Tol);
+      }
+    }
+  }
+}
+
+//-----------------------------------------------------------------------------
+
 void onModelLoaded(const TopoDS_Shape& loadedShape)
 {
   // Modify Data Model.
