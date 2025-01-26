@@ -1025,7 +1025,8 @@ void Doc::GetParts(PartIds& parts) const
   AssemblyItemIds parents;
   this->GetRootAssemblyItems(parents);
   //
-  this->GetParts(parents, parts, false);
+  if ( !parents.IsEmpty() )
+    this->GetParts(parents, parts, false);
 }
 
 //-----------------------------------------------------------------------------
