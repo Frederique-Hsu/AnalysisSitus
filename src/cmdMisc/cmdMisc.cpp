@@ -42,12 +42,14 @@
 #include <asiAlgo_PlaneOnPoints.h>
 #include <asiAlgo_PointInPoly.h>
 #include <asiAlgo_ProjectPointOnMesh.h>
+#include <asiAlgo_SampleFace.h>
 #include <asiAlgo_Timer.h>
 #include <asiAlgo_TopoKill.h>
 #include <asiAlgo_Utils.h>
 
 // asiUI includes
 #include <asiUI_CommonFacilities.h>
+#include <asiUI_DialogDump.h>
 #include <asiUI_IV.h>
 
 // asiTcl includes
@@ -83,6 +85,7 @@
 #include <BRepTools.hxx>
 #include <BRepTools_WireExplorer.hxx>
 #include <ElCLib.hxx>
+#include <ElSLib.hxx>
 #include <GCE2d_MakeSegment.hxx>
 #include <GCPnts_QuasiUniformAbscissa.hxx>
 #include <GCPnts_TangentialDeflection.hxx>
@@ -118,6 +121,8 @@
   #include <mobius/geom_InterpolateMultiCurve.h>
   #include <mobius/geom_MakeBicubicBSurf.h>
   #include <mobius/geom_SkinSurface.h>
+  #include <mobius/nest_JSON.h>
+  #include <mobius/nest_Part.h>
 
   using namespace mobius;
 #endif
@@ -3811,6 +3816,158 @@ int MISC_ConvertCurvesPoly(const Handle(asiTcl_Interp)& interp,
 
 //-----------------------------------------------------------------------------
 
+int MISC_ConvertFacePoly(const Handle(asiTcl_Interp)& interp,
+                         int                          argc,
+                         const char**                 argv)
+{
+#if defined USE_MOBIUS
+  Handle(asiEngine_Model)
+    M = Handle(asiEngine_Model)::DownCast( interp->GetModel() );
+
+  /* =====================
+   *  Get the target face.
+   * ===================== */
+
+  Handle(asiAlgo_AAG) G = M->GetPartNode()->GetAAG();
+  //
+  if ( G.IsNull() )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Part's AAG is null.");
+    return TCL_ERROR;
+  }
+
+  // Access selected faces (if any).
+  asiAlgo_Feature selected;
+  //
+  asiEngine_Part partApi(M, (cmdMisc::cf && cmdMisc::cf->ViewerPart) ? cmdMisc::cf->ViewerPart->PrsMgr() 
+                                                                     : nullptr);
+  //
+  if ( !cmdMisc::cf.IsNull() )
+  {
+    partApi.GetHighlightedFaces(selected);
+  }
+
+  int fid = 0;
+  TCollection_AsciiString fidStr;
+  if ( interp->GetKeyValue(argc, argv, "fid", fidStr) )
+  {
+    fid = fidStr.IntegerValue();
+  }
+
+  if ( fid >= 1 )
+  {
+    selected.Add(fid);
+  }
+
+  if ( !selected.Extent() == 1 )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Please, select exactly one face to proceed with this command.");
+    return TCL_ERROR;
+  }
+
+  const TopoDS_Face& face = G->GetFace( selected.GetMinimalMapped() );
+
+  // Only planar faces are supported.
+  Handle(Geom_Plane) plane;
+  //
+  if ( !asiAlgo_Utils::IsPlanar(face, plane) )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "The target face should be planar.");
+    return TCL_ERROR;
+  }
+
+  /* =====================
+   *  Discretize the face.
+   * ===================== */
+
+  TIMER_NEW
+  TIMER_GO
+
+  // Find out which wire is the outer one.
+  TopoDS_Wire ow = asiAlgo_Utils::ComputeOuterWire(face);
+
+  // Construct a new discrete part.
+  t_ptr<nest_Part> mbPart = new nest_Part;
+
+  // Discretize wires.
+  for ( TopExp_Explorer exp(face.Oriented(TopAbs_FORWARD), TopAbs_WIRE); exp.More(); exp.Next() )
+  {
+    const TopoDS_Wire& w = TopoDS::Wire( exp.Current() );
+
+    TopoDS_Wire polyWire;
+
+    asiAlgo_ConvertCurve::Convert2Polyline(w, polyWire);
+
+    // Construct a new polygon.
+    t_ptr<nest_Polygon> mbPolygon = new nest_Polygon;
+
+    // Turn the polygonal wire into a Mobius polygon.
+    for ( BRepTools_WireExplorer wexp(polyWire); wexp.More(); wexp.Next() )
+    {
+      const TopoDS_Vertex& V = wexp.CurrentVertex();
+      gp_Pnt               P = BRep_Tool::Pnt(V);
+
+      // Project `P` onto a plane.
+      double u, v;
+      gp_Pln pln = plane->Pln();
+      ElSLib::Parameters(pln, P, u, v);
+
+      // Populate the polygon.
+      mbPolygon->AddPole( t_uv(u, v) );
+    }
+
+    if ( w.IsPartner(ow) )
+    {
+      mbPart->SetOuterLoop(mbPolygon);
+    }
+    else
+    {
+      mbPart->AddInnerLoop(mbPolygon);
+    }
+  }
+
+  // Initialize optional properties.
+  mbPart->SetName         ( "FACE_" + asiAlgo_Utils::Str::ToString( selected.GetMinimalMapped() ) );
+  mbPart->SetCount        ( 1 );
+  mbPart->SetAngleStepDeg ( 30. );
+
+  TIMER_FINISH
+  TIMER_COUT_RESULT_NOTIFIER(interp->GetProgress(), "Convert wires to polylines")
+
+  // Export to the filesystem if requested.
+  std::string filename;
+  //
+  if ( interp->GetKeyValue(argc, argv, "filename", filename) )
+  {
+    if ( !nest_Part::Export(mbPart, filename) )
+    {
+      interp->GetProgress().SendLogMessage(LogErr(Normal) << "Cannot save the converted face to '%1'."
+                                                          << filename);
+      return TCL_ERROR;
+    }
+  }
+  else
+  {
+    // Dump part.
+    nest_JSON interop;
+    //
+    interop.DumpPart(mbPart);
+
+    // Dump to JSON.
+    asiUI_DialogDump* pDumpDlg = new asiUI_DialogDump( "Polygonal part" );
+    pDumpDlg->Populate( interop.GetJSON() );
+    pDumpDlg->show();
+  }
+
+  return TCL_OK;
+#else
+  interp->GetProgress().SendLogMessage(LogErr(Normal) << "Mobius module is disabled.");
+  return TCL_ERROR;
+#endif
+}
+
+//-----------------------------------------------------------------------------
+
 int MISC_CheckGaps(const Handle(asiTcl_Interp)& interp,
                    int                          /*argc*/,
                    const char**                 /*argv*/)
@@ -4202,6 +4359,19 @@ void cmdMisc::Factory(const Handle(asiTcl_Interp)&      interp,
     "\t serialized to the filesystem.",
     //
     __FILE__, group, MISC_ConvertCurvesPoly);
+
+  //-------------------------------------------------------------------------//
+  interp->AddCommand("misc-convert-face-poly",
+    //
+    "misc-convert-face-poly [-fid <fid>] [-filename <filename>]\n"
+    "\t Converts all wires of the selected face to polygons and\n"
+    "\t dumps the extracted poles in the JSON format. The format keeps\n"
+    "\t the inner loops as children of the outer loop of the face.\n"
+    "\t If the filename is passed, the converted polygons are\n"
+    "\t serialized to the filesystem. If not, the UI dialog with\n"
+    "\t the JSON dump shows up.",
+    //
+    __FILE__, group, MISC_ConvertFacePoly);
 
   //-------------------------------------------------------------------------//
   interp->AddCommand("misc-check-gaps",

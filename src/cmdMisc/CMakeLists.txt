@@ -10,6 +10,7 @@ if (USE_MOBIUS)
     mobiusCascade
     mobiusCore
     mobiusGeom
+    mobiusNest
   )
 endif()
 
