@@ -1415,14 +1415,14 @@ namespace asiAlgo_Utils
   //! \param YMax      [out] max Y.
   //! \param ZMax      [out] max Z.
   //! \param tolerance [in]  tolerance to enlarge the bounding box with.
-  //! \param isPrecise [in]  whether to use precise bbox computation.
+  //! \param optimize  [in]  whether to optimize bbox with numerical methods.
   //! \return false if bounding box is void.
   asiAlgo_EXPORT bool
     Bounds(const TopoDS_Shape& shape,
            double& XMin, double& YMin, double& ZMin,
            double& XMax, double& YMax, double& ZMax,
            const double tolerance = 0.0,
-           const bool isPrecise = true);
+           const bool optimize = true);
 
   //! Computes the axis-aligned bounding box for the passed shape.
   //! \param[in]  shape     the shape of interest.

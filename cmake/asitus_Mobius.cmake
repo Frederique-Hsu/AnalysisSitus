@@ -51,6 +51,7 @@ set (LIBS
   mobiusPoly
   mobiusGeom
   mobiusCascade
+  mobiusNest
 )
 
 ASITUS_INSTALL_3RDPARTY (LIBS "mobius")
