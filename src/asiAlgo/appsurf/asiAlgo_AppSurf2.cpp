@@ -60,8 +60,8 @@ using namespace mobius;
 //-----------------------------------------------------------------------------
 
 asiAlgo_AppSurf2::asiAlgo_AppSurf2(core_ProgressEntry progress,
-                                   core_PlotterEntry  plotter)
-: core_IAlgorithm   (progress, plotter),
+                                   geom_PlotterEntry  plotter)
+: geom_IAlgorithm   (progress, plotter),
   m_fEdgeDiscrPrec  ( 1.0 ),
   m_fFairCoeff      ( 0.01 ),
   m_iNumUKnots      ( 2 ),

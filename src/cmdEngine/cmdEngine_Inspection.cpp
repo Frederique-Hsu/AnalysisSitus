@@ -3525,7 +3525,7 @@ int ENGINE_InvertPointSurf(const Handle(asiTcl_Interp)& interp,
     // Set diagnostic tools.
     t_ptr<asiUI_IVMobius> ivMob = new asiUI_IVMobius( interp->GetPlotter().Access() );
     //
-    mobSurf->SetDiagnosticTools( nullptr, core_PlotterEntry(ivMob) );
+    mobSurf->SetDiagnosticTools( nullptr, geom_PlotterEntry(ivMob) );
 
     // Invert point.
     t_uv projUV;

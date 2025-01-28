@@ -154,6 +154,21 @@
   <div align="center"><a href="../imgs/ext/smru-qna_04.png"><img src="../imgs/ext/smru-qna_04.png" width="60%"/></a></div>
 </div>
 
+<br/>
+
+<div class="faq">
+  <b>Question:</b> A visually correct part is labeled with the "abnormal bend" <a href="./features_smru-diagnostic-messages.html">error code</a>. Is there anything particularly wrong with the geometry?
+  <hr>
+  <b>Answer:</b>
+  <p>
+    "Abnormal" bends typically occur when SMRU is unable to match pairs of cylindrical surfaces. It could be a situation of missing bends or uneven thickness at a bend feature caused by misaligned axes or mismatched radii. One criteria that can be easily checked on a part is that the difference between bend radii should be equal to the part's thickness, i.e., $r_o - r_i = t$, where $r_i$ is the inner bend radius, $r_o$ is the outer bend radius, and $t$ is the material thickness.
+  </p>
+  <div align="center"><a href="../imgs/ext/smru-qna_05.png"><img src="../imgs/ext/smru-qna_05.png" width="40%"/></a></div>
+  <p>
+    In the above example, the radii differ by 2 millimeters, but the sheet thickness is 3 millimeters. Therefore, a warning is reported.
+  </p>
+</div>
+
 <!-- [END] contents -->
 </div>
 <br/>

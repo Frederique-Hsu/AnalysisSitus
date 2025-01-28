@@ -40,14 +40,14 @@
 #include <TopTools_HSequenceOfShape.hxx>
 
 // Mobius includes
-#include <mobius/core_IAlgorithm.h>
+#include <mobius/geom_IAlgorithm.h>
 
 //-----------------------------------------------------------------------------
 
 //! \ingroup ASI_MODELING
 //!
 //! Runs APPSURF2 surface fitting algorithm.
-class asiAlgo_AppSurf2 : public mobius::core_IAlgorithm
+class asiAlgo_AppSurf2 : public mobius::geom_IAlgorithm
 {
 public:
 
@@ -56,7 +56,7 @@ public:
   //! \param[in] plotter  the imperative plotter.
   asiAlgo_EXPORT
     asiAlgo_AppSurf2(mobius::core_ProgressEntry progress = nullptr,
-                     mobius::core_PlotterEntry  plotter  = nullptr);
+                     mobius::geom_PlotterEntry  plotter  = nullptr);
 
 public:
 

@@ -47,7 +47,7 @@
 #if defined USE_MOBIUS
   // Mobius includes
   #include <mobius/cascade.h>
-  #include <mobius/core_IPlotter.h>
+  #include <mobius/geom_IPlotter.h>
 #endif
 
 // STD includes
@@ -867,7 +867,7 @@ protected:
 
 //! Imperative plotter to redirect the visual debugging requests of Mobius to
 //! the standard drawing facilities of Analysis Situs.
-class asiUI_IVMobius : public mobius::core_IPlotter
+class asiUI_IVMobius : public mobius::geom_IPlotter
 {
 public:
 
@@ -875,7 +875,7 @@ public:
   //! \param[in] plotter imperative plotter to use.
   asiUI_IVMobius(const Handle(ActAPI_IPlotter)& plotter)
   //
-  : mobius::core_IPlotter(), m_plotter(plotter)
+  : mobius::geom_IPlotter(), m_plotter(plotter)
   {}
 
 // GEOMETRY:
