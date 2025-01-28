@@ -99,13 +99,20 @@
 
 <ul>
   <li class="fancy_ul_item">(1) Check if two sheet faces are parallel to the main projection planes.</li>
-  <li class="fancy_ul_item">(2) If (1), then find the longest straight edge: it should be aligned with the principal axes.</li>
+  <li class="fancy_ul_item">(2) If (1), then find the longest straight edge: it should be aligned with one of the principal axes and contribute more than 40% of the bounding box's larger side.</li>
   <li class="fancy_ul_item">(3) If (1) and (2), then the sheet face is said to be aligned properly. If not, the flat shape is realigned using the <a href="../commands.html#orient-part">optimal orientation algorithm</a>.</li>
 </ul>
 
-<div align="center"><a href="../imgs/ext/smru-alignment_03.png"><img src="../imgs/ext/smru-alignment_03.png" width="60%"/></a></div>
-
-<div align="center"><a href="../imgs/ext/smru-alignment_04.png"><img src="../imgs/ext/smru-alignment_04.png" width="60%"/></a></div>
+<table>
+  <tr>
+    <td style="padding: 15px; border-bottom: 1px solid black;"><div align="center"><a href="../imgs/ext/smru-alignment_03.png"><img src="../imgs/ext/smru-alignment_03.png" width="100%"/></a></div></td>
+    <td style="padding: 15px; border-bottom: 1px solid black;"><div align="center"><a href="../imgs/ext/smru-alignment_04.png"><img src="../imgs/ext/smru-alignment_04.png" width="100%"/></a></div></td>
+  </tr>
+  <tr>
+    <td style="padding: 15px"><div align="center"><a href="../imgs/ext/smru-alignment_07.png"><img src="../imgs/ext/smru-alignment_07.png" width="100%"/></a></div></td>
+    <td style="padding: 15px"><div align="center"><a href="../imgs/ext/smru-alignment_08.png"><img src="../imgs/ext/smru-alignment_08.png" width="100%"/></a></div></td>
+  </tr>
+</table>
 
 <h2 id="toc-smru-orientation-folded">Folded sheet metals</h2>
 
