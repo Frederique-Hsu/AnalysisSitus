@@ -285,6 +285,10 @@ sudo make install
 It might happen that you encounter compilation or linking problems because VTK-8.2 is quite obsolete, while gcc compiler, Qt and potentially something else in your Linux environment is more up-to-date. For example, VTK-8.2 would not see any compilation issues on Ubuntu 20.04, while on Ubuntu 22.04 the situation becomes worse. Ideally, Analysis Situs should be migrated to a newer version of VTK, but that was hardly possible <a href="https://quaoar.su/blog/page/what-enduring-software-is">last time we tried it</a>.
 </p>
 
+<p class="note">
+  You may want to use our fork of the VTK-8.2 library (<a href="https://gitlab.com/ssv/vtk-analysis-situs">https://gitlab.com/ssv/vtk-analysis-situs</a>) with the compilation issues resolved. See also the supplementary "community links" at the end of this page.
+</p>
+
 <h2 id="toc-tools-getting-back-to-cmake">Generate Makefiles</h2>
 
 <p>
@@ -332,6 +336,14 @@ Pay attention to the visualization of edges. If your video-driver is fine, you s
 <p>
 The procedure detailed above is automated in the <a href="https://gitlab.com/ssv/AnalysisSitus/-/blob/master/Dockerfile?ref_type=heads">Dockerfile</a> available in your working copy of Analysis Situs. Therefore, you may prefer to build Analysis Situs with UI in a Docker container.
 </p>
+
+<!-- Optional references to community resources -->
+<div class="mg">
+  <div class="mg-headline">Community reading:</div>
+  <ul>
+    <li class="fancy_ul_item">Forum // <a href="http://analysissitus.org/forum/index.php?threads/compilation-linux-for-occt-7-8.449">Compilation linux for OCCT 7.8</a>.</li>
+  </ul>
+</div>
 
 <!-- [END] contents -->
 </div>
