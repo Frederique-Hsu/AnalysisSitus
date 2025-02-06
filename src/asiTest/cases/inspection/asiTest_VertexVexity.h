@@ -72,6 +72,10 @@ public:
   static void Functions(asiTestFunctions& functions)
   {
     functions << &test001
+              << &test002
+              << &test003
+              << &test004
+              << &test005
     ; // Put semicolon here for convenient adding new functions above ;)
   }
 
@@ -83,6 +87,10 @@ private:
 private:
 
   static outcome test001(const int funcID, const bool);
+  static outcome test002(const int funcID, const bool);
+  static outcome test003(const int funcID, const bool);
+  static outcome test004(const int funcID, const bool);
+  static outcome test005(const int funcID, const bool);
 
 };
 
