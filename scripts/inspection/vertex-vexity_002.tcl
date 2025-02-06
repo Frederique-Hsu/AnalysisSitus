@@ -7,8 +7,8 @@ load-brep $datadir/$datafile
 fit
 
 set ref_convex 4
-set ref_concave 6
-set ref_smooth 9
+set ref_concave 7
+set ref_smooth 8
 
 # Check vexity.
 check-vertex-vexity -fid 1 convex concave smooth

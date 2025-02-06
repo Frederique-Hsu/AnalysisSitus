@@ -154,8 +154,12 @@ asiAlgo_FeatureAngleType
   angRad = Abs( V_prev.Angle(V_next) );
 
   // Check for smooth transition.
-  if ( (angRad < AxisAngTolerRad) || (Abs(angRad - M_PI) < AxisAngTolerRad) )
+  if ( Abs(angRad - M_PI) < AxisAngTolerRad )
     return FeatureAngleType_Smooth;
+
+  // Zero means concave.
+  if ( angRad < AxisAngTolerRad )
+    return FeatureAngleType_Concave;
 
   if ( !m_plotter.Access().IsNull() )
   {
