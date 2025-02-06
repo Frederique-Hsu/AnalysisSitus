@@ -224,6 +224,18 @@ public:
                    const bool) override;
 
   asiUI_EXPORT virtual void
+    DRAW_LABELS(const Handle(HRealArray)&,
+                const Handle(HStringArray)&,
+                const ActAPI_Color&,
+                const t_extString&) override;
+
+  asiUI_EXPORT virtual void
+    REDRAW_LABELS(const t_extString&,
+                  const Handle(HRealArray)&,
+                  const Handle(HStringArray)&,
+                  const ActAPI_Color&) override;
+
+  asiUI_EXPORT virtual void
     DRAW_VECTOR_AT(const gp_Pnt&,
                    const gp_Vec&,
                    const ActAPI_Color&,
@@ -723,6 +735,14 @@ protected:
                  const bool                rescale,
                  const t_extString&        name,
                  const bool                newPrimitive);
+
+  asiUI_EXPORT void
+    draw_labels(const Handle(HRealArray)&   points,
+                const Handle(HStringArray)& labels,
+                const ActAPI_Color&         color,
+                const int                   size,
+                const t_extString&          name,
+                const bool                  newPrimitive);
 
   asiUI_EXPORT void
     draw_curve(const Handle(Geom_Curve)& curve,

@@ -198,3 +198,15 @@ Handle(asiData_IVAxesSetNode) asiData_IVNode::Axes()
   //
   return nullptr;
 }
+
+//! \return underlying labels container.
+Handle(asiData_IVLabelsNode) asiData_IVNode::Labels()
+{
+  Handle(asiData_IVLabelsNode)
+    labels_n = Handle(asiData_IVLabelsNode)::DownCast( this->GetChildNode(Child_Labels) );
+  //
+  if ( !labels_n.IsNull() && labels_n->IsWellFormed() )
+    return labels_n;
+  //
+  return nullptr;
+}

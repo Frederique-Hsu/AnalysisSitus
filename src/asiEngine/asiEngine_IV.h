@@ -115,6 +115,20 @@ public:
 
 //---------------------------------------------------------------------------//
 
+  asiEngine_EXPORT Handle(asiData_IVLabelFieldNode)
+    Find_LabelField(const t_extString& name);
+
+  asiEngine_EXPORT Handle(asiData_IVLabelFieldNode)
+    Create_LabelField(const Handle(HRealArray)&   points,
+                      const Handle(HStringArray)& labels,
+                      const t_extString&          name,
+                      const bool                  useAutoNaming);
+
+  asiEngine_EXPORT void
+    Clean_Labels();
+
+//---------------------------------------------------------------------------//
+
   asiEngine_EXPORT Handle(asiData_IVCurveNode)
     Get_LastCurve();
 

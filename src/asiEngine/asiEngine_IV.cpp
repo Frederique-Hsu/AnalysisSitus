@@ -214,6 +214,21 @@ Handle(asiData_IVNode) asiEngine_IV::Create_IV()
     iv_n->AddChildNode(iv_axes_n);
   }
 
+  // Create underlying Labels container
+  {
+    Handle(ActAPI_INode) iv_labels_base = asiData_IVLabelsNode::Instance();
+    m_model->GetIVLabelsPartition()->AddNode(iv_labels_base);
+
+    // Initialize
+    Handle(asiData_IVLabelsNode) iv_labels_n = Handle(asiData_IVLabelsNode)::DownCast(iv_labels_base);
+    iv_labels_n->Init();
+    iv_labels_n->SetName("Labels");
+    iv_labels_n->SetUserFlags(NodeFlag_IsStructural);
+
+    // Add as child
+    iv_n->AddChildNode(iv_labels_n);
+  }
+
   // Return the just created Node
   return iv_n;
 }
@@ -233,6 +248,7 @@ void asiEngine_IV::Clean_All()
   this->Clean_Text();
   this->Clean_Topo();
   this->Clean_Axes();
+  this->Clean_Labels();
 }
 
 //-----------------------------------------------------------------------------
@@ -433,7 +449,6 @@ void asiEngine_IV::Clean_Points()
   //
   this->_cleanChildren(IV_Parent);
 }
-///
 
 //-----------------------------------------------------------------------------
 
@@ -511,6 +526,87 @@ void asiEngine_IV::Clean_Vectors()
 {
   Handle(asiData_IVVectorsNode)
     IV_Parent = m_model->GetIVNode()->Vectors();
+  //
+  this->_cleanChildren(IV_Parent);
+}
+
+//-----------------------------------------------------------------------------
+
+//! Finds Node with the given name. Returns nullptr if nothing is found.
+//! \param name [in] target name.
+//! \return found Node (the first one if several exist) or nullptr.
+Handle(asiData_IVLabelFieldNode)
+  asiEngine_IV::Find_LabelField(const t_extString& name)
+{
+  Handle(asiData_IVLabelsNode) parent = m_model->GetIVNode()->Labels();
+
+  // Find the first Node with the given name
+  for ( Handle(ActAPI_IChildIterator) cit = parent->GetChildIterator(true); cit->More(); cit->Next() )
+  {
+    Handle(ActAPI_INode) node = cit->Value();
+    //
+    if ( node.IsNull() || !node->IsWellFormed() )
+      continue;
+
+    TCollection_ExtendedString nodeName = node->GetName();
+    //
+    if ( nodeName.IsEqual(name) )
+      return Handle(asiData_IVLabelFieldNode)::DownCast(node);
+  }
+
+  return nullptr;
+}
+
+//-----------------------------------------------------------------------------
+
+//! Creates a Labels Field Node.
+//! \param points        [in] point cloud to set.
+//! \param labels        [in] label field to set.
+//! \param name          [in] name to set (auto-generated if empty).
+//! \param useAutoNaming [in] indicates whether to auto-name entities.
+//! \return Label Field Node.
+Handle(asiData_IVLabelFieldNode)
+  asiEngine_IV::Create_LabelField(const Handle(HRealArray)&   points,
+                                  const Handle(HStringArray)& labels,
+                                  const t_extString&          name,
+                                  const bool                  useAutoNaming)
+{
+  // Access Model and parent Node
+  Handle(asiData_IVLabelsNode) IV_Parent = m_model->GetIVNode()->Labels();
+
+  // Add Label Field Node to Partition
+  Handle(asiData_IVLabelFieldNode)
+    item_n = Handle(asiData_IVLabelFieldNode)::DownCast( asiData_IVLabelFieldNode::Instance() );
+  //
+  m_model->GetIVLabelFieldPartition()->AddNode(item_n);
+
+  // Generate unique name
+  TCollection_ExtendedString item_name = ( name.IsEmpty() ? "Label set" : name );
+  //
+  if ( useAutoNaming )
+    item_name = ActData_UniqueNodeName::Generate(ActData_SiblingNodes::CreateForChild(item_n, IV_Parent), item_name);
+
+  // Initialize
+  item_n->Init();
+  item_n->SetUserFlags(NodeFlag_IsPresentedInPartView | NodeFlag_IsPresentationVisible);
+  item_n->SetName(item_name);
+  item_n->SetPoints(points);
+  item_n->SetLabels(labels);
+
+  // Add as child
+  IV_Parent->AddChildNode(item_n);
+
+  // Return the just created Node
+  return item_n;
+}
+
+//-----------------------------------------------------------------------------
+
+//! Deletes all Label Field Nodes.
+void asiEngine_IV::Clean_Labels()
+{
+  Handle(asiData_IVLabelsNode)
+    IV_Parent = m_model->GetIVNode()->Labels();
   //
   this->_cleanChildren(IV_Parent);
 }

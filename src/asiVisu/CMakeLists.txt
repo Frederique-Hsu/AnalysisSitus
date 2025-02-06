@@ -70,6 +70,7 @@ set (pipelines_H_FILES
   pipelines/asiVisu_Grid2dPipeline.h
   pipelines/asiVisu_HatchingPipeline.h
   pipelines/asiVisu_IVSurfacePipeline.h
+  pipelines/asiVisu_LabelsPipeline.h
   pipelines/asiVisu_MeshContourPipeline.h
   pipelines/asiVisu_MeshENScalarPipeline.h
   pipelines/asiVisu_MeshEScalarPipeline.h
@@ -118,6 +119,7 @@ set (pipelines_CPP_FILES
   pipelines/asiVisu_Grid2dPipeline.cpp
   pipelines/asiVisu_HatchingPipeline.cpp
   pipelines/asiVisu_IVSurfacePipeline.cpp
+  pipelines/asiVisu_LabelsPipeline.cpp
   pipelines/asiVisu_MeshContourPipeline.cpp
   pipelines/asiVisu_MeshENScalarPipeline.cpp
   pipelines/asiVisu_MeshEScalarPipeline.cpp
@@ -167,6 +169,7 @@ set (presentations_H_FILES
   presentations/asiVisu_IVAxesPrs.h
   presentations/asiVisu_IVCurve2dPrs.h
   presentations/asiVisu_IVCurvePrs.h
+  presentations/asiVisu_IVLabelFieldPrs.h
   presentations/asiVisu_IVPointSet2dPrs.h
   presentations/asiVisu_IVPointSetPrs.h
   presentations/asiVisu_IVSurfacePrs.h
@@ -209,6 +212,7 @@ set (presentations_CPP_FILES
   presentations/asiVisu_IVAxesPrs.cpp
   presentations/asiVisu_IVCurve2dPrs.cpp
   presentations/asiVisu_IVCurvePrs.cpp
+  presentations/asiVisu_IVLabelFieldPrs.cpp
   presentations/asiVisu_IVPointSet2dPrs.cpp
   presentations/asiVisu_IVPointSetPrs.cpp
   presentations/asiVisu_IVSurfacePrs.cpp
@@ -261,10 +265,12 @@ set (providers_H_FILES
   providers/asiVisu_IVAxesDataProvider.h
   providers/asiVisu_IVCurve2dDataProvider.h
   providers/asiVisu_IVCurveDataProvider.h
+  providers/asiVisu_IVLabelsDataProvider.h
   providers/asiVisu_IVPointSet2dDataProvider.h
   providers/asiVisu_IVPointSetDataProvider.h
   providers/asiVisu_IVSurfaceDataProvider.h
   providers/asiVisu_IVVectorFieldDataProvider.h
+  providers/asiVisu_LabelsDataProvider.h
   providers/asiVisu_LawDataProvider.h
   providers/asiVisu_MeshDataProvider.h
   providers/asiVisu_MeshEScalarDataProvider.h
@@ -309,10 +315,12 @@ set (providers_CPP_FILES
   providers/asiVisu_IVAxesDataProvider.cpp
   providers/asiVisu_IVCurve2dDataProvider.cpp
   providers/asiVisu_IVCurveDataProvider.cpp
+  providers/asiVisu_IVLabelsDataProvider.cpp
   providers/asiVisu_IVPointSet2dDataProvider.cpp
   providers/asiVisu_IVPointSetDataProvider.cpp
   providers/asiVisu_IVSurfaceDataProvider.cpp
   providers/asiVisu_IVVectorFieldDataProvider.cpp
+  providers/asiVisu_LabelsDataProvider.cpp
   providers/asiVisu_LawDataProvider.cpp
   providers/asiVisu_MeshDataProvider.cpp
   providers/asiVisu_OctreeDataProvider.cpp
@@ -523,6 +531,7 @@ set (VTK_LIB_FILES
   vtkRenderingAnnotation-8.2
   vtkRenderingCore-8.2
   vtkRenderingOpenGL2-8.2
+  vtkRenderingLabel-8.2
 )
 
 #------------------------------------------------------------------------------

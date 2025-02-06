@@ -64,6 +64,7 @@
 #include <asiVisu_IVAxesPrs.h>
 #include <asiVisu_IVCurve2dPrs.h>
 #include <asiVisu_IVCurvePrs.h>
+#include <asiVisu_IVLabelFieldPrs.h>
 #include <asiVisu_IVPointSet2dPrs.h>
 #include <asiVisu_IVPointSetPrs.h>
 #include <asiVisu_IVSurfacePrs.h>
@@ -232,6 +233,7 @@ int main(int argc, char** argv)
   REGISTER_PRESENTATION(asiVisu_IVPointSetPrs)
   REGISTER_PRESENTATION(asiVisu_IVCurve2dPrs)
   REGISTER_PRESENTATION(asiVisu_IVCurvePrs)
+  REGISTER_PRESENTATION(asiVisu_IVLabelFieldPrs)
   REGISTER_PRESENTATION(asiVisu_IVSurfacePrs)
   REGISTER_PRESENTATION(asiVisu_IVTessItemPrs)
   REGISTER_PRESENTATION(asiVisu_IVTextItemPrs)

@@ -113,6 +113,8 @@ set (iv_H_FILES
   iv/asiData_IVCurveNode.h
   iv/asiData_IVCurves2dNode.h
   iv/asiData_IVCurvesNode.h
+  iv/asiData_IVLabelFieldNode.h
+  iv/asiData_IVLabelsNode.h
   iv/asiData_IVNode.h
   iv/asiData_IVPoints2dNode.h
   iv/asiData_IVPointSet2dNode.h
@@ -136,6 +138,8 @@ set (iv_CPP_FILES
   iv/asiData_IVCurveNode.cpp
   iv/asiData_IVCurves2dNode.cpp
   iv/asiData_IVCurvesNode.cpp
+  iv/asiData_IVLabelFieldNode.cpp
+  iv/asiData_IVLabelsNode.cpp
   iv/asiData_IVNode.cpp
   iv/asiData_IVPoints2dNode.cpp
   iv/asiData_IVPointSet2dNode.cpp

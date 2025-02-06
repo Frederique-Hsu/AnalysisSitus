@@ -4531,6 +4531,10 @@ int ENGINE_CheckVertexVexity(const Handle(asiTcl_Interp)& interp,
   //
   algo.CheckContours(fid, vexity);
 
+  // Arrays for labels.
+  Handle(HRealArray)   coords = new HRealArray(0, vexity.Extent()*3 - 1, 0.);
+  Handle(HStringArray) labels = new HStringArray(0, vexity.Extent()*3 - 1);
+
   // Collect smooth, convex and concave vertices.
   BRep_Builder bbuilder;
   TopoDS_Compound compSmooth, compConcave, compConvex;
@@ -4539,13 +4543,23 @@ int ENGINE_CheckVertexVexity(const Handle(asiTcl_Interp)& interp,
   bbuilder.MakeCompound(compConcave);
   bbuilder.MakeCompound(compConvex);
   //
-  int numConvex = 0, numConcave = 0, numSmooth = 0;
+  int numConvex = 0, numConcave = 0, numSmooth = 0, idx = 0;
   //
   for ( asiAlgo_CheckVertexVexity::t_vexityMap::Iterator vit(vexity);
         vit.More(); vit.Next() )
   {
     const TopoDS_Vertex&           V = vit.Key();
+    const gp_Pnt                   P = BRep_Tool::Pnt(V);
     const asiAlgo_FeatureAngleType X = vit.Value();
+
+    coords->ChangeValue(idx)     = P.X();
+    coords->ChangeValue(idx + 1) = P.Y();
+    coords->ChangeValue(idx + 2) = P.Z();
+    labels->ChangeValue(idx)     = 0.;
+    labels->ChangeValue(idx + 1) = 0.;
+    labels->ChangeValue(idx + 2) = 0.;
+    //
+    idx += 3;
 
     if ( X == FeatureAngleType_Smooth )
     {
@@ -4564,9 +4578,10 @@ int ENGINE_CheckVertexVexity(const Handle(asiTcl_Interp)& interp,
     }
   }
 
-  interp->GetPlotter().REDRAW_SHAPE("smooth",  compSmooth,  Color_LightGray, 1., true);
-  interp->GetPlotter().REDRAW_SHAPE("concave", compConcave, Color_Red,       1., true);
-  interp->GetPlotter().REDRAW_SHAPE("convex",  compConvex,  Color_Green,     1., true);
+  interp->GetPlotter().REDRAW_SHAPE  ("smooth",  compSmooth,     Color_LightGray, 1., true);
+  interp->GetPlotter().REDRAW_SHAPE  ("concave", compConcave,    Color_Red,       1., true);
+  interp->GetPlotter().REDRAW_SHAPE  ("convex",  compConvex,     Color_Green,     1., true);
+  interp->GetPlotter().REDRAW_LABELS ("angles",  coords, labels, Color_White);
 
   if ( !isFidPassed && (argc == 4) || isFidPassed && (argc == 6) )
   {

@@ -322,6 +322,20 @@ public:
   //-------------------------------------------------------------------------//
 
   virtual void
+    DRAW_LABELS(const Handle(HRealArray)&,
+                const Handle(HStringArray)&,
+                const ActAPI_Color&,
+                const t_extString&) {}
+
+  virtual void
+    REDRAW_LABELS(const t_extString&,
+                  const Handle(HRealArray)&,
+                  const Handle(HStringArray)&,
+                  const ActAPI_Color&) {}
+
+  //-------------------------------------------------------------------------//
+
+  virtual void
     DRAW_RECT(const gp_Pnt2d&,
               const gp_Pnt2d&,
               const ActAPI_Color&,
@@ -984,6 +998,32 @@ public:
     if ( m_iv.IsNull() ) return;
     //
     m_iv->REDRAW_VECTORS(name, points, vectors, color, tips, rescale);
+  }
+
+//-------------------------------------------------------------------------//
+
+  virtual void
+    DRAW_LABELS(const Handle(HRealArray)&   points,
+                const Handle(HStringArray)& labels,
+                const ActAPI_Color&         color,
+                const t_extString&          name)
+  {
+    if ( m_iv.IsNull() ) return;
+    //
+    m_iv->DRAW_LABELS(points, labels, color, name);
+  }
+
+//-------------------------------------------------------------------------//
+
+  virtual void
+    REDRAW_LABELS(const t_extString&          name,
+                  const Handle(HRealArray)&   points,
+                  const Handle(HStringArray)& labels,
+                  const ActAPI_Color&         color)
+  {
+    if ( m_iv.IsNull() ) return;
+    //
+    m_iv->REDRAW_LABELS(name, points, labels, color);
   }
 
 //---------------------------------------------------------------------------//

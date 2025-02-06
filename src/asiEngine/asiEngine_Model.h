@@ -46,6 +46,7 @@
 #include <asiData_IVCurveNode.h>
 #include <asiData_IVCurves2dNode.h>
 #include <asiData_IVCurvesNode.h>
+#include <asiData_IVLabelsNode.h>
 #include <asiData_IVNode.h>
 #include <asiData_IVPointSet2dNode.h>
 #include <asiData_IVPointSetNode.h>
@@ -553,6 +554,20 @@ public:
     return Handle(asiData_Partition<asiData_ClearanceNode>)::DownCast( this->Partition(Partition_Clearance) );
   }
 
+  //! Accessor for a Partition instance dedicated to IV Labels Nodes.
+  //! \return requested Partition.
+  Handle(asiData_Partition<asiData_IVLabelsNode>) GetIVLabelsPartition() const
+  {
+    return Handle(asiData_Partition<asiData_IVLabelsNode>)::DownCast( this->Partition(Partition_IV_Labels) );
+  }
+
+  //! Accessor for a Partition instance dedicated to IV Label Field Nodes.
+  //! \return requested Partition.
+  Handle(asiData_Partition<asiData_IVLabelFieldNode>) GetIVLabelFieldPartition() const
+  {
+    return Handle(asiData_Partition<asiData_IVLabelFieldNode>)::DownCast( this->Partition(Partition_IV_LabelField) );
+  }
+
 protected:
 
   asiEngine_EXPORT virtual void
@@ -652,6 +667,8 @@ protected:
     Partition_IV_TextItem,
     Partition_IV_AxesSet,
     Partition_IV_Axes,
+    Partition_IV_Labels,
+    Partition_IV_LabelField,
   //---------------------------------------------------------------------------
     Partition_SurfDeviation,
     Partition_Thickness,

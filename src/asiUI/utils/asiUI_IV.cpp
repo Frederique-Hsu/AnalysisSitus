@@ -566,6 +566,26 @@ void asiUI_IV::REDRAW_VECTORS(const t_extString&        name,
 
 //---------------------------------------------------------------------------//
 
+void asiUI_IV::DRAW_LABELS(const Handle(HRealArray)&   points,
+                           const Handle(HStringArray)& labels,
+                           const ActAPI_Color&         color,
+                           const t_extString&          name)
+{
+  this->draw_labels(points, labels, color, 22, name, true);
+}
+
+//---------------------------------------------------------------------------//
+
+void asiUI_IV::REDRAW_LABELS(const t_extString&          name,
+                             const Handle(HRealArray)&   points,
+                             const Handle(HStringArray)& labels,
+                             const ActAPI_Color&         color)
+{
+  this->draw_labels(points, labels, color, 22, name, false);
+}
+
+//---------------------------------------------------------------------------//
+
 void asiUI_IV::DRAW_VECTORS(const Handle(HRealArray)& points,
                             const Handle(HRealArray)& vectors,
                             const ActAPI_Color&       color,
@@ -1709,6 +1729,69 @@ void asiUI_IV::draw_vectors(const Handle(HRealArray)& points,
 
   // Visualize
   this->visualize(false, vf_n, true, color, 1.0, 0);
+}
+
+//---------------------------------------------------------------------------//
+
+void asiUI_IV::draw_labels(const Handle(HRealArray)&   points,
+                           const Handle(HStringArray)& labels,
+                           const ActAPI_Color&         color,
+                           const int                   size,
+                           const t_extString&          name,
+                           const bool                  newPrimitive)
+{
+  if ( points.IsNull() || labels.IsNull() )
+    return;
+
+  // Open transaction
+  bool isTx = false;
+  if ( !m_model->HasOpenCommand() )
+  {
+    m_model->OpenCommand();
+    isTx = true;
+  }
+
+  // Modify data
+  Handle(asiData_IVLabelFieldNode) lf_n;
+  //
+  bool doCreate = newPrimitive;
+  //
+  if ( !doCreate )
+  {
+    lf_n = asiEngine_IV(m_model).Find_LabelField(name);
+    //
+    if ( !lf_n.IsNull() )
+    {
+      lf_n->SetPoints (points);
+      lf_n->SetLabels (labels);
+    }
+    else
+    {
+      doCreate = true;
+    }
+  }
+
+  if ( doCreate )
+  {
+    lf_n = asiEngine_IV(m_model).Create_LabelField(points,
+                                                   labels,
+                                                   name,
+                                                   newPrimitive);
+
+    // Update the last created object
+    m_lastObj = lf_n;
+  }
+
+  // Update persistent color.
+  lf_n->SetColor ( ActAPI_Color::ColorToInt( color.Red(), color.Green(), color.Blue() ) );
+  lf_n->SetSize  ( size );
+
+  // Commit transaction
+  if ( isTx )
+    m_model->CommitCommand();
+
+  // Visualize
+  this->visualize(false, lf_n, true, color, 1.0, 0);
 }
 
 //---------------------------------------------------------------------------//

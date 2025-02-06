@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
-// Created on: 08 April 2016
+// Created on: 05 February 2025
 //-----------------------------------------------------------------------------
-// Copyright (c) 2016-present, Sergey Slyadnev
+// Copyright (c) 2025-present, Quaoar Studio LLC (http://analysissitus.org)
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -28,41 +28,33 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-----------------------------------------------------------------------------
 
-#ifndef asiData_IVNode_h
-#define asiData_IVNode_h
+#ifndef asiData_IVLabelsNode_h
+#define asiData_IVLabelsNode_h
 
 // asiData includes
-#include <asiData_IVAxesSetNode.h>
-#include <asiData_IVCurves2dNode.h>
-#include <asiData_IVCurvesNode.h>
-#include <asiData_IVLabelsNode.h>
-#include <asiData_IVPoints2dNode.h>
-#include <asiData_IVPointsNode.h>
-#include <asiData_IVSurfacesNode.h>
-#include <asiData_IVTessNode.h>
-#include <asiData_IVTextNode.h>
-#include <asiData_IVTopoNode.h>
-#include <asiData_IVVectorsNode.h>
+#include <asiData_IVLabelFieldNode.h>
 
-//-----------------------------------------------------------------------------
-
-//! Root Node for all items visualized in the imperative viewer.
-class asiData_IVNode : public ActData_BaseNode
+//! Data Node representing a set of text labels in IV (Imperative Viewer).
+class asiData_IVLabelsNode : public ActData_BaseNode
 {
 public:
 
   // OCCT RTTI
-  DEFINE_STANDARD_RTTI_INLINE(asiData_IVNode, ActData_BaseNode)
+  DEFINE_STANDARD_RTTI_INLINE(asiData_IVLabelsNode, ActData_BaseNode)
 
   // Automatic registration of Node type in global factory
-  DEFINE_NODE_FACTORY(asiData_IVNode, Instance)
+  DEFINE_NODE_FACTORY(asiData_IVLabelsNode, Instance)
 
 public:
 
   //! IDs for the underlying Parameters.
   enum ParamId
   {
-    PID_Name, //!< Name of the Node.
+  //------------------//
+  // Common           //
+  //------------------//
+    PID_Name,         //!< Name of the Node.
+  //------------------//
     PID_Last = PID_Name + ActData_BaseNode::RESERVED_PARAM_RANGE
   };
 
@@ -83,38 +75,8 @@ public:
 // Handy accessors to the stored data:
 public:
 
-  asiData_EXPORT Handle(asiData_IVPoints2dNode)
-    Points2d();
-
-  asiData_EXPORT Handle(asiData_IVPointsNode)
-    Points();
-
-  asiData_EXPORT Handle(asiData_IVVectorsNode)
-    Vectors();
-
-  asiData_EXPORT Handle(asiData_IVCurves2dNode)
-    Curves2d();
-
-  asiData_EXPORT Handle(asiData_IVCurvesNode)
-    Curves();
-
-  asiData_EXPORT Handle(asiData_IVSurfacesNode)
-    Surfaces();
-
-  asiData_EXPORT Handle(asiData_IVTopoNode)
-    Topology();
-
-  asiData_EXPORT Handle(asiData_IVTessNode)
-    Tessellation();
-
-  asiData_EXPORT Handle(asiData_IVTextNode)
-    Text();
-
-  asiData_EXPORT Handle(asiData_IVAxesSetNode)
-    Axes();
-
-  asiData_EXPORT Handle(asiData_IVLabelsNode)
-    Labels();
+  asiData_EXPORT Handle(asiData_IVLabelFieldNode)
+    Item(const int oneBased_idx);
 
 // Initialization:
 public:
@@ -126,24 +88,7 @@ protected:
 
   //! Allocation is allowed only via Instance() method.
   asiData_EXPORT
-    asiData_IVNode();
-
-private:
-
-  enum Child
-  {
-    Child_Points2d = 1,
-    Child_Points,
-    Child_Vectors,
-    Child_Curves2d,
-    Child_Curves,
-    Child_Surfaces,
-    Child_Topology,
-    Child_Tessellation,
-    Child_Text,
-    Child_Axes,
-    Child_Labels
-  };
+    asiData_IVLabelsNode();
 
 };
 
