@@ -72,9 +72,17 @@ public:
     {}
   };
 
-  typedef NCollection_IndexedDataMap<TopoDS_Edge, t_edgeInfo, TopTools_ShapeMapHasher> t_edgeInfoMap;
+  //! Convexity properties at a vertex.
+  struct t_vexityInfo
+  {
+    asiAlgo_FeatureAngleType angType;
+    double                   angRad;
 
-  typedef NCollection_DataMap<TopoDS_Vertex, asiAlgo_FeatureAngleType> t_vexityMap;
+    t_vexityInfo() : angType(FeatureAngleType_Undefined), angRad(0.) {}
+  };
+
+  typedef NCollection_IndexedDataMap<TopoDS_Edge, t_edgeInfo, TopTools_ShapeMapHasher> t_edgeInfoMap;
+  typedef NCollection_DataMap<TopoDS_Vertex, t_vexityInfo>                             t_vexityMap;
 
 public:
 
@@ -99,7 +107,8 @@ public:
     CheckConvexity(const TopoDS_Edge& E1,
                    const TopoDS_Edge& E2,
                    const int          fid,
-                   TopoDS_Vertex&     V) const;
+                   TopoDS_Vertex&     V,
+                   double&            angRad) const;
 
   //! Checks all contours in the given face.
   asiAlgo_EXPORT void

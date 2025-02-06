@@ -90,7 +90,8 @@ asiAlgo_FeatureAngleType
   asiAlgo_CheckVertexVexity::CheckConvexity(const TopoDS_Edge& E1,
                                             const TopoDS_Edge& E2,
                                             const int          fid,
-                                            TopoDS_Vertex&     V) const
+                                            TopoDS_Vertex&     V,
+                                            double&            angRad) const
 {
   const TopoDS_Face& F = m_aag->GetFace(fid);
 
@@ -150,10 +151,10 @@ asiAlgo_FeatureAngleType
   if ( Abs(p_next - eNext_l) < pprec )
     V_next.Reverse();
 
-  double ang = Abs( V_prev.Angle(V_next) );
+  angRad = Abs( V_prev.Angle(V_next) );
 
   // Check for smooth transition.
-  if ( (ang < AxisAngTolerRad) || (Abs(ang - M_PI) < AxisAngTolerRad) )
+  if ( (angRad < AxisAngTolerRad) || (Abs(angRad - M_PI) < AxisAngTolerRad) )
     return FeatureAngleType_Smooth;
 
   if ( !m_plotter.Access().IsNull() )
@@ -191,9 +192,9 @@ asiAlgo_FeatureAngleType
     }
 
     if ( !isIn )
-      ang = 2*M_PI - ang;
+      angRad = 2*M_PI - angRad;
 
-    if ( ang > M_PI )
+    if ( angRad > M_PI )
       return FeatureAngleType_Convex;
 
     return FeatureAngleType_Concave;
@@ -236,10 +237,18 @@ void asiAlgo_CheckVertexVexity::CheckContours(const int    fid,
       const t_edgeInfo& einfo2 = edgesInfo.FindFromKey(E2);
 
       TopoDS_Vertex V;
+      double        angRad = 0.;
+      //
       asiAlgo_FeatureAngleType
-        vVexity = this->CheckConvexity(einfo1.edge, einfo2.edge, fid, V);
+        vVexity = this->CheckConvexity(einfo1.edge, einfo2.edge, fid, V, angRad);
 
-      vexity.Bind(V, vVexity);
+      // Compose the result props.
+      t_vexityInfo info;
+      info.angType = vVexity;
+      info.angRad  = angRad;
+
+      // Add to the result.
+      vexity.Bind(V, info);
     } // By edges.
   } // By wires.
 }

@@ -4533,7 +4533,7 @@ int ENGINE_CheckVertexVexity(const Handle(asiTcl_Interp)& interp,
 
   // Arrays for labels.
   Handle(HRealArray)   coords = new HRealArray(0, vexity.Extent()*3 - 1, 0.);
-  Handle(HStringArray) labels = new HStringArray(0, vexity.Extent()*3 - 1);
+  Handle(HStringArray) labels = new HStringArray(0, vexity.Extent() - 1);
 
   // Collect smooth, convex and concave vertices.
   BRep_Builder bbuilder;
@@ -4543,23 +4543,21 @@ int ENGINE_CheckVertexVexity(const Handle(asiTcl_Interp)& interp,
   bbuilder.MakeCompound(compConcave);
   bbuilder.MakeCompound(compConvex);
   //
-  int numConvex = 0, numConcave = 0, numSmooth = 0, idx = 0;
+  int numConvex = 0, numConcave = 0, numSmooth = 0, coordIdx = 0, lblIdx = 0;
   //
   for ( asiAlgo_CheckVertexVexity::t_vexityMap::Iterator vit(vexity);
         vit.More(); vit.Next() )
   {
     const TopoDS_Vertex&           V = vit.Key();
     const gp_Pnt                   P = BRep_Tool::Pnt(V);
-    const asiAlgo_FeatureAngleType X = vit.Value();
+    const asiAlgo_FeatureAngleType X = vit.Value().angType;
 
-    coords->ChangeValue(idx)     = P.X();
-    coords->ChangeValue(idx + 1) = P.Y();
-    coords->ChangeValue(idx + 2) = P.Z();
-    labels->ChangeValue(idx)     = 0.;
-    labels->ChangeValue(idx + 1) = 0.;
-    labels->ChangeValue(idx + 2) = 0.;
+    coords->ChangeValue(coordIdx)     = P.X();
+    coords->ChangeValue(coordIdx + 1) = P.Y();
+    coords->ChangeValue(coordIdx + 2) = P.Z();
+    labels->ChangeValue(lblIdx++)     = vit.Value().angRad * 180. / M_PI;
     //
-    idx += 3;
+    coordIdx += 3;
 
     if ( X == FeatureAngleType_Smooth )
     {

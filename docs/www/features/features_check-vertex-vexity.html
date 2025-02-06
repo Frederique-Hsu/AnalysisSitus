@@ -80,14 +80,22 @@
 <h1>Check vertex convexity</h1>
 
 <p>
-  Just like we can test if a <a href="./features_check-dih-angles.html">dihedral angle</a> is convex, concave or smooth, the same classification can be useful recognition cue for vertices. E.g., for each vertex in a planar domain, we can analyze the angle between a pair of edges that meet in this vertex. Such information can be used for accessibility analysis, i.e., if a mill can approach the vicinity of a certain part's corner.
+  Just like we can test if a <a href="./features_check-dih-angles.html">dihedral angle</a> is convex, concave or smooth, the same classification can be useful recognition cue for vertices.
 </p>
 
-<div align="center"><img src="../imgs/vertex-vexity.png"/></div>
+<div align="center"><img src="../imgs/vertex-vexity_01.png"/></div>
 
 <p>
-  To analyze vertex convexity, select a face and run <span class="code-inline">check-vertex-vexity</span> command.
+  E.g., for each vertex in a planar domain, we can analyze the angle between a pair of edges that meet in this vertex. Such information can be used for accessibility analysis, i.e., if a mill can approach the vicinity of a certain part's corner.
 </p>
+
+<div align="center"><img src="../imgs/vertex-vexity_02.png"/></div>
+
+<p>
+  To analyze vertex convexity, select a face and run <span class="code-inline">check-vertex-vexity</span> command. Analysis Situs will also report the measured angles (in degrees) in the 3D viewer near the corresponding vertices.
+</p>
+
+<div align="center"><a href="../imgs/vertex-vexity_03.png"><img src="../imgs/vertex-vexity_03.png" width="60%"/></a></div>
 
 <p class="note">You can read more about why this heuristic can be useful in the <a href="http://quaoar.su/blog/page/to-the-automatic-milling-feature-recognition">corresponding blog post</a>.</p>
 
