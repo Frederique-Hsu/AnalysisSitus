@@ -112,6 +112,7 @@
   #include <mobius/bspl_FindSpan.h>
   #include <mobius/bspl_UnifyKnots.h>
   #include <mobius/cascade.h>
+  #include <mobius/cascade_PolygonPart.h>
   #include <mobius/core_HeapAlloc.h>
   #include <mobius/geom_BSplineCurve.h>
   #include <mobius/geom_CoonsSurfaceCubic.h>
@@ -3968,6 +3969,46 @@ int MISC_ConvertFacePoly(const Handle(asiTcl_Interp)& interp,
 
 //-----------------------------------------------------------------------------
 
+int MISC_LoadPolygonPart(const Handle(asiTcl_Interp)& interp,
+                         int                          argc,
+                         const char**                 argv)
+{
+#if defined USE_MOBIUS
+  // Read the source filename.
+  std::string filename;
+  //
+  if ( !interp->GetKeyValue(argc, argv, "filename", filename) )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Please, provide a filename via -filename key.");
+    return TCL_ERROR;
+  }
+
+  // Load part.
+  t_ptr<nest_Part> part = nest_Part::Import(filename);
+  //
+  if ( part.IsNull() )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Failed to import a part from file '%1'."
+                                                        << filename);
+    return TCL_ERROR;
+  }
+
+  // Convert.
+  cascade_PolygonPart converter(part);
+  //
+  converter.DirectConvert();
+  //
+  interp->GetPlotter().REDRAW_SHAPE( part->GetName().c_str(), converter.GetOpenCascadeFace() );
+
+  return TCL_OK;
+#else
+  interp->GetProgress().SendLogMessage(LogErr(Normal) << "Mobius module is disabled.");
+  return TCL_ERROR;
+#endif
+}
+
+//-----------------------------------------------------------------------------
+
 int MISC_CheckGaps(const Handle(asiTcl_Interp)& interp,
                    int                          /*argc*/,
                    const char**                 /*argv*/)
@@ -4372,6 +4413,15 @@ void cmdMisc::Factory(const Handle(asiTcl_Interp)&      interp,
     "\t the JSON dump shows up.",
     //
     __FILE__, group, MISC_ConvertFacePoly);
+
+  //-------------------------------------------------------------------------//
+  interp->AddCommand("misc-load-polygon-part",
+    //
+    "misc-load-polygon-part -filename <filename>\n"
+    "\t Loads a polygonal (flat) part from the specified file and\n"
+    "\t converts it to a B-rep face.",
+    //
+    __FILE__, group, MISC_LoadPolygonPart);
 
   //-------------------------------------------------------------------------//
   interp->AddCommand("misc-check-gaps",
