@@ -79,7 +79,7 @@
 
 <h1>SMRU FAQ</h1>
 
-<div class="faq">
+<div class="faq" id="q1">
   <b>Question:</b> After analysis, a seemingly valid sheet metal part remains unrecognized. What is the problem?
   <hr>
   <b>Answer:</b>
@@ -99,7 +99,7 @@
 
 <br/>
 
-<div class="faq">
+<div class="faq" id="q2">
   <b>Question:</b> Is there a way to adjust the hole sizes in the flat pattern?
   <hr>
   <b>Answer:</b>
@@ -110,7 +110,7 @@
 
 <br/>
 
-<div class="faq">
+<div class="faq" id="q3">
   <b>Question:</b> Is there a way to save each body as its own STEP file?
   <hr>
   <b>Answer:</b>
@@ -122,7 +122,7 @@
 
 <br/>
 
-<div class="faq">
+<div class="faq" id="q4">
   <b>Question:</b> I find it strange that flat parts aligned on the Y, bent parts on the X and tubes on the Z. Do you not think it would make sense to align these different types of models along the same axis?
   <hr>
   <b>Answer:</b>
@@ -133,7 +133,7 @@
 
 <br/>
 
-<div class="faq">
+<div class="faq" id="q5">
   <b>Question:</b> When using the SDK, a DXF of the unfolded STEP file is generated. Is there a feature to also output a DXF of the original state before unfolding?
   <hr>
   <b>Answer:</b>
@@ -144,7 +144,7 @@
 
 <br/>
 
-<div class="faq">
+<div class="faq" id="q6">
   <b>Question:</b> If more than two parts touch each other in an assembly, how would the <a href="./features_smru-welding-paths.html">welding identification</a> report those multiple contact zones?
   <hr>
   <b>Answer:</b>
@@ -156,7 +156,7 @@
 
 <br/>
 
-<div class="faq">
+<div class="faq" id="q7">
   <b>Question:</b> A visually correct part is labeled with the "abnormal bend" <a href="./features_smru-diagnostic-messages.html">error code</a>. Is there anything particularly wrong with the geometry?
   <hr>
   <b>Answer:</b>
@@ -167,6 +167,22 @@
   <p>
     In the above example, the radii differ by 2 millimeters, but the sheet thickness is 3 millimeters. Therefore, a warning is reported.
   </p>
+</div>
+
+<br/>
+
+<div class="faq" id="q8">
+  <b>Question:</b> The JSON output of SMRU reports both <span class="code-inline">drilledHoles</span> and <span class="code-inline">cutouts</span> sections with the same face IDs. Why is that?
+  <hr>
+  <b>Answer:</b>
+  <p>
+    Sheet metal manufacturing includes a combination of primary and secondary machining operations. The primary operations are cutting and bending (or rolling). Secondary processes include deburring, drilling, and edge machining. Because SMRU cannot (and should not) predict the cutting method (which may be laser, plasma, or waterjet technology), the algorithm is unable to determine which features should be drilled and which should be cut. For example, a circular hole can be made on a laser machine alongside contour cutting, however drilling may be required for thicker materials if waterjet cutting is utilized and the hole diameter is small.
+  </p>
+  <div align="center"><a href="../imgs/ext/smru-production-method-vs-thickness.png"><img src="../imgs/ext/smru-production-method-vs-thickness.png" width="60%"/></a></div>
+  <p>
+    As a result, a feature that allows for cutting OR drilling is reported twice. The client application decides which process should be used for a feature, and the corresponding properties can be taken from either the <span class="code-inline">drilledHoles</span> or the <span class="code-inline">cutouts</span> arrays.
+  </p>
+  <div align="center"><a href="../imgs/ext/smru-cutting-drilling.png"><img src="../imgs/ext/smru-cutting-drilling.png" width="60%"/></a></div>
 </div>
 
 <!-- [END] contents -->
