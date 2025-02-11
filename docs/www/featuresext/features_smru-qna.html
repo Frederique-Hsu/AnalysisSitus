@@ -183,6 +183,9 @@
     As a result, a feature that allows for cutting OR drilling is reported twice. The client application decides which process should be used for a feature, and the corresponding properties can be taken from either the <span class="code-inline">drilledHoles</span> or the <span class="code-inline">cutouts</span> arrays.
   </p>
   <div align="center"><a href="../imgs/ext/smru-cutting-drilling.png"><img src="../imgs/ext/smru-cutting-drilling.png" width="60%"/></a></div>
+  <p>
+    Take a counterbored hole as an example. As a drilled hole, it will get its reported type and properties as a typical machined drill. As a cutout, it will get the "arbitrary" type because it cannot be matched over any of the predefined cutout types in the dictionary. Therefore, you should normally consult the <span class="code-inline">cutouts</span> and the <span class="code-inline">drilledHoles</span> arrays together to grab all the reported cutting/drilling features out of the JSON outcome.
+  </p>
 </div>
 
 <!-- [END] contents -->

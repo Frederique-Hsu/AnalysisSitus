@@ -2,7 +2,7 @@
 <html>
  <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>Analysis Situs: 3D packing overview</title>
+  <title>Analysis Situs: 3D printing summary</title>
   <link rel="shortcut icon" type="image/png" href="../imgs/favicon.png"/>
   <link rel="stylesheet" type="text/css" href="../css/situ-main-style.css">
 
@@ -16,13 +16,7 @@
     gtag('config', 'UA-112292727-2');
   </script>
   <!-- [end] Google Analytics -->
-  
-  <!--
-    Quick navigation script. Use a div with "toc-panel" class having a
-    nested div with "toc" id to place the navigation panel.
-  -->
-  <script src="../js/jquery-3.5.1.min.js"></script>
-  <script src="../js/toc.js"></script>
+
 
   <!-- [begin] Code highlight -->
   <link rel="stylesheet" href="../css/highlight.min.css">
@@ -57,7 +51,7 @@
   <td align="left" class="header">
     <span class="header-logo"><a href="../index.html" class="header-href">Analysis&nbsp;Situs</a></span>
     &nbsp;
-    ./<a class="header-href" href="../featuresext.html">extensions</a>/3D packing overview
+    ./<a class="header-href" href="../featuresext.html">extensions</a>/3D printing summary
   </td>
 </tr>
 </table>
@@ -83,71 +77,41 @@
 <div class="content-body">
 <!-- [BEGIN] contents -->
 
-<h1 id="toc-3dnesting-overview">3D packing overview</h1>
-
-<h2 id="toc-3dnesting-input">Input</h2>
+<h1>3D printing summary</h1>
 
 <p>
-  3D nesting reads its inputs from a JSON file.
+  The abbreviation ALM stands for "Additive Layered Manufacturing." In the Analysis Situs SDK, this term refers to all 3D printing methods, including FDM, SLS, MJF, and other production types. From a geometric perspective, 3D printing processes require specific data preparation workflows. Still, regardless of the fabrication method, there is a common API to extract summary information such as part volume, surface area, bounding box dimensions, and so on. An example of these summary properties collected by the ALM SDK is given below.
 </p>
 
 <pre><code>{
-  "outputDir": "./out",
-  "container": {
-    "name": "c",
-    "xDim": 400,
-    "yDim": 300,
-    "zDim": 200,
-    "cellSize": 10
-  },
-  "settings": {
-    "enablePartDecimation": true
-  },
-  "parts": [
-    {
-      "filename": "alm/blade.obj-out.stl",
-      "count": 6
-    },
-    {
-      "filename": "alm/armchair.obj-out.stl",
-      "count": 5
-    }
-  ]
-}  
-</code></pre>
-
-<h2 id="toc-3dnesting-output">Output</h2>
-
-<p>
-  The results of 3D nesting are dumped to the directory defined with the <span class="code-inline">outputDir</span> key in the input JSON.
-</p>
-
-<pre><code>{
-  "processingTime": 9.2336539999996603,
-  "sdk": "Analysis Situs / Nesting",
-  "sdkVersion": "2024.2dev",
-  "sdkHash": "0d281821da",
-  "file": "../input.json",
+  "file": "Rocker Arm_input.stl",
   "summary": {
-    "numNestedParts": 100,
-    "zHeight": 321.5
+    "bboxDx": 0.30336600542068481,
+    "bboxDy": 0.51445502042770386,
+    "bboxDz": 0.99943101406097412,
+    "totalFaceArea": 1.2913252120115157,
+    "totalVolume": 0.042490076845111052,
+    "numConnectedComponents": 1
   }
-}  
-</code></pre>
-
-<h2 id="toc-3dnesting-perform">Perform nesting</h2>
+}</code></pre>
 
 <p>
-  To perform 3D nesting from the command prompt of Analysis Situs, use the <span class="code-inline">nesting-perform</span> command followed by the filename of the input file:
+  The <span class="code-inline">alm-perform</span> command can be used in the <a href="../features/features_active-script.html">Active Script</a> session to perform summary extraction for a 3D printed part. The accepted formats are mesh (STL) and B-rep (STEP). The same logic can be used from within C++ and <span class="code-inline">asiAlmExe</span> executable. The following script illustrates a typical way of running the ALM recognition workflow:
 </p>
 
-<pre><code>> nesting-perform -filename {data}/input.json</code></pre>
+<pre><code>> clear; alm-perform -filename mesh.stl</code></pre>
 
 <p>
-  The algorithm will do the job and open up the UI dialog with the nesting summary. The nested parts are rendered in the container.
+  Aside from the JSON summary, the ALM SDK translates the input to glTF format for display in the client's application.
 </p>
 
-<div align="center"><a href="../imgs/ext/3dnesting-perform.png"><img src="../imgs/ext/3dnesting-perform.png" width="70%"/></a></div>
+<div align="center"><a href="../imgs/ext/alm-summary-gltf.png"><img src="../imgs/ext/alm-summary-gltf.png" width="60%"/></a></div>
+
+<p>
+  The SDK also generates a PNG thumbnail ("preview") image.
+</p>
+
+<div align="center"><a href="../imgs/ext/alm-summary-preview.png"><img src="../imgs/ext/alm-summary-preview.png" width="40%"/></a></div>
 
 <!-- [END] contents -->
 </div>
