@@ -354,6 +354,18 @@ h3 {
   border-radius: 4px;
 }
 
+.commit-msg-started {
+  color: rgb(0, 0, 0);
+  font-size: 14px;
+  border: 1px dotted red;
+  font-family: Menlo, Monaco, "Courier New", Courier, monospace;
+  background-color: rgb(255, 195, 187);
+  margin-bottom: 5px;
+  padding: 5px;
+  font-weight: normal;
+  border-radius: 4px;
+}
+
 .ui-control {
   background-color: rgb(44, 48, 50);
   border-radius: 4px;

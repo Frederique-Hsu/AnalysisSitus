@@ -2412,8 +2412,9 @@ bool asiAlgo_Utils::AreParallel(const Handle(Geom_Plane)& S1,
                                 const Handle(Geom_Plane)& S2,
                                 const double              angPrec)
 {
-  const gp_Dir& planeDirS1 = S1->Pln().Axis().Direction();
-  const gp_Dir& planeDirS2 = S2->Pln().Axis().Direction();
+  // WARNING: no `const &` here as `Pln()` returns value and not reference.
+  gp_Dir planeDirS1 = S1->Pln().Axis().Direction();
+  gp_Dir planeDirS2 = S2->Pln().Axis().Direction();
 
   if ( planeDirS1.IsParallel(planeDirS2, angPrec) ||
        planeDirS1.IsOpposite(planeDirS2, angPrec) )
