@@ -2412,7 +2412,10 @@ bool asiAlgo_Utils::AreParallel(const Handle(Geom_Plane)& S1,
                                 const Handle(Geom_Plane)& S2,
                                 const double              angPrec)
 {
-  // WARNING: no `const &` here as `Pln()` returns value and not reference.
+  // WARNING: no `const &` here as `Pln()` returns value and not reference. Assigning
+  //          to `const &` will provoke undefined behavior due to dangling reference.
+  //
+  // Read on here: https://quaoar.su/blog/page/tip-of-the-week-002-dangling-references-can-cost-you-a-day
   gp_Dir planeDirS1 = S1->Pln().Axis().Direction();
   gp_Dir planeDirS2 = S2->Pln().Axis().Direction();
 
