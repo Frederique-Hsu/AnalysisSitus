@@ -39,15 +39,18 @@
   #pragma message("===== warning: FILE_DEBUG is enabled")
 #endif
 
+using namespace asiAsm::xde;
+
 //-----------------------------------------------------------------------------
 
 // Filenames are specified relatively to ASI_TEST_DATA environment variable.
 #define filename_asm_001 "public/cad/asm/asm-simplified-connectors.stp"
+#define filename_asm_002 "public/cad/chassis.stp"
 
 //-----------------------------------------------------------------------------
 
-bool asiTest_XdeDoc::loadDocument(const char*               shortFilename,
-                                  Handle(asiAsm::xde::Doc)& doc)
+bool asiTest_XdeDoc::loadDocument(const char*  shortFilename,
+                                  Handle(Doc)& doc)
 {
   // Get common facilities.
   Handle(asiTest_CommonFacilities) cf = asiTest_CommonFacilities::Instance();
@@ -58,7 +61,7 @@ bool asiTest_XdeDoc::loadDocument(const char*               shortFilename,
              + shortFilename;
 
   // Create a new empty XDE document.
-  doc = new asiAsm::xde::Doc;
+  doc = new Doc;
 
   // Load data from file.
   if ( !doc->Load( filename.c_str() ) )
@@ -73,8 +76,8 @@ bool asiTest_XdeDoc::loadDocument(const char*               shortFilename,
 
 //-----------------------------------------------------------------------------
 
-bool asiTest_XdeDoc::areEqual(const asiAsm::xde::PartIds& pids1,
-                              const asiAsm::xde::PartIds& pids2)
+bool asiTest_XdeDoc::areEqual(const PartIds& pids1,
+                              const PartIds& pids2)
 {
   // Get common facilities.
   Handle(asiTest_CommonFacilities) cf = asiTest_CommonFacilities::Instance();
@@ -85,14 +88,14 @@ bool asiTest_XdeDoc::areEqual(const asiAsm::xde::PartIds& pids1,
     return false;
   }
 
-  for ( asiAsm::xde::PartIds::Iterator pit1(pids1); pit1.More(); pit1.Next() )
+  for ( PartIds::Iterator pit1(pids1); pit1.More(); pit1.Next() )
   {
-    const asiAsm::xde::PartId& pid1 = pit1.Value();
+    const PartId& pid1 = pit1.Value();
     bool isFound = false;
 
-    for ( asiAsm::xde::PartIds::Iterator pit2(pids2); pit2.More(); pit2.Next() )
+    for ( PartIds::Iterator pit2(pids2); pit2.More(); pit2.Next() )
     {
-      const asiAsm::xde::PartId& pid2 = pit2.Value();
+      const PartId& pid2 = pit2.Value();
       //
       if ( pid1.IsEqual(pid2) )
       {
@@ -113,6 +116,58 @@ bool asiTest_XdeDoc::areEqual(const asiAsm::xde::PartIds& pids1,
 
 //-----------------------------------------------------------------------------
 
+bool asiTest_XdeDoc::testCombine(const char* shortFilename,
+                                 const int   numLeavesInitially)
+{
+  // Get common facilities.
+  Handle(asiTest_CommonFacilities) cf = asiTest_CommonFacilities::Instance();
+
+  // Load XDE document.
+  Handle(Doc) doc;
+  //
+  if ( !loadDocument(shortFilename, doc) )
+  {
+    return false;
+  }
+
+  // Check that there are many leaf assembly items initially.
+  {
+    AssemblyItemIds leaves;
+    doc->GetLeafAssemblyItems(leaves);
+    //
+    const int numLeaves = leaves.Length();
+    //
+    if ( numLeaves != numLeavesInitially )
+    {
+      return false;
+    }
+  }
+
+  AssemblyItemIds roots;
+  doc->GetRootAssemblyItems(roots);
+
+  // Convert the first root to part.
+  if ( !doc->ConvertToPart( roots.First() ) )
+  {
+    return false;
+  }
+
+  // Check that there is only one leaf assembly item now.
+  {
+    AssemblyItemIds leaves;
+    doc->GetLeafAssemblyItems(leaves);
+    //
+    if ( leaves.Length() != 1 )
+    {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+//-----------------------------------------------------------------------------
+
 outcome asiTest_XdeDoc::testFindItems(const int funcID, const bool)
 {
   outcome res(DescriptionFn(), funcID);
@@ -121,14 +176,14 @@ outcome asiTest_XdeDoc::testFindItems(const int funcID, const bool)
   Handle(asiTest_CommonFacilities) cf = asiTest_CommonFacilities::Instance();
 
   // Load XDE document.
-  Handle(asiAsm::xde::Doc) doc;
+  Handle(Doc) doc;
   //
   if ( !loadDocument(filename_asm_001, doc) )
     return res.failure();
 
   // Find items.
   {
-    Handle(asiAsm::xde::HAssemblyItemIdsMap) items;
+    Handle(HAssemblyItemIdsMap) items;
     //
     if ( !doc->FindItems("X473", items) )
     {
@@ -162,10 +217,10 @@ outcome asiTest_XdeDoc::testAddPart(const int funcID, const bool)
   Handle(asiTest_CommonFacilities) cf = asiTest_CommonFacilities::Instance();
 
   // Create a new empty XDE document.
-  Handle(asiAsm::xde::Doc) doc = new asiAsm::xde::Doc;
+  Handle(Doc) doc = new asiAsm::xde::Doc;
 
   // Add parts.
-  asiAsm::xde::PartIds pidsAdded;
+  PartIds pidsAdded;
   {
     pidsAdded.Append( doc->AddPart("Part 1") );
     pidsAdded.Append( doc->AddPart("Part 2") );
@@ -173,10 +228,22 @@ outcome asiTest_XdeDoc::testAddPart(const int funcID, const bool)
   }
 
   // Verify.
-  asiAsm::xde::PartIds pidsGot;
+  PartIds pidsGot;
   doc->GetParts(pidsGot);
   //
   if ( !areEqual(pidsAdded, pidsGot) )
+    return res.failure();
+
+  return res.success();
+}
+
+//-----------------------------------------------------------------------------
+
+outcome asiTest_XdeDoc::testCombine01(const int funcID, const bool)
+{
+  outcome res(DescriptionFn(), funcID);
+
+  if ( !testCombine(filename_asm_002, 6) )
     return res.failure();
 
   return res.success();

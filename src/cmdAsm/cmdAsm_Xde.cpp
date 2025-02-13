@@ -473,6 +473,62 @@ int ASMXDE_XCompounds(const Handle(asiTcl_Interp)& interp,
 
 //-----------------------------------------------------------------------------
 
+int ASMXDE_Combine(const Handle(asiTcl_Interp)& interp,
+                   int                          argc,
+                   const char**                 argv)
+{
+  // Get model name.
+  std::string name;
+  //
+  if ( !interp->GetKeyValue(argc, argv, "model", name) )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Model name is not specified.");
+    return TCL_ERROR;
+  }
+
+  // Get the XDE document.
+  Handle(asiTcl_Variable) var = interp->GetVar(name);
+  //
+  if ( var.IsNull() || !var->IsKind( STANDARD_TYPE(cmdAsm_XdeModel) ) )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "There is no XDE model named '%1'."
+                                                        << name);
+    return TCL_ERROR;
+  }
+  //
+  Handle(Doc) xdeDoc = Handle(cmdAsm_XdeModel)::DownCast(var)->GetDocument();
+
+  // Get item.
+  t_asciiString  itemStr;
+  AssemblyItemId item;
+  //
+  if ( interp->GetKeyValue(argc, argv, "item", itemStr) )
+  {
+    item = itemStr;
+  }
+  else
+  {
+    AssemblyItemIds roots;
+    xdeDoc->GetRootAssemblyItems(roots);
+
+    item = roots.First();
+  }
+
+  TIMER_NEW
+  TIMER_GO
+
+  // Combine.
+  AssemblyItemIds updated;
+  xdeDoc->ConvertToPart(item, updated);
+
+  TIMER_FINISH
+  TIMER_COUT_RESULT_NOTIFIER(interp->GetProgress(), "asm-xde-combine")
+
+  return TCL_OK;
+}
+
+//-----------------------------------------------------------------------------
+
 int ASMXDE_ResetColors(const Handle(asiTcl_Interp)& interp,
                        int                          argc,
                        const char**                 argv)
@@ -1969,6 +2025,14 @@ void cmdAsm::Commands_XDE(const Handle(asiTcl_Interp)&      interp,
     "\t not passed).",
     //
     __FILE__, group, ASMXDE_XCompounds);
+
+  //-------------------------------------------------------------------------//
+  interp->AddCommand("asm-xde-combine",
+    //
+    "asm-xde-combine -model <M> [-item <item>]\n"
+    "\t Combines the (sub)assembly into a compound-part.",
+    //
+    __FILE__, group, ASMXDE_Combine);
 
   //-------------------------------------------------------------------------//
   interp->AddCommand("asm-xde-reset-colors",

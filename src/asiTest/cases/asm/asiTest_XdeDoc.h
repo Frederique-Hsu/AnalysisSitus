@@ -80,6 +80,7 @@ public:
   {
     functions << &testFindItems
               << &testAddPart
+              << &testCombine01
     ; // Put semicolon here for convenient adding new functions above ;)
   }
 
@@ -94,10 +95,15 @@ private:
   static bool areEqual(const asiAsm::xde::PartIds& pids1,
                        const asiAsm::xde::PartIds& pids2);
 
+  //! Tests assembly aggregation into compound parts.
+  static bool testCombine(const char* shortFilename,
+                          const int   numLeavesInitially);
+
 private:
 
   static outcome testFindItems (const int funcID, const bool);
   static outcome testAddPart   (const int funcID, const bool);
+  static outcome testCombine01 (const int funcID, const bool);
 
 };
 

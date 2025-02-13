@@ -2567,6 +2567,254 @@ void Doc::TransformRoot(const double tx,
 
 //-----------------------------------------------------------------------------
 
+bool Doc::ConvertToPart(const AssemblyItemId& assembly,
+                        AssemblyItemIds&      updatedItems)
+{
+  Handle(XCAFDoc_ShapeTool) shapeTool = this->GetShapeTool();
+  //
+  if ( !shapeTool->IsAssembly( this->GetLabel(assembly) ) )
+  {
+    m_progress.SendLogMessage(LogErr(Normal) << "Nothing to convert to part.");
+    return false;
+  }
+
+  // Collect updated items.
+  AssemblyItemIds auxItemArray;
+  this->GetPartners(assembly, auxItemArray);
+  //
+  for ( AssemblyItemIds::Iterator newIt(auxItemArray); newIt.More(); newIt.Next() )
+  {
+    bool isToAdd = true;
+    for ( AssemblyItemIds::Iterator it(updatedItems); it.More() && isToAdd; it.Next() )
+    {
+      if ( newIt.Value().IsChild( it.Value() ) )
+        isToAdd = false;
+    }
+    if ( isToAdd )
+      updatedItems.Append( newIt.Value() );
+  }
+
+  // Collect old shapes.
+  TDF_LabelSequence oldOriginals, oldComponents;
+  std::vector<TopLoc_Location> locs;
+  DocIterator it(assembly, this);
+  it.Next(); // Skip main shape itself.
+  for  ( ; it.More(); it.Next() )
+  {
+    TDF_Label label = this->GetLabel(it.Current());
+    oldComponents.Append(label);
+    oldOriginals.Append( this->GetOriginal(label) );
+    locs.push_back( this->GetParentLocation( it.Current() ) * this->GetOwnLocation( it.Current() ) );
+  }
+
+  // Update main shape.
+  TDF_Label assemblyL = this->GetLabel(assembly);
+  TopoDS_Shape mainShape = shapeTool->GetShape(assemblyL);
+  assemblyL.ForgetAttribute( XCAFDoc::AssemblyGUID() );
+  shapeTool->SetShape(assemblyL, mainShape);
+
+  // Declare new subshapes and update metadada.
+  TDF_LabelDataMap pmiMap;
+  TDF_LabelSequence::Iterator origIt(oldOriginals),
+                              compIt(oldComponents);
+  int locIt = 0;
+  for ( ; origIt.More(); origIt.Next(), compIt.Next(), locIt++ )
+  {
+    TDF_Label oldOriginal = origIt.Value();
+    TDF_Label oldComponent = compIt.Value();
+    TopLoc_Location oldLoc = locs[locIt];
+    TopoDS_Shape shape = shapeTool->GetShape(oldOriginal);
+    shape.Location(oldLoc);
+
+    if ( oldComponent.Father().IsEqual(assemblyL) )
+    {
+      // Modify assembly component to subshape.
+      oldComponent.ForgetAttribute(XCAFDoc::ShapeRefGUID());
+      oldComponent.ForgetAttribute(XCAFDoc_ShapeMapTool::GetID());
+      oldComponent.ForgetAttribute(XCAFDoc_Location::GetID());
+      shapeTool->SetShape(oldComponent, shape);
+      this->ExtractAttributes(oldOriginal, oldComponent);
+      oldComponent.ForgetAttribute(XCAFDoc::AssemblyGUID());
+      pmiMap.Bind(oldOriginal, oldComponent);
+    }
+    else
+    {
+      // Declare new subshape.
+      TDF_Label newSubL = shapeTool->AddSubShape(assemblyL, shape);
+      this->ExtractAttributes(oldComponent, newSubL);
+      this->ExtractAttributes(oldOriginal, newSubL);
+      newSubL.ForgetAttribute(XCAFDoc::AssemblyGUID());
+
+      // Clear component label only if it (parent assembly) is not used anymore.
+      if ( !this->HasUsers( oldComponent.Father() ) )
+        oldComponent.ForgetAllAttributes();
+
+      pmiMap.Bind(oldOriginal, newSubL);
+    }
+
+    // Add subshapes of processed old part.
+    TDF_LabelSequence subs;
+    shapeTool->GetSubShapes(oldOriginal, subs);
+    for ( TDF_LabelSequence::Iterator subIt(subs); subIt.More(); subIt.Next() )
+    {
+      TDF_Label oldSubL = subIt.Value();
+      TopoDS_Shape subshape = shapeTool->GetShape(oldSubL);
+      subshape.Location(shape.Location() * subshape.Location());
+      TDF_Label newL = shapeTool->AddSubShape(assemblyL, subshape);
+      this->ExtractAttributes(oldSubL, newL);
+      pmiMap.Bind(oldSubL, newL);
+    }
+  }
+
+  this->UpdatePMI(pmiMap);
+
+  // Remove old shapes.
+  for ( TDF_LabelSequence::Iterator origIt2(oldOriginals); origIt2.More(); origIt2.Next() )
+  {
+    TDF_Label origL = origIt2.Value();
+    //
+    if ( this->HasUsers(origL) )
+      continue;
+
+    TDF_LabelSequence subs;
+    shapeTool->GetSubShapes(origL, subs);
+    //
+    for ( TDF_LabelSequence::Iterator subIt(subs); subIt.More(); subIt.Next() )
+      subIt.ChangeValue().ForgetAllAttributes();
+
+    origL.ForgetAllAttributes();
+  }
+
+  this->UpdateAssemblies();
+
+  return true;
+}
+
+//-----------------------------------------------------------------------------
+
+bool Doc::ConvertToPart(const AssemblyItemId& assembly)
+{
+  AssemblyItemIds updatedItems;
+  return this->ConvertToPart(assembly, updatedItems);
+}
+
+//-----------------------------------------------------------------------------
+
+void Doc::UpdatePMI(const TDF_LabelDataMap map)
+{
+  // TODO: NYI
+}
+
+//-----------------------------------------------------------------------------
+
+void Doc::ExtractAttributes(const TDF_Label oldLabel,
+                            TDF_Label&      newLabel)
+{
+
+  if ( oldLabel.IsNull() || newLabel.IsNull() || oldLabel.IsEqual(newLabel) )
+    return;
+
+  // Color.
+  Handle(XCAFDoc_ColorTool) newColorTool = XCAFDoc_DocumentTool::ColorTool(newLabel);
+  Handle(XCAFDoc_ColorTool) colorTool = XCAFDoc_DocumentTool::ColorTool(oldLabel);
+  //
+  Quantity_ColorRGBA color;
+  if ( colorTool->GetColor(oldLabel, XCAFDoc_ColorSurf, color) )
+  {
+    newColorTool->SetColor(newLabel, color, XCAFDoc_ColorSurf);
+  }
+  if ( colorTool->GetColor(oldLabel, XCAFDoc_ColorCurv, color) )
+  {
+    newColorTool->SetColor(newLabel, color, XCAFDoc_ColorCurv);
+  }
+  if ( colorTool->GetColor(oldLabel, XCAFDoc_ColorGen, color) )
+  {
+    newColorTool->SetColor(newLabel, color, XCAFDoc_ColorGen);
+  }
+  if ( !colorTool->IsVisible(oldLabel) )
+  {
+    newColorTool->SetVisibility(newLabel, false);
+  }
+
+  // Layer.
+  Handle(XCAFDoc_LayerTool) newLayerTool = XCAFDoc_DocumentTool::LayerTool(newLabel);
+  Handle(XCAFDoc_LayerTool) layerTool = XCAFDoc_DocumentTool::LayerTool(oldLabel);
+  Handle(TColStd_HSequenceOfExtendedString) layers;
+  layerTool->GetLayers(oldLabel, layers);
+  //
+  for ( int j = 1; j <= layers->Length(); ++j )
+  {
+    newLayerTool->SetLayer(newLabel, layers->Value(j));
+  }
+
+  // Material.
+  Handle(XCAFDoc_MaterialTool) newMatTool = XCAFDoc_DocumentTool::MaterialTool(newLabel);
+  Handle(XCAFDoc_MaterialTool) matTool = XCAFDoc_DocumentTool::MaterialTool(oldLabel);
+  Handle(TDataStd_TreeNode) matNode;
+  //
+  if ( oldLabel.FindAttribute(XCAFDoc::MaterialRefGUID(), matNode) && matNode->HasFather() )
+  {
+    TDF_Label matL = matNode->Father()->Label();
+    Handle(TCollection_HAsciiString) name;
+    Handle(TCollection_HAsciiString) description;
+
+    double density;
+    Handle(TCollection_HAsciiString) densName;
+    Handle(TCollection_HAsciiString) densValType;
+
+    if ( matTool->GetMaterial(matL, name, description, density, densName, densValType) )
+    {
+      if ( name->Length() != 0 )
+        newMatTool->SetMaterial(newLabel, name, description, density, densName, densValType);
+    }
+  }
+
+  // Attributes.
+  Handle(TDF_Attribute) tAtt;
+  // Finds the target attributes or creates them empty.
+  for ( TDF_AttributeIterator attItr(oldLabel); attItr.More(); attItr.Next() )
+  {
+    const Handle(TDF_Attribute) sAtt = attItr.Value();
+
+    // Protect against color and layer coping without link to colors and layers.
+    if ( sAtt->IsKind(STANDARD_TYPE(TDataStd_TreeNode)) || sAtt->IsKind(STANDARD_TYPE(XCAFDoc_GraphNode)) )
+      continue;
+
+    // Do not copy shape, it is already copied.
+    if ( sAtt->IsKind(STANDARD_TYPE(TNaming_NamedShape)) || sAtt->IsKind(STANDARD_TYPE(XCAFDoc_ShapeMapTool)) )
+      continue;
+
+    // Do not copy location, it should be copied during shape creation.
+    if ( sAtt->IsKind(STANDARD_TYPE(XCAFDoc_Location)) )
+      continue;
+
+    const Standard_GUID& id = sAtt->ID();
+    //
+    if ( !newLabel.FindAttribute(id, tAtt) )
+    {
+      tAtt = sAtt->NewEmpty();
+      newLabel.AddAttribute(tAtt);
+    }
+    Handle(TDF_RelocationTable) rt = new TDF_RelocationTable();
+    sAtt->Paste(tAtt, rt);
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+bool Doc::HasUsers(const TDF_Label& original) const
+{
+  Handle(TDataStd_TreeNode) node;
+
+  if ( !original.FindAttribute(XCAFDoc::ShapeRefGUID(), node) )
+    return false;
+
+  node = node->First();
+  return !node.IsNull();
+}
+
+//-----------------------------------------------------------------------------
+
 void Doc::DumpAssemblyItems(Standard_OStream& out) const
 {
   for ( DocIterator ait(this); ait.More(); ait.Next() )

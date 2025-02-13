@@ -1012,6 +1012,34 @@ public:
                   const double ry,
                   const double rz);
 
+  //! Converts the passed subassembly (defined as an OCAF label) to
+  //! a compound part.
+  asiAsm_EXPORT bool
+    ConvertToPart(const AssemblyItemId& assembly,
+                  AssemblyItemIds&      updatedItems);
+
+  //! Converts the passed subassembly (defined as an OCAF label) to
+  //! a compound part.
+  asiAsm_EXPORT bool
+    ConvertToPart(const AssemblyItemId& assembly);
+
+  //! Updates references of PMI (GDT and more).
+  asiAsm_EXPORT void
+    UpdatePMI(const TDF_LabelDataMap map);
+
+  //! Copies all attributes from one label to another.
+  //! \param[in]  oldLabel the label to copy information from.
+  //! \param[out] newLabel the label to copy information to.
+  asiAsm_EXPORT void
+    ExtractAttributes(const TDF_Label oldLabel,
+                      TDF_Label&      newLabel);
+
+  //! Check if the given original label has users.
+  //! \param[in] original the label to check.
+  //! \return true/false.
+  asiAsm_EXPORT bool
+    HasUsers(const TDF_Label& original) const;
+
 public:
 
   //! Dumps assembly hierarchy to the passed output stream.
