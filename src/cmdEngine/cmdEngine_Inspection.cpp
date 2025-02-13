@@ -4999,7 +4999,7 @@ int ENGINE_NegativeVolume(const Handle(asiTcl_Interp)& interp,
   }
 
   TIMER_FINISH
-  TIMER_COUT_RESULT_NOTIFIER(interp->GetProgress(), "Computes negative volumes")
+  TIMER_COUT_RESULT_NOTIFIER(interp->GetProgress(), "Compute negative volumes")
 
   std::vector<std::tuple<asiAlgo_Feature,
                          TopoDS_Shape,
