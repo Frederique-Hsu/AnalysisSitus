@@ -45,8 +45,6 @@ typedef rapidjson::Document::ValueType t_jsonValue;
 typedef rapidjson::Document::Object    t_jsonObject;
 #endif
 
-#endif
-
 //-----------------------------------------------------------------------------
 
 void asiAlgo_SemanticCode::FromJSON(void*                 pJsonGenericObj,

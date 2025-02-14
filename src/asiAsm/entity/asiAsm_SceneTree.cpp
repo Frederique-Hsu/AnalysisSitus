@@ -44,7 +44,6 @@
 // Rapidjson includes
 #include <rapidjson/document.h>
 #include <rapidjson/istreamwrapper.h>
-#endif
 
 #endif
 
@@ -58,7 +57,6 @@
 
 typedef rapidjson::Document::Array     t_jsonArray;
 typedef rapidjson::Document::ValueType t_jsonValue;
-#endif
 
 #endif
 

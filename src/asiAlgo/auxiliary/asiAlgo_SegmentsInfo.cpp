@@ -47,8 +47,6 @@ typedef rapidjson::Document::Array     t_jsonArray;
 typedef rapidjson::Document::ValueType t_jsonValue;
 #endif
 
-#endif
-
 //-----------------------------------------------------------------------------
 
 asiAlgo_SegmentsInfo::asiAlgo_SegmentsInfo(const double       _id,
