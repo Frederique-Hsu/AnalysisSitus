@@ -49,12 +49,8 @@
 #include <rapidjson/istreamwrapper.h>
 #include <rapidjson/ostreamwrapper.h>
 
-#endif
-
 // Standard includes
 #include <vector>
-
-#if defined USE_RAPIDJSON
 
 //-----------------------------------------------------------------------------
 
