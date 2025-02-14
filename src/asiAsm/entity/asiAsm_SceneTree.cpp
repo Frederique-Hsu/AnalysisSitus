@@ -53,7 +53,7 @@
 #include <gp_Quaternion.hxx>
 
 //-----------------------------------------------------------------------------
-#if defined USE_RAPIDJSON
+
 #if defined USE_RAPIDJSON
 
 typedef rapidjson::Document::Array     t_jsonArray;
@@ -134,9 +134,6 @@ class asiAsm_SceneTree_Object : public Standard_Transient
           value->fromJSON( prop, &mit->value );
         }
       }
-#else
-      (void)pJsonBlock;
-      (void)value;
 #endif
     }
 
@@ -237,9 +234,6 @@ class asiAsm_SceneTree_Part : public asiAsm_SceneTree_Prototype
       {
         this->shape = pJsonObj->GetString();
       }
-#else
-      (void)pJsonBlock;
-      (void)prop;
 #endif
     }
 
@@ -312,9 +306,6 @@ class asiAsm_SceneTree_Assembly : public asiAsm_SceneTree_Prototype
 
         asiAlgo_Utils::Json::ReadVector( &arr, children );
       }
-#else
-      (void)pJsonBlock;
-      (void)prop;
 #endif
     }
 
@@ -429,9 +420,6 @@ class asiAsm_SceneTree_Instance : public asiAsm_SceneTree_Object
         if (coords.Modulus() > RealEpsilon())
           this->translation = coords;
       }
-#else
-      (void)pJsonBlock;
-      (void)prop;
 #endif
     }
 
@@ -930,9 +918,6 @@ void asiAsm_SceneTree::FromJSON(std::ifstream&    in,
     return;
 
   asiAsm_SceneTree::FromJSON(&it->value, info);
-#else
-  (void)in;
-  (void)info;
 #endif
 }
 
@@ -994,9 +979,6 @@ void asiAsm_SceneTree::FromJSON(void*             pJsonGenericObj,
       readChildren< asiAsm_SceneTree_Instance >( &arr, info.m_instances );
     }
   }
-#else
-  (void)pJsonGenericObj;
-  (void)info;
 #endif
 }
 
