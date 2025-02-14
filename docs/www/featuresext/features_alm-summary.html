@@ -102,16 +102,32 @@
 <pre><code>> clear; alm-perform -filename mesh.stl</code></pre>
 
 <p>
+  A typical ALM processing log on running a batch executable is given below:
+</p>
+
+<div align="center"><a href="../imgs/ext/alm-log.png"><img src="../imgs/ext/alm-log.png" width="60%"/></a></div>
+
+<p>
   Aside from the JSON summary, the ALM SDK translates the input to glTF format for display in the client's application.
 </p>
 
 <div align="center"><a href="../imgs/ext/alm-summary-gltf.png"><img src="../imgs/ext/alm-summary-gltf.png" width="60%"/></a></div>
 
 <p>
+  To apply proper lightning, many viewers require a normal field associated with the mesh triangles. Analysis Situs calculates mesh normals per facet and exports them as glTF along with the meshes. Often, 3D viewers average normals at vertices, resulting in "puffy" renders. If it is not what you want, you can use your viewer's "flat shading" mode (click image below to enlarge).
+</p>
+
+<div align="center"><a href="../imgs/ext/alm-shading-modes.png"><img src="../imgs/ext/alm-shading-modes.png" width="80%"/></a></div>
+
+<p>
   The SDK also generates a PNG thumbnail ("preview") image.
 </p>
 
 <div align="center"><a href="../imgs/ext/alm-summary-preview.png"><img src="../imgs/ext/alm-summary-preview.png" width="40%"/></a></div>
+
+<p>
+  The meshes imported by the SDK from the STL files are passed through processing as they are. If a STEP file is loaded, the underlying B-rep is first tessellated by our uniform quadtree-based faceter to generate dense meshes.
+</p>
 
 <!-- [END] contents -->
 </div>
