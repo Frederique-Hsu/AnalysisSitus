@@ -41,14 +41,20 @@
 #include <Standard_ProgramError.hxx>
 #include <TCollection_AsciiString.hxx>
 
+#if defined USE_RAPIDJSON
+
 // Rapidjson includes
 #include <rapidjson/prettywriter.h>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/istreamwrapper.h>
 #include <rapidjson/ostreamwrapper.h>
 
+#endif
+
 // Standard includes
 #include <vector>
+
+#if defined USE_RAPIDJSON
 
 //-----------------------------------------------------------------------------
 
@@ -547,3 +553,5 @@ TCollection_AsciiString asiAlgo_JsonDocument::WriteIntoString() const
 
   return result;
 }
+
+#endif

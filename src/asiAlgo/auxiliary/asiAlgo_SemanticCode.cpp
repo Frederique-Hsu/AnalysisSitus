@@ -35,6 +35,8 @@
 #include <asiAlgo_JsonDict.h>
 #include <asiAlgo_Utils.h>
 
+#if defined USE_RAPIDJSON
+
 // Rapidjson includes
 #include <rapidjson/document.h>
 
@@ -42,11 +44,14 @@ typedef rapidjson::Document::Array     t_jsonArray;
 typedef rapidjson::Document::ValueType t_jsonValue;
 typedef rapidjson::Document::Object    t_jsonObject;
 
+#endif
+
 //-----------------------------------------------------------------------------
 
 void asiAlgo_SemanticCode::FromJSON(void*                 pJsonGenericObj,
                                     asiAlgo_SemanticCode& code)
 {
+#if defined USE_RAPIDJSON
   t_jsonValue*
     pJsonObj = reinterpret_cast<t_jsonValue*>(pJsonGenericObj);
 
@@ -83,6 +88,7 @@ void asiAlgo_SemanticCode::FromJSON(void*                 pJsonGenericObj,
       asiAlgo_Utils::Json::ReadFeature(&arr, code.vertexIds);
     }
   }
+#endif
 }
 
 //-----------------------------------------------------------------------------

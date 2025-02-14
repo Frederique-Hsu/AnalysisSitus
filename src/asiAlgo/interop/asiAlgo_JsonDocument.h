@@ -37,12 +37,16 @@
 // OpenCascade includes
 #include <Standard_Type.hxx>
 
+#if defined USE_RAPIDJSON
+
 // Rapidjson includes
 #include <rapidjson/document.h>
 
 typedef rapidjson::Document::Array     t_jsonArray;
 typedef rapidjson::Document::ValueType t_jsonValue;
 typedef rapidjson::Document::Object    t_jsonObject;
+
+#endif
 
 class TCollection_AsciiString;
 
@@ -54,6 +58,8 @@ class TCollection_AsciiString;
 class asiAlgo_JsonDocument : public Standard_Transient
 {
   DEFINE_STANDARD_RTTI_INLINE(asiAlgo_JsonDocument, Standard_Transient)
+
+#if defined USE_RAPIDJSON
 
 public:
 
@@ -239,6 +245,8 @@ protected:
   bool         m_bToRelease; //!< Whether to release instead of reuse memory.
   bool         m_bIsDoc;     //!< Indicates whether this object is a document or a property.
   bool         m_bIsPretty;  //!< Indicates whether a "pretty" output format is enabled.
+
+#endif
 
 };
 

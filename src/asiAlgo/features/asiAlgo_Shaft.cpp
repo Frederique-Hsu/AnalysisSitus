@@ -35,11 +35,15 @@
 #include <asiAlgo_JsonDict.h>
 #include <asiAlgo_Utils.h>
 
+#if defined USE_RAPIDJSON
+
 // Rapidjson includes
 #include <rapidjson/document.h>
 
 typedef rapidjson::Document::Array     t_jsonArray;
 typedef rapidjson::Document::ValueType t_jsonValue;
+
+#endif
 
 //-----------------------------------------------------------------------------
 
@@ -76,6 +80,7 @@ bool asiAlgo_Shaft::IsEqual(const Handle(asiAlgo_Shaft)& other,
 void asiAlgo_Shaft::FromJSON(void*                  pJsonGenericObj,
                              Handle(asiAlgo_Shaft)& shaft)
 {
+#if defined USE_RAPIDJSON
   t_jsonValue*
     pJsonObj = reinterpret_cast<t_jsonValue*>(pJsonGenericObj);
 
@@ -131,6 +136,7 @@ void asiAlgo_Shaft::FromJSON(void*                  pJsonGenericObj,
       }
     }
   }
+#endif
 }
 
 //-----------------------------------------------------------------------------

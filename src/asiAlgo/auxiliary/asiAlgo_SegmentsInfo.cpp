@@ -38,11 +38,15 @@
 // STL includes
 #include <ostream>
 
+#if defined USE_RAPIDJSON
+
 // Rapidjson includes
 #include <rapidjson/document.h>
 
 typedef rapidjson::Document::Array     t_jsonArray;
 typedef rapidjson::Document::ValueType t_jsonValue;
+
+#endif
 
 //-----------------------------------------------------------------------------
 
@@ -165,6 +169,7 @@ bool asiAlgo_SegmentsInfo::AreEqual(const asiAlgo_SegmentsInfoVec& v1,
 void asiAlgo_SegmentsInfo::FromJSON(void*                 pJsonGenericObj,
                                     asiAlgo_SegmentsInfo& info)
 {
+#if defined USE_RAPIDJSON
   t_jsonValue*
     pJsonObj = reinterpret_cast<t_jsonValue*>(pJsonGenericObj);
 
@@ -223,6 +228,7 @@ void asiAlgo_SegmentsInfo::FromJSON(void*                 pJsonGenericObj,
         info.angle = mit->value.GetDouble();
     }
   }
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -230,6 +236,7 @@ void asiAlgo_SegmentsInfo::FromJSON(void*                 pJsonGenericObj,
 void asiAlgo_SegmentsInfo::FromJSON(void*                    pJsonGenericObj,
                                     asiAlgo_SegmentsInfoVec& infoVec)
 {
+#if defined USE_RAPIDJSON
   t_jsonValue*
     pJsonObj = reinterpret_cast<t_jsonValue*>(pJsonGenericObj);
 
@@ -244,6 +251,7 @@ void asiAlgo_SegmentsInfo::FromJSON(void*                    pJsonGenericObj,
 
     infoVec.push_back( segInfo );
   }
+#endif
 }
 
 //-----------------------------------------------------------------------------
