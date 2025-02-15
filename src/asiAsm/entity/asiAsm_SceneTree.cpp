@@ -473,6 +473,7 @@ namespace
   void readChildren(void*                       pJsonBlock,
                     std::vector< Handle( T ) >& v)
   {
+#if defined USE_RAPIDJSON
     t_jsonArray*
       jsonBlock = reinterpret_cast< t_jsonArray* >( pJsonBlock );
 
@@ -487,6 +488,7 @@ namespace
 
       v.push_back( value );
     }
+#endif
   }
 
   //---------------------------------------------------------------------------
