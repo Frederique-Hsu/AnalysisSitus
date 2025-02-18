@@ -127,17 +127,47 @@
 </p>
 
 <pre><code>{
-  "processingTime": 9.2336539999996603,
+  "processingTime": 0.3663092000024335,
   "sdk": "Analysis Situs / Nesting",
   "sdkVersion": "2024.2dev",
-  "sdkHash": "0d281821da",
-  "file": "../input.json",
+  "sdkHash": "1948e4cc5c",
+  "file": "C:/work/Extensions/data/nesting3d/main/07.json",
   "summary": {
-    "numNestedParts": 100,
-    "zHeight": 321.5
-  }
-}  
+    "numNestedParts": 42,
+    "numUnnestableParts": 1
+  },
+  "containers": [
+    {
+      "numNestedParts": 8,
+      "zHeight": 38.54222297668457
+    },
+    {
+      "numNestedParts": 8,
+      "zHeight": 38.54222297668457
+    },
+    {
+      "numNestedParts": 8,
+      "zHeight": 38.54222297668457
+    },
+    {
+      "numNestedParts": 8,
+      "zHeight": 38.54222297668457
+    },
+    {
+      "numNestedParts": 8,
+      "zHeight": 38.54222297668457
+    },
+    {
+      "numNestedParts": 2,
+      "zHeight": 18.54222297668457
+    }
+  ]
+}
 </code></pre>
+
+<p>
+  Draw attention to the <span class="code-inline">numUnnestableParts</span> JSON property. It counts how many parts (prototypes) cannot be nested because their dimensions do not fit into the specified container size.
+</p>
 
 <h2 id="toc-3dnesting-perform">Perform nesting</h2>
 
@@ -148,8 +178,10 @@
 <pre><code>> nesting-perform -filename {data}/input.json</code></pre>
 
 <p>
-  The algorithm will do the job and open up the UI dialog with the nesting summary. The nested parts are rendered in the container.
+  The algorithm will do the job and open up the UI dialog with the nesting summary. The nested parts are rendered in the incrementally added containers. The output directory for the generated artifacts (JSON, STL) is specified in the input JSON file. To override the output directory in the script, use the optional <span class="code-inline">-outdir</span> argument followed by the target path.
 </p>
+
+<pre><code>> nesting-perform -filename {data}/input.json -outdir {desktop}</code></pre>
 
 <div align="center"><a href="../imgs/ext/3dnesting-perform.png"><img src="../imgs/ext/3dnesting-perform.png" width="70%"/></a></div>
 
