@@ -62,6 +62,7 @@ enum asiAlgo_FileFormat
   FileFormat_BREP,
   FileFormat_STEP,
   FileFormat_IGES,
+  FileFormat_DXF,
 
   //---------------------------------------------------------------------------
   // CAD Proprietary
@@ -82,6 +83,7 @@ enum asiAlgo_FileFormat
   // Others
   //---------------------------------------------------------------------------
   FileFormat_XML,
+  FileFormat_JSON,
 
   //---------------------------------------------------------------------------
   // Last item
@@ -148,11 +150,23 @@ public:
   asiAlgo_EXPORT static asiAlgo_FileFormat
     FormatFromFileExtension(const TCollection_AsciiString& path);
 
+  //! Returns file format analyzing the file extension.
+  //! \param[in] path full filename.
+  //! \return file format enum.
+  asiAlgo_EXPORT static asiAlgo_FileFormat
+    FormatFromFileExtension(const std::string& path);
+
   //! Returns file format analyzing the file contents.
   //! \param[in] path full filename.
   //! \return file format enum.
   asiAlgo_EXPORT static asiAlgo_FileFormat
     FormatFromFileContent(const TCollection_AsciiString& path);
+
+  //! Returns file format analyzing the file contents.
+  //! \param[in] path full filename.
+  //! \return file format enum.
+  asiAlgo_EXPORT static asiAlgo_FileFormat
+    FormatFromFileContent(const std::string& path);
 
 public:
 

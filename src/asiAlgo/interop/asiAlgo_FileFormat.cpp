@@ -34,21 +34,6 @@
 // OCCT includes
 #include <OSD_OpenFile.hxx>
 
-//! The list of names for all defined formats.
-const char* const asiAlgo_FileFormatTool::NAMED_FORMATS[] =
-{
-  "Unknown",    // FileFormat_Unknown
-  "SITU",       // FileFormat_NATIVE
-  "BREP",       // FileFormat_BREP
-  "STEP",       // FileFormat_STEP
-  "IGES",       // FileFormat_IGES
-  "STL"         // FileFormat_STL
-  "SOLIDWORKS"  // FileFormat_SOLIDWORKS
-  "CREOVIEW"    // FileFormat_CREOVIEW
-  "SOLIDEDGE"   // FileFormat_SOLIDEDGE
-  "INVENTOR"    // FileFormat_INVENTOR
-};
-
 //-----------------------------------------------------------------------------
 
 TCollection_AsciiString
@@ -100,6 +85,10 @@ asiAlgo_FileFormat
   {
     return FileFormat_IGES;
   }
+  else if ( ext == "dxf" )
+  {
+    return FileFormat_DXF;
+  }
   else if ( ext == "ply" )
   {
     return FileFormat_PLY;
@@ -112,23 +101,35 @@ asiAlgo_FileFormat
   {
     return FileFormat_XML;
   }
-  else if (ext == "sldprt" || ext == "sldasm")
+  else if ( ext == "json" )
+  {
+    return FileFormat_JSON;
+  }
+  else if ( ext == "sldprt" || ext == "sldasm" )
   {
     return FileFormat_SOLIDWORKS;
   }
-  else if (ext == "pvz" || ext == "ol" || ext == "ed" || ext == "edz" || ext == "pvs")
+  else if ( ext == "pvz" || ext == "ol" || ext == "ed" || ext == "edz" || ext == "pvs" )
   {
     return FileFormat_CREOVIEW;
   }
-  else if (ext == "par" || ext == "asm" || ext == "psm" || ext == "pwd")
+  else if ( ext == "par" || ext == "asm" || ext == "psm" || ext == "pwd" )
   {
     return FileFormat_SOLIDEDGE;
   }
-  else if (ext == "iam" || ext == "ipt")
+  else if ( ext == "iam" || ext == "ipt" )
   {
     return FileFormat_INVENTOR;
   }
   return FileFormat_Unknown;
+}
+
+//-----------------------------------------------------------------------------
+
+asiAlgo_FileFormat
+  asiAlgo_FileFormatTool::FormatFromFileExtension(const std::string& path)
+{
+  return FormatFromFileExtension( TCollection_AsciiString( path.c_str() ) );
 }
 
 //-----------------------------------------------------------------------------
@@ -200,13 +201,21 @@ asiAlgo_FileFormat
 
 //-----------------------------------------------------------------------------
 
+asiAlgo_FileFormat
+  asiAlgo_FileFormatTool::FormatFromFileContent(const std::string& path)
+{
+  return FormatFromFileContent( TCollection_AsciiString( path.c_str() ) );
+}
+
+//-----------------------------------------------------------------------------
+
 bool asiAlgo_FileFormatTool::IsExportSupported(const asiAlgo_FileFormat& format)
 {
   if ( format == FileFormat_NATIVE
     || format == FileFormat_XBF
     || format == FileFormat_BREP
     || format == FileFormat_STEP
-    || format == FileFormat_STL)
+    || format == FileFormat_STL )
   {
     return true;
   }
