@@ -2664,27 +2664,16 @@ namespace asiAlgo_Utils
                         const gp_Pnt&             point,
                         gp_Pnt&                   proj);
 
-  //! Checks if the passed neighbors contain any eccentric circular edge
-  //! with one of the checked vexities.
-  asiAlgo_EXPORT bool
-    HasConcentricVexity(const int                                 fid,
-                        const asiAlgo_Feature&                    nids,
-                        const gp_Ax1&                             axis,
-                        const Handle(asiAlgo_AAG)&                aag,
-                        const double                              linPrec,
-                        const std::set<asiAlgo_FeatureAngleType>& toCheck,
-                        ActAPI_PlotterEntry                       plotter = nullptr);
-
-  //! Checks if the passed wire contains any eccentric circular edge
-  //! with one of the checked vexities.
-  asiAlgo_EXPORT bool
-    HasConcentricVexity(const int                                 fid,
-                        const TopoDS_Wire&                        wire,
-                        const gp_Ax1&                             axis,
-                        const Handle(asiAlgo_AAG)&                aag,
-                        const double                              linPrec,
-                        const std::set<asiAlgo_FeatureAngleType>& toCheck,
-                        ActAPI_PlotterEntry                       plotter = nullptr);
+  //! Returns the indices of all vertical edges in the UV space of the
+  //! passed face `fid`.
+  //! \param[in] fid       the 1-based index of the face to inspect.
+  //! \param[in] aag       the attributed adjacency graph.
+  //! \param[in] tolAngDeg the angular tolerance (in degrees) to use.
+  //! \return the collection of 1-based edge indices.
+  asiAlgo_EXPORT TColStd_PackedMapOfInteger
+    GetVerticalEdges(const int                  fid,
+                     const Handle(asiAlgo_AAG)& aag,
+                     const double               tolAngDeg);
 
 } // asiAlgo_Utils namespace.
 

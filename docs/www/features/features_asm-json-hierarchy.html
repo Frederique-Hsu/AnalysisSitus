@@ -298,13 +298,13 @@
   All reusable data containers (i.e., parts and subassemblies) are embraced by the <span class="code-inline">prototypes</span> object. A "prototype" is something that can be instantiated.
 </li>
 <li>
-  An instance is a reference to a prototype with the transformation properties represented with rotation (axis and angle) and translation.
+  An instance is a reference to a prototype with the transformation properties represented with rotation (axis and angle) and translation. An instance is like a "pointer" type in a programming language.
 </li>
 <li>
   Rotation and translation are defined at the level of instances. It is always an instance that holds the transformation props of a prototype. An instance holds a reference to the prototype via the <span class="code-inline">prototype</span> integer property.
 </li>
 <li>
-To make it clear that an assembly can only contain instances as its components (children), and assembly prototype has a field named <span class="code-inline">childInstances</span>.
+  To make it clear that an assembly may only contain instances as its components (children), an <i>assembly prototype</i> has a field named <span class="code-inline">childInstances</span>.
 </li>
 </ol>
 

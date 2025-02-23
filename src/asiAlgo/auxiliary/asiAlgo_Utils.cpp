@@ -7021,3 +7021,43 @@ bool asiAlgo_Utils::ProjectPointOnPlane(const Handle(Geom_Plane)& plane,
 
   return true;
 }
+
+//-----------------------------------------------------------------------------
+
+TColStd_PackedMapOfInteger
+  asiAlgo_Utils::GetVerticalEdges(const int                  fid,
+                                  const Handle(asiAlgo_AAG)& aag,
+                                  const double               tolAngDeg)
+{
+  const TopoDS_Face& face = aag->GetFace(fid);
+
+  // Get all edges.
+  TopTools_IndexedMapOfShape faceEdges;
+  TopExp::MapShapes(face, TopAbs_EDGE, faceEdges);
+
+  gp_Dir2d OV = gp_Dir2d(0, 1);
+
+  // Keep vertical edges.
+  TColStd_PackedMapOfInteger eids;
+  //
+  for ( int eidx = 1; eidx <= faceEdges.Extent(); ++eidx )
+  {
+    const TopoDS_Edge& edge = TopoDS::Edge( faceEdges(eidx) );
+
+    double f, l;
+    Handle(Geom2d_Curve) c2d = BRep_Tool::CurveOnSurface(edge, face, f, l);
+
+    gp_Lin2d c2dlin;
+    if ( asiAlgo_Utils::IsStraightPCurve(c2d, c2dlin, true) )
+    {
+      const gp_Dir2d& DL = c2dlin.Direction();
+
+      if ( DL.IsParallel(OV, tolAngDeg) )
+      {
+        eids.Add( aag->RequestMapOfEdges().FindIndex(edge) );
+      }
+    }
+  }
+
+  return eids;
+}

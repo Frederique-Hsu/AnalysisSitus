@@ -55,54 +55,6 @@
   #pragma message("===== warning: DRAW_DEBUG is enabled")
 #endif
 
-namespace {
-
-  //! Returns the indices of all vertical edges in the UV space of the
-  //! passed face `fid`.
-  //! \param[in] fid       the 1-based index of the face to inspect.
-  //! \param[in] aag       the attributed adjacency graph.
-  //! \param[in] tolAngDeg the angular tolerance (in degrees) to use.
-  //! \return the collection of 1-based edge indices.
-  TColStd_PackedMapOfInteger
-    GetVerticalEdges(const int                  fid,
-                     const Handle(asiAlgo_AAG)& aag,
-                     const double               tolAngDeg)
-  {
-    const TopoDS_Face& face = aag->GetFace(fid);
-
-    // Get all edges.
-    TopTools_IndexedMapOfShape faceEdges;
-    TopExp::MapShapes(face, TopAbs_EDGE, faceEdges);
-
-    gp_Dir2d OV = gp_Dir2d(0, 1);
-
-    // Keep vertical edges.
-    TColStd_PackedMapOfInteger eids;
-    //
-    for ( int eidx = 1; eidx <= faceEdges.Extent(); ++eidx )
-    {
-      const TopoDS_Edge& edge = TopoDS::Edge( faceEdges(eidx) );
-
-      double f, l;
-      Handle(Geom2d_Curve) c2d = BRep_Tool::CurveOnSurface(edge, face, f, l);
-
-      gp_Lin2d c2dlin;
-      if ( asiAlgo_Utils::IsStraightPCurve(c2d, c2dlin, true) )
-      {
-        const gp_Dir2d& DL = c2dlin.Direction();
-
-        if ( DL.IsParallel(OV, tolAngDeg) )
-        {
-          eids.Add( aag->RequestMapOfEdges().FindIndex(edge) );
-        }
-      }
-    }
-
-    return eids;
-  }
-
-}
-
 //-----------------------------------------------------------------------------
 
 bool asiAlgo_RecognitionRuleShaft::recognize(TopTools_IndexedMapOfShape& featureFaces,
@@ -312,7 +264,7 @@ void asiAlgo_RecognitionRuleShaft::visitNeighborCylinders(const int        sid,
   if ( asiAlgo_Utils::IsCylindrical(face) )
   {
     TColStd_PackedMapOfInteger
-      verticalEids = ::GetVerticalEdges( fid, m_it->GetGraph(), 1.*M_PI/180. );
+      verticalEids = asiAlgo_Utils::GetVerticalEdges( fid, m_it->GetGraph(), 1.*M_PI/180. );
 
     nids = m_it->GetGraph()->GetNeighborsThru(fid, verticalEids);
   }
