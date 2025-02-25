@@ -64,6 +64,18 @@
 
 //-----------------------------------------------------------------------------
 
+bool asiAlgo_STEP::Import(const TCollection_AsciiString& filename,
+                          TopoDS_Shape&                  result,
+                          ActAPI_ProgressEntry           progress,
+                          ActAPI_PlotterEntry            plotter)
+{
+  asiAlgo_STEP reader(progress, plotter);
+
+  return reader.Read(filename, false, result);
+}
+
+//-----------------------------------------------------------------------------
+
 bool asiAlgo_STEP::SetHeaders(STEPControl_Writer& writer)
 {
   /* Change header in the STEP file to indicate the originating system */

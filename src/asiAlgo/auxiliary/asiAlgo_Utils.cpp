@@ -7024,10 +7024,11 @@ bool asiAlgo_Utils::ProjectPointOnPlane(const Handle(Geom_Plane)& plane,
 
 //-----------------------------------------------------------------------------
 
-TColStd_PackedMapOfInteger
-  asiAlgo_Utils::GetVerticalEdges(const int                  fid,
-                                  const Handle(asiAlgo_AAG)& aag,
-                                  const double               tolAngDeg)
+void asiAlgo_Utils::GetEdgesParallelTo(const int                   fid,
+                                       const Handle(asiAlgo_AAG)&  aag,
+                                       const gp_Dir2d&             dir,
+                                       const double                tolAngDeg,
+                                       TColStd_PackedMapOfInteger& eids)
 {
   const TopoDS_Face& face = aag->GetFace(fid);
 
@@ -7035,11 +7036,7 @@ TColStd_PackedMapOfInteger
   TopTools_IndexedMapOfShape faceEdges;
   TopExp::MapShapes(face, TopAbs_EDGE, faceEdges);
 
-  gp_Dir2d OV = gp_Dir2d(0, 1);
-
-  // Keep vertical edges.
-  TColStd_PackedMapOfInteger eids;
-  //
+  // Collect all edges parallel to `dir`.
   for ( int eidx = 1; eidx <= faceEdges.Extent(); ++eidx )
   {
     const TopoDS_Edge& edge = TopoDS::Edge( faceEdges(eidx) );
@@ -7052,12 +7049,23 @@ TColStd_PackedMapOfInteger
     {
       const gp_Dir2d& DL = c2dlin.Direction();
 
-      if ( DL.IsParallel(OV, tolAngDeg) )
+      if ( DL.IsParallel(dir, tolAngDeg) )
       {
         eids.Add( aag->RequestMapOfEdges().FindIndex(edge) );
       }
     }
   }
+}
 
-  return eids;
+//-----------------------------------------------------------------------------
+
+TColStd_PackedMapOfInteger
+  asiAlgo_Utils::GetVerticalEdges(const int                  fid,
+                                  const Handle(asiAlgo_AAG)& aag,
+                                  const double               tolAngDeg)
+{
+  TColStd_PackedMapOfInteger res;
+  GetEdgesParallelTo(fid, aag, gp_Dir2d(0., 1.), tolAngDeg, res);
+
+  return res;
 }

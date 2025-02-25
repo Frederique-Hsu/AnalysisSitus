@@ -46,6 +46,20 @@ class asiAlgo_STEP : public asiAlgo_BaseSTEP
 
 public:
 
+  //! Performs STEP import.
+  //! \param[in] filename  file to read.
+  //! \param[in] result    retrieved shape.
+  //! \param[in] progress  progress notifier.
+  //! \param[in] plotter  imperative plotter.
+  //! \return true in case of success, false -- otherwise.
+  asiAlgo_EXPORT static bool
+    Import(const TCollection_AsciiString& filename,
+           TopoDS_Shape&                  result,
+           ActAPI_ProgressEntry           progress = nullptr,
+           ActAPI_PlotterEntry            plotter  = nullptr);
+
+public:
+
   //! Sets header info to the STEP model.
   //! \param[in] writer the STEP writer to customize.
   //! \return true in case of success, false -- otherwise.

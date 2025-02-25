@@ -152,6 +152,12 @@
   The round tubes are realigned by their recognized axes.
 </p>
 
+<h1 id="toc-smru-export">Note on glTF export</h1>
+
+<p>
+  If the <span class="code-inline">-asm</span> flag is passed to the SMRU executable <span class="code-inline">asiSheetMetalExe</span>, then the parts exported to glTF files do not get their calculated optimal transformation applied. This is done for the purpose of being able to recover the parts' original places in the scope of their assembly. I.e., if the optimal transformation matrices have happened to be applied, then recomposition of an assembly from the <a href="../features/features_asm-json-hierarchy.html">scene tree</a> and the exported glTF parts would resulted in wrong locations of the assembly components.
+</p>
+
 <!-- Optional references to community resources -->
 <div class="mg">
   <div class="mg-headline">Community reading:</div>

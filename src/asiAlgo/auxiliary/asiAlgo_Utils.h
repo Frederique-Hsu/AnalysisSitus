@@ -2664,6 +2664,20 @@ namespace asiAlgo_Utils
                         const gp_Pnt&             point,
                         gp_Pnt&                   proj);
 
+  //! Returns the indices of all edges parallel to the passed direction
+  //! `dir` in the UV space of the given face `fid`.
+  //! \param[in]  fid       the 1-based index of the face to inspect.
+  //! \param[in]  aag       the attributed adjacency graph.
+  //! \param[in]  dir       the direction of interest.
+  //! \param[in]  tolAngDeg the angular tolerance (in degrees) to use.
+  //! \param[out] eids      the collected edge IDs.
+  asiAlgo_EXPORT void
+    GetEdgesParallelTo(const int                   fid,
+                       const Handle(asiAlgo_AAG)&  aag,
+                       const gp_Dir2d&             dir,
+                       const double                tolAngDeg,
+                       TColStd_PackedMapOfInteger& eids);
+
   //! Returns the indices of all vertical edges in the UV space of the
   //! passed face `fid`.
   //! \param[in] fid       the 1-based index of the face to inspect.
