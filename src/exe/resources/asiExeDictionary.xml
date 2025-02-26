@@ -322,11 +322,25 @@ Make sure to pass non-zero values to surface approximation methods in order to a
 
   <!-- Thickness check types -->
   <datum id="ThicknessCheckType" format="" label="Type">
-	<domain type="List" list="List-ThicknessCheckType" />
-	<ui widget="ComboBox" />
+  <domain type="List" list="List-ThicknessCheckType" />
+  <ui widget="ComboBox" />
     <description>Thickness check type</description>
   </datum>
-	
+
+  <!-- Punch types for bending simulation -->
+  <valueList id="List-PunchType" name="Punch type">
+    <value id="0">Gooseneck</value>
+    <value id="1">Sword</value>
+    <value id="2">Custom</value>
+  </valueList>
+
+  <!-- Punch type -->
+  <datum id="PunchType" format="" label="Punch type">
+    <domain type="List" list="List-PunchType" />
+    <ui widget="ComboBox" />
+    <description>Punch type</description>
+  </datum>
+
   <!-- ==================================================================== -->
   <!-- DEFINITIONS OF DIMENSIONS AND ASSOCIATED UNITS                       -->
   <!-- ==================================================================== -->

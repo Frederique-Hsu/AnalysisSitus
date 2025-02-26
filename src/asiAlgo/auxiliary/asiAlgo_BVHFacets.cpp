@@ -414,6 +414,12 @@ bool asiAlgo_BVHFacets::init(const Handle(Poly_Triangulation)& mesh,
 bool asiAlgo_BVHFacets::init(const Handle(ActData_Mesh)&  mesh,
                              const asiAlgo_BVHBuilderType builderType)
 {
+  // Prepare builder
+  if ( builderType == BVHBuilder_Binned )
+    myBuilder = new BVH_BinnedBuilder<double, 3, 32>(5, 32);
+  else if ( builderType == BVHBuilder_Linear )
+    myBuilder = new BVH_LinearBuilder<double, 3>(5, 32);
+
   for ( ActData_Mesh_ElementsIterator it(mesh, ActData_Mesh_ET_Face); it.More(); it.Next() )
   {
     const Handle(ActData_Mesh_Element)& elem = it.GetValue();
@@ -441,7 +447,7 @@ bool asiAlgo_BVHFacets::init(const Handle(ActData_Mesh)&  mesh,
     if ( n.SquareMagnitude() < Precision::SquareConfusion() )
       continue;
 
-    td.FaceIndex = 0;
+    td.FaceIndex = elem->GetID();
     td.N         = n;
     //
     m_facets.push_back(td);
