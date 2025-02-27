@@ -282,12 +282,18 @@ sudo make install
 </pre>
 
 <p>
-It might happen that you encounter compilation or linking problems because VTK-8.2 is quite obsolete, while gcc compiler, Qt and potentially something else in your Linux environment is more up-to-date. For example, VTK-8.2 would not see any compilation issues on Ubuntu 20.04, while on Ubuntu 22.04 the situation becomes worse. Ideally, Analysis Situs should be migrated to a newer version of VTK, but that was hardly possible <a href="https://quaoar.su/blog/page/what-enduring-software-is">last time we tried it</a>.
+  It might happen that you encounter compilation or linking problems because VTK-8.2 is quite obsolete, while gcc compiler, Qt and potentially something else in your Linux environment is more up-to-date. For example, VTK-8.2 would not see any compilation issues on Ubuntu 20.04, while on Ubuntu 22.04 the situation becomes worse. Ideally, Analysis Situs should be migrated to a newer version of VTK, but that was hardly possible <a href="https://quaoar.su/blog/page/what-enduring-software-is">last time we tried it</a>.
 </p>
 
 <p class="note">
   You may want to use our fork of the VTK-8.2 library (<a href="https://gitlab.com/ssv/vtk-analysis-situs">https://gitlab.com/ssv/vtk-analysis-situs</a>) with the compilation issues resolved. See also the supplementary "community links" at the end of this page.
 </p>
+
+<p>
+  For debug builds, it is useful to disable OpenGL "state checks" provided by VTK. These checks may sometimes fail and lead to reporting of verbose diagnostics, e.g., when imperative viewer is used in the code.
+</p>
+
+<div align="center"><a href="../imgs/vtk-cmake.png"><img src="../imgs/vtk-cmake.png" width="70%"/></a></div>
 
 <h2 id="toc-tools-getting-back-to-cmake">Generate Makefiles</h2>
 
