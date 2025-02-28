@@ -140,6 +140,9 @@
   <p>
     Nope, the folded state is not dumped to DXF or SVG. To preview solid models, we normally recommend dumping a PNG image with adjustable colors and hidden lines organically eliminated (due to shaded view).
   </p>
+  <p>
+    In fact, we do have plans to make a drawing generator based on the outputs of SMRU. The idea is to prepare SVG views that could then be integrated into a Python-based code for rendering PDF documents. Because people are often familiar with Python, it will be easier for them to configure their drawings, setup fonts, tune styles, add frames and what not. Feel free to <a href="https://quaoar.su/blog/contact">contact us</a> for further discussion on that matter.
+  </p>
 </div>
 
 <br/>
@@ -185,6 +188,28 @@
   <div align="center"><a href="../imgs/ext/smru-cutting-drilling.png"><img src="../imgs/ext/smru-cutting-drilling.png" width="60%"/></a></div>
   <p>
     Take a counterbored hole as an example. As a drilled hole, it will get its reported type and properties as a typical machined drill. As a cutout, it will get the "arbitrary" type because it cannot be matched over any of the predefined cutout types in the dictionary. Therefore, you should normally consult the <span class="code-inline">cutouts</span> and the <span class="code-inline">drilledHoles</span> arrays together to grab all the reported cutting/drilling features out of the JSON outcome.
+  </p>
+</div>
+
+<br/>
+
+<div class="faq" id="q9">
+  <b>Question:</b> We identified an issue with face indexing in one of our test files. A hole with a face ID of 17 was reported by the SDK as having a face ID of 16. This appears strange. Can you assist us in clarifying the origin of this discrepancy?
+  <hr>
+  <b>Answer:</b>
+  <p>
+    Face IDs may change after feature recognition due to the input model being preconditioned in two ways:
+  </p>
+  <ul>
+    <li class="fancy_ul_item">Faces are maximized, e.g., coplanar faces are merged together, half cylinders are united into full cylinders, the same happens to cones and spheres.</li>
+    <li class="fancy_ul_item">Splines that are convertible to canonical geometries are transformed accordingly (more information is available <a href="../features/features_convert-canonical.html">here</a>).</li>
+  </ul>
+  <p>
+    These stages are not strictly obligatory; however, we prefer to keep them unconditionally because the input CAD parts often require such preprocessing. This conclusion is based on our regression testing and the integrations performed for our clients, all of which have it enabled. The only issue with this, as you noted, is the discrepancy in the indexation. The effects of face maximization may be observed at the "thickness" faces here, for example:
+  </p>
+  <div align="center"><a href="../imgs/ext/smru-qna_06.png"><img src="../imgs/ext/smru-qna_06.png" width="60%"/></a></div>
+  <p>
+    SMRU writes the normalized STEP file as one of the outcome artifacts. You should use this normalized STEP instead of the original one to interpret the indices from the JSON result file. That should solve the problem.
   </p>
 </div>
 
