@@ -34,6 +34,9 @@
 // asiAlgo include
 #include <asiAlgo_Optional.h>
 
+// OCCT includes
+#include <gp_Pnt.hxx>
+
 // STL includes
 #include <string>
 #include <vector>
@@ -60,8 +63,11 @@ class asiAlgo_SegmentsInfo
     std::string type;
     double      cuttingLength;
 
+    gp_Pnt      midPnt;
+
     tl::optional< int >    nextSegment;
-    tl::optional< double > angleToNextSegment;
+    tl::optional< double > turningAngleToNextSegment;
+    tl::optional< gp_Pnt > connectionPointToNextSegment;
 
     tl::optional< double > radius;
     tl::optional< double > angle;

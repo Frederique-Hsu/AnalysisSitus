@@ -77,6 +77,8 @@
 #define asiPropName_CuttingLength                         "cuttingLength"
 #define asiPropName_NextSegment                           "nextSegment"
 #define asiPropName_AngleToNextSegment                    "angleToNextSegment"
+#define asiPropName_ConnectionPointToNextSegment          "connectionPointToNextSegment"
+#define asiPropName_MiddlePointOfSegment                  "middlePoint"
 #define asiPropName_Radius                                "radius"
 #define asiPropName_Diameter                              "diameter"
 #define asiPropName_Length                                "length"

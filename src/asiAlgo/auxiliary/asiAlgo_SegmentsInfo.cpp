@@ -100,14 +100,32 @@ bool asiAlgo_SegmentsInfo::IsEqual(const asiAlgo_SegmentsInfo& info,
     return false;
   }
 
-  // Angle to next segment.
-  if ( this->angleToNextSegment.has_value() != info.angleToNextSegment.has_value() )
+  // Middle point of segment.
+  if ( !this->midPnt.IsEqual( info.midPnt, linToler ) )
   {
     return false;
   }
 
-  if ( this->angleToNextSegment.has_value() &&
-       Abs( *this->angleToNextSegment - *info.angleToNextSegment ) > angTolerDeg )
+  // Angle to next segment.
+  if ( this->turningAngleToNextSegment.has_value() != info.turningAngleToNextSegment.has_value() )
+  {
+    return false;
+  }
+
+  if ( this->turningAngleToNextSegment.has_value() &&
+       Abs( *this->turningAngleToNextSegment - *info.turningAngleToNextSegment ) > angTolerDeg )
+  {
+    return false;
+  }
+
+  // Connection point to next segment.
+  if ( this->connectionPointToNextSegment.has_value() != info.connectionPointToNextSegment.has_value() )
+  {
+    return false;
+  }
+
+  if (   this->connectionPointToNextSegment.has_value() &&
+      !(*this->connectionPointToNextSegment).IsEqual( *info.connectionPointToNextSegment, linToler ) )
   {
     return false;
   }
@@ -207,11 +225,39 @@ void asiAlgo_SegmentsInfo::FromJSON(void*                 pJsonGenericObj,
         info.nextSegment = mit->value.GetInt();
     }
 
+    // Middle point of segment.
+    else if ( prop == asiPropName_MiddlePointOfSegment )
+    {
+      if ( !mit->value.IsNull() )
+      {
+        t_jsonArray arr = mit->value.GetArray();
+
+        gp_XYZ coords;
+        asiAlgo_Utils::Json::ReadCoords(&arr, coords);
+
+        info.midPnt = gp_Pnt( coords );
+      }
+    }
+
     // Angle to next segment.
     else if ( prop == asiPropName_AngleToNextSegment )
     {
       if ( !mit->value.IsNull() )
-        info.angleToNextSegment = mit->value.GetDouble();
+        info.turningAngleToNextSegment = mit->value.GetDouble();
+    }
+
+    // Connection point to next segment.
+    else if ( prop == asiPropName_ConnectionPointToNextSegment )
+    {
+      if ( !mit->value.IsNull() )
+      {
+        t_jsonArray arr = mit->value.GetArray();
+
+        gp_XYZ coords;
+        asiAlgo_Utils::Json::ReadCoords(&arr, coords);
+
+        info.connectionPointToNextSegment = gp_Pnt( coords );
+      }
     }
 
     // Radius.
@@ -275,6 +321,9 @@ void asiAlgo_SegmentsInfo::ToJSON(const asiAlgo_SegmentsInfo& info,
     // Cutting length.
     out << "," << nl << qt << asiPropName_CuttingLength << qt << ": " << info.cuttingLength;
 
+    // Middle point.
+    out << "," << nl << qt << asiPropName_MiddlePointOfSegment << qt << ": " << asiAlgo_Utils::Json::FromCoordsAsTuple( info.midPnt.XYZ() );
+
     // Next segment ID.
     if ( info.nextSegment.has_value() )
     {
@@ -283,9 +332,14 @@ void asiAlgo_SegmentsInfo::ToJSON(const asiAlgo_SegmentsInfo& info,
       out << "," << nl << qt << asiPropName_NextSegment << qt << ": " << nextStr;
 
       // Angle to next segment.
-      std::string angleToNextStr = info.nextSegment.has_value() ? asiAlgo_Utils::Str::ToString( *info.angleToNextSegment )
+      std::string angleToNextStr = info.nextSegment.has_value() ? asiAlgo_Utils::Str::ToString( *info.turningAngleToNextSegment )
                                                                 : "null";
       out << "," << nl << qt << asiPropName_AngleToNextSegment << qt << ": " << angleToNextStr;
+
+      // Connection point to next segment.
+      std::string pointToNextStr = info.connectionPointToNextSegment.has_value() ? asiAlgo_Utils::Json::FromCoordsAsTuple( (*info.connectionPointToNextSegment).XYZ() )
+                                                                                 : "null";
+      out << "," << nl << qt << asiPropName_ConnectionPointToNextSegment << qt << ": " << pointToNextStr;
     }
 
     // For circular curves.

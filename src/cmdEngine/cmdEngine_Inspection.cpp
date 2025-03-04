@@ -66,6 +66,7 @@
 #include <asiAlgo_RecognizeShafts.h>
 #include <asiAlgo_RTCD.h>
 #include <asiAlgo_SampleFace.h>
+#include <asiAlgo_SegmentsInfoExtractor.h>
 #include <asiAlgo_Timer.h>
 #include <asiAlgo_Utils.h>
 
@@ -4476,6 +4477,121 @@ int ENGINE_CheckFacets(const Handle(asiTcl_Interp)& interp,
 
 //-----------------------------------------------------------------------------
 
+int ENGINE_CheckSegmentsInfo(const Handle(asiTcl_Interp)& interp,
+                             int                          argc,
+                             const char**                 argv)
+{
+  // Get part's AAG.
+  Handle(asiData_PartNode)
+    partNode = Handle(asiEngine_Model)::DownCast( interp->GetModel() )->GetPartNode();
+  //
+  if ( partNode.IsNull() || !partNode->IsWellFormed() )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Part Node is null or ill-defined.");
+    return TCL_OK;
+  }
+  //
+  Handle(asiAlgo_AAG) G = partNode->GetAAG();
+
+  int fid = 0;
+  interp->GetKeyValue(argc, argv, "fid", fid);
+
+  // Access selected faces (if any).
+  asiAlgo_Feature selected;
+  //
+  if ( !fid && !cmdEngine::cf.IsNull() )
+  {
+    asiEngine_Part partApi( cmdEngine::cf->Model,
+                            cmdEngine::cf->ViewerPart->PrsMgr() );
+
+    partApi.GetHighlightedFaces(selected);
+
+    if ( selected.Extent() == 1 )
+    {
+      fid = selected.GetMinimalMapped();
+    }
+    else
+    {
+      interp->GetProgress().SendLogMessage(LogWarn(Normal) << "Please, select one face.");
+      return TCL_ERROR;
+    }
+  }
+
+  if ( !fid )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Face to check is not defined.");
+    return TCL_ERROR;
+  }
+
+  asiAlgo_SegmentsInfoExtractor extractor( interp->GetProgress(), interp->GetPlotter() );
+
+  asiAlgo_SegmentsInfoVec segmentsInfoVec;
+
+  if ( !extractor.Perform( G->GetFace(fid), segmentsInfoVec ) )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Failed to extract segments info for the face %1." << fid);
+    return TCL_ERROR;
+  }
+
+  // Arrays for labels.
+  Handle(HRealArray)   coords = new HRealArray  ( 0, (int) segmentsInfoVec.size() * 6 - 1, 0. );
+  Handle(HStringArray) labels = new HStringArray( 0, (int) segmentsInfoVec.size() * 2 - 1 );
+
+  int coordIdx = 0;
+  int lblIdx = 0;
+
+  for ( auto& info : segmentsInfoVec )
+  {
+    const tl::optional< gp_Pnt > P = info.connectionPointToNextSegment;
+
+    if ( !P.has_value() )
+      continue;
+
+    // Print connection point to the next edge.
+    coords->ChangeValue(coordIdx)     = P.value().X();
+    coords->ChangeValue(coordIdx + 1) = P.value().Y();
+    coords->ChangeValue(coordIdx + 2) = P.value().Z();
+
+    labels->ChangeValue(lblIdx++)     = *info.turningAngleToNextSegment;
+
+    coordIdx += 3;
+
+    // Print segment information at the center of edge.
+    coords->ChangeValue(coordIdx)     = info.midPnt.X();
+    coords->ChangeValue(coordIdx + 1) = info.midPnt.Y();
+    coords->ChangeValue(coordIdx + 2) = info.midPnt.Z();
+
+    coordIdx += 3;
+
+    TCollection_AsciiString edgeInfoStr = "id: ";
+    edgeInfoStr += info.id;
+
+    edgeInfoStr += "\ntype: ";
+    edgeInfoStr += info.type.c_str();
+
+    edgeInfoStr += "\nlength: ";
+    edgeInfoStr += info.cuttingLength;
+
+    if ( info.radius.has_value() )
+    {
+      edgeInfoStr += "\nradius: ";
+      edgeInfoStr += *info.radius;
+
+      edgeInfoStr += "\nangle: ";
+      edgeInfoStr += *info.angle;
+      edgeInfoStr += "°";
+    }
+
+    labels->ChangeValue(lblIdx++) = edgeInfoStr;
+  }
+
+  interp->GetPlotter().REDRAW_LABELS( "segments info", coords, labels, Color_White );
+
+  return TCL_OK;
+}
+
+//-----------------------------------------------------------------------------
+
 int ENGINE_CheckVertexVexity(const Handle(asiTcl_Interp)& interp,
                              int                          argc,
                              const char**                 argv)
@@ -5827,6 +5943,14 @@ void cmdEngine::Commands_Inspection(const Handle(asiTcl_Interp)&      interp,
     "\t Checks if the selected face is of canonical type.",
     //
     __FILE__, group, ENGINE_CheckCanonical);
+
+  //-------------------------------------------------------------------------//
+  interp->AddCommand("check-segments-info",
+    //
+    "check-segments-info [-fid <fid>]\n"
+    "\t Print segments info of all edges in the given face.",
+    //
+    __FILE__, group, ENGINE_CheckSegmentsInfo);
 
   //-------------------------------------------------------------------------//
   interp->AddCommand("compute-negative-volume",

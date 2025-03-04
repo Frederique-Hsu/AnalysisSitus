@@ -31,6 +31,9 @@
 #ifndef asiAlgo_SegmentsInfoExtractor_h
 #define asiAlgo_SegmentsInfoExtractor_h
 
+// Active Data includes
+#include <ActAPI_IAlgorithm.h>
+
 // asiAlgo include
 #include <asiAlgo_SegmentsInfo.h>
 
@@ -38,6 +41,7 @@
 #include <Geom_Curve.hxx>
 #include <gp_Pln.hxx>
 #include <TopoDS_Edge.hxx>
+#include <TopoDS_Face.hxx>
 #include <TopoDS_Wire.hxx>
 
 // STL includes
@@ -48,67 +52,42 @@
 //! \ingroup ASI_MODELING
 //!
 //! Class to extract segments information from the passed wire.
-class asiAlgo_SegmentsInfoExtractor
+class asiAlgo_SegmentsInfoExtractor : public ActAPI_IAlgorithm
 {
+  // OCCT RTTI
+  DEFINE_STANDARD_RTTI_INLINE(asiAlgo_SegmentsInfoExtractor, ActAPI_IAlgorithm)
+
 public:
 
   //! Constructor.
-  //! Extracts information about segments (edges) from the passed wire.
-  //! \param[in] wire   the wire to extract segments information from.
-  //! \param[in] normal the normal for the plane which contains the passed wire.
+  //! \param[in] progress the progress notifier.
+  //! \param[in] plotter  the imperative plotter.
   asiAlgo_EXPORT
-    asiAlgo_SegmentsInfoExtractor(const TopoDS_Wire& wire,
-                                  const gp_Dir&      normal);
+    asiAlgo_SegmentsInfoExtractor(ActAPI_ProgressEntry progress = nullptr,
+                                  ActAPI_PlotterEntry  plotter  = nullptr);
 
-  //! Constructor.
+public:
+
   //! Extracts information about segments (edges) from the passed wire.
-  //! Computes the normal by itself using points from the wire.
   //!
-  //! \param[in] wire the wire to extract segments information from.
+  //! \param[in]  wire            the wire to extract segments information from.
+  //! \param[out] segmentsInfoVec the resulting vector of segments infomation data structures.
+  //!
+  //! \return true in case of success, false -- otherwise.
   asiAlgo_EXPORT
-    asiAlgo_SegmentsInfoExtractor(const TopoDS_Wire& wire);
+    bool Perform(const TopoDS_Wire&       wire,
+                 asiAlgo_SegmentsInfoVec& segmentsInfoVec);
 
-  //! Destructor.
+  //! Extracts information about segments (edges) from the passed face.
+  //!
+  //! \param[in]  face            the face to extract segments information from.
+  //! \param[out] segmentsInfoVec the resulting vector of segments infomation data structures.
+  //!
+  //! \return true in case of success, false -- otherwise.
   asiAlgo_EXPORT
-    ~asiAlgo_SegmentsInfoExtractor();
+    bool Perform(const TopoDS_Face&       face,
+                 asiAlgo_SegmentsInfoVec& segmentsInfoVec);
 
-public:
-
-  //! Returns resulting vector of segments infomation data structures.
-  const asiAlgo_SegmentsInfoVec& Result() const { return m_infoVec; }
-
-private:
-
-  double angleToDegree(const double& angle);
-
-  double angleTo(const TopoDS_Edge& edge,
-                 const TopoDS_Edge& nextEdge,
-                 const gp_Dir&      normal);
-
-  bool curveDirection(const Handle(Geom_Curve)& curve,
-                      const gp_Pnt&             commonPoint,
-                      const gp_Pnt&             firstPoint,
-                      const gp_Pnt&             secondPoint,
-                      gp_Dir&                   curveDir);
-
-  void curveAngularity(const Handle(Geom_Curve)& curve,
-                       const double              U1,
-                       const double              U2,
-                       double&                   edgeRadius,
-                       double&                   edgeAngle);
-
-  void angularity(const TopoDS_Edge& edge,
-                  double&            edgeRadius,
-                  double&            edgeAngle);
-
-private:
-
-  asiAlgo_SegmentsInfoExtractor();
-
-private:
-
-  asiAlgo_SegmentsInfoVec m_infoVec; //!< Resulting vector of segments information.
-  double                  m_tol;     //!< Machinery precision.
 };
 
 #endif
