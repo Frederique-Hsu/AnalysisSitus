@@ -148,6 +148,12 @@ asiAlgo_BVHFacets::asiAlgo_BVHFacets(const t_ptr<t_mesh>&         mesh,
 
 //-----------------------------------------------------------------------------
 
+asiAlgo_BVHFacets::~asiAlgo_BVHFacets()
+{
+}
+
+//-----------------------------------------------------------------------------
+
 int asiAlgo_BVHFacets::Size() const
 {
   return (int) m_facets.size();

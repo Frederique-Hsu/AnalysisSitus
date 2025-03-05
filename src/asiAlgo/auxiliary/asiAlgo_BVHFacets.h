@@ -136,6 +136,10 @@ public:
                       ActAPI_PlotterEntry                  plotter     = nullptr);
 #endif
 
+  //! Dtor.
+  asiAlgo_EXPORT virtual
+    ~asiAlgo_BVHFacets();
+
 public:
 
   //! \return number of stored facets.

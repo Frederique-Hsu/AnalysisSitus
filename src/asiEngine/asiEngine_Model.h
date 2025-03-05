@@ -103,7 +103,8 @@ public:
   asiEngine_EXPORT
     asiEngine_Model();
 
-//-----------------------------------------------------------------------------
+  asiEngine_EXPORT virtual
+    ~asiEngine_Model();
 
 public:
 

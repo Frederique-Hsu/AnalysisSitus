@@ -137,6 +137,13 @@ asiEngine_Model::asiEngine_Model() : ActData_BaseModel(true)
 
 //-----------------------------------------------------------------------------
 
+//! Dtor.
+asiEngine_Model::~asiEngine_Model()
+{
+}
+
+//-----------------------------------------------------------------------------
+
 bool asiEngine_Model::Open(const TCollection_AsciiString& filename,
                            ActAPI_ProgressEntry           progress)
 {
