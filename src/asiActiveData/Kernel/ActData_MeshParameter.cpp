@@ -64,6 +64,7 @@ void ActData_MeshParameter::DeltaModeOn()
     Standard_ProgramError::Raise("Cannot access detached data");
 
   Handle(ActData_MeshAttr) aMeshAttr = ActData_Utils::AccessMeshAttr(m_label, DS_Mesh);
+  //
   if ( aMeshAttr.IsNull() )
     Standard_ProgramError::Raise("Cannot access NULL Mesh DS");
 

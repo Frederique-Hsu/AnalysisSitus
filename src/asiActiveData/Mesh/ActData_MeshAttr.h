@@ -117,7 +117,7 @@ public:
 
   ActData_EXPORT void
     SetMesh(const Handle(ActData_Mesh)& Mesh,
-            const Standard_Boolean doDelta = Standard_True);
+            const Standard_Boolean doDelta = Standard_False);
 
   ActData_EXPORT Handle(ActData_Mesh)&
     GetMesh();
