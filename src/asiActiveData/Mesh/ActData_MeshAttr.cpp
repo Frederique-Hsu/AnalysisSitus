@@ -48,77 +48,12 @@
 #undef COUT_DEBUG
 
 //-----------------------------------------------------------------------------
-// Macro for managing Modification Deltas
-//-----------------------------------------------------------------------------
-
-// ------------------------------------------------------------------------- //
-#define BACKUP this->Backup()
-// ------------------------------------------------------------------------- //
-#define MDELTA m_delta
-// ------------------------------------------------------------------------- //
-#define MDELTA_ACCESS \
-  if ( m_delta.IsNull() ) \
-    m_delta = new ActData_MeshMDelta(this);
-// ------------------------------------------------------------------------- //
-#define MDELTA_REPLACED_MESH(OldM, NewM) \
-  if ( m_bDeltaEnabled ) \
-  { \
-    MDELTA_ACCESS \
-    m_delta->ReplacedMesh(OldM, NewM); \
-  }
-// ------------------------------------------------------------------------- //
-#define MDELTA_ADDED_NODE(ID, X, Y, Z) \
-  if ( m_bDeltaEnabled ) \
-  { \
-    MDELTA_ACCESS \
-    m_delta->AddedNode(ID, X, Y, Z); \
-  }
-// ------------------------------------------------------------------------- //
-#define MDELTA_REMOVED_NODE(ID) \
-  if ( m_bDeltaEnabled ) \
-  { \
-    MDELTA_ACCESS \
-    m_delta->RemovedNode(ID); \
-  }
-// ------------------------------------------------------------------------- //
-#define MDELTA_ADDED_TRI(ID, NODES) \
-  if ( m_bDeltaEnabled ) \
-  { \
-    MDELTA_ACCESS \
-    m_delta->AddedTriangle(ID, NODES); \
-  }
-// ------------------------------------------------------------------------- //
-#define MDELTA_REMOVED_TRI(ID) \
-  if ( m_bDeltaEnabled ) \
-  { \
-    MDELTA_ACCESS \
-    m_delta->RemovedTriangle(ID); \
-  }
-// ------------------------------------------------------------------------- //
-#define MDELTA_ADDED_QUAD(ID, NODES) \
-  if ( m_bDeltaEnabled ) \
-  { \
-    MDELTA_ACCESS \
-    m_delta->AddedQuadrangle(ID, NODES); \
-  }
-// ------------------------------------------------------------------------- //
-#define MDELTA_REMOVED_QUAD(ID) \
-  if ( m_bDeltaEnabled ) \
-  { \
-    MDELTA_ACCESS \
-    m_delta->RemovedQuadrangle(ID); \
-  }
-// ------------------------------------------------------------------------- //
-
-//-----------------------------------------------------------------------------
 // Construction & settling-down routines
 //-----------------------------------------------------------------------------
 
 //! Default constructor.
 ActData_MeshAttr::ActData_MeshAttr() : TDF_Attribute()
 {
-  MDELTA = new ActData_MeshMDelta(this);
-  m_bDeltaEnabled = Standard_True;
 }
 
 //! Settles down new Mesh Attribute to the given CAF Label.
@@ -172,68 +107,11 @@ Handle(TDF_Attribute) ActData_MeshAttr::NewEmpty() const
 
 //! Performs data transferring from the given CAF Attribute to this one.
 //! This method is mainly used by OCAF Undo/Redo kernel as a part of
-//! Backup functionality. For our Mesh Attribute we keep the implementation
-//! of this method empty as we are not going to compare our Main Attribute
-//! with its Backup copy somehow. Such a comparing is actually the most
-//! obvious and common way to retrieve Modification Delta for any Attribute.
-//! However, this is not really acceptable for meshes due to optimality
-//! reasons. Instead of straightforward comparing we cumulate a Modification
-//! Delta in the Main Attribute and push it to the "external world" in
-//! DeltaOnModification method.
+//! Backup functionality.
 //! \param MainAttr [in] CAF Attribute to copy data from.
 void ActData_MeshAttr::Restore(const Handle(TDF_Attribute)& ActData_NotUsed(MainAttr))
 {
   // Nothing is here
-}
-
-//! Passing the Modification Delta from the top of the bi-directional stack
-//! (either from its positive or negative tails), this method inverts that
-//! Delta (as required for Undo/Redo operations) and pushes it to the Main
-//! Attribute in order to make the Modification Delta accessible from
-//! DeltaOnModification method.
-//! \param Delta [in] Modification Delta coming from OCAF kernel stack.
-//! \param doForce [in] not used (see OCAF reference for details).
-//! \return true always. False value is not used (see OCAF reference for details).
-Standard_Boolean ActData_MeshAttr::BeforeUndo(const Handle(TDF_AttributeDelta)& Delta,
-                                              const Standard_Boolean            ActData_NotUsed(doForce))
-{
-  // Prepare Modification Delta for UNDO
-  Handle(ActData_MeshMDelta) aMeshDelta = Handle(ActData_MeshMDelta)::DownCast(Delta);
-  if ( !aMeshDelta.IsNull() ) // NULL if nothing exists in the stack
-    aMeshDelta->Invert();
-
-#if defined ACT_DEBUG && defined COUT_DEBUG
-  std::cout << "\nBeforeUndo:" << std::endl;
-  if ( !aMeshDelta.IsNull() )
-    aMeshDelta->Dump(cout);
-#endif
-
-  // Set shallow copy of Modification Delta to the Main Attribute. This
-  // trick allows us to have Modification Delta already "charged" with
-  // those Modification Queue coming from the Undo/Redo stack
-  MDELTA = aMeshDelta;
-
-  return Standard_True;
-}
-
-//! Not currently used.
-//! \param Delta [in] not used (see OCAF reference for details).
-//! \param doForce [in] not used (see OCAF reference for details).
-//! \return true always. False value is not used (see OCAF reference for details).
-Standard_Boolean ActData_MeshAttr::AfterUndo(const Handle(TDF_AttributeDelta)& ActData_NotUsed(Delta),
-                                             const Standard_Boolean            ActData_NotUsed(doForce))
-{
-  return Standard_True;
-}
-
-//! Performs Backup of the Main Attribute as required by OCAF mechanism.
-//! Actually, here, in Mesh Attribute, we need only an empty Backup copy
-//! just to charge the internal OCAF Undo/Redo workflows. The created
-//! Backup instance will not be used for comparison with the Main Attribute
-//! as we have Modification Delta for playing that role.
-void ActData_MeshAttr::BeforeCommitTransaction()
-{
-  BACKUP;
 }
 
 //! Supporting method for Copy/Paste functionality. Performs full copying of
@@ -282,68 +160,7 @@ void ActData_MeshAttr::Paste(const Handle(TDF_Attribute)& Into,
     }
   }
 
-  // Notice that we disable MDELTA recording here, in Paste method, as this
-  // method is paired with DeltaOnAddition standard functionality rather
-  // than with DeltaOnModification one. Ergo, if we bind a transient MDelta
-  // to "IntoMesh" Attribute here, this Delta will bypass current transaction
-  // and return into play in the next one. Obviously, this is not correct as
-  // we normally want our Deltas to be kept alive during a single transaction
-  // only. Moreover, there is no sense to have any MDelta for the Attribute
-  // being pasted, as this Attribute is new one and does not require any
-  // Modification Delta so.
-  IntoMesh->SetMesh(IntoMeshDS, Standard_False);
-}
-
-//! Returns Modification Delta to be pushed to the bi-directional stack (to
-//! its negative side in case of normal modification transactions and Redo,
-//! and to its positive side in case of Undo).
-//! \param Backup [in] not used Backup copy of the Main Attribute.
-//! \return Modification Delta.
-Handle(TDF_DeltaOnModification)
-  ActData_MeshAttr::DeltaOnModification(const Handle(TDF_Attribute)& ActData_NotUsed(Backup)) const
-{
-  // We push a copy to the bi-directional stack as our own transient instance
-  // will be cleaned up soon
-  Handle(ActData_MeshMDelta) aResult = ( MDELTA.IsNull() ? NULL : MDELTA->DeepCopy() );
-
-#if defined ACT_DEBUG && defined COUT_DEBUG
-  std::cout << "\nDeltaOnModification [FROM]:" << std::endl;
-  if ( !MDELTA.IsNull() )
-    MDELTA->Dump(cout);
-
-  std::cout << "\nDeltaOnModification [RESULT]:" << std::endl;
-  if ( !aResult.IsNull() )
-    aResult->Dump(cout);
-#endif
-
-  // Now clean up the owning Delta for the next transaction (if any)
-  if ( !MDELTA.IsNull() )
-    MDELTA->Clean();
-
-  return aResult;
-}
-
-//! Returns Addition Delta.
-//! \return Addition Delta.
-Handle(TDF_DeltaOnAddition) ActData_MeshAttr::DeltaOnAddition() const
-{
-  return TDF_Attribute::DeltaOnAddition();
-}
-
-//! Enables Delta recording mode. This mode is turned ON by default, so
-//! the only case you're supposed to use this method is when you have called
-//! DeltaModeOff previously.
-void ActData_MeshAttr::DeltaModeOn()
-{
-  m_bDeltaEnabled = Standard_True;
-}
-
-//! Disables Delta recording mode. This method is useful when huge amount
-//! of data is being transferred to the Mesh Attribute. Normally you do not
-//! want any Undo/Redo working for such cases.
-void ActData_MeshAttr::DeltaModeOff()
-{
-  m_bDeltaEnabled = Standard_False;
+  IntoMesh->SetMesh(IntoMeshDS);
 }
 
 //-----------------------------------------------------------------------------
@@ -359,19 +176,15 @@ void ActData_MeshAttr::NewEmptyMesh()
 //! Sets Mesh DS to store.
 //! \param Mesh [in] mesh to store.
 //! \param doDelta [in] indicates whether to apply Delta.
-void ActData_MeshAttr::SetMesh(const Handle(ActData_Mesh)& Mesh,
-                               const Standard_Boolean doDelta)
+void ActData_MeshAttr::SetMesh(const Handle(ActData_Mesh)& Mesh)
 {
-  if ( doDelta )
-  {
-    MDELTA_REPLACED_MESH(m_mesh, Mesh); // Deltalize replacement
-  }
+  m_mesh.Nullify();
   m_mesh = Mesh;
 }
 
 //! Returns the stored Mesh DS.
 //! \return stored mesh.
-Handle(ActData_Mesh)& ActData_MeshAttr::GetMesh()
+Handle(ActData_Mesh) ActData_MeshAttr::GetMesh()
 {
   return m_mesh;
 }
@@ -395,8 +208,6 @@ Standard_Integer ActData_MeshAttr::AddNode(const Standard_Real X,
   // Add node to Mesh DS
   Standard_Integer aResID = m_mesh->AddNode(X, Y, Z);
 
-  MDELTA_ADDED_NODE(aResID, X, Y, Z); // Deltalize modification
-
   return aResID;
 }
 
@@ -418,8 +229,6 @@ Standard_Boolean ActData_MeshAttr::AddNodeWithID(const Standard_Real X,
   // Add node to Mesh DS
   Standard_Boolean aRes = m_mesh->AddNodeWithID(X, Y, Z, ID);
 
-  MDELTA_ADDED_NODE(ID, X, Y, Z); // Deltalize modification
-
   return aRes;
 }
 
@@ -430,12 +239,6 @@ Standard_Boolean ActData_MeshAttr::RemoveNode(const Standard_Integer ID)
 {
   // Attempt to remove the mesh node
   Standard_Boolean isOk = m_mesh->RemoveNode(ID);
-
-  // Deltalize removal if it has been done successfully
-  if ( isOk )
-  {
-    MDELTA_REMOVED_NODE(ID);
-  }
 
   return isOk;
 }
@@ -452,18 +255,6 @@ Standard_Integer ActData_MeshAttr::AddElement(Standard_Address Nodes,
 
   // Add element to the underlying Mesh DS
   Standard_Integer aResID = m_mesh->AddFace(Nodes, NbNodes);
-  
-  // Deltalize modification
-  if ( NbNodes == 3 )
-  {
-    MDELTA_ADDED_TRI(aResID, Nodes);
-  }
-  else if ( NbNodes == 4 )
-  {
-    MDELTA_ADDED_QUAD(aResID, Nodes);
-  }
-  else
-    Standard_ProgramError::Raise("Unexpected number of nodes for delta");
 
   return aResID;
 }
@@ -484,18 +275,6 @@ Standard_Boolean
 
   // Add element to the underlying Mesh DS
   Standard_Boolean aRes = m_mesh->AddFaceWithID(Nodes, NbNodes, ID);
-  
-  // Deltalize modification
-  if ( NbNodes == 3 )
-  {
-    MDELTA_ADDED_TRI(ID, Nodes);
-  }
-  else if ( NbNodes == 4 )
-  {
-    MDELTA_ADDED_QUAD(ID, Nodes);
-  }
-  else
-    Standard_ProgramError::Raise("Unexpected number of nodes for delta");
 
   return aRes;
 }
@@ -512,18 +291,6 @@ Standard_Boolean ActData_MeshAttr::RemoveElement(const Standard_Integer ID)
 
   // Remove element
   m_mesh->RemoveElement(anElem);
-
-  // Deltalize removal
-  if ( anElem->IsInstance( STANDARD_TYPE(ActData_Mesh_Triangle) ) )
-  {
-    MDELTA_REMOVED_TRI(ID);
-  }
-  else if ( anElem->IsInstance( STANDARD_TYPE(ActData_Mesh_Quadrangle) ) )
-  {
-    MDELTA_REMOVED_QUAD(ID);
-  }
-  else
-    Standard_ProgramError::Raise("Unexpected type of element for delta");
 
   return Standard_True;
 }

@@ -174,14 +174,10 @@ set (kernel_CPP_FILES
 
 set (mesh_H_FILES
   Mesh/ActData_MeshAttr.h
-  Mesh/ActData_MeshDeltaEntities.h
-  Mesh/ActData_MeshMDelta.h
 )
 
 set (mesh_CPP_FILES 
   Mesh/ActData_MeshAttr.cpp
-  Mesh/ActData_MeshDeltaEntities.cpp
-  Mesh/ActData_MeshMDelta.cpp
 )
 
 #------------------------------------------------------------------------------

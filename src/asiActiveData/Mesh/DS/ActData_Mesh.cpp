@@ -51,7 +51,8 @@
 
 ActData_Mesh::ActData_Mesh(const Handle(Poly_Triangulation)& tri)
   : myNodeIDFactory     (new ActData_Mesh_IDFactory),
-    myElementIDFactory  (new ActData_Mesh_IDFactory)
+    myElementIDFactory  (new ActData_Mesh_IDFactory),
+    myHasInverse        (Standard_False)
 {
   for ( int node_idx = 1; node_idx <= tri->NbNodes(); ++node_idx )
   {
@@ -75,7 +76,7 @@ ActData_Mesh::ActData_Mesh(const Handle(Poly_Triangulation)& tri)
 ActData_Mesh::ActData_Mesh(const int nbnodes,
                            const int nbedges,
                            const int nbfaces)
-  : myNodeIDFactory     (new ActData_Mesh_IDFactory), 
+  : myNodeIDFactory     (new ActData_Mesh_IDFactory),
     myElementIDFactory  (new ActData_Mesh_IDFactory),
     myNodes             (nbnodes /*, new NCollection_IncAllocator*/),
     myEdges             (nbedges),

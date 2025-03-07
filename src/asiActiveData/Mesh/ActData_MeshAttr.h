@@ -35,7 +35,6 @@
 
 // Active Data includes
 #include <ActData_Common.h>
-#include <ActData_MeshMDelta.h>
 
 // OCCT includes
 #include <TDF_Attribute.hxx>
@@ -44,15 +43,11 @@
 // Mesh includes
 #include <ActData_Mesh.h>
 
-DEFINE_STANDARD_HANDLE(ActData_MeshAttr, TDF_Attribute)
-
 //! \ingroup AD_DF
 //!
 //! OCAF Attribute representing mesh data.
 class ActData_MeshAttr : public TDF_Attribute
 {
-public:
-
   // OCCT RTTI
   DEFINE_STANDARD_RTTI_INLINE(ActData_MeshAttr, TDF_Attribute)
 
@@ -82,32 +77,9 @@ public:
   ActData_EXPORT virtual void
     Restore(const Handle(TDF_Attribute)& MainAttr);
 
-  ActData_EXPORT virtual Standard_Boolean
-    BeforeUndo(const Handle(TDF_AttributeDelta)& Delta,
-               const Standard_Boolean doForce = Standard_False);
-
-  ActData_EXPORT virtual Standard_Boolean
-    AfterUndo(const Handle(TDF_AttributeDelta)& Delta,
-              const Standard_Boolean doForce = Standard_False);
-
-  ActData_EXPORT virtual void
-    BeforeCommitTransaction();
-
   ActData_EXPORT virtual void
     Paste(const Handle(TDF_Attribute)& Into,
           const Handle(TDF_RelocationTable)& RelocTable) const;
-
-  ActData_EXPORT virtual Handle(TDF_DeltaOnModification)
-    DeltaOnModification(const Handle(TDF_Attribute)& BackUp) const;
-
-  ActData_EXPORT virtual Handle(TDF_DeltaOnAddition)
-    DeltaOnAddition() const;
-
-  ActData_EXPORT void
-    DeltaModeOn();
-
-  ActData_EXPORT void
-    DeltaModeOff();
 
 // Accessors for domain-specific data:
 public:
@@ -116,10 +88,9 @@ public:
     NewEmptyMesh();
 
   ActData_EXPORT void
-    SetMesh(const Handle(ActData_Mesh)& Mesh,
-            const Standard_Boolean doDelta = Standard_False);
+    SetMesh(const Handle(ActData_Mesh)& Mesh);
 
-  ActData_EXPORT Handle(ActData_Mesh)&
+  ActData_EXPORT Handle(ActData_Mesh)
     GetMesh();
 
 // Manipulations with mesh:
@@ -158,14 +129,6 @@ private:
 
   //! Stored Mesh DS.
   Handle(ActData_Mesh) m_mesh;
-
-  //! Transient Modification Delta being passed from the beginning
-  //! of each transaction (it is empty in the beginning) till its
-  //! end (it is populated with Modification Requests at the end).
-  Handle(ActData_MeshMDelta) m_delta;
-
-  //! Indicates whether DELTALIZATION is enabled or not.
-  Standard_Boolean m_bDeltaEnabled;
 
 };
 

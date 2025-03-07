@@ -219,7 +219,6 @@ int main(int argc, char* argv[])
   CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<ActTest_TriangulationParameter> );
   CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<ActTest_CAFConversionCtx>       );
   CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<ActTest_ExtTransactionEngine>   );
-  CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<ActTest_MeshAttrTransactional>  );
   CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<ActTest_MeshAttrBean>           );
   CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<ActTest_MeshAttrPersistent>     );
   CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<ActTest_CopyPasteEngine>        );

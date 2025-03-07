@@ -74,17 +74,11 @@ Standard_Boolean
     return Standard_False;
   }
 
-  // Disable accumulation of deltas
-  aMeshAttr->DeltaModeOff();
-
   // Create new Mesh DS
   aMeshAttr->NewEmptyMesh();
 
   // Read from the input stream
   Read<BinObjMgt_Persistent>(FromPersistent, aMeshAttr);
-
-  // Enable accumulation of deltas
-  aMeshAttr->DeltaModeOn();
 
   return Standard_True;
 }

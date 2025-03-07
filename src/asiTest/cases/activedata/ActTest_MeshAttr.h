@@ -150,60 +150,6 @@ private:
 //!
 //! Test suite for Active Data.
 //! This class performs unit testing of Mesh CAF Attribute class in its
-//! transactional perspective.
-class ActTest_MeshAttrTransactional : public ActTest_MeshAttrBase
-{
-public:
-
-  //! Returns Test Case ID.
-  //! \return ID of the Test Case.
-  static int ID()
-  {
-    return CaseID_MeshAttrTransactional;
-  }
-
-  //! Returns filename for the description.
-  //! \return filename for the description of the Test Case.
-  static std::string DescriptionFn()
-  {
-    return "ActTest_MeshAttrTransactional";
-  }
-
-  //! Returns Test Case description directory.
-  //! \return description directory for the Test Case.
-  static std::string DescriptionDir()
-  {
-    return "Mesh";
-  }
-
-  //! Returns the IDs of the test cases to generate reference data for.
-  static void GenRefIds(std::set<int>& genrefIds)
-  {
-    (void) genrefIds;
-  }
-
-  //! Returns pointers to the Test Functions to launch.
-  //! \param functions [out] output collection of pointers.
-  static void Functions(asiTestFunctions& functions)
-  {
-    functions << &meshTransUndoRedoTest1
-              << &meshTransAbortTest1
-              << &meshTransAbortTest2;
-  }
-
-// Test functions:
-private:
-
-  static outcome meshTransUndoRedoTest1 (const int funcID, const bool);
-  static outcome meshTransAbortTest1    (const int funcID, const bool);
-  static outcome meshTransAbortTest2    (const int funcID, const bool);
-
-};
-
-//! \ingroup AD_TEST
-//!
-//! Test suite for Active Data.
-//! This class performs unit testing of Mesh CAF Attribute class in its
 //! persistence perspective.
 class ActTest_MeshAttrPersistent : public ActTest_MeshAttrBase
 {

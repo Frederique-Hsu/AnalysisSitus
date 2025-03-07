@@ -57,33 +57,6 @@ Handle(ActData_MeshParameter) ActData_MeshParameter::Instance()
   return new ActData_MeshParameter();
 }
 
-//! Switches ON modification delta recording mode.
-void ActData_MeshParameter::DeltaModeOn()
-{
-  if ( this->IsDetached() )
-    Standard_ProgramError::Raise("Cannot access detached data");
-
-  Handle(ActData_MeshAttr) aMeshAttr = ActData_Utils::AccessMeshAttr(m_label, DS_Mesh);
-  //
-  if ( aMeshAttr.IsNull() )
-    Standard_ProgramError::Raise("Cannot access NULL Mesh DS");
-
-  aMeshAttr->DeltaModeOn();
-}
-
-//! Switches OFF modification delta recording mode.
-void ActData_MeshParameter::DeltaModeOff()
-{
-  if ( this->IsDetached() )
-    Standard_ProgramError::Raise("Cannot access detached data");
-
-  Handle(ActData_MeshAttr) aMeshAttr = ActData_Utils::AccessMeshAttr(m_label, DS_Mesh);
-  if ( aMeshAttr.IsNull() )
-    Standard_ProgramError::Raise("Cannot access NULL Mesh DS");
-
-  aMeshAttr->DeltaModeOff();
-}
-
 //! Sets Mesh data for the Parameter.
 //! \param theMesh [in] Mesh data to set.
 //! \param theModType [in] Modification Type.

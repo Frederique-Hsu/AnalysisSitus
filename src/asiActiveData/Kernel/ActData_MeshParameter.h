@@ -93,12 +93,6 @@ public:
 public:
 
   ActData_EXPORT void
-    DeltaModeOn();
-
-  ActData_EXPORT void
-    DeltaModeOff();
-
-  ActData_EXPORT void
     SetMesh(const Handle(ActData_Mesh)& theMesh,
             const ActAPI_ModificationType theModType = MT_Touched,
             const Standard_Boolean doResetValidity = Standard_True,
