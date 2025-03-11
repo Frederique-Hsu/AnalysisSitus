@@ -83,7 +83,7 @@
 <div class="content-body">
 <!-- [BEGIN] contents -->
 
-<div class="toc-panel"><div id="toc"></div></div>
+<!--<div class="toc-panel"><div id="toc"></div></div>-->
 
 <h1 id="toc-smru-segments">SMRU contour segments</h1>
 
@@ -102,11 +102,13 @@
 
 <pre><code>"segments": [
   {
-    "id": 1,
+    "id": 2,
     "type": "line",
     "cuttingLength": 137.93114224133723,
-    "nextSegment": 2,
-    "angleToNextSegment": -133.53119928564325
+    "middlePoint": [127.5, 70, 0],
+    "nextSegment": 3,
+    "angleToNextSegment": 133.53119928564325,
+    "connectionPointToNextSegment": [80, 20, 0]
   },
   ...
 ]
@@ -123,6 +125,18 @@
 </p>
 
 <div align="center"><a href="../imgs/ext/smru-segments_01.png"><img src="../imgs/ext/smru-segments_01.png" width="60%"/></a></div>
+
+<p>
+  The segments are reported in the order of traversal.
+</p>
+
+<!-- Optional references to community resources -->
+<div class="mg">
+  <div class="mg-headline">Community reading:</div>
+  <ul>
+    <li class="fancy_ul_item">MG // <a href="https://quaoar.su/blog/page/segments-over-a-planar-contour">Segments over a planar contour</a>.</li>
+  </ul>
+</div>
 
 <!-- [END] contents -->
 </div>
