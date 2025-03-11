@@ -1343,6 +1343,7 @@ void asiUI_ViewerPartListener::executeAction(QAction* pAction)
     {
       TopoDS_Edge edge = BRepBuilderAPI_MakeEdge(posPnt, oppositePnt);
       m_plotter.DRAW_SHAPE(edge, Color_Red, "thickness");
+      m_plotter.DRAW_LABEL(posPnt.XYZ(), t_asciiString(minDist), Color_White, "thickness");
     }
 
     m_progress.SendLogMessage( LogInfo(Normal) << "Thickness is %1."

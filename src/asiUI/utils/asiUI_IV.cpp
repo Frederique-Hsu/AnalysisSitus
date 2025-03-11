@@ -586,6 +586,46 @@ void asiUI_IV::REDRAW_LABELS(const t_extString&          name,
 
 //---------------------------------------------------------------------------//
 
+void asiUI_IV::DRAW_LABEL(const gp_XYZ&        point,
+                          const t_asciiString& label,
+                          const ActAPI_Color&  color,
+                          const t_extString&   name)
+{
+  Handle(HRealArray) coords = new HRealArray(0, 2);
+  //
+  coords->ChangeValue(0) = point.X();
+  coords->ChangeValue(1) = point.Y();
+  coords->ChangeValue(2) = point.Z();
+
+  Handle(HStringArray) labels = new HStringArray(0, 0);
+  //
+  labels->ChangeValue(0) = label;
+
+  this->draw_labels(coords, labels, color, 22, name, true);
+}
+
+//---------------------------------------------------------------------------//
+
+void asiUI_IV::REDRAW_LABEL(const t_extString&   name,
+                            const gp_XYZ&        point,
+                            const t_asciiString& label,
+                            const ActAPI_Color&  color)
+{
+  Handle(HRealArray) coords = new HRealArray(0, 2);
+  //
+  coords->ChangeValue(0) = point.X();
+  coords->ChangeValue(1) = point.Y();
+  coords->ChangeValue(2) = point.Z();
+
+  Handle(HStringArray) labels = new HStringArray(0, 0);
+  //
+  labels->ChangeValue(0) = label;
+
+  this->draw_labels(coords, labels, color, 22, name, false);
+}
+
+//---------------------------------------------------------------------------//
+
 void asiUI_IV::DRAW_VECTORS(const Handle(HRealArray)& points,
                             const Handle(HRealArray)& vectors,
                             const ActAPI_Color&       color,

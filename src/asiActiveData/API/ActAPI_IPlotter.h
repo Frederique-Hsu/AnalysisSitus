@@ -333,6 +333,18 @@ public:
                   const Handle(HStringArray)&,
                   const ActAPI_Color&) {}
 
+  virtual void
+    DRAW_LABEL(const gp_XYZ&,
+               const t_asciiString&,
+               const ActAPI_Color&,
+               const t_extString&) {}
+
+  virtual void
+    REDRAW_LABEL(const t_extString&,
+                 const gp_XYZ&,
+                 const t_asciiString&,
+                 const ActAPI_Color&) {}
+
   //-------------------------------------------------------------------------//
 
   virtual void
@@ -1024,6 +1036,32 @@ public:
     if ( m_iv.IsNull() ) return;
     //
     m_iv->REDRAW_LABELS(name, points, labels, color);
+  }
+
+//-------------------------------------------------------------------------//
+
+  virtual void
+    DRAW_LABEL(const gp_XYZ&        point,
+               const t_asciiString& label,
+               const ActAPI_Color&  color,
+               const t_extString&   name)
+  {
+    if ( m_iv.IsNull() ) return;
+    //
+    m_iv->DRAW_LABEL(point, label, color, name);
+  }
+
+//-------------------------------------------------------------------------//
+
+  virtual void
+    REDRAW_LABEL(const t_extString&   name,
+                 const gp_XYZ&        point,
+                 const t_asciiString& label,
+                 const ActAPI_Color&  color)
+  {
+    if ( m_iv.IsNull() ) return;
+    //
+    m_iv->REDRAW_LABEL(name, point, label, color);
   }
 
 //---------------------------------------------------------------------------//

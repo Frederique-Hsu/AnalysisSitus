@@ -236,6 +236,18 @@ public:
                   const ActAPI_Color&) override;
 
   asiUI_EXPORT virtual void
+    DRAW_LABEL(const gp_XYZ&,
+               const t_asciiString&,
+               const ActAPI_Color&,
+               const t_extString&) override;
+
+  asiUI_EXPORT virtual void
+    REDRAW_LABEL(const t_extString&,
+                 const gp_XYZ&,
+                 const t_asciiString&,
+                 const ActAPI_Color&) override;
+
+  asiUI_EXPORT virtual void
     DRAW_VECTOR_AT(const gp_Pnt&,
                    const gp_Vec&,
                    const ActAPI_Color&,
