@@ -3973,7 +3973,8 @@ bool asiAlgo_Utils::CalculateFaceNormals(const TopoDS_Face&                 face
                                          const double                       sampleRate,
                                          Handle(asiAlgo_BaseCloud<double>)& points,
                                          Handle(asiAlgo_BaseCloud<double>)& vectors,
-                                         gp_Vec&                            average)
+                                         gp_Vec&                            average,
+                                         const bool                         useDiscr)
 {
   if ( sampleRate < 1e-10 || sampleRate > 1 )
     return false;
@@ -3999,7 +4000,7 @@ bool asiAlgo_Utils::CalculateFaceNormals(const TopoDS_Face&                 face
   const double vStep = (vMax - vMin)*sampleRate;
 
   // Prepare classifier
-  asiAlgo_ClassifyPointFace classifier(face, BRep_Tool::Tolerance(face), 0.01, false);
+  asiAlgo_ClassifyPointFace classifier(face, BRep_Tool::Tolerance(face), 0.01, useDiscr);
 
   // Sample points
   double   u = uMin;

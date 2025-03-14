@@ -1646,6 +1646,7 @@ namespace asiAlgo_Utils
   //! \param[out] points     sample points (internal or lying on the boundary).
   //! \param[out] vectors    computed normal field.
   //! \param[out] average    computed average normal.
+  //! \param[in]  useDiscr   indicator indicating that discrete PMC will be used.
   //!
   //! \return true in case of success, false -- otherwise.
   asiAlgo_EXPORT bool
@@ -1653,7 +1654,8 @@ namespace asiAlgo_Utils
                          const double                       sampleRate,
                          Handle(asiAlgo_BaseCloud<double>)& points,
                          Handle(asiAlgo_BaseCloud<double>)& vectors,
-                         gp_Vec&                            average);
+                         gp_Vec&                            average,
+                         const bool                         useDiscr = false);
 
   //! This function takes "just any" interior point on a face.
   //!
