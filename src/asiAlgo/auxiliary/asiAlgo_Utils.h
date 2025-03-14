@@ -1741,6 +1741,8 @@ namespace asiAlgo_Utils
   //! \param[in]     checkValidity the Boolean flag indicating whether to check for validity
   //!                              after the conversion is done.
   //! \param[out]    summary       the conversion summary.
+  //! \param[in]     planeOnly     the Boolean flag indicating whether only planar faces
+  //!                              are to be converted.
   //! \param[in]     progress      the progress notifier.
   //! \return true in the case of success, false -- otherwise.
   asiAlgo_EXPORT bool
@@ -1748,7 +1750,8 @@ namespace asiAlgo_Utils
                      const double                     tol,
                      const bool                       checkValidity,
                      asiAlgo_ConvertCanonicalSummary& summary,
-                     ActAPI_ProgressEntry             progress = nullptr);
+                     const bool                       planeOnly = false,
+                     ActAPI_ProgressEntry             progress  = nullptr);
 
   //! Interpolates the given collection of points with B-curve of the
   //! desired degree.

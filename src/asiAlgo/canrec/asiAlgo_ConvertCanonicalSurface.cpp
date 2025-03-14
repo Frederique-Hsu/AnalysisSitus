@@ -45,9 +45,11 @@
 
 //-----------------------------------------------------------------------------
 
-asiAlgo_ConvertCanonicalSurface::asiAlgo_ConvertCanonicalSurface(const Handle(Geom_Surface)& S)
-: m_surf (S),
-  m_fGap (0.)
+asiAlgo_ConvertCanonicalSurface::asiAlgo_ConvertCanonicalSurface(const Handle(Geom_Surface)& S,
+                                                                 const bool                  planeOnly)
+: m_surf       (S),
+  m_fGap       (0.),
+  m_bPlaneOnly (planeOnly)
 {}
 
 //-----------------------------------------------------------------------------
@@ -78,6 +80,12 @@ Handle(Geom_Surface)
   if ( asiAlgo_RecognizeCanonical::CheckIsPlanar(m_surf, toler, pln) )
   {
     return new Geom_Plane(pln);
+  }
+
+  if ( m_bPlaneOnly )
+  {
+    // In the "plane-only" mode, we do not go further.
+    return newSurf;
   }
 
   // Check for infinite bounds.

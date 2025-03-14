@@ -3463,7 +3463,12 @@ int ENGINE_ConvertToCanonical(const Handle(asiTcl_Interp)& interp,
   {
     asiAlgo_ConvertCanonicalSummary summary;
     //
-    if ( !asiAlgo_Utils::ConvertCanonical( shape, tol, true, summary, interp->GetProgress() ) )
+    if ( !asiAlgo_Utils::ConvertCanonical( shape,
+                                           tol,
+                                           true,
+                                           summary,
+                                           interp->HasKeyword(argc, argv, "planeOnly"),
+                                           interp->GetProgress() ) )
     {
       interp->GetProgress().SendLogMessage(LogErr(Normal) << "Face maximization failed.");
       //
@@ -4753,7 +4758,7 @@ void cmdEngine::Commands_Editing(const Handle(asiTcl_Interp)&      interp,
   //-------------------------------------------------------------------------//
   interp->AddCommand("convert-to-canonical",
     //
-    "convert-to-canonical [-tol <tol>]\n"
+    "convert-to-canonical [-tol <tol>] [-planeOnly]\n"
     "\t Attempts to convert a shape to a canonical form.",
     //
     __FILE__, group, ENGINE_ConvertToCanonical);

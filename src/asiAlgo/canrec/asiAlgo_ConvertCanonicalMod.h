@@ -78,6 +78,11 @@ public:
   asiAlgo_EXPORT void
     SetCurveMode(const bool CurvMode);
 
+  //! Sets the plane-only mode of conversion, so that only
+  //! planar splines get converted.
+  asiAlgo_EXPORT void
+    SetPlaneOnlyMode(const bool PlainOnlyMode);
+
 /* Modification API */
 public:
 
@@ -172,6 +177,7 @@ public:
 
 private:
 
+  bool                                       m_bPlaneOnly; //!< Plane-only mode.
   double                                     m_fToler;     //!< Conversion tolerance.
   TColStd_IndexedDataMapOfTransientTransient m_cache;      //!< Cached geometric entities.
   bool                                       m_bSurfMode;  //!< Indicates whether to convert surfaces.

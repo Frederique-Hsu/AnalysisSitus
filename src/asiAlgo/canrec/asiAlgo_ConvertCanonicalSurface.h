@@ -48,9 +48,12 @@ class asiAlgo_ConvertCanonicalSurface
 public:
 
   //! Ctor accepting the surface to convert.
-  //! \param[in] S the surface to convert.
+  //! \param[in] S         the surface to convert.
+  //! \param[in] planeOnly the Boolean flag indicating whether we'd like
+  //!                      to convert only planar surfaces.
   asiAlgo_EXPORT
-    asiAlgo_ConvertCanonicalSurface(const Handle(Geom_Surface)& S);
+    asiAlgo_ConvertCanonicalSurface(const Handle(Geom_Surface)& S,
+                                    const bool                  planeOnly);
 
 public:
 
@@ -65,8 +68,9 @@ public:
 
 private:
 
-  Handle(Geom_Surface) m_surf; //!< Surface to convert.
-  double               m_fGap; //!< Fitting error.
+  Handle(Geom_Surface) m_surf;       //!< Surface to convert.
+  double               m_fGap;       //!< Fitting error.
+  bool                 m_bPlaneOnly; //!< Plane-only mode.
 
 };
 

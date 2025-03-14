@@ -80,6 +80,13 @@ public:
 
 public:
 
+  //! Sets the plane-only mode of conversion, so that only
+  //! planar splines get converted.
+  void SetPlaneOnly(const bool on)
+  {
+    m_bPlaneOnly = on;
+  }
+
   //! \return the conversion summary.
   const asiAlgo_ConvertCanonicalSummary& GetSummary() const
   {
@@ -113,9 +120,9 @@ protected:
 
 protected:
 
-  //! Conversion summary.
-  asiAlgo_ConvertCanonicalSummary m_summary;
-  Handle(BRepTools_History)       m_history; //!< Modification history.
+  bool                            m_bPlaneOnly; //!< Plane-only mode.
+  asiAlgo_ConvertCanonicalSummary m_summary;    //!< Conversion summary.
+  Handle(BRepTools_History)       m_history;    //!< Modification history.
 
 };
 

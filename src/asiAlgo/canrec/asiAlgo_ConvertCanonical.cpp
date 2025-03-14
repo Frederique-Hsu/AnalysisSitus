@@ -150,7 +150,8 @@ namespace
 
 asiAlgo_ConvertCanonical::asiAlgo_ConvertCanonical(ActAPI_ProgressEntry progress,
                                                    ActAPI_PlotterEntry  plotter)
-: ActAPI_IAlgorithm(progress, plotter)
+: ActAPI_IAlgorithm (progress, plotter),
+  m_bPlaneOnly      (false)
 {
   m_history = new BRepTools_History();
 }
@@ -175,9 +176,10 @@ TopoDS_Shape asiAlgo_ConvertCanonical::Perform(const TopoDS_Shape& shape,
   Handle(asiAlgo_ConvertCanonicalMod)
     M = new asiAlgo_ConvertCanonicalMod;
   //
-  M->SetTolerance   (tol);
-  M->SetSurfaceMode (convertSurfaces);
-  M->SetCurveMode   (convertCurves);
+  M->SetTolerance     (tol);
+  M->SetSurfaceMode   (convertSurfaces);
+  M->SetCurveMode     (convertCurves);
+  M->SetPlaneOnlyMode (m_bPlaneOnly);
 
   /* ====================
    *  Apply modification.

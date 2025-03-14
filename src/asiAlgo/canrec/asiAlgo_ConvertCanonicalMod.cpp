@@ -69,6 +69,7 @@ struct t_curveWithParams : public Standard_Transient
 asiAlgo_ConvertCanonicalMod::asiAlgo_ConvertCanonicalMod()
 : asiAlgo_BRepNormalization()
 {
+  m_bPlaneOnly = false;
   m_fToler     = 0.;
   m_bSurfMode  = true;
   m_bCurveMode = true;
@@ -97,6 +98,13 @@ void asiAlgo_ConvertCanonicalMod::SetCurveMode(const bool CurvMode)
 
 //-----------------------------------------------------------------------------
 
+void asiAlgo_ConvertCanonicalMod::SetPlaneOnlyMode(const bool PlainOnlyMode)
+{
+  m_bPlaneOnly = PlainOnlyMode;
+}
+
+//-----------------------------------------------------------------------------
+
 bool asiAlgo_ConvertCanonicalMod::GetConverted(Handle(Geom_Surface)& S)
 {
   if ( !m_bSurfMode )
@@ -119,7 +127,7 @@ bool asiAlgo_ConvertCanonicalMod::GetConverted(Handle(Geom_Surface)& S)
     S = Handle(Geom_RectangularTrimmedSurface)::DownCast(S)->BasisSurface();
 
   // Perform conversion.
-  asiAlgo_ConvertCanonicalSurface scs(S);
+  asiAlgo_ConvertCanonicalSurface scs(S, m_bPlaneOnly);
   Handle(Geom_Surface) newsurf;
   newsurf = scs.Perform(m_fToler);
 
