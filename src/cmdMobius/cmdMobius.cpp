@@ -130,7 +130,7 @@ namespace
       //
       for ( int fid = 1; fid <= allFaces.Extent(); ++fid )
       {
-        if ( asiAlgo_Utils::IsPlanar( aag->GetFace(fid) ) )
+        if ( asiAlgo_Utils::IsPlanar( aag->GetFace(fid), false ) )
           planarDomain.insert(fid);
       }
     }
@@ -262,7 +262,7 @@ namespace
         const TopoDS_Face& face = m_aag->GetFace(tag);
 
         Handle(Geom_Plane) occPlane;
-        if ( !asiAlgo_Utils::IsPlanar(face, occPlane) )
+        if ( !asiAlgo_Utils::IsPlanar(face, occPlane, false) )
           continue;
 
         t_ptr<t_plane> pln = cascade::GetMobiusPlane(occPlane);
@@ -1993,7 +1993,7 @@ int MOBIUS_POLY_CheckDomainInter(const Handle(asiTcl_Interp)& interp,
   Handle(Geom_Plane) occPlane;
   t_ptr<t_plane>     pln;
   //
-  if ( asiAlgo_Utils::IsPlanar(aag->GetFace(domainId), occPlane) )
+  if ( asiAlgo_Utils::IsPlanar(aag->GetFace(domainId), occPlane, false) )
   {
     pln = cascade::GetMobiusPlane(occPlane);
   }

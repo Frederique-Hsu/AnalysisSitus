@@ -1764,29 +1764,43 @@ std::string asiAlgo_Utils::ShapeAddr(const TopoDS_Shape& shape)
 
 //-----------------------------------------------------------------------------
 
-bool asiAlgo_Utils::IsPlanar(const TopoDS_Face& face)
+bool asiAlgo_Utils::IsPlanar(const TopoDS_Face& face,
+                             const bool         canrec,
+                             const double       tol)
 {
-  return IsTypeOf<Geom_Plane>(face);
+  Handle(Geom_Plane) plane;
+
+  return IsPlanar( face, plane, canrec, tol );
 }
 
 //-----------------------------------------------------------------------------
 
 bool asiAlgo_Utils::IsPlanar(const TopoDS_Face&  face,
-                             Handle(Geom_Plane)& plane)
+                             Handle(Geom_Plane)& plane,
+                             const bool          canrec,
+                             const double        tol)
 {
-  if ( !IsTypeOf<Geom_Plane>(face) )
-    return false;
-
-  Handle(Geom_Surface) surf = BRep_Tool::Surface(face);
-
-  if( surf.IsNull() ) {
-    return false;
+  if ( IsTypeOf< Geom_Plane >( face, plane ) )
+  {
+    return !plane.IsNull();
   }
 
-  plane = Handle(Geom_Plane)::DownCast(surf);
-  return true;
-}
+  if ( canrec )
+  {
+    Handle(Geom_Surface) surf = BRep_Tool::Surface( face );
 
+    gp_Pln pln;
+
+    if ( asiAlgo_RecognizeCanonical::CheckIsPlanar( surf, tol, pln ) )
+    {
+      plane = new Geom_Plane( pln );
+
+      return true;
+    }
+  }
+
+  return false;
+}
 
 //-----------------------------------------------------------------------------
 

@@ -3235,7 +3235,7 @@ int ENGINE_ResetLocation(const Handle(asiTcl_Interp)& interp,
       const int          fid  = selected.GetMinimalMapped();
       const TopoDS_Face& face = partNode->GetAAG()->GetFace(fid);
       //
-      if ( asiAlgo_Utils::IsPlanar(face) )
+      if ( asiAlgo_Utils::IsPlanar(face, false) )
       {
         gp_Ax3 faceAx;
         asiAlgo_Utils::GetLocalFrame(face, true, faceAx);

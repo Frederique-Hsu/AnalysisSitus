@@ -106,7 +106,7 @@ bool asiAlgo_RecognizeEBF::Perform(const int    fid,
   const TopoDS_Face& face = m_aag->GetFace(fid);
 
   // Conical and planar types are normally left for chamfers...
-  if ( asiAlgo_Utils::IsPlanar(face) )
+  if ( asiAlgo_Utils::IsPlanar(face, false) )
     return false;
   //
   if ( !m_bAllowCones && asiAlgo_Utils::IsConical(face) ) // ... but we might wanna change that.

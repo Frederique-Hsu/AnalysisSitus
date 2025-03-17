@@ -100,6 +100,7 @@
 #define asiAlgo_RangeLinPrec  0.01
 #define asiAlgo_SlashStr      "/"
 #define asiAlgo_QuoteStr      "\""
+#define asiAlgo_IsPlanarToler 1.0e-3
 
 //-----------------------------------------------------------------------------
 
@@ -1051,18 +1052,36 @@ namespace asiAlgo_Utils
   }
 
   //! Checks if the passed face has planar support.
-  //! \param[in] face face to check.
+  //!
+  //! The passed tolerance is used for recognizing as planar
+  //! those surfaces that are not defined as analytic planes.
+  //!
+  //! \param[in] face   face to check.
+  //! \param[in] canrec whether to try canonical recognition.
+  //! \param[in] toler  the tolerance to use.
+  //!
   //! \return true/false.
   asiAlgo_EXPORT bool
-    IsPlanar(const TopoDS_Face& face);
+    IsPlanar(const TopoDS_Face& face,
+             const bool         canrec,
+             const double       tol = asiAlgo_IsPlanarToler);
 
   //! Checks if the passed face has planar support.
-  //! \param[in]  face  face to check.
-  //! \param[out] plane planar support.
+  //!
+  //! The passed tolerance is used for recognizing as planar
+  //! those surfaces that are not defined as analytic planes.
+  //!
+  //! \param[in]  face   face to check.
+  //! \param[out] plane  planar support.
+  //! \param[in]  canrec whether to try canonical recognition.
+  //! \param[in]  toler  the tolerance to use.
+  //!
   //! \return true/false.
   asiAlgo_EXPORT bool
     IsPlanar(const TopoDS_Face&  face,
-             Handle(Geom_Plane)& plane);
+             Handle(Geom_Plane)& plane,
+             const bool          canrec,
+             const double        tol = asiAlgo_IsPlanarToler);
 
   //! Checks if the passed face has cylindrical support.
   //! \param[in] face face to check.

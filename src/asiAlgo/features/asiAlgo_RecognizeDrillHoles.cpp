@@ -286,7 +286,7 @@ bool asiAlgo_RecognizeDrillHoles::performInternal(const double radius)
     {
       bool isPlateauEnding = false;
       //
-      if ( asiAlgo_Utils::IsPlanar(currentFace) && current_neighbors.Extent() )
+      if ( asiAlgo_Utils::IsPlanar(currentFace, false) && current_neighbors.Extent() )
       {
         // For a planar face, its outer wire should have hole feature faces attached.
         // If that's not the case, there's something strange with such a planar ending
