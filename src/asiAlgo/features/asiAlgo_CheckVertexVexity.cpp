@@ -61,7 +61,7 @@ void asiAlgo_CheckVertexVexity::CollectEdges(const int      fid,
 {
   const TopoDS_Face& face = m_aag->GetFace(fid);
 
-  if ( asiAlgo_Utils::IsPlanar(face) ||
+  if ( asiAlgo_Utils::IsPlanar(face, false) ||
        asiAlgo_Utils::IsCylindrical(face) )
   {
     for ( TopExp_Explorer exp(face, TopAbs_EDGE); exp.More(); exp.Next() )
@@ -174,7 +174,7 @@ asiAlgo_FeatureAngleType
   gp_XYZ probe = P_prev.XYZ() + InPlaneShiftCoeff*V_prev.Normalized().XYZ()
                               + InPlaneShiftCoeff*V_next.Normalized().XYZ();
   //
-  if ( asiAlgo_Utils::IsPlanar(F, plane) )
+  if ( asiAlgo_Utils::IsPlanar(F, plane, false) )
   {
     double S, T;
     ElSLib::Parameters(plane->Pln(), probe, S, T);

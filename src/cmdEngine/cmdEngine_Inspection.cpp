@@ -5177,7 +5177,7 @@ int ENGINE_GetDominatingPlane(const Handle(asiTcl_Interp)& interp,
     const TopoDS_Face& face = G->GetFace(fid);
     Handle(Geom_Plane) pln;
 
-    if ( asiAlgo_Utils::IsPlanar(face, pln) )
+    if ( asiAlgo_Utils::IsPlanar(face, pln, false) )
     {
       const double faceArea = asiAlgo_Utils::CacheFaceArea(fid, G);
       //

@@ -357,7 +357,7 @@ bool asiAlgo_RepatchFaces::repatchGroup(const TColStd_PackedMapOfInteger& faceId
     BRep_Builder().Add(compFaces, face);
 
     // Get inner points.
-    if ( asiAlgo_Utils::IsPlanar(face) )
+    if ( asiAlgo_Utils::IsPlanar(face, false) )
     {
       asiAlgo_SampleFace sampleFace(face, m_progress);
       //

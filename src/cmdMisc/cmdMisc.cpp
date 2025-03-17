@@ -3871,7 +3871,7 @@ int MISC_ConvertFacePoly(const Handle(asiTcl_Interp)& interp,
   // Only planar faces are supported.
   Handle(Geom_Plane) plane;
   //
-  if ( !asiAlgo_Utils::IsPlanar(face, plane) )
+  if ( !asiAlgo_Utils::IsPlanar(face, plane, false) )
   {
     interp->GetProgress().SendLogMessage(LogErr(Normal) << "The target face should be planar.");
     return TCL_ERROR;

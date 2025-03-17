@@ -71,7 +71,8 @@ bool asiAlgo_OrientCnc::Perform()
   //
   m_fExtents = Sqrt(basisArea);
 
-  std::vector<int>    candidates;
+  std::vector< std::pair< int, Handle(Geom_Plane) > > candidates;
+
   std::vector<gp_Dir> cylAxes;
 
   for( asiAlgo_AAGRandomIterator it(m_aag); it.More(); it.Next() )
@@ -81,7 +82,9 @@ bool asiAlgo_OrientCnc::Perform()
 
     gp_Ax1 cylAxis;
 
-    if ( asiAlgo_Utils::IsPlanar(face) )
+    Handle(Geom_Plane) plane;
+
+    if ( asiAlgo_Utils::IsPlanar( face, plane, true ) )
     {
       // check area
       const double faceArea = asiAlgo_Utils::CacheFaceArea(fid, m_aag);
@@ -90,27 +93,26 @@ bool asiAlgo_OrientCnc::Perform()
         continue;
       }
 
-      candidates.push_back(fid);
+      candidates.push_back( { fid, plane } );
     }
-    else if ( asiAlgo_Utils::IsCylindrical(face, cylAxis) )
+    else if ( asiAlgo_Utils::IsCylindrical( face, cylAxis ) )
     {
       cylAxes.push_back(cylAxis.Direction());
     }
   }
 
-  std::sort(candidates.begin(), candidates.end(), [&](int a, int b)
+  std::sort(candidates.begin(), candidates.end(), [&](const auto& a, const auto& b)
   {
-    return asiAlgo_Utils::CacheFaceArea(a, m_aag) > asiAlgo_Utils::CacheFaceArea(b, m_aag);
+    return asiAlgo_Utils::CacheFaceArea(a.first, m_aag) > asiAlgo_Utils::CacheFaceArea(b.first, m_aag);
   });
 
   tl::optional<gp_Ax3> result;
 
-  for ( const auto& candidateId: candidates )
+  for ( const auto& candidateData: candidates )
   {
-    const TopoDS_Face& candidate = m_aag->GetFace(candidateId);
+    const TopoDS_Face& candidate = m_aag->GetFace( candidateData.first );
 
-    const Handle(Geom_Plane)
-      candidatePlane = Handle(Geom_Plane)::DownCast( BRep_Tool::Surface(candidate) );
+    const Handle(Geom_Plane) candidatePlane = candidateData.second;
 
     gp_Ax3 candidateAx3 = candidatePlane->Position(); // This should be XY equal to the UV of the plane and Z the normal
 

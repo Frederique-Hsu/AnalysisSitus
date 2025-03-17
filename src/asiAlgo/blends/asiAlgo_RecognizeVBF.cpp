@@ -84,7 +84,7 @@ bool asiAlgo_RecognizeVBF::Perform(const int fid)
   /* ----------------------------------------- */
 
   // Conical and planar types are left for chamfers.
-  if ( asiAlgo_Utils::IsPlanar(face) || asiAlgo_Utils::IsConical(face) )
+  if ( asiAlgo_Utils::IsPlanar(face, false) || asiAlgo_Utils::IsConical(face) )
     return false;
 
   /* ------------------------------------------------- */

@@ -183,7 +183,7 @@ bool asiAlgo_WriteDXF::exportShape(const TopoDS_Shape& shape)
       // We're looking for any plane.
       Handle(Geom_Plane) plane;
       //
-      if ( asiAlgo_Utils::IsPlanar(face, plane) )
+      if ( asiAlgo_Utils::IsPlanar(face, plane, false) )
       {
         isPlaneFound = true;
 

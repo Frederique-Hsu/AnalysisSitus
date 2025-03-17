@@ -373,7 +373,7 @@ bool asiAlgo_RecognizeDrillHolesRule::recognize(TopTools_IndexedMapOfShape& feat
       const TopoDS_Face& neighbor_face = m_it->GetGraph()->GetFace(neighbor_id);
       //
       if ( asiAlgo_Utils::IsConical(neighbor_face) ||
-           asiAlgo_Utils::IsPlanar(neighbor_face)  ||
+           asiAlgo_Utils::IsPlanar(neighbor_face, false) ||
            asiAlgo_Utils::IsToroidal(neighbor_face) )
         suspected_endings.Add(neighbor_id);
     }
