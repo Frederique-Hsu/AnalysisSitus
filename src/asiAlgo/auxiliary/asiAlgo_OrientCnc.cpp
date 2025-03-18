@@ -101,7 +101,9 @@ bool asiAlgo_OrientCnc::Perform()
     }
   }
 
-  std::sort(candidates.begin(), candidates.end(), [&](const auto& a, const auto& b)
+  std::sort(candidates.begin(), candidates.end(),
+        [&](const std::pair< int, Handle(Geom_Plane) >& a,
+            const std::pair< int, Handle(Geom_Plane) >& b)
   {
     return asiAlgo_Utils::CacheFaceArea(a.first, m_aag) > asiAlgo_Utils::CacheFaceArea(b.first, m_aag);
   });
