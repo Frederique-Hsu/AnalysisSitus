@@ -36,6 +36,7 @@
 #include <asiAlgo_BuildMinAreaRect.h>
 #include <asiAlgo_MeshGen.h>
 #include <asiAlgo_MeshInfo.h>
+#include <asiAlgo_MeshMerge.h>
 #include <asiAlgo_OrientCnc.h>
 
 // OCCT includes
@@ -59,6 +60,15 @@ asiAlgo_FindOptimalOrientation::asiAlgo_FindOptimalOrientation(const TopoDS_Shap
 
 bool asiAlgo_FindOptimalOrientation::Perform()
 {
+  if ( !m_plotter.Access().IsNull() )
+  {
+    // Diagnose meshes used for projection.
+    asiAlgo_MeshMerge::t_faceElems H;
+    Handle(Poly_Triangulation) T = asiAlgo_MeshMerge::PutTogether(m_shape, H);
+    //
+    m_plotter.REDRAW_TRIANGULATION( "T", T, Color_Default, 1. );
+  }
+
   /* =========
    *  Stage 1.
    * ========= */
@@ -137,7 +147,12 @@ bool asiAlgo_FindOptimalOrientation::Perform()
   {
     asiAlgo_MeshInfo meshInfo = asiAlgo_MeshInfo::Extract(orientedShape);
 
-    if ( !meshInfo.nFacets )
+    // The second condition is to force the remeshing of "gappy" shapes whose faces
+    // are triangulated in a sparse manner, i.e., one face is meshed while another
+    // is not. This can be the case if the caller code has, for example, visualized
+    // just a couple of faces of the bigger part, so that these visualized faces got
+    // their triangulations, while the remaining ones did not.
+    if ( !meshInfo.nFacets || (meshInfo.nFacetedFaces < meshInfo.nBrepFaces / 2) )
     {
       const double linDefl = 10*asiAlgo_MeshGen::AutoSelectLinearDeflection  (orientedShape);
       const double angDefl = 10*asiAlgo_MeshGen::AutoSelectAngularDeflection (orientedShape);

@@ -48,10 +48,17 @@ struct asiAlgo_MeshInfo
 {
   int    nNodes;        //!< Num. of mesh nodes.
   int    nFacets;       //!< Num of facets.
+  int    nFacetedFaces; //!< Number of faceted faces.
+  int    nBrepFaces;    //!< Number of B-rep faces.
   double maxDeflection; //!< Max deflection.
 
   //! Default ctor.
-  asiAlgo_MeshInfo() : nNodes(0), nFacets(0), maxDeflection(0.0) {}
+  asiAlgo_MeshInfo()
+  : nNodes        (0),
+    nFacets       (0),
+    nFacetedFaces (0),
+    nBrepFaces    (0),
+    maxDeflection (0.0) {}
 
   //! Extracts mesh info from the passed shape and returns the mesh
   //! info structure by value.

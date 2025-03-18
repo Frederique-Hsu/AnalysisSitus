@@ -54,18 +54,23 @@ void asiAlgo_MeshInfo::ExtractInfoFrom(const TopoDS_Shape& shape)
   if ( shape.IsNull() )
     return;
 
-  nNodes = nFacets = 0;
+  nNodes = nFacets = nFacetedFaces = nBrepFaces = 0;
   maxDeflection = 0.0;
 
   for ( TopExp_Explorer ex(shape, TopAbs_FACE); ex.More(); ex.Next() )
   {
+    nBrepFaces++;
+
     const TopoDS_Face&                F = TopoDS::Face( ex.Current() );
     TopLoc_Location                   L;
     const Handle(Poly_Triangulation)& T = BRep_Tool::Triangulation(F, L);
     //
     if ( T.IsNull() )
+    {
       continue;
+    }
 
+    nFacetedFaces++;
     nFacets += T->NbTriangles();
     nNodes  += T->NbNodes();
     //
@@ -89,5 +94,7 @@ void asiAlgo_MeshInfo::Dump(Standard_OStream& out)
 {
   out << "Num. triangles: "        << nFacets       << "\n";
   out << "Num. nodes: "            << nNodes        << "\n";
+  out << "Num. faceted faces: "    << nFacetedFaces << "\n";
+  out << "Num. B-rep faces: "      << nBrepFaces    << "\n";
   out << "Max surface deviation: " << maxDeflection << "\n";
 }
