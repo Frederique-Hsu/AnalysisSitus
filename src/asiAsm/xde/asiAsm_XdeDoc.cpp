@@ -41,6 +41,7 @@
 // asiAlgo includes
 #include <asiAlgo_FileFormat.h>
 #include <asiAlgo_Version.h>
+#include <asiAlgo_CascadeMessageIndicator.h>
 
 // OpenCascade includes
 #include <APIHeaderSection_MakeHeader.hxx>
@@ -370,9 +371,19 @@ bool Doc::LoadSTEP(const TCollection_AsciiString& filename,
     return false;
   }
 
+  m_progress.Init(100);
+
   // Prepare reader.
   STEPCAFControl_Reader xdeReader;
   Handle(XSControl_WorkSession) WS = xdeReader.Reader().WS();
+
+  Handle(asiAlgo_CascadeMessageIndicator) messIndicator = new asiAlgo_CascadeMessageIndicator();
+  messIndicator->ConnectNotifier(m_progress.Access());
+
+  Message_ProgressRange rootRange = messIndicator->Start();
+  Message_ProgressScope scope(rootRange, "IMPORT STEP", 2);
+  
+  scope.Next(); // Progress range reserved for transferring file into RAM
 
   /* Initialize parameters of reader */
 
@@ -402,8 +413,11 @@ bool Doc::LoadSTEP(const TCollection_AsciiString& filename,
       return false;
     }
 
+    if (m_progress.IsCancelling())
+      return false;
+
     // Transfer data.
-    if ( !xdeReader.Transfer(m_doc) )
+    if ( !xdeReader.Transfer(m_doc, scope.Next()) )
     {
       m_progress.SendLogMessage(LogErr(Normal) << "STEP reader failed (error occurred transferring STEP model to XDE)." );
       //
