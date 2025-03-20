@@ -371,8 +371,6 @@ bool Doc::LoadSTEP(const TCollection_AsciiString& filename,
     return false;
   }
 
-  m_progress.Init(100);
-
   // Prepare reader.
   STEPCAFControl_Reader xdeReader;
   Handle(XSControl_WorkSession) WS = xdeReader.Reader().WS();
@@ -382,7 +380,7 @@ bool Doc::LoadSTEP(const TCollection_AsciiString& filename,
 
   Message_ProgressRange rootRange = messIndicator->Start();
   Message_ProgressScope scope(rootRange, "IMPORT STEP", 2);
-  
+
   scope.Next(); // Progress range reserved for transferring file into RAM
 
   /* Initialize parameters of reader */
