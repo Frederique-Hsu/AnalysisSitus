@@ -884,11 +884,12 @@ class asiAlgo_ClassifyPointSolid
 {
 public:
 
-  asiAlgo_ClassifyPointSolid(const Handle(Poly_Triangulation)& mesh)
+  asiAlgo_ClassifyPointSolid(const Handle(Poly_Triangulation)& mesh,
+                             const int                         numRays = 3)
   {
     m_tris = mesh;
     m_bvh  = new ModelBvh(mesh);
-    m_dist = new MeshDist(m_bvh);
+    m_dist = new MeshDist(m_bvh, numRays);
   }
 
   //! Ctor.
