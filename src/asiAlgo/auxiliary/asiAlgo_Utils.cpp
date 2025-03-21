@@ -1015,6 +1015,24 @@ void asiAlgo_Utils::Json::ReadCoords(void*   pJsonBlock,
 
 //-----------------------------------------------------------------------------
 
+void asiAlgo_Utils::Json::ReadCoords(void*  pJsonBlock,
+                                     gp_XY& coords)
+{
+#if defined USE_RAPIDJSON
+  t_jsonArray*
+    pJsonArr = reinterpret_cast<t_jsonArray*>(pJsonBlock);
+
+  int i = 1;
+  for ( t_jsonArray::ValueIterator it = pJsonArr->Begin();
+        it != pJsonArr->End(); it++ )
+  {
+    coords.SetCoord( i++, it->GetDouble() );
+  }
+#endif
+}
+
+//-----------------------------------------------------------------------------
+
 std::string
   asiAlgo_Utils::Json::FromFeature(const asiAlgo_Feature& feature)
 {
@@ -1059,6 +1077,20 @@ std::string asiAlgo_Utils::Json::FromCoordsAsTuple(const gp_XYZ& xyz)
   out << xyz.X();
   out << ", " << xyz.Y();
   out << ", " << xyz.Z();
+  out << "]";
+
+  return out.str();
+}
+
+//-----------------------------------------------------------------------------
+
+std::string asiAlgo_Utils::Json::FromCoordsAsTuple(const gp_XY& xy)
+{
+  std::stringstream out;
+
+  out << "[";
+  out << xy.X();
+  out << ", " << xy.Y();
   out << "]";
 
   return out.str();

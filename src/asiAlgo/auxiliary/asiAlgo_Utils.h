@@ -411,6 +411,13 @@ namespace asiAlgo_Utils
       ReadCoords(void*   pJsonBlock,
                  gp_XYZ& coords);
 
+    //! Reads the passed JSON block as a pair of coordinates.
+    //! \param[in]  pJsonBlock the JSON block to interpret.
+    //! \param[out] coords     the outcome coords.
+    asiAlgo_EXPORT void
+      ReadCoords(void*  pJsonBlock,
+                 gp_XY& coords);
+
     //! Dumps the passed feature as a JSON array.
     //! \param[in] map the map to dump.
     //! \return a JSON array containing the elements of the map.
@@ -434,6 +441,12 @@ namespace asiAlgo_Utils
     //! \return '[X(), Y(), Z()]' string.
     asiAlgo_EXPORT std::string
       FromCoordsAsTuple(const gp_XYZ& xyz);
+
+    //! Dumps the passed coordinates as a JSON array.
+    //! \param[in] xy the coordinates to dump.
+    //! \return '[X(), Y()]' string.
+    asiAlgo_EXPORT std::string
+      FromCoordsAsTuple(const gp_XY& xy);
 
     //! Dumps the passed pair as a JSON array.
     //! \param[in] pair the pair to dump.
