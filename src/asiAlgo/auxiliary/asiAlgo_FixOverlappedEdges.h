@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
-// Created on: 13 July 2016
+// Created on: 23 March 2025
 //-----------------------------------------------------------------------------
-// Copyright (c) 2017, Sergey Slyadnev
+// Copyright (c) 2025-present, Sergey Kiselev
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -28,69 +28,60 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-----------------------------------------------------------------------------
 
-#ifndef asiUI_PartCallback_h
-#define asiUI_PartCallback_h
+#pragma once
 
-// asiUI includes
-#include <asiUI_ViewerCallback.h>
+// asiAlgo includes
+#include "asiAlgo.h"
 
-// VTK includes
-#pragma warning(push, 0)
-#include <vtkRenderer.h>
-#include <vtkSmartPointer.h>
-#pragma warning(pop)
+// asiActiveData
+#include <ActAPI_IAlgorithm.h>
 
-// Qt includes
-#pragma warning(push, 0)
-#include <QObject>
-#pragma warning(pop)
+// OCCT includes
+#include <Precision.hxx>
+#include <TopoDS_Edge.hxx>
 
-//! Callback for operations in Part viewer.
-class asiUI_PartCallback : public QObject,
-                           public asiUI_ViewerCallback
+//-----------------------------------------------------------------------------
+
+//! Algorithm to find fully overlapped edges (duplicates) and
+//! keep only a single instance of such edges.
+class asiAlgo_FixOverlappedEdges : public ActAPI_IAlgorithm
 {
-  Q_OBJECT
+  // OCCT RTTI
+  DEFINE_STANDARD_RTTI_INLINE(asiAlgo_FixOverlappedEdges, ActAPI_IAlgorithm)
 
-public:
+  public:
 
-  asiUI_EXPORT static asiUI_PartCallback*
-    New();
+    //! Constructor.
+    //!
+    //! \param[in] progress the progress entry.
+    //! \param[in] plotter  the plotter entry.
+    asiAlgo_FixOverlappedEdges(ActAPI_ProgressEntry progress = nullptr,
+                               ActAPI_PlotterEntry  plotter  = nullptr)
+      : ActAPI_IAlgorithm( progress, plotter ),
+        m_maxAllowedDistance( Precision::Confusion() )
+    {}
 
-  asiUI_EXPORT static asiUI_PartCallback*
-    New(asiUI_Viewer* pViewer);
+    //! Destructor.
+    virtual ~asiAlgo_FixOverlappedEdges() {}
 
-  vtkTypeMacro(asiUI_PartCallback, asiUI_ViewerCallback)
+  public:
 
-public:
+    //! Perform.
+    //!
+    //! \param[in/out] edges the initial set to proceed.
+    //!
+    //! \return true in case of success, false -- otherwise.
+    asiAlgo_EXPORT
+      bool Perform(std::vector< TopoDS_Edge >& edges);
 
-  asiUI_EXPORT virtual void
-    Execute(vtkObject*    pCaller,
-            unsigned long eventId,
-            void*         pCallData);
 
-signals:
+    //! Sets the maximum allowed distance between edges to mark them as overlapped.
+    void SetMaxAllowedDistance(const double& maxAllowedDistance)
+    {
+      m_maxAllowedDistance = maxAllowedDistance;
+    }
 
-  void findFace();
-  void findEdge();
-  void findVertex();
-  void refineTessellation();
-  void buildHLR();
-  void buildHLRDiscr();
-  void buildHLRBox();
-  void buildHLRDiscrBox();
-  void selectAll();
-  void defeature();
-  void buildHLROutline();
-  void buildHLRDiscrOutline();
+  private:
 
-private:
-
-  asiUI_EXPORT
-    asiUI_PartCallback(asiUI_Viewer* pViewer);
-
-  asiUI_EXPORT
-    ~asiUI_PartCallback();
-
+    double m_maxAllowedDistance; //!< Max allowed distance between edges.
 };
-
-#endif

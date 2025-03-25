@@ -222,6 +222,10 @@ void asiVisu_InteractorStylePick::OnKeyPress()
   //
   else if ( key == "Delete" )
     this->InvokeEvent(EVENT_DEFEATURE);
+  //
+  else if ( key == "o" )
+    this->Interactor->GetAltKey() ? this->InvokeEvent(EVENT_BUILD_HLR_OUTLINE_DISCR) :
+                                    this->InvokeEvent(EVENT_BUILD_HLR_OUTLINE);
 }
 
 bool asiVisu_InteractorStylePick::IsControlPressed() const
