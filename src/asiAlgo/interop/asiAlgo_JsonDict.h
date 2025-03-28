@@ -65,6 +65,8 @@
 #define PropName_Bodies                           "bodies"
 #define PropName_Type                             "type"
 #define PropName_Volume                           "volume"
+#define PropName_StatusCodes                      "codes"
+#define PropName_SemanticCodes                    "semanticCodes"
 
 // JSON properties
 #define asiPropName_ExtrasCanRecSummary            "canrecSummary"

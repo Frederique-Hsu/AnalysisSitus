@@ -374,6 +374,7 @@ set (interop_H_FILES
   interop/asiAlgo_IGES.h
   interop/asiAlgo_InteropVars.h
   interop/asiAlgo_JsonDict.h
+  interop/asiAlgo_JsonDocument.h
   interop/asiAlgo_OBJ.h
   interop/asiAlgo_PLY.h
   interop/asiAlgo_ReadSTEPWithMeta.h
@@ -391,6 +392,7 @@ set (interop_CPP_FILES
   interop/asiAlgo_BaseSTEP.cpp
   interop/asiAlgo_FileFormat.cpp
   interop/asiAlgo_IGES.cpp
+  interop/asiAlgo_JsonDocument.cpp
   interop/asiAlgo_OBJ.cpp
   interop/asiAlgo_PLY.cpp
   interop/asiAlgo_ReadSTEPWithMeta.cpp
