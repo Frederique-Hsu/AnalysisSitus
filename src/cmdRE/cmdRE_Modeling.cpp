@@ -2299,6 +2299,12 @@ int RE_ApproxContour(const Handle(asiTcl_Interp)& interp,
 
   // Part shape.
   TopoDS_Shape partShape = partNode->GetShape();
+  //
+  if ( partShape.ShapeType() != TopAbs_WIRE )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Only `TopoDS_Wire` type is supported.");
+    return TCL_ERROR;
+  }
 
   // Precision.
   double prec = 1.;
@@ -2316,7 +2322,7 @@ int RE_ApproxContour(const Handle(asiTcl_Interp)& interp,
   asiAlgo_ReapproxContour reapproxContour( partShape,
                                            prec,
                                            angDeg,
-                                           false,
+                                           true,
                                            interp->GetProgress(),
                                            interp->HasKeyword(argc, argv, "diagnostics") ? interp->GetPlotter()
                                                                                          : nullptr );
