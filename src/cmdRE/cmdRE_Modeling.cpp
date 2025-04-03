@@ -2322,7 +2322,7 @@ int RE_ApproxContour(const Handle(asiTcl_Interp)& interp,
   asiAlgo_ReapproxContour reapproxContour( partShape,
                                            prec,
                                            angDeg,
-                                           true,
+                                           false,
                                            interp->GetProgress(),
                                            interp->HasKeyword(argc, argv, "diagnostics") ? interp->GetPlotter()
                                                                                          : nullptr );
