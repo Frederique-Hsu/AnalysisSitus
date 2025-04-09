@@ -132,7 +132,8 @@ void Doc::NewDocument()
 
 //-----------------------------------------------------------------------------
 
-bool Doc::Load(const TCollection_AsciiString& filename)
+bool Doc::Load(const TCollection_AsciiString& filename,
+               const bool                     readSubshapes)
 {
   // Recognize format.
   const asiAlgo_FileFormat
@@ -142,7 +143,7 @@ bool Doc::Load(const TCollection_AsciiString& filename)
   switch ( format )
   {
     case FileFormat_STEP:
-      return this->LoadSTEP(filename);
+      return this->LoadSTEP(filename, readSubshapes);
     case FileFormat_XBF:
       return this->LoadNative(filename);
     default:
@@ -328,7 +329,7 @@ inline static double fromSiName(const TCollection_AsciiString& unitStr)
 //-----------------------------------------------------------------------------
 
 bool Doc::LoadSTEP(const TCollection_AsciiString& filename,
-                   const bool&                    readSubshapes)
+                   const bool                     readSubshapes)
 {
   std::string units;
   double scaleFactor = 1.0;
@@ -340,7 +341,7 @@ bool Doc::LoadSTEP(const TCollection_AsciiString& filename,
 bool Doc::LoadSTEP(const TCollection_AsciiString& filename,
                    std::string&                   units,
                    double&                        scaleFactor,
-                   const bool&                    readSubshapes)
+                   const bool                     readSubshapes)
 {
   std::istream* stream = nullptr;
   return LoadSTEP(filename, *stream, units, scaleFactor, readSubshapes, false);
@@ -351,7 +352,7 @@ bool Doc::LoadSTEP(const TCollection_AsciiString& filename,
 bool Doc::LoadSTEPFromStream(std::istream& stream,
                              std::string&  units,
                              double&       scaleFactor,
-                             const bool&   readSubshapes)
+                             const bool    readSubshapes)
 {
   return LoadSTEP("", stream, units, scaleFactor, readSubshapes, true);
 }
@@ -362,7 +363,7 @@ bool Doc::LoadSTEP(const TCollection_AsciiString& filename,
                    std::istream&                  stream,
                    std::string&                   units,
                    double&                        scaleFactor,
-                   const bool&                    readSubshapes,
+                   const bool                     readSubshapes,
                    bool                           isStream)
 {
   if ( m_doc.IsNull() )
@@ -386,7 +387,7 @@ bool Doc::LoadSTEP(const TCollection_AsciiString& filename,
   /* Initialize parameters of reader */
 
   // To read sub-shape names from 'Name' attributes of STEP Representation Items
-  Interface_Static::SetIVal("read.stepcaf.subshapes.name", readSubshapes); 
+  Interface_Static::SetIVal("read.stepcaf.subshapes.name", readSubshapes);
 
   // Read CAD and associated data from file.
   try

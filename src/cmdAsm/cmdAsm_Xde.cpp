@@ -228,7 +228,7 @@ int ASMXDE_Load(const Handle(asiTcl_Interp)& interp,
   TIMER_GO
 
   // Load data from file.
-  if ( !doc->Load( filename.c_str() ) )
+  if ( !doc->Load( filename.c_str(), interp->HasKeyword(argc, argv, "names") ) )
   {
     interp->GetProgress().SendLogMessage(LogErr(Normal) << "Cannot load XDE document from file '%1'."
                                                         << filename);
@@ -1985,8 +1985,9 @@ void cmdAsm::Commands_XDE(const Handle(asiTcl_Interp)&      interp,
   //-------------------------------------------------------------------------//
   interp->AddCommand("asm-xde-load",
     //
-    "asm-xde-load -model <M> -filename <filename>\n"
-    "\t Loads assembly from file <filename> to the XDE document named <M>.",
+    "asm-xde-load -model <M> -filename <filename> [-names]\n"
+    "\t Loads assembly from file <filename> to the XDE document named <M>.\n"
+    "\t If the '-names' flag is passed, subshape names are also imported.",
     //
     __FILE__, group, ASMXDE_Load);
 

@@ -110,10 +110,12 @@ public:
     NewDocument();
 
   //! Loads file of any supported format.
-  //! \param[in] filename name of the file to load.
+  //! \param[in] filename      name of the file to load.
+  //! \param[in] readSubshapes flag whether to read subshapes.
   //! \return true in case of success, false -- otherwise.
   asiAsm_EXPORT bool
-    Load(const TCollection_AsciiString& filename);
+    Load(const TCollection_AsciiString& filename,
+         const bool                     readSubshapes = false);
 
   //! Loads the native XDE Document.
   //! \param[in] filename name of the file containing CAF Document to open.
@@ -127,7 +129,7 @@ public:
   //! \return true in case of success, false -- otherwise.
   asiAsm_EXPORT bool
     LoadSTEP(const TCollection_AsciiString& filename,
-             const bool&                    readSubshapes = false);
+             const bool                     readSubshapes = false);
 
   //! Loads STEP file to populate the internal XDE Document.
   //! \param[in]  filename      name of the STEP file to load.
@@ -139,7 +141,7 @@ public:
     LoadSTEP(const TCollection_AsciiString& filename,
              std::string&                   units,
              double&                        scaleFactor,
-             const bool&                    readSubshapes = false);
+             const bool                     readSubshapes = false);
 
   //! Loads STEP file to populate the internal XDE Document.
   //! \param[in]  stream        stream.
@@ -151,7 +153,7 @@ public:
     LoadSTEPFromStream(std::istream& stream,
                        std::string&  units,
                        double&       scaleFactor,
-                       const bool&   readSubshapes = false);
+                       const bool    readSubshapes = false);
 
   //! Loads STEP file to populate the internal XDE Document.
   //! \param[in]  filename      name of the STEP file to load.
@@ -166,7 +168,7 @@ public:
              std::istream&                  stream,
              std::string&                   units,
              double&                        scaleFactor,
-             const bool&                    readSubshapes = false,
+             const bool                     readSubshapes = false,
              bool                           isStream      = false);
 
   //! Loads IGES file to populate the internal XDE Document.
