@@ -58,6 +58,7 @@
 
 // Active Data includes
 #include <ActData_GraphToDot.h>
+#include <ActData_ParameterFactory.h>
 
 // DF Browser includes
 #include <DFBrowser.hxx>
@@ -1801,6 +1802,75 @@ int ENGINE_GenerateFacets(const Handle(asiTcl_Interp)& interp,
 
 //-----------------------------------------------------------------------------
 
+int ENGINE_SetParam(const Handle(asiTcl_Interp)& interp,
+                    int                          argc,
+                    const char**                 argv)
+{
+  if ( argc != 4 )
+  {
+    return interp->ErrorOnWrongArgs(argv[0]);
+  }
+
+  // Get Node by its ID.
+  Handle(ActAPI_INode) N = cmdEngine::model->FindNode(argv[1]);
+  //
+  if ( N.IsNull() || !N->IsWellFormed() )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Data Node %1 is null or invalid."
+                                                        << argv[1]);
+    return TCL_ERROR;
+  }
+
+  // Get Parameter.
+  Handle(ActAPI_IUserParameter) P = N->Parameter( atoi(argv[2]) );
+  //
+  if ( P.IsNull() || !P->IsWellFormed() )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Parameter %1 is null or invalid."
+                                                        << argv[2]);
+    return TCL_ERROR;
+  }
+
+  interp->GetModel()->OpenCommand();
+  {
+    const ActAPI_ParameterType type = (ActAPI_ParameterType) P->GetParamType();
+    //
+    switch ( type )
+    {
+      case Parameter_Int:
+        ActParamTool::AsInt(P)->SetValue(atoi(argv[3]));
+        break;
+      case Parameter_Real:
+        ActParamTool::AsReal(P)->SetValue(atof(argv[3]));
+        break;
+      case Parameter_Bool:
+        ActParamTool::AsBool(P)->SetValue(atoi(argv[3]));
+        break;
+      case Parameter_AsciiString:
+        ActParamTool::AsAsciiString(P)->SetValue(argv[3]);
+        break;
+      default:
+        interp->GetProgress().SendLogMessage(LogErr(Normal) << "Unsupported parameter type %1."
+                                                            << type);
+        break;
+    }
+
+    interp->GetModel()->FuncExecuteAll();
+  }
+  interp->GetModel()->CommitCommand();
+
+  if ( cmdEngine::cf && cmdEngine::cf->ViewerPart )
+  {
+    // There is already a facet generator inside.
+    cmdEngine::cf->ViewerPart->PrsMgr()->Actualize(N);
+    cmdEngine::cf->ParamEditor->SetParameters(N->Parameters());
+  }
+
+  return TCL_OK;
+}
+
+//-----------------------------------------------------------------------------
+
 void cmdEngine::Commands_Data(const Handle(asiTcl_Interp)&      interp,
                               const Handle(Standard_Transient)& cmdEngine_NotUsed(data))
 {
@@ -2062,4 +2132,12 @@ void cmdEngine::Commands_Data(const Handle(asiTcl_Interp)&      interp,
     "\t deflections automatically.",
     //
     __FILE__, group, ENGINE_GenerateFacets);
+
+  //-------------------------------------------------------------------------//
+  interp->AddCommand("set-param",
+    //
+    "set-param <nodeId> <paramId> <value>\n"
+    "\t Sets the given value for the Parameter <paramId> of the Data Node <nodeId>.",
+    //
+    __FILE__, group, ENGINE_SetParam);
 }
