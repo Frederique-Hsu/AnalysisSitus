@@ -1042,6 +1042,14 @@ public:
   asiAsm_EXPORT bool
     HasUsers(const TDF_Label& original) const;
 
+  //! Collects naming information for the passed part. The naming
+  //! records are added for all subshapes if they are registered in
+  //! OCAF for this part.
+  //! \param[in] pid the part of interest.
+  //! \return the collected naming information.
+  asiAsm_EXPORT Handle(asiAlgo_Naming)
+    GetNaming(const PartId& pid) const;
+
 public:
 
   //! Dumps assembly hierarchy to the passed output stream.

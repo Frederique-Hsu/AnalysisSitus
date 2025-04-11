@@ -277,6 +277,7 @@ set (providers_H_FILES
   providers/asiVisu_MeshNScalarDataProvider.h
   providers/asiVisu_OctreeDataProvider.h
   providers/asiVisu_PartDataProvider.h
+  providers/asiVisu_PartNamesDataProvider.h
   providers/asiVisu_PointsDataProvider.h
   providers/asiVisu_PointsFromListDataProvider.h
   providers/asiVisu_ReCoedgeDataProvider.h
@@ -325,6 +326,7 @@ set (providers_CPP_FILES
   providers/asiVisu_MeshDataProvider.cpp
   providers/asiVisu_OctreeDataProvider.cpp
   providers/asiVisu_PartDataProvider.cpp
+  providers/asiVisu_PartNamesDataProvider.cpp
   providers/asiVisu_PointsDataProvider.cpp
   providers/asiVisu_PointsFromListDataProvider.cpp
   providers/asiVisu_ReCoedgeDataProvider.cpp

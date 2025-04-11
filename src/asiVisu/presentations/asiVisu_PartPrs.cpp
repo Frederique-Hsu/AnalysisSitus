@@ -35,8 +35,10 @@
 #include <asiVisu_AdjGraphDataProvider.h>
 #include <asiVisu_AdjGraphPipeline.h>
 #include <asiVisu_BVHPipeline.h>
+#include <asiVisu_LabelsPipeline.h>
 #include <asiVisu_PartDataProvider.h>
 #include <asiVisu_PartEdgesPipeline.h>
+#include <asiVisu_PartNamesDataProvider.h>
 #include <asiVisu_PartPipeline.h>
 #include <asiVisu_ShapeBVHDataProvider.h>
 #include <asiVisu_ShapeDisplayMode.h>
@@ -169,6 +171,24 @@ asiVisu_PartPrs::asiVisu_PartPrs(const Handle(ActAPI_INode)& N) : asiVisu_Prs(N)
   //
   this->addPipeline        ( Pipeline_BVH, bvh_pl );
   this->assignDataProvider ( Pipeline_BVH, bvh_dp );
+
+  /* ====================
+   *  Pipeline for names.
+   * ==================== */
+
+  // Create Data Provider for BVH.
+  Handle(asiVisu_PartNamesDataProvider)
+    labels_dp = new asiVisu_PartNamesDataProvider(partNode);
+
+  // Create pipeline for subshape names.
+  Handle(asiVisu_LabelsPipeline)
+    labels_pl = new asiVisu_LabelsPipeline();
+
+  // Adjust props.
+  labels_pl->Actor()->SetPickable(0);
+  //
+  this->addPipeline        ( Pipeline_Names, labels_pl );
+  this->assignDataProvider ( Pipeline_Names, labels_dp );
 }
 
 //-----------------------------------------------------------------------------

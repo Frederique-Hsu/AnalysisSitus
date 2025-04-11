@@ -447,10 +447,16 @@ void asiUI_XdeBrowser::onSetActivePart()
     return;
   }
 
+  // Extract naming (if any).
+  Handle(asiAlgo_Naming) naming = m_doc->GetNaming(partId);
+
+  asiEngine_Part partApi(m_cf->Model);
+
   // Update part.
   m_cf->Model->OpenCommand(); // tx start
   {
-    asiEngine_Part(m_cf->Model).Update(rep->GetShape(), nullptr, true);
+    partApi.Update(rep->GetShape(), nullptr, true);
+    partApi.GetPart()->SetNaming(naming);
   }
   m_cf->Model->CommitCommand(); // tx commit
 

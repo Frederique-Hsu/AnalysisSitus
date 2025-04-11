@@ -67,6 +67,9 @@ int ENGINE_InitNaming(const Handle(asiTcl_Interp)& interp,
   }
   cmdEngine::model->CommitCommand();
 
+  if ( cmdEngine::cf && cmdEngine::cf->ViewerPart )
+    cmdEngine::cf->ViewerPart->PrsMgr()->Actualize(part_n);
+
   return TCL_OK;
 }
 

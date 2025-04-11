@@ -72,12 +72,7 @@ void asiVisu_LabelsPipeline::SetInput(const Handle(asiVisu_DataProvider)& DP)
    *  Validate input Parameters.
    * =========================== */
 
-  Handle(asiAlgo_BaseCloud<double>)
-    anchors = provider->GetAnchorPoints();
-  //
-  Handle(HStringArray) hLabels = provider->GetLabels();
-  //
-  if ( anchors.IsNull() )
+  if ( !provider->HasAnchorPoints() )
   {
     // Pass empty data set in order to have valid pipeline.
     vtkSmartPointer<vtkUnstructuredGrid> dummyDS = vtkSmartPointer<vtkUnstructuredGrid>::New();
@@ -98,6 +93,11 @@ void asiVisu_LabelsPipeline::SetInput(const Handle(asiVisu_DataProvider)& DP)
 
   if ( provider->MustExecute( this->GetMTime() ) )
   {
+    Handle(asiAlgo_BaseCloud<double>)
+      anchors = provider->GetAnchorPoints();
+    //
+    Handle(HStringArray) hLabels = provider->GetLabels();
+
     m_origins->SetInputPoints(anchors);
     m_origins->Update();
 

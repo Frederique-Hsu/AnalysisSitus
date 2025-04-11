@@ -777,13 +777,15 @@ TCollection_ExtendedString
 
   // Find the subshape's attachment label.
   TDF_Label subShapeL;
-  if (!this->GetShapeTool()->FindSubShape(partLab, subShape, subShapeL))
+  //
+  if ( !this->GetShapeTool()->FindSubShape(partLab, subShape, subShapeL) )
   {
     return TCollection_ExtendedString();
   }
 
   Handle(TDataStd_Name) nameAttr;
-  if (subShapeL.FindAttribute(TDataStd_Name::GetID(), nameAttr))
+  //
+  if ( subShapeL.FindAttribute(TDataStd_Name::GetID(), nameAttr) )
   {
     return nameAttr->Get();
   }
@@ -2824,6 +2826,58 @@ bool Doc::HasUsers(const TDF_Label& original) const
 
   node = node->First();
   return !node.IsNull();
+}
+
+//-----------------------------------------------------------------------------
+
+Handle(asiAlgo_Naming) Doc::GetNaming(const PartId& pid) const
+{
+  // Get part label.
+  TDF_Label partLab = this->GetLabel(pid);
+
+  // Get part shape.
+  TopoDS_Shape partShape = this->GetShape(pid);
+  //
+  if ( partShape.IsNull() || partShape.ShapeType() >= TopAbs_FACE )
+  {
+    return nullptr;
+  }
+
+  Handle(XCAFDoc_ShapeTool) ST = this->GetShapeTool();
+
+  // Get all faces of a part.
+  TopTools_IndexedMapOfShape partFaces;
+  TopExp::MapShapes(partShape, TopAbs_FACE, partFaces);
+
+  // Prepare naming.
+  Handle(asiAlgo_Naming) naming = new asiAlgo_Naming(partShape);
+
+  // Loop over the faces.
+  for ( int f = 1; f <= partFaces.Extent(); ++f )
+  {
+    const TopoDS_Shape& faceShape = partFaces(f);
+
+    // All faces should be colorized.
+    TDF_Label faceLab;
+    //
+    if ( !ST->FindSubShape(partLab, faceShape, faceLab) )
+    {
+      continue;
+    }
+
+    // Retrieve name.
+    TCollection_AsciiString faceName;
+    Handle(TDataStd_Name) nodeName;
+    //
+    if ( faceLab.FindAttribute(TDataStd_Name::GetID(), nodeName) )
+    {
+      faceName = nodeName->Get();
+
+      naming->SetName(faceShape, faceName);
+    }
+  }
+
+  return naming;
 }
 
 //-----------------------------------------------------------------------------

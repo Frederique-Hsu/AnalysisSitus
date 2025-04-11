@@ -109,6 +109,14 @@ public:
   asiAlgo_EXPORT TCollection_AsciiString
     GenerateName(const TopoDS_Shape& shape);
 
+  //! \brief Sets the externally defined name for the passed sub-shape.
+  //! \param[in] shape the shape to set a name for.
+  //! \param[in] name  the name to set.
+  //! \return true if the name has been successfully set, false -- otherwise.
+  asiAlgo_EXPORT bool
+    SetName(const TopoDS_Shape&            shape,
+            const TCollection_AsciiString& name);
+
   //! Actualizes the naming attributes stored in the topology graph according
   //! to the current state of history. This method should be called in a
   //! modeling algorithm which takes care of persistent naming.

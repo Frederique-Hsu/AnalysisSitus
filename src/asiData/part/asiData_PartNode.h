@@ -184,6 +184,9 @@ public:
   asiData_EXPORT Handle(asiAlgo_Naming)
     GetNaming() const;
 
+  asiData_EXPORT void
+    SetNaming(const Handle(asiAlgo_Naming)&);
+
   asiData_EXPORT bool
     HasNaming() const;
 
@@ -418,10 +421,6 @@ protected:
   //! See comment for setShape() method.
   asiData_EXPORT void
     setBVH(const Handle(asiAlgo_BVHFacets)&);
-
-  //! See comment for setShape() method.
-  asiData_EXPORT void
-    setNaming(const Handle(asiAlgo_Naming)&);
 
 };
 

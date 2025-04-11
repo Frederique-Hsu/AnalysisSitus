@@ -108,7 +108,7 @@ void asiData_PartNode::ResetToDefault(const bool resetNaming)
   this->setBVH    ( nullptr );
   //
   if ( resetNaming )
-    this->setNaming ( nullptr );
+    this->SetNaming ( nullptr );
 
   // Set default values to primitive Parameters.
   this->SetFilenameIn            ("");
@@ -282,6 +282,13 @@ Handle(asiAlgo_BVHFacets) asiData_PartNode::GetBVH() const
 Handle(asiAlgo_Naming) asiData_PartNode::GetNaming() const
 {
   return Handle(asiData_NamingParameter)::DownCast( this->Parameter(PID_Naming) )->GetNaming();
+}
+
+//! Sets naming service to store.
+//! \param naming [in] naming service to store.
+void asiData_PartNode::SetNaming(const Handle(asiAlgo_Naming)& naming)
+{
+  Handle(asiData_NamingParameter)::DownCast( this->Parameter(PID_Naming) )->SetNaming(naming);
 }
 
 //! \return true if naming service is initialized.
@@ -947,11 +954,4 @@ void asiData_PartNode::setAAG(const Handle(asiAlgo_AAG)& aag)
 void asiData_PartNode::setBVH(const Handle(asiAlgo_BVHFacets)& bvh)
 {
   Handle(asiData_BVHParameter)::DownCast( this->Parameter(PID_BVH) )->SetBVH(bvh);
-}
-
-//! Sets naming service to store.
-//! \param naming [in] naming service to store.
-void asiData_PartNode::setNaming(const Handle(asiAlgo_Naming)& naming)
-{
-  Handle(asiData_NamingParameter)::DownCast( this->Parameter(PID_Naming) )->SetNaming(naming);
 }

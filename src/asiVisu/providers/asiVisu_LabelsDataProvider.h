@@ -55,6 +55,9 @@ public:
 
 public:
 
+  virtual bool
+    HasAnchorPoints() const = 0;
+
   virtual Handle(asiAlgo_BaseCloud<double>)
     GetAnchorPoints() const = 0;
 

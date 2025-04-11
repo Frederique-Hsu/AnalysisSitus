@@ -67,7 +67,8 @@ public:
                        // for VTK 8.2).
     Pipeline_Contour,
     Pipeline_AAG,
-    Pipeline_BVH
+    Pipeline_BVH,
+    Pipeline_Names
   };
 
 public:

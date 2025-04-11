@@ -164,6 +164,35 @@ TCollection_AsciiString
 
 //-----------------------------------------------------------------------------
 
+bool asiAlgo_Naming::SetName(const TopoDS_Shape&            shape,
+                             const TCollection_AsciiString& name)
+{
+  // Bind to map for fast access.
+  if ( !this->registerNamedShape(name, shape) )
+  {
+    m_progress.SendLogMessage(LogErr(Normal) << "Attempt to register shape under non-unique name '%1'."
+                                             << name);
+    return false;
+  }
+
+  const int idx = m_topograph->GetNodeIndex(shape);
+  //
+  if ( !idx )
+  {
+    m_progress.SendLogMessage(LogErr(Normal) << "Cannot find the subshape of interest in the topology graph.");
+    return false;
+  }
+
+  // Prepare nodal attribute to store the name in the topology graph.
+  Handle(asiAlgo_TopoAttrName) A = new asiAlgo_TopoAttrName(name);
+  //
+  m_topograph->AddNodeAttribute(idx, A);
+
+  return true;
+}
+
+//-----------------------------------------------------------------------------
+
 bool asiAlgo_Naming::Actualize(const TopoDS_Shape& newShape)
 {
   if ( m_history.IsNull() )

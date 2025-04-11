@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-// Created on: 06 February 2025
+// Created on: 11 April 2025
 //-----------------------------------------------------------------------------
 // Copyright (c) 2025-present, Quaoar Studio LLC (http://analysissitus.org)
 // All rights reserved.
@@ -28,25 +28,25 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-----------------------------------------------------------------------------
 
-#ifndef asiVisu_IVLabelsDataProvider_h
-#define asiVisu_IVLabelsDataProvider_h
+#ifndef asiVisu_PartNamesDataProvider_h
+#define asiVisu_PartNamesDataProvider_h
 
 // asiVisu includes
 #include <asiVisu_LabelsDataProvider.h>
 
 // asiData includes
-#include <asiData_IVLabelFieldNode.h>
+#include <asiData_PartNode.h>
 
-//! Data provider for IV label fields.
-class asiVisu_IVLabelsDataProvider : public asiVisu_LabelsDataProvider
+//! Data provider for named subshapes in the Part Node.
+class asiVisu_PartNamesDataProvider : public asiVisu_LabelsDataProvider
 {
   // OCCT RTTI
-  DEFINE_STANDARD_RTTI_INLINE(asiVisu_IVLabelsDataProvider, asiVisu_LabelsDataProvider)
+  DEFINE_STANDARD_RTTI_INLINE(asiVisu_PartNamesDataProvider, asiVisu_LabelsDataProvider)
 
 public:
 
   asiVisu_EXPORT
-    asiVisu_IVLabelsDataProvider(const Handle(asiData_IVLabelFieldNode)& node);
+    asiVisu_PartNamesDataProvider(const Handle(asiData_PartNode)& node);
 
 public:
 

@@ -45,6 +45,13 @@ asiVisu_IVLabelsDataProvider::asiVisu_IVLabelsDataProvider(const Handle(asiData_
 
 //-----------------------------------------------------------------------------
 
+bool asiVisu_IVLabelsDataProvider::HasAnchorPoints() const
+{
+  return true;
+}
+
+//-----------------------------------------------------------------------------
+
 Handle(asiAlgo_BaseCloud<double>)
   asiVisu_IVLabelsDataProvider::GetAnchorPoints() const
 {
