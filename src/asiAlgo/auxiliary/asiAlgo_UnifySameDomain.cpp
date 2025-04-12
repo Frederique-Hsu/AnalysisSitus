@@ -1927,7 +1927,8 @@ asiAlgo_UnifySameDomain::asiAlgo_UnifySameDomain(ActAPI_ProgressEntry progress,
     myConcatBSplines (Standard_False),
     myAllowInternal (Standard_False),
     mySafeInputMode(Standard_True),
-    myFailed (Standard_False)
+    myFailed (Standard_False),
+    myHistory(new BRepTools_History)
 {
   myContext = new ShapeBuild_ReShape;
 }
@@ -1953,7 +1954,8 @@ asiAlgo_UnifySameDomain::asiAlgo_UnifySameDomain(const TopoDS_Shape&    aShape,
     myAllowInternal (Standard_False),
     mySafeInputMode (Standard_True),
     myShape (aShape),
-    myFailed (Standard_False)
+    myFailed (Standard_False),
+    myHistory(new BRepTools_History)
 {
   myContext = new ShapeBuild_ReShape;
 }
@@ -1976,6 +1978,7 @@ void asiAlgo_UnifySameDomain::Initialize(const TopoDS_Shape& aShape,
 
   myContext->Clear();
   myKeepShapes.Clear();
+  myHistory->Clear();
 }
 
 //=======================================================================
@@ -2962,6 +2965,9 @@ bool asiAlgo_UnifySameDomain::Build()
   if (!myFailed && myUnifyEdges)
     UnifyEdges();
 
+  // Fill the history of modifications during the operation
+  FillHistory();
+
   // All faces should be closed in UV space as a result of maximization.
   const bool isOk = !myFailed && CheckClosedContours(myShape);
 
@@ -2982,4 +2988,89 @@ bool asiAlgo_UnifySameDomain::Build()
 #endif
 
   return isOk;
+}
+
+//=======================================================================
+//function : FillHistory
+//purpose  : Fill the history of modifications during the operation
+//=======================================================================
+void asiAlgo_UnifySameDomain::FillHistory()
+{
+  if (myHistory.IsNull())
+    // History is not requested
+    return;
+
+  // Only Vertices, Edges and Faces can be modified during unification.
+  // Thus, only these kind of shapes should be checked.
+
+  // Get history from the context.
+  // It contains all modifications of the operation. Some of these
+  // modifications become not relevant and should be filtered.
+  Handle(BRepTools_History) aCtxHistory = myContext->History();
+
+  // Explore the history of the context and fill
+  // the history of UnifySameDomain algorithm
+  Handle(BRepTools_History) aUSDHistory = new BRepTools_History();
+
+  // Map all Vertices, Edges, Faces and Solids in the input shape
+  TopTools_IndexedMapOfShape aMapInputShape;
+  TopExp::MapShapes(myInitShape, TopAbs_VERTEX, aMapInputShape);
+  TopExp::MapShapes(myInitShape, TopAbs_EDGE  , aMapInputShape);
+  TopExp::MapShapes(myInitShape, TopAbs_FACE  , aMapInputShape);
+  TopExp::MapShapes(myInitShape, TopAbs_SOLID , aMapInputShape);
+
+  // Map all Vertices, Edges, Faces and Solids in the result shape
+  TopTools_IndexedMapOfShape aMapResultShapes;
+  TopExp::MapShapes(myShape, TopAbs_VERTEX, aMapResultShapes);
+  TopExp::MapShapes(myShape, TopAbs_EDGE  , aMapResultShapes);
+  TopExp::MapShapes(myShape, TopAbs_FACE  , aMapResultShapes);
+  TopExp::MapShapes(myShape, TopAbs_SOLID , aMapResultShapes);
+
+  // Iterate on all input shapes and get their modifications
+  Standard_Integer i, aNb = aMapInputShape.Extent();
+  for (i = 1; i <= aNb; ++i)
+  {
+    const TopoDS_Shape& aS = aMapInputShape(i);
+
+    // Check the shape itself to be present in the result
+    if (aMapResultShapes.Contains(aS))
+    {
+      // The shape is present in the result as is, thus has not been modified
+      continue;
+    }
+
+    // Check if the shape has been modified during the operation
+    const TopTools_ListOfShape& aLSImages = aCtxHistory->Modified(aS);
+    if (aLSImages.IsEmpty())
+    {
+      // The shape has not been modified and not present in the result,
+      // thus it has been removed
+      aUSDHistory->Remove(aS);
+      continue;
+    }
+
+    // Check the images of the shape to be present in the result
+    Standard_Boolean bRemoved = Standard_True;
+    TopTools_ListIteratorOfListOfShape aItLSIm(aLSImages);
+    for (; aItLSIm.More(); aItLSIm.Next())
+    {
+      const TopoDS_Shape& aSIm = aItLSIm.Value();
+      if (aMapResultShapes.Contains(aSIm))
+      {
+        if (!aSIm.IsSame(aS))
+          // Image is found in the result, thus the shape has been modified
+          aUSDHistory->AddModified(aS, aSIm);
+        bRemoved = Standard_False;
+      }
+    }
+
+    if (bRemoved)
+    {
+      // No images are found in the result, thus the shape has been removed
+      aUSDHistory->Remove(aS);
+    }
+  }
+
+  // Merge the history of the operation into global history
+  myHistory->Merge(aUSDHistory);
 }

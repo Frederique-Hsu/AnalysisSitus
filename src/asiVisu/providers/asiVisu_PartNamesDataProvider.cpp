@@ -151,6 +151,9 @@ Handle(HStringArray) asiVisu_PartNamesDataProvider::GetLabels() const
     names.push_back(name);
   }
 
+  if ( names.empty() )
+    return nullptr;
+
   Handle(HStringArray) res = new HStringArray( 0, (int) (names.size() - 1) );
   //
   for ( int i = 0; i < (int) ( names.size() ); ++i )

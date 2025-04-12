@@ -73,6 +73,7 @@ typedef rapidjson::Document::Object    t_jsonObject;
 #include <asiAlgo_RecognizeCanonical.h>
 #include <asiAlgo_RelievePointCloud.h>
 #include <asiAlgo_Timer.h>
+#include <asiAlgo_UnifySameDomain.h>
 
 #if defined USE_MOBIUS
   #include <mobius/bspl_UnifyKnots.h>
@@ -3500,7 +3501,8 @@ bool asiAlgo_Utils::MaximizeFaces(TopoDS_Shape&              shape,
                                   const double               linToler,
                                   const double               angToler)
 {
-  ShapeUpgrade_UnifySameDomain Unify(shape);
+  asiAlgo_UnifySameDomain Unify(shape);
+  //
   try
   {
     Unify.SetLinearTolerance  (linToler);

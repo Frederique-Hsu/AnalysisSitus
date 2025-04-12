@@ -147,6 +147,18 @@ public:
     return myShape;
   }
 
+  //! Returns the history of the processed shapes.
+  const Handle(BRepTools_History)& History() const
+  {
+    return myHistory;
+  }
+
+  //! Returns the history of the processed shapes.
+  Handle(BRepTools_History)& History()
+  {
+    return myHistory;
+  }
+
   DEFINE_STANDARD_RTTIEXT(asiAlgo_UnifySameDomain,ActAPI_IAlgorithm)
 
 protected:
@@ -163,6 +175,9 @@ protected:
   bool IntUnifyFaces(const TopoDS_Shape& theInpShape,
                      TopTools_IndexedDataMapOfShapeListOfShape& theGMapEdgeFaces);
 
+  //! Fills the history of the modifications during the operation.
+  Standard_EXPORT void FillHistory();
+
 private:
 
   TopoDS_Shape myInitShape;
@@ -177,6 +192,7 @@ private:
   Handle(ShapeBuild_ReShape) myContext;
   TopTools_MapOfShape myKeepShapes;
   Standard_Boolean myFailed;
+  Handle(BRepTools_History) myHistory; //!< The history.
 };
 
 #endif // _asiAlgo_UnifySameDomain_HeaderFile

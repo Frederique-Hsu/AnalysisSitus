@@ -3354,10 +3354,14 @@ int ENGINE_MaximizeFaces(const Handle(asiTcl_Interp)& interp,
   //
   interp->GetKeyValue(argc, argv, "angTol", angToler);
 
+  Handle(BRepTools_History) H;
+
   // Modify shape.
   cmdEngine::model->OpenCommand();
   {
-    if ( !asiAlgo_Utils::MaximizeFaces(shape, linToler, angToler) )
+    TopoDS_Shape initShape = shape;
+    //
+    if ( !asiAlgo_Utils::MaximizeFaces(shape, H, linToler, angToler) )
     {
       interp->GetProgress().SendLogMessage(LogErr(Normal) << "Face maximization failed.");
       //
@@ -3365,7 +3369,11 @@ int ENGINE_MaximizeFaces(const Handle(asiTcl_Interp)& interp,
       return TCL_ERROR;
     }
     //
-    asiEngine_Part(cmdEngine::model).Update(shape);
+    Handle(asiAlgo_History) history = asiAlgo_History::Create(initShape, H);
+    //
+    partNode->GetNaming()->SetHistory(history);
+    //
+    asiEngine_Part(cmdEngine::model).Update(shape, history);
   }
   cmdEngine::model->CommitCommand();
 
