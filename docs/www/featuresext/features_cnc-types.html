@@ -85,8 +85,20 @@
 
 <h1 id="toc-cnc">Recognized CNC types</h1>
 
+<div class="toc-panel"><div id="toc"></div></div>
+
 <p>
-  The following table provides a digest over the recognized production methods. The second column gives the string identifier of the process: <span class="code-inline">CNC_LATHE</span>, <span class="code-inline">CNC_MILLING</span> or <span class="code-inline">CNC_LATHE_MILLING</span>. All possible production types are defined in the <a href="https://gitlab.com/ssv/AnalysisSitus/-/blob/master/src/asiAlgo/features/asiAlgo_PartBodyType.h?ref_type=heads">asiAlgo_PartBodyType</a> enum of Analysis Situs.
+  The following table provides a digest over the recognized production methods. The second column gives the string identifier of the process:
+</p>
+
+<ul>
+  <li class="fancy_ul_item"><span class="code-inline">CNC_LATHE</span>,</li>
+  <li class="fancy_ul_item"><span class="code-inline">CNC_MILLING</span>,</li>
+  <li class="fancy_ul_item"><span class="code-inline">CNC_LATHE_MILLING</span>.</li>
+</ul>
+
+<p>
+  All possible production types are defined in the <a href="https://gitlab.com/ssv/AnalysisSitus/-/blob/master/src/asiAlgo/features/asiAlgo_PartBodyType.h?ref_type=heads">asiAlgo_PartBodyType</a> enum of Analysis Situs.
 </p>
 
 <table align="center" style="border: 1px solid rgb(100, 100, 100);" cellpadding="5" cellspacing="0" width="100%">
@@ -135,7 +147,25 @@
       </p>
     </td>
   </tr>
-  </table>
+</table>
+
+<h1 id="toc-rules">"Turned" vs "milled" decision</h1>
+
+<p>
+  The algorithm is precalibrated to automatically distinguish between turned and milled parts. The employed rules are briefly described below. For a part to be recognized as a lathed one, all of the following criteria should be satisfied:
+</p>
+
+<ul>
+  <li class="fancy_ul_item">There should be at least one turned diameter, contour, taper or thread face.</li>
+  <li class="fancy_ul_item">The spanned angle of rotation around the axis of symmetry should exceed 90 degrees.</li>
+  <li class="fancy_ul_item">The axial range of turned features should be greater than 50% of all features projected onto the axis of rotation. The remaining percentage can be used by milling features.</li>
+  <li class="fancy_ul_item">The radial ratio of all turned faces over the max radius of the part should exceed 50%.</li>
+  <li class="fancy_ul_item">The axial range of turning obstructions should be less than 50% of all turning features projected onto the axis of rotation.</li>
+</ul>
+
+<p>
+  If a part is decided to be lathed (according to the rules above) but contains some unrecognized faces that do not have rotational symmetry, then those faces undergo milling recognized and the part is assigned to be lathed+milled.
+</p>
 
 <!-- [END] contents -->
 </div>
