@@ -31,6 +31,8 @@
 #ifndef asiAlgo_JsonDict_HeaderFile
 #define asiAlgo_JsonDict_HeaderFile
 
+#include <asiAlgo.h>
+
 // Filename extension.
 #define asiRef_Ext "ref"
 

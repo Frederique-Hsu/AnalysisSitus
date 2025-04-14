@@ -191,7 +191,7 @@ void asiAlgo_SegmentsInfo::FromJSON(void*                 pJsonGenericObj,
   t_jsonValue*
     pJsonObj = reinterpret_cast<t_jsonValue*>(pJsonGenericObj);
 
-  // Iterate members of the fillet chain object.
+  // Iterate members.
   for ( t_jsonValue::MemberIterator mit = pJsonObj->MemberBegin();
         mit != pJsonObj->MemberEnd(); mit++ )
   {

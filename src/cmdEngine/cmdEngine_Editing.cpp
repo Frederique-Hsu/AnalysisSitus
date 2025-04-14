@@ -3371,7 +3371,8 @@ int ENGINE_MaximizeFaces(const Handle(asiTcl_Interp)& interp,
     //
     Handle(asiAlgo_History) history = asiAlgo_History::Create(initShape, H);
     //
-    partNode->GetNaming()->SetHistory(history);
+    if ( partNode->HasNaming() )
+      partNode->GetNaming()->SetHistory(history);
     //
     asiEngine_Part(cmdEngine::model).Update(shape, history);
   }
