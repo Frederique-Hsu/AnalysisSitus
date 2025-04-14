@@ -33,6 +33,7 @@
 
 // asiAlgo includes
 #include <asiAlgo_BuildHLR.h>
+#include <asiAlgo_ComputeOutline.h>
 #include <asiAlgo_SuppressFeatures.h>
 #include <asiAlgo_Timer.h>
 
@@ -80,6 +81,7 @@
 #endif
 
 #define ZOOM_FACTOR 0.1
+#define DISCRETE_LINES_COLOR ActAPI_Color(40./255., 190./255., 255./255., Quantity_TOC_RGB)
 
 namespace
 {
@@ -280,6 +282,56 @@ namespace
     TIMER_FINISH
     TIMER_COUT_RESULT_NOTIFIER(progress, "HLR box projection")
   }
+
+  void MakeHLROutline(const Handle(asiEngine_Model)&             model,
+                      asiAlgo_ComputeOutline::Mode               mode,
+                      const vtkSmartPointer<asiVisu_PrsManager>& prsMgr,
+                      const t_asciiString&                       name,
+                      const ActAPI_Color&                        color,
+                      ActAPI_ProgressEntry                       progress,
+                      ActAPI_PlotterEntry                        plotter)
+  {
+    TIMER_NEW
+    TIMER_GO
+
+    // Read part shape.
+    TopoDS_Shape partShape = model->GetPartNode()->GetShape();
+    //
+    if ( partShape.IsNull() )
+      return;
+
+    // Read projection direction.
+    double dX, dY, dZ;
+    //
+    prsMgr->GetRenderer()->GetActiveCamera()->GetViewPlaneNormal(dX, dY, dZ);
+
+    gp_Dir dir( dX, dY, dZ );
+
+    asiAlgo_ComputeOutline outliner( partShape, progress, plotter );
+
+    outliner.SetLinearTolerance( 0.01 );
+
+    TopoDS_Compound outlineWires;
+
+    if ( !outliner.Perform( dir, outlineWires, mode ) )
+    {
+      return;
+    }
+
+    // Draw the result with the default color.
+    plotter.REDRAW_SHAPE( name,
+                          outlineWires,
+                          color,
+                          1.,
+                          true );
+
+    TIMER_FINISH
+
+    if ( mode == asiAlgo_ComputeOutline::Mode_Precise )
+      TIMER_COUT_RESULT_NOTIFIER(progress, "HLR outline projection")
+    else
+      TIMER_COUT_RESULT_NOTIFIER(progress, "DHLR outline projection")
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -429,6 +481,14 @@ asiUI_ViewerPart::asiUI_ViewerPart(const Handle(asiEngine_Model)& model,
     if ( !m_prs_mgr->GetDefaultInteractorStyle()->HasObserver(EVENT_BUILD_HLR_DISCR_BOX) )
       m_prs_mgr->GetDefaultInteractorStyle()->AddObserver(EVENT_BUILD_HLR_DISCR_BOX, m_partCallback);
 
+    // Set observer for HLR (outline mode)
+    if ( !m_prs_mgr->GetDefaultInteractorStyle()->HasObserver(EVENT_BUILD_HLR_OUTLINE) )
+      m_prs_mgr->GetDefaultInteractorStyle()->AddObserver(EVENT_BUILD_HLR_OUTLINE, m_partCallback);
+
+    // Set observer for discrete HLR (outline mode)
+    if ( !m_prs_mgr->GetDefaultInteractorStyle()->HasObserver(EVENT_BUILD_HLR_OUTLINE_DISCR) )
+      m_prs_mgr->GetDefaultInteractorStyle()->AddObserver(EVENT_BUILD_HLR_OUTLINE_DISCR, m_partCallback);
+
     // Set observer for defeaturing
     if ( !m_prs_mgr->GetDefaultInteractorStyle()->HasObserver(EVENT_DEFEATURE) )
       m_prs_mgr->GetDefaultInteractorStyle()->AddObserver(EVENT_DEFEATURE, m_partCallback);
@@ -441,16 +501,18 @@ asiUI_ViewerPart::asiUI_ViewerPart(const Handle(asiEngine_Model)& model,
     connect(m_pickCallback, SIGNAL(highlighted()), this, SLOT( onWhateverHighlighted() ) );
 
     // Get notified about part events
-    connect( m_partCallback, SIGNAL( findFace() ),           this, SLOT( onFindFace() ) );
-    connect( m_partCallback, SIGNAL( findEdge() ),           this, SLOT( onFindEdge() ) );
-    connect( m_partCallback, SIGNAL( findVertex() ),         this, SLOT( onFindVertex() ) );
-    connect( m_partCallback, SIGNAL( refineTessellation() ), this, SLOT( onRefineTessellation() ) );
-    connect( m_partCallback, SIGNAL( buildHLR() ),           this, SLOT( onBuildHLR() ) );
-    connect( m_partCallback, SIGNAL( buildHLRDiscr() ),      this, SLOT( onBuildHLRDiscr() ) );
-    connect( m_partCallback, SIGNAL( buildHLRBox() ),        this, SLOT( onBuildHLRBox() ) );
-    connect( m_partCallback, SIGNAL( buildHLRDiscrBox() ),   this, SLOT( onBuildHLRDiscrBox() ) );
-    connect( m_partCallback, SIGNAL( selectAll() ),          this, SLOT( onSelectAll() ) );
-    connect( m_partCallback, SIGNAL( defeature() ),          this, SLOT( onDefeature() ) );
+    connect( m_partCallback, SIGNAL( findFace() ),             this, SLOT( onFindFace() ) );
+    connect( m_partCallback, SIGNAL( findEdge() ),             this, SLOT( onFindEdge() ) );
+    connect( m_partCallback, SIGNAL( findVertex() ),           this, SLOT( onFindVertex() ) );
+    connect( m_partCallback, SIGNAL( refineTessellation() ),   this, SLOT( onRefineTessellation() ) );
+    connect( m_partCallback, SIGNAL( buildHLR() ),             this, SLOT( onBuildHLR() ) );
+    connect( m_partCallback, SIGNAL( buildHLRDiscr() ),        this, SLOT( onBuildHLRDiscr() ) );
+    connect( m_partCallback, SIGNAL( buildHLRBox() ),          this, SLOT( onBuildHLRBox() ) );
+    connect( m_partCallback, SIGNAL( buildHLRDiscrBox() ),     this, SLOT( onBuildHLRDiscrBox() ) );
+    connect( m_partCallback, SIGNAL( selectAll() ),            this, SLOT( onSelectAll() ) );
+    connect( m_partCallback, SIGNAL( defeature() ),            this, SLOT( onDefeature() ) );
+    connect( m_partCallback, SIGNAL( buildHLROutline() ),      this, SLOT( onBuildHLROutline() ) );
+    connect( m_partCallback, SIGNAL( buildHLRDiscrOutline() ), this, SLOT( onBuildHLRDiscrOutline() ) );
 
     /* ===============================
      *  Setting up rotation callbacks
@@ -828,7 +890,7 @@ void asiUI_ViewerPart::onBuildHLRDiscr()
             this->PrsMgr(),
             asiAlgo_BuildHLR::Mode_Discrete,
            "DHLR",
-            ActAPI_Color(40./255., 190./255., 255./255., Quantity_TOC_RGB),
+            DISCRETE_LINES_COLOR,
             m_progress,
             m_plotter);
 }
@@ -854,9 +916,37 @@ void asiUI_ViewerPart::onBuildHLRDiscrBox()
   ::MakeHLRBox(m_model,
                asiAlgo_BuildHLR::Mode_Discrete,
               "DHLR",
-               ActAPI_Color(40./255., 190./255., 255./255., Quantity_TOC_RGB),
+               DISCRETE_LINES_COLOR,
                m_progress,
                m_plotter);
+}
+
+//-----------------------------------------------------------------------------
+
+//! Callback for constructing outline HLR representation.
+void asiUI_ViewerPart::onBuildHLROutline()
+{
+  ::MakeHLROutline(m_model,
+                   asiAlgo_ComputeOutline::Mode_Precise,
+                   this->PrsMgr(),
+                  "HLROutline",
+                   Color_White,
+                   m_progress,
+                   m_plotter);
+}
+
+//-----------------------------------------------------------------------------
+
+//! Callback for constructing discrete outline HLR representation.
+void asiUI_ViewerPart::onBuildHLRDiscrOutline()
+{
+  ::MakeHLROutline(m_model,
+                   asiAlgo_ComputeOutline::Mode_Discrete,
+                   this->PrsMgr(),
+                  "DHLROutline",
+                   DISCRETE_LINES_COLOR,
+                   m_progress,
+                   m_plotter);
 }
 
 //-----------------------------------------------------------------------------
