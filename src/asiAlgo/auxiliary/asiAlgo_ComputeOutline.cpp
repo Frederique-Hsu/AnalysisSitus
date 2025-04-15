@@ -38,12 +38,12 @@
 #include "asiAlgo_FixOverlappedEdges.h"
 #include "asiAlgo_SplitEdgesByStartEndPoints.h"
 #include "asiAlgo_Utils.h"
-#include <asiAlgo_BVHFacets.h>
-#include <asiAlgo_FeatureFaces.h>
-#include <asiAlgo_HitFacet.h>
-#include <asiAlgo_HlrPreciseAlgo.h>
-#include <asiAlgo_HlrToShape.h>
-#include <asiAlgo_IntersectCC.h>
+#include "asiAlgo_BVHFacets.h"
+#include "asiAlgo_FeatureFaces.h"
+#include "asiAlgo_HitFacet.h"
+#include "asiAlgo_HlrPreciseAlgo.h"
+#include "asiAlgo_HlrToShape.h"
+#include "asiAlgo_IntersectCC.h"
 
 // OCCT includes
 #include <BOPAlgo_Tools.hxx>
