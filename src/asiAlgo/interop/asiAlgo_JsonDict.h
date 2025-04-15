@@ -107,6 +107,8 @@
 #define asiPropName_StatusCodes                           "codes"
 #define asiPropName_SemanticCodes                         "semanticCodes"
 #define asiPropName_Naming                                "naming"
+#define asiPropName_OutlineIsClosed                       "isClosed"
+#define asiPropName_OutlineNbEdges                        "nbEdges"
 
 // Extras
 #define asiPropName_ExtrasCanRecSummary                   "canrecSummary"
