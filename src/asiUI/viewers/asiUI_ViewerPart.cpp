@@ -294,8 +294,55 @@ namespace
     TIMER_NEW
     TIMER_GO
 
+    Handle(asiData_PartNode) geom_n = model->GetPartNode();
+
+    // Get indices of the active sub-shapes.
+    Handle(TColStd_HPackedMapOfInteger)
+      gids = geom_n->GetFaceRepresentation()->GetSelectedFaces();
+
+    if ( gids.IsNull() )
+    {
+      return;
+    }
+
+    TColStd_PackedMapOfInteger sel = gids->Map();
+
+    if ( geom_n->GetAAG().IsNull() )
+    {
+      progress.SendLogMessage( LogErr(Normal) << "Null AAG. Part data is incomplete." );
+      return;
+    }
+
+    // Get sub-shapes map.
+    const TopTools_IndexedMapOfShape&
+      allSubShapes = geom_n->GetAAG()->RequestMapOfSubShapes();
+
+    // Get map of faces.
+    const TopTools_IndexedMapOfShape&
+      allFaces = geom_n->GetAAG()->GetMapOfFaces();
+
+    // Loop over the selected faces.
+    asiAlgo_Feature fids;
+    //
+    for ( TColStd_PackedMapOfInteger::Iterator git(sel); git.More(); git.Next() )
+    {
+      const int globalId = git.Key();
+      //
+      if ( globalId < 1 || globalId > allSubShapes.Extent() )
+      {
+        continue;
+      }
+
+      // Get sub-shape.
+      const TopoDS_Shape& subShape = allSubShapes(globalId);
+
+      // Get pedigree index.
+      const int pedigreeId = allFaces.FindIndex(subShape);
+      fids.Add(pedigreeId);
+    }
+
     // Read part shape.
-    TopoDS_Shape partShape = model->GetPartNode()->GetShape();
+    TopoDS_Shape partShape = geom_n->GetAAG()->GetMasterShape();
     //
     if ( partShape.IsNull() )
       return;
@@ -310,6 +357,7 @@ namespace
     asiAlgo_ComputeOutline outliner( partShape, progress, plotter );
 
     outliner.SetLinearTolerance( 0.01 );
+    outliner.SetDomain( fids );
 
     TopoDS_Compound outlineWires;
 

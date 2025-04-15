@@ -35,31 +35,32 @@
 #include <ActAPI_IAlgorithm.h>
 
 // asiAlgo includes
-#include "asiAlgo_FixOverlappedEdges.h"
-#include "asiAlgo_SplitEdgesByStartEndPoints.h"
 #include "asiAlgo_Utils.h"
 #include "asiAlgo_BVHFacets.h"
 #include "asiAlgo_FeatureFaces.h"
 #include "asiAlgo_HitFacet.h"
 #include "asiAlgo_HlrPreciseAlgo.h"
 #include "asiAlgo_HlrToShape.h"
-#include "asiAlgo_IntersectCC.h"
+#include "asiAlgo_Timer.h"
 
 // OCCT includes
+#include <BOPAlgo_PaveFiller.hxx>
 #include <BOPAlgo_Tools.hxx>
+#include <BOPDS_DS.hxx>
+#include <BOPDS_PDS.hxx>
 #include <BRep_Builder.hxx>
+#include <BRepBndLib.hxx>
 #include <BRepBuilderAPI_MakeEdge.hxx>
-#include <BRepBuilderAPI_MakeVertex.hxx>
-#include <BRepGProp.hxx>
 #include <BRepLib.hxx>
-#include <GProp_GProps.hxx>
+#include <GCPnts_TangentialDeflection.hxx>
+#include <GCPnts_UniformAbscissa.hxx>
 #include <Geom2dAPI_InterCurveCurve.hxx>
-#include <GeomAPI_ProjectPointOnCurve.hxx>
+#include <Geom_Ellipse.hxx>
 #include <HLRBRep_Data.hxx>
 #include <HLRBRep_PolyAlgo.hxx>
 #include <HLRBRep_PolyHLRToShape.hxx>
 #include <NCollection_UBTreeFiller.hxx>
-#include <ShapeAnalysis_ShapeTolerance.hxx>
+#include <ShapeAnalysis_Curve.hxx>
 #include <ShapeFix_Wire.hxx>
 #include <TopExp_Explorer.hxx>
 
@@ -67,13 +68,12 @@
 #undef DRAW_DEBUG
 
 #ifdef DRAW_DEBUG
-  #define dirCoords 1, -1, 1
-
+  #define dirCoords -0.123775, 1.36516e-17, -0.99231
   static std::set< int > toDraw = { -1 }; // '-1' to draw all vectors;
                                           // 'empty' to skip drawing;
                                           // 'custom indices' to draw vectors for specific edges.
 
-  #define DRAW_INDEX toDraw.count( *edgeData.seqIndex )
+  #define DRAW_INDEX toDraw.count( edgeData->index )
   #define DRAW_ALL   toDraw.count(-1)
 
   // #define INCLUDE_HIDDEN_LINES
@@ -90,7 +90,16 @@
 
 //-----------------------------------------------------------------------------
 
+#define InterCurveCurveTol   Precision::Confusion()
+#define OverlappingTol       Precision::Confusion()
+#define BBGap                1.0
+#define MinDistForRaycasting 0.1
+#define EdgesToWiresTol      m_linearTolerance
+
+//-----------------------------------------------------------------------------
+
 using namespace asiAlgo;
+using namespace asiAlgo::algo;
 
 typedef NCollection_UBTree       < int, Bnd_Box > boxBndTree;
 typedef NCollection_UBTreeFiller < int, Bnd_Box > boxBndFiller;
@@ -111,11 +120,12 @@ namespace
 
   //-----------------------------------------------------------------------------
 
-  bool makeProjection(const TopoDS_Shape&      shape,
-                      const gp_Dir&            dir,
-                      const asiAlgo_Feature&   featureFaces,
-                      TopoDS_Shape&            hlrResult,
-                      TopoDS_Shape&            featureFacesResult)
+  bool makeProjection(const TopoDS_Shape&        shape,
+                      const gp_Dir&              dir,
+                      const asiAlgo_Feature&     featureFaces,
+                      TopoDS_Shape&              hlrResult,
+                      TopoDS_Shape&              featureFacesResult,
+                      Handle(BRepTools_History)& /*history*/)
   {
     gp_Ax2 transform( gp::Origin(), dir );
     HLRAlgo_Projector projector( transform );
@@ -286,11 +296,12 @@ namespace
 
   //-----------------------------------------------------------------------------
 
-  bool makeProjectionDiscr(const TopoDS_Shape&    shape,
-                           const gp_Dir&          dir,
-                           const asiAlgo_Feature& featureFaces,
-                           TopoDS_Shape&          hlrResult,
-                           TopoDS_Shape&          featureFacesResult)
+  bool makeProjectionDiscr(const TopoDS_Shape&        shape,
+                           const gp_Dir&              dir,
+                           const asiAlgo_Feature&     featureFaces,
+                           TopoDS_Shape&              hlrResult,
+                           TopoDS_Shape&              featureFacesResult,
+                           Handle(BRepTools_History)& /*history*/)
   {
     gp_Ax2 transform( gp::Origin(), dir );
 
@@ -468,12 +479,207 @@ namespace
     return facetIdx != -1;
   }
 
+
   //-----------------------------------------------------------------------------
 
-  void drawEdges(const std::vector< TopoDS_Edge >& edges,
-                 const std::string&                name,
-                 ActAPI_PlotterEntry               plotter,
-                 ActAPI_Color                      color = Color_Pink)
+  struct intersectionInfo
+  {
+    tl::optional< double > distance;
+    tl::optional< double > param;
+
+    tl::optional< int    > otherIndex;
+    tl::optional< double > otherParam;
+
+    intersectionInfo()
+    {
+    }
+
+    intersectionInfo(const int     index,
+                     const double& thisParam,
+                     const double& otherParam)
+      : param( thisParam ),
+        otherIndex( index ),
+        otherParam( otherParam )
+    {
+    }
+  };
+
+  //-----------------------------------------------------------------------------
+
+  struct sideInfo
+  {
+    enum HasMaterial
+    {
+      HasMaterial_Undefined = 0,
+      HasMaterial_HasMaterial,
+      HasMaterial_NoMaterial
+    };
+
+    HasMaterial hasMaterial;
+
+    gp_Pnt shiftP;
+    gp_Vec shiftV;
+
+    bool isIOk;
+    intersectionInfo iInfo;
+
+    sideInfo()
+      : hasMaterial( HasMaterial_Undefined ),
+        isIOk( true )
+    {
+    }
+  };
+
+  //-----------------------------------------------------------------------------
+
+  class edgeInfo : public Standard_Transient
+  {
+    public:
+
+      enum Status
+      {
+        Status_Undefined = 0,
+        Status_Border,
+        Status_Body,
+        Status_Dangling
+      };
+
+    public:
+
+      int index;
+
+      TopoDS_Edge E;
+
+      bool isShiftEdge;
+
+      sideInfo sideInfo_Left;
+      sideInfo sideInfo_Right;
+
+      Bnd_Box box;
+
+      // 3D parameters.
+      double f, l;
+      Handle(Geom_Curve) C3d;
+
+      // 2D parameters.
+      double f2d, l2d;
+      Handle(Geom2d_Curve) C2d;
+
+      bool isReversed2d;
+
+      // Information about intersections.
+      std::vector< intersectionInfo > intersected2DParams;
+
+
+    public:
+
+      // Constructor.
+      edgeInfo(const TopoDS_Edge&        e,
+               const Handle(Geom_Plane)& plane,
+               const int                 i)
+        : Standard_Transient (),
+          index( i ),
+          isShiftEdge( false ),
+          E( e )
+      {
+        // Get bounding boxes.
+        {
+          BRepBndLib::AddOptimal( E, box, false, false );
+
+          box.SetGap( BBGap );
+        }
+
+        // Get edges's parameters in 3D.
+        {
+          C3d = BRep_Tool::Curve( E, f, l );
+
+          // Default points and vectors.
+          gp_Pnt midP;
+          gp_Vec midV;
+
+          C3d->D1( ( f + l ) * 0.5, midP, midV );
+
+          if ( midV.Magnitude() < Precision::Confusion() )
+          {
+            // Try to move along curve to find another place for ray casting.
+            GeomAdaptor_Curve adaptor( C3d );
+
+            GCPnts_UniformAbscissa discretizer( adaptor, 21 );
+
+            if ( !discretizer.IsDone() ||
+                  discretizer.NbPoints() == 0 )
+            {
+              return;
+            }
+
+            std::vector< double > params;
+
+            const int nbPoints = discretizer.NbPoints();
+            //
+            for ( int j = 2; j < nbPoints; ++j )
+            {
+              const double param = discretizer.Parameter(j);
+
+              C3d->D1( param, midP, midV );
+
+              if ( midV.Magnitude() < Precision::Confusion() )
+              {
+                continue;
+              }
+
+              break;
+            }
+          }
+
+          sideInfo_Left.shiftP  = midP;
+          sideInfo_Right.shiftP = midP;
+
+          sideInfo_Left.shiftV  = midV.Rotated( gp_Ax1( midP, plane->Axis().Direction() ), M_PI / 2. ).Normalized();
+          sideInfo_Right.shiftV = sideInfo_Left.shiftV.Reversed();
+        }
+
+        // Get edges's parameters in 2D.
+        {
+          Handle(Geom2d_Curve) curve2d = BRep_Tool::CurveOnPlane( E, plane, TopLoc_Location(), f2d, l2d );
+          C2d = new Geom2d_TrimmedCurve( curve2d, f2d, l2d );
+
+          isReversed2d = f2d > l2d;
+        }
+      }
+
+      //-----------------------------------------------------------------------------
+
+      Status Status()
+      {
+        if ( sideInfo_Left.hasMaterial  == sideInfo::HasMaterial_Undefined ||
+             sideInfo_Right.hasMaterial == sideInfo::HasMaterial_Undefined )
+        {
+          return Status_Undefined;
+        }
+
+        if ( sideInfo_Left.hasMaterial  == sideInfo::HasMaterial_NoMaterial &&
+             sideInfo_Right.hasMaterial == sideInfo::HasMaterial_NoMaterial )
+        {
+          return Status_Dangling;
+        }
+
+        if ( sideInfo_Left.hasMaterial  == sideInfo::HasMaterial_HasMaterial &&
+             sideInfo_Right.hasMaterial == sideInfo::HasMaterial_HasMaterial )
+        {
+          return Status_Body;
+        }
+
+        return Status_Border;
+      }
+  };
+
+  //-----------------------------------------------------------------------------
+
+  void drawEdges(const std::vector< Handle(edgeInfo) >& edges,
+                 const std::string&                     name,
+                 ActAPI_PlotterEntry                    plotter,
+                 ActAPI_Color                           color = Color_Pink,
+                 const bool                             toSeparate = false)
   {
     if ( edges.empty() )
     {
@@ -485,12 +691,24 @@ namespace
     BRep_Builder bb;
     bb.MakeCompound(C);
 
-    for ( auto& edge : edges )
+    for ( const Handle(edgeInfo)& edge : edges )
     {
-      bb.Add( C, edge );
+      bb.Add( C, edge->E );
+
+      if ( toSeparate )
+      {
+        std::string nameSep = name;
+        nameSep += "_";
+        nameSep += std::to_string( edge->index );
+
+        plotter.REDRAW_SHAPE( nameSep.c_str(), edge->E, color );
+      }
     }
 
-    plotter.REDRAW_SHAPE( name.c_str(), C, color );
+    if ( !toSeparate )
+    {
+      plotter.REDRAW_SHAPE( name.c_str(), C, color );
+    }
   }
 
   //-----------------------------------------------------------------------------
@@ -530,218 +748,142 @@ namespace
 
   //-----------------------------------------------------------------------------
 
-  struct sideInfo
-  {
-    enum HasMaterial
-    {
-      HasMaterial_Undefined = 0,
-      HasMaterial_HasMaterial,
-      HasMaterial_NoMaterial
-    };
-
-    HasMaterial hasMaterial;
-
-    gp_Vec sideShiftV;
-
-    // Intersection results.
-    bool                   m_iDone;
-
-    tl::optional< double > m_iDistance;
-    tl::optional< int    > m_iEdgeIndex;
-    tl::optional< double > m_iEdgeParam;
-
-    sideInfo()
-      : hasMaterial( HasMaterial_Undefined ),
-        m_iDone( false )
-    {
-    }
-  };
-
-  //-----------------------------------------------------------------------------
-
-  struct edgeInfo
-  {
-    tl::optional< int > seqIndex;
-
-    enum Status
-    {
-      Status_Undefined = 0,
-      Status_Border,
-      Status_Body
-    };
-
-    sideInfo sideInfo_Left;
-    sideInfo sideInfo_Right;
-
-    Bnd_Box box;
-
-    double tolerance;
-
-    // 3D parameters.
-    gp_Pnt midP;
-    gp_Vec midV;
-
-    double f, l;
-    Handle(Geom_Curve) C3d;
-
-    // Constructor.
-    edgeInfo(const TopoDS_Edge&        edge,
-             const gp_Dir&             norm,
-             const double              gap,
-             const tl::optional< int > i)
-      : tolerance( gap ),
-        seqIndex(i)
-    {
-      // Get bounding boxes.
-      {
-        asiAlgo_Utils::Bounds( edge, false, true, box );
-
-        box.SetGap( tolerance );
-      }
-
-      // Get edges's parameters in 3D.
-      {
-        C3d = BRep_Tool::Curve( edge, f, l );
-
-        C3d->D1( ( f + l ) * 0.5, midP, midV );
-
-        midV.Normalize();
-      }
-
-      sideInfo_Left.sideShiftV  = midV.Rotated( gp_Ax1( midP, norm ),   M_PI / 2. ).Normalized();
-      sideInfo_Right.sideShiftV = midV.Rotated( gp_Ax1( midP, norm ), - M_PI / 2. ).Normalized();
-    }
-
-    Status status()
-    {
-      if ( sideInfo_Left.hasMaterial  == sideInfo::HasMaterial_Undefined ||
-           sideInfo_Right.hasMaterial == sideInfo::HasMaterial_Undefined )
-      {
-        return Status_Undefined;
-      }
-
-      if ( sideInfo_Left.hasMaterial  == sideInfo::HasMaterial_HasMaterial &&
-           sideInfo_Right.hasMaterial == sideInfo::HasMaterial_HasMaterial )
-      {
-        return Status_Body;
-      }
-
-      return Status_Border;
-    }
-  };
-
-  //-----------------------------------------------------------------------------
-
   class Selector_FindIntersections : public boxBndTree::Selector
   {
     public:
 
-      Selector_FindIntersections(const std::vector< TopoDS_Edge >& edges,
-                                 const gp_Dir&                     norm,
-                                 const double                      gap)
-        : m_shiftEdgeInfo( nullptr ),
-          m_sideInfo( nullptr ),
-          m_intersector( { nullptr, nullptr } )
+      Selector_FindIntersections(std::vector< Handle(edgeInfo) >& edges,
+                                 ActAPI_PlotterEntry              plotter)
+        : m_targetEdgeInfo ( nullptr ),
+          m_data ( edges ),
+          m_plotter ( plotter )
       {
-        if ( edges.empty() )
-        {
-          return;
-        }
-
-        // Extract data from the passed edges set.
-        int i = 1;
-
-        for ( const TopoDS_Edge& edge : edges )
-        {
-          m_data.push_back( { edge, norm, gap, i } );
-
-          ++i;
-        }
       }
 
-      void Define(edgeInfo* info,
-                  sideInfo* sInfo)
+      void Define(edgeInfo* info)
       {
-        m_shiftEdgeInfo = info;
-        m_sideInfo      = sInfo;
+        m_targetEdgeInfo = info;
       }
 
       bool Reject(const Bnd_Box& box) const
       {
-        return m_shiftEdgeInfo->box.IsOut( box );
+        return m_targetEdgeInfo->box.IsOut( box );
       }
 
       bool Accept(const int& index)
       {
+#ifdef DRAW_DEBUG
+        const int id = m_targetEdgeInfo->index;
+#endif
         // Skip intersections check with the edge which we test.
-        if ( *m_shiftEdgeInfo->seqIndex == index )
+        if ( m_targetEdgeInfo->index == index - 1 )
         {
           return false;
         }
 
-        const edgeInfo& indexEdgeInfo = m_data[ index - 1 ];
+        return checkIntersection( m_targetEdgeInfo, m_data[ index - 1 ] );
+      }
 
-        bool hasIntersection = false;
+    private:
+
+      bool checkIntersection(Handle(edgeInfo)& edge,
+                             Handle(edgeInfo)& otherEdge)
+      {
+        if ( edge->C2d.IsNull() ||
+             otherEdge->C2d.IsNull() )
+        {
+          return false;
+        }
+
+        bool hasIntersections = false;
 
         try
         {
           OCC_CATCH_SIGNALS
 
-          asiAlgo_IntersectionPointsCC iPoints;
+          Geom2dAPI_InterCurveCurve icc( edge->C2d, otherEdge->C2d, InterCurveCurveTol );
 
-          if ( !m_intersector( indexEdgeInfo.C3d,    indexEdgeInfo.f,    indexEdgeInfo.l,
-                               m_shiftEdgeInfo->C3d, m_shiftEdgeInfo->f, m_shiftEdgeInfo->l,
-                               Precision::Confusion(),
-                               iPoints ) )
+          int nbPnts     = icc.NbPoints();
+          int nbSegments = icc.NbSegments();
+
+          // They are not intersected with given tolerance.
+          if ( nbPnts == 0 && nbSegments == 0 )
           {
             return false;
           }
 
-          if ( iPoints.Size() == 0 )
-          {
-            return false;
-          }
+          // Get the list of intersection parameters of curves.
+          const Geom2dInt_GInter& intersector = icc.Intersector();
 
-          for ( int i = 1; i <= iPoints.Size(); ++i )
+          // Check point intersections.
+          for ( int i = 1; i <= icc.NbPoints(); ++i )
           {
-            const Handle(asiAlgo_IntersectionPointCC)& res = iPoints(i);
+            const IntRes2d_IntersectionPoint& p =
+              intersector.Point( i );
 
-            if ( res->W2 < m_shiftEdgeInfo->f ||
-                 res->W2 > m_shiftEdgeInfo->l )
+            if ( checkParam( p.ParamOnFirst(), p.ParamOnSecond(), edge, otherEdge ) )
             {
-              continue;
+              hasIntersections = true;
+            }
+          }
+
+          // Check segment intersections.
+          for ( int i = 1; i <= icc.NbSegments(); ++i )
+          {
+            const IntRes2d_IntersectionSegment& seg =
+              intersector.Segment( i );
+
+            if ( seg.HasFirstPoint() )
+            {
+              if ( checkParam( seg.FirstPoint().ParamOnFirst(), seg.FirstPoint().ParamOnSecond(), edge, otherEdge ) )
+              {
+                hasIntersections = true;
+              }
             }
 
-            // 'seqIndex' contains id of contour edge, while 'm_shiftEdgeInfo' itself
-            // is a dump edge created to check intersections on the side of this contour edge.
-            const double dist = m_data[ m_shiftEdgeInfo->seqIndex.value() - 1 ].midP.Distance( res->P );
-
-            if ( !m_sideInfo->m_iDistance.has_value() ||
-                  dist < *m_sideInfo->m_iDistance )
+            if ( seg.HasLastPoint() )
             {
-              hasIntersection = true;
-
-              m_sideInfo->m_iDistance  = dist;
-              m_sideInfo->m_iEdgeIndex = index - 1;
-              m_sideInfo->m_iEdgeParam = res->W1;
+              if ( checkParam( seg.LastPoint().ParamOnFirst(), seg.LastPoint().ParamOnSecond(), edge, otherEdge ) )
+              {
+                hasIntersections = true;
+              }
             }
           }
         }
-        catch(...)
+        catch ( ... )
         {
           return false;
         }
 
-        return hasIntersection;
+        return hasIntersections;
       }
 
+      //-----------------------------------------------------------------------------
+
+      bool checkParam(const double      T,
+                      const double      otherT,
+                      Handle(edgeInfo)& tOwnerEdge,
+                      Handle(edgeInfo)& otherEdge)
+      {
+        // Check that intersection point on the edge.
+        const bool isOnEdge = tOwnerEdge->isReversed2d ? ( T > tOwnerEdge->l2d - Precision::Confusion() && T < tOwnerEdge->f2d + Precision::Confusion() )
+                                                       : ( T > tOwnerEdge->f2d - Precision::Confusion() && T < tOwnerEdge->l2d + Precision::Confusion() );
+
+        if ( isOnEdge )
+        {
+          tOwnerEdge->intersected2DParams.push_back( { otherEdge->index, T, otherT } );
+
+          return true;
+        }
+
+        return false;
+      }
 
     public:
 
-      asiAlgo_IntersectCC     m_intersector;
-      std::vector< edgeInfo > m_data;
-      edgeInfo*               m_shiftEdgeInfo;
-      sideInfo*               m_sideInfo;
+      std::vector< Handle(edgeInfo) >& m_data;
+      Handle(edgeInfo)                 m_targetEdgeInfo;
+      ActAPI_PlotterEntry              m_plotter;
 
   };
 }
@@ -754,7 +896,9 @@ asiAlgo_ComputeOutline::asiAlgo_ComputeOutline(const Handle(asiAlgo_AAG)& aag,
   : ActAPI_IAlgorithm( progress, plotter ),
     m_aag( aag ),
     m_linearTolerance( Precision::Confusion() ),
-    m_mode( Mode::Mode_Precise )
+    m_mode( Mode::Mode_Precise ),
+    m_history( new BRepTools_History ),
+    m_includeDanglingEdges( true )
 {}
 
 //-----------------------------------------------------------------------------
@@ -774,126 +918,136 @@ enum checkingModes
   checkingModes_RayTracingForIntersectedCases_All
 };
 
+//-----------------------------------------------------------------------------
+
 void checkSide(asiAlgo_HitFacet&           hitFacets,
-               boxBndTree&                 bbTree,
                Selector_FindIntersections& treeSelector,
-               edgeInfo&                   edgeData,
+               Handle(edgeInfo)&           edgeData,
                const bool                  isLeft,
-               const gp_Dir&               dir,
+               const Handle(Geom_Plane)&   plane,
                bool&                       isSomethingDone,
                const checkingModes         checkingMode,
                ActAPI_ProgressEntry        progress,
                ActAPI_PlotterEntry         plotter)
 {
-  sideInfo& thisSideInfo  = isLeft ? edgeData.sideInfo_Left  : edgeData.sideInfo_Right;
-  sideInfo& otherSideInfo = isLeft ? edgeData.sideInfo_Right : edgeData.sideInfo_Left;
+  sideInfo& thisSideInfo  = isLeft ? edgeData->sideInfo_Left
+                                   : edgeData->sideInfo_Right;
 
   if ( thisSideInfo.hasMaterial != sideInfo::HasMaterial_Undefined )
   {
     return;
   }
 
-  tl::optional< double > raycastDist;
-
-  const bool hasIntersection = thisSideInfo.m_iEdgeIndex.has_value();
-
-  if ( thisSideInfo.m_iDone )
+  if ( thisSideInfo.isIOk != true )
   {
-    if ( hasIntersection )
-    {
-      if ( *thisSideInfo.m_iDistance < Precision::Confusion() )
-      {
-        return;
-      }
+    thisSideInfo.hasMaterial = sideInfo::HasMaterial_HasMaterial;
 
-      const edgeInfo& intersectedEdge = treeSelector.m_data[ *thisSideInfo.m_iEdgeIndex ];
-
-      gp_Pnt iP;
-      gp_Vec iV;
-
-      intersectedEdge.C3d->D1( *thisSideInfo.m_iEdgeParam, iP, iV );
-
-      if ( !iP.IsEqual( edgeData.midP, Precision::Confusion() ) )
-      {
-        gp_Vec V1( iP, edgeData.midP );
-
-        const bool atLeftSide = iV.AngleWithRef( V1, dir ) > 0;
-
-        sideInfo::HasMaterial intersectedEdgeMaterial = atLeftSide ? intersectedEdge.sideInfo_Left.hasMaterial
-                                                                   : intersectedEdge.sideInfo_Right.hasMaterial;
-
-#ifdef DRAW_DEBUG
-        if ( DRAW_INDEX || DRAW_ALL )
-        {
-          debugInfoVec_Target.push_back( { edgeData.midP, edgeData.midV } );
-          debugInfoVec_Intersected.push_back( { iP, iV.Normalized() } );
-          debugInfoVec_FromTargetToIntersected.push_back( { edgeData.midP, V1.Reversed() } );
-        }
-#endif
-
-        if ( intersectedEdgeMaterial != sideInfo::HasMaterial_Undefined )
-        {
-          thisSideInfo.hasMaterial = intersectedEdgeMaterial;
-
-          if ( thisSideInfo.hasMaterial == sideInfo::HasMaterial_NoMaterial &&
-               otherSideInfo.hasMaterial == sideInfo::HasMaterial_Undefined )
-          {
-            otherSideInfo.hasMaterial = sideInfo::HasMaterial_HasMaterial;
-          }
-
-          isSomethingDone = true;
-        }
-      }
-    }
-    else
-    {
-      raycastDist = 0.5;
-    }
-  }
-  else
-  {
-    thisSideInfo.m_iDone = true;
-
-    // Check that we do not intersect any other edge.
-    TopoDS_Edge shiftEdge = BRepBuilderAPI_MakeEdge( edgeData.midP, edgeData.midP.Translated( thisSideInfo.sideShiftV ) );
-
-    edgeInfo rayShiftEdge( shiftEdge, dir, edgeData.tolerance, edgeData.seqIndex );
-
-    treeSelector.Define( &rayShiftEdge, &thisSideInfo );
-
-    bbTree.Select( treeSelector );
-
-    checkSide( hitFacets, bbTree, treeSelector, edgeData, isLeft, dir, isSomethingDone, checkingMode, progress, plotter );
+    isSomethingDone = true;
 
     return;
   }
 
+  // Try to get information from the intersected edge.
+  tl::optional< double > raycastDist;
+
+  const bool hasIntersection = thisSideInfo.iInfo.distance.has_value();
+
+  if ( hasIntersection )
+  {
+    const Handle(edgeInfo)& intersectedEdge = treeSelector.m_data[ *thisSideInfo.iInfo.otherIndex ];
+
+    // Convert intersection 2D point to 3D space.
+    gp_Pnt2d P2d;
+
+    intersectedEdge->C2d->D0( *thisSideInfo.iInfo.otherParam, P2d );
+
+    gp_Pnt P = plane->Value( P2d.X(), P2d.Y() );
+
+    // Get the point's parameter on a curve.
+    ShapeAnalysis_Curve sac;
+
+    double param = 0.;
+    sac.Project( intersectedEdge->C3d, P, Precision::Confusion(), P, param );
+
+    gp_Pnt iP;
+    gp_Vec iV;
+
+    intersectedEdge->C3d->D1( param, iP, iV );
+
+#ifdef DRAW_DEBUG
+    if ( DRAW_INDEX || DRAW_ALL )
+    {
+      gp_Pnt tP;
+      gp_Vec tV;
+
+      edgeData->C3d->D1( *thisSideInfo.iInfo.param, tP, tV );
+
+      debugInfoVec_Target.push_back( { tP, tV.Normalized() } );
+      debugInfoVec_Intersected.push_back( { iP, iV.Normalized() } );
+    }
+#endif
+
+    gp_Pnt vecP1 = iP;
+    gp_Pnt vecP2 = thisSideInfo.shiftP;
+
+    gp_Vec V1( vecP1, vecP2 );
+
+    const bool atLeftSide = iV.AngleWithRef( V1, plane->Axis().Direction() ) > 0.;
+
+    sideInfo::HasMaterial intersectedEdgeMaterial = atLeftSide ? intersectedEdge->sideInfo_Left.hasMaterial
+                                                               : intersectedEdge->sideInfo_Right.hasMaterial;
+
+#ifdef DRAW_DEBUG
+    if ( DRAW_INDEX || DRAW_ALL )
+    {
+      debugInfoVec_FromTargetToIntersected.push_back( { vecP1, V1.Reversed().Normalized() } );
+    }
+#endif
+
+    if ( intersectedEdgeMaterial != sideInfo::HasMaterial_Undefined )
+    {
+      thisSideInfo.hasMaterial = intersectedEdgeMaterial;
+
+      isSomethingDone = true;
+
+      return;
+    }
+  }
+  else
+  {
+    raycastDist = 0.5;
+  }
+
   if ( checkingMode != checkingModes::checkingModes_NoRayTracingForIntersectedCases &&
        thisSideInfo.hasMaterial == sideInfo::HasMaterial_Undefined &&
-       thisSideInfo.m_iEdgeIndex.has_value() )
+       thisSideInfo.iInfo.otherIndex.has_value() )
   {
-    raycastDist = *thisSideInfo.m_iDistance * 0.5;
+    raycastDist = *thisSideInfo.iInfo.distance * 0.5;
   }
 
   if ( raycastDist.has_value() )
   {
-    if ( *raycastDist < edgeData.tolerance )
+    if ( *raycastDist < MinDistForRaycasting )
     {
 #ifdef DRAW_DEBUG
-      progress.SendLogMessage(LogInfo(Normal) << "Too small half dist for %1."
-                                              << *edgeData.seqIndex);
+      progress.SendLogMessage( LogInfo(Normal) << "Too small half dist for %1."
+                                               << edgeData->index );
 #endif
 
-      thisSideInfo.hasMaterial = sideInfo::HasMaterial_HasMaterial;
+      {
+        thisSideInfo.hasMaterial = sideInfo::HasMaterial_HasMaterial;
 
-      isSomethingDone = true;
+        isSomethingDone = true;
+      }
+
+      return;
     }
     else
     {
-      gp_Pnt rayP = edgeData.midP.Translated( thisSideInfo.sideShiftV.Scaled( *raycastDist ) );
+      gp_Pnt rayP = thisSideInfo.shiftP.Translated( thisSideInfo.shiftV.Scaled( *raycastDist ) );
 
-      bool _hasHit = hasHit( hitFacets, rayP, dir ) ||
-                     hasHit( hitFacets, rayP, dir.Reversed() );
+      bool _hasHit = hasHit( hitFacets, rayP, plane->Axis().Direction() ) ||
+                     hasHit( hitFacets, rayP, plane->Axis().Direction().Reversed() );
 
       sideInfo::HasMaterial hasMetarial = _hasHit ? sideInfo::HasMaterial_HasMaterial
                                                   : sideInfo::HasMaterial_NoMaterial;
@@ -904,32 +1058,22 @@ void checkSide(asiAlgo_HitFacet&           hitFacets,
       {
         thisSideInfo.hasMaterial = hasMetarial;
 
-        // Transfer recognition results to the other side if possible.
-        if ( thisSideInfo.hasMaterial == sideInfo::HasMaterial_NoMaterial &&
-             otherSideInfo.hasMaterial == sideInfo::HasMaterial_Undefined )
-        {
-          otherSideInfo.hasMaterial = sideInfo::HasMaterial_HasMaterial;
-        }
-
         isSomethingDone = true;
       }
 
 #ifdef DRAW_DEBUG
       if ( DRAW_INDEX || DRAW_ALL )
       {
-        std::string rayPV    = "rayPV"    + isLeft ? "_L_" : "_R_" + *edgeData.seqIndex;
-        std::string rayShift = "rayShift" + isLeft ? "_L_" : "_R_" + *edgeData.seqIndex;
-
         if ( _hasHit )
         {
-          debugInfoVec_Rays_Red.push_back( { rayP, dir } );
+          debugInfoVec_Rays_Red.push_back( { rayP, plane->Axis().Direction() } );
         }
         else
         {
-          debugInfoVec_Rays_Green.push_back( { rayP, dir } );
+          debugInfoVec_Rays_Green.push_back( { rayP, plane->Axis().Direction() } );
         }
 
-        debugInfoVec_Shift.push_back( { edgeData.midP, thisSideInfo.sideShiftV.Scaled( *raycastDist ) } );
+        debugInfoVec_Shift.push_back( { thisSideInfo.shiftP, thisSideInfo.shiftV.Scaled( *raycastDist ) } );
       }
 #endif
     }
@@ -938,10 +1082,226 @@ void checkSide(asiAlgo_HitFacet&           hitFacets,
 
 //-----------------------------------------------------------------------------
 
+bool findRayPositionAtParam(boxBndTree&                 bbTree,
+                            Selector_FindIntersections& treeSelector,
+                            Handle(edgeInfo)&           edgeData,
+                            const gp_Pnt&               shiftPnt,
+                            const gp_Vec&               shiftVec,
+                            const Handle(Geom_Plane)&   plane,
+                            intersectionInfo&           iInfo)
+{
+  // Check if we intersect any other edge.
+  TopoDS_Edge shiftEdge;
+
+  try
+  {
+    shiftEdge = BRepBuilderAPI_MakeEdge( shiftPnt, shiftPnt.Translated( shiftVec ) );
+  }
+  catch( ... )
+  {
+    return false;
+  }
+
+  double f, l;
+  Handle(Geom_Curve) C3d = BRep_Tool::Curve( shiftEdge, f, l );
+
+  if ( C3d.IsNull() )
+  {
+    return false;
+  }
+
+  edgeInfo rayShiftEdge( shiftEdge, plane, edgeData->index );
+
+  rayShiftEdge.isShiftEdge = true;
+
+  treeSelector.Define( &rayShiftEdge );
+
+  bbTree.Select( treeSelector );
+
+  // Get closest intersected edges info if any.
+  for ( const auto& iInfoRes : rayShiftEdge.intersected2DParams )
+  {
+    gp_Pnt2d iP;
+    rayShiftEdge.C2d->D0( *iInfoRes.param, iP );
+
+    const double dist = shiftPnt.Distance( plane->Value( iP.X(), iP.Y() ) );
+
+    if ( !iInfo.distance.has_value() ||
+          dist < *iInfo.distance )
+    {
+      iInfo.distance   = dist;
+      iInfo.otherIndex = iInfoRes.otherIndex;
+      iInfo.otherParam = iInfoRes.otherParam;
+    }
+  }
+
+  const bool hasIntersection = iInfo.distance.has_value();
+
+  if ( hasIntersection )
+  {
+    const Handle(edgeInfo)& intersectedEdge = treeSelector.m_data[ *iInfo.otherIndex ];
+
+    // Convert intersection 2D point to 3D space.
+    gp_Pnt2d P2d;
+
+    intersectedEdge->C2d->D0( *iInfo.otherParam, P2d );
+
+    gp_Pnt P3d = plane->Value( P2d.X(), P2d.Y() );
+
+    // Get the point's parameter on a curve.
+    ShapeAnalysis_Curve sac;
+
+    double t = 0.;
+    sac.Project( intersectedEdge->C3d, P3d, Precision::Confusion(), P3d, t );
+
+    gp_Pnt iP;
+    gp_Vec iV;
+
+    intersectedEdge->C3d->D1( t, iP, iV );
+
+    // Try to avoid cases with zero length vector.
+    if ( iP.IsEqual( shiftPnt, Precision::Confusion() ) )
+    {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+//-----------------------------------------------------------------------------
+
+void findRayPosition(boxBndTree&                 bbTree,
+                     Selector_FindIntersections& treeSelector,
+                     Handle(edgeInfo)&           edgeData,
+                     const bool                  isLeft,
+                     const Handle(Geom_Plane)&   plane,
+                     ActAPI_ProgressEntry        progress,
+                     ActAPI_PlotterEntry         plotter)
+{
+  sideInfo& thisSideInfo = isLeft ? edgeData->sideInfo_Left
+                                  : edgeData->sideInfo_Right;
+
+  // 1. Try to check middle point of the edge.
+  {
+    intersectionInfo iInfo;
+
+    const bool isOk = findRayPositionAtParam( bbTree,
+                                              treeSelector,
+                                              edgeData,
+                                              thisSideInfo.shiftP,
+                                              thisSideInfo.shiftV,
+                                              plane,
+                                              iInfo );
+
+    if ( isOk )
+    {
+      thisSideInfo.iInfo = iInfo;
+
+      return;
+    }
+  }
+
+#ifdef DRAW_DEBUG
+  const int id = edgeData->index;
+#endif
+
+  thisSideInfo.isIOk = false;
+
+  // 2. Try to move along curve to find another place for ray casting.
+  GeomAdaptor_Curve adaptor( edgeData->C3d );
+
+  GCPnts_UniformAbscissa discretizer( adaptor, 21 );
+
+  if ( !discretizer.IsDone() ||
+        discretizer.NbPoints() == 0 )
+  {
+    return;
+  }
+
+  std::vector< double > params;
+
+  const int nbPoints = discretizer.NbPoints();
+  //
+  for ( int i = 2; i < nbPoints; ++i )
+  {
+    const double param = discretizer.Parameter(i);
+
+    gp_Pnt P;
+    gp_Vec V;
+
+    edgeData->C3d->D1( param, P, V );
+
+    if ( V.Magnitude() < Precision::Confusion() )
+    {
+      continue;
+    }
+
+    V = V.Rotated( gp_Ax1( P, plane->Axis().Direction() ), M_PI / 2. ).Normalized();
+
+    if ( !isLeft )
+    {
+      V = V.Reversed();
+    }
+
+    intersectionInfo iInfo;
+
+    const bool isOk = findRayPositionAtParam( bbTree,
+                                              treeSelector,
+                                              edgeData,
+                                              P,
+                                              V,
+                                              plane,
+                                              iInfo );
+
+    if ( isOk )
+    {
+      thisSideInfo.isIOk = true;
+      thisSideInfo.iInfo = iInfo;
+
+      thisSideInfo.shiftP = P;
+      thisSideInfo.shiftV = V;
+
+      return;
+    }
+  }
+
+  return;
+}
+
+//-----------------------------------------------------------------------------
+
+bool asiAlgo_ComputeOutline::Perform(const gp_Dir&                                dir,
+                                     std::vector<Handle(asiAlgo::algo::Outline)>& outlines,
+                                     const Mode                                   mode)
+{
+  TopoDS_Compound outlineWires;
+
+  if ( !Perform( dir, outlineWires, mode ) )
+  {
+    return false;
+  }
+
+  for ( TopExp_Explorer it( outlineWires, TopAbs_WIRE ); it.More(); it.Next() )
+  {
+    const TopoDS_Wire& W = TopoDS::Wire( it.Current() );
+
+    Handle(Outline) outline = new Outline( W );
+
+    outlines.push_back( outline );
+  }
+
+  return true;
+}
+
+//-----------------------------------------------------------------------------
+
 bool asiAlgo_ComputeOutline::Perform(const gp_Dir&    _dir,
                                      TopoDS_Compound& outlineWires,
                                      const Mode       mode)
 {
+  m_history->Clear();
+
 #ifdef DRAW_DEBUG
   debugInfoVec_Shift.clear();
   debugInfoVec_Rays_Red.clear();
@@ -958,10 +1318,42 @@ bool asiAlgo_ComputeOutline::Perform(const gp_Dir&    _dir,
   gp_Dir dir( _dir );
 #endif
 
+  Handle(Geom_Plane) plane = new Geom_Plane( gp_Pnt(), dir );
+
   m_progress.SendLogMessage(LogInfo(Normal) << "Direction of projection for HLR Outline is: %1."
                                             << asiAlgo_Utils::Json::FromDirAsTuple( dir ) );
 
-  Handle(asiAlgo_BVHFacets) bvh = new asiAlgo_BVHFacets( m_aag->GetMasterShape() );
+  //-----------------------------------------------------------------------------
+  // Get faces to project.
+  //-----------------------------------------------------------------------------
+
+  TopoDS_Shape targetShape;
+
+  if ( m_domain.IsEmpty() )
+  {
+    targetShape = m_aag->GetMasterShape();
+  }
+  else
+  {
+    TopoDS_Compound comp;
+
+    BRep_Builder bbuilder;
+    bbuilder.MakeCompound( comp );
+
+    asiAlgo_Feature::Iterator fiter( m_domain );
+    for ( ; fiter.More(); fiter.Next() )
+    {
+      bbuilder.Add( comp, m_aag->GetFace( fiter.Key() ) );
+    }
+
+    targetShape = comp;
+  }
+
+  //-----------------------------------------------------------------------------
+  // Prepare BVH data structure.
+  //-----------------------------------------------------------------------------
+
+  Handle(asiAlgo_BVHFacets) bvh = new asiAlgo_BVHFacets( targetShape );
 
   // Avoid execution without facets.
   if ( bvh->Size() == 0 )
@@ -983,7 +1375,7 @@ bool asiAlgo_ComputeOutline::Perform(const gp_Dir&    _dir,
     {
       case Mode_Precise:
       {
-        if ( !makeProjection( m_aag->GetMasterShape(), dir, m_facesToExclude, hlrResult, features ) )
+        if ( !makeProjection( targetShape, dir, m_facesToExclude, hlrResult, features, m_history ) )
         {
           return false;
         }
@@ -992,7 +1384,7 @@ bool asiAlgo_ComputeOutline::Perform(const gp_Dir&    _dir,
       }
       case Mode_Discrete:
       {
-        if ( !makeProjectionDiscr( m_aag->GetMasterShape(), dir, m_facesToExclude, hlrResult, features ) )
+        if ( !makeProjectionDiscr( targetShape, dir, m_facesToExclude, hlrResult, features, m_history ) )
         {
           return false;
         }
@@ -1006,7 +1398,7 @@ bool asiAlgo_ComputeOutline::Perform(const gp_Dir&    _dir,
 
 #ifdef DRAW_DEBUG
   m_plotter.REDRAW_SHAPE( "hlrResult", hlrResult );
-  //m_plotter.REDRAW_SHAPE( "features",  features  );
+  m_plotter.REDRAW_SHAPE( "features",  features  );
 #endif
 
   //-----------------------------------------------------------------------------
@@ -1022,109 +1414,203 @@ bool asiAlgo_ComputeOutline::Perform(const gp_Dir&    _dir,
   }
 
 #ifdef DRAW_DEBUG
-  //m_plotter.REDRAW_SHAPE( "hlrResult_cut", hlrResult );
+  m_plotter.REDRAW_SHAPE( "hlrResult_cut", hlrResult );
 #endif
 
   //-----------------------------------------------------------------------------
-  // Split edges by start/end points.
+  // Extract edges data.
   //-----------------------------------------------------------------------------
 
-  Handle(asiAlgo_SplitEdgesByStartEndPoints) splitAlgo = new asiAlgo_SplitEdgesByStartEndPoints( m_progress, m_plotter );
+  TopTools_ListOfShape shapes;
 
-  std::vector< TopoDS_Edge > edges;
+  int i = 0;
 
   for ( TopExp_Explorer exp( hlrResult, TopAbs_EDGE ); exp.More(); exp.Next() )
   {
-    edges.push_back( TopoDS::Edge( exp.Value() ) );
-  }
+    i++;
 
-  splitAlgo->SetMinAllowedDistFromEnds( m_linearTolerance );
-  splitAlgo->SetMaxDistFromPointToCurve( m_linearTolerance );
+    const TopoDS_Edge& E = TopoDS::Edge( exp.Value() );
 
-  splitAlgo->Perform( edges );
+    // Replace collapsed ellipses by line.
+    Handle(Geom_Ellipse) baseEllipse;
 
-#ifdef DRAW_DEBUG
-  //drawEdges( edges, "edges_after_split", m_plotter );
-#endif
-
-  //-----------------------------------------------------------------------------
-  // Remove too short edges.
-  //-----------------------------------------------------------------------------
-
-  {
-    edges.erase( std::remove_if( edges.begin(),
-                                 edges.end(),
-                                 [&](const TopoDS_Edge& edge)
+    if ( asiAlgo_Utils::IsTypeOf< Geom_Ellipse >( E, baseEllipse ) )
     {
-      GProp_GProps props;
-      BRepGProp::LinearProperties( edge, props );
+      const double r1 = baseEllipse->MajorRadius();
+      const double r2 = baseEllipse->MinorRadius();
 
-      return Abs( props.Mass() ) < m_linearTolerance;
-    } ), edges.end() );
+      if ( r1 * 2. < m_linearTolerance ||
+           r2 * 2. < m_linearTolerance )
+      {
+        double f, l;
+        Handle(Geom_Curve) curve = BRep_Tool::Curve( E, f, l );
+
+        gp_Pnt fP, lP;
+
+        baseEllipse->D0( f, fP );
+        baseEllipse->D0( l, lP );
+
+        if ( fP.Distance( lP ) < m_linearTolerance )
+        {
+          gp_Pnt mP;
+          baseEllipse->D0( ( f + l ) * 0.5, mP );
+
+          if ( fP.Distance( mP ) > Precision::Confusion() )
+          {
+            shapes.Append( BRepBuilderAPI_MakeEdge( fP, mP ) );
+          }
+
+          continue;
+        }
+      }
+    }
+
+    shapes.Append( E );
   }
 
-#ifdef DRAW_DEBUG
-  //drawEdges( edges, "edges_removed_short", m_plotter );
-#endif
+  //TIMER_NEW
+  //TIMER_GO
 
-  //-----------------------------------------------------------------------------
-  // For fully overlapped edges keep only a single instance of such edge.
-  //-----------------------------------------------------------------------------
+  BOPAlgo_PaveFiller filler;
 
-  Handle(asiAlgo_FixOverlappedEdges) overlappedAlgo = new asiAlgo_FixOverlappedEdges( m_progress, m_plotter );
+  filler.SetArguments( shapes );
 
-  overlappedAlgo->SetMaxAllowedDistance( m_linearTolerance );
+  filler.Perform();
 
-  overlappedAlgo->Perform( edges );
+  double t1 = 0., t2 = 0.;
 
-#ifdef DRAW_DEBUG
-  //drawEdges( edges, "edges_removed_overlapped", m_plotter );
-#endif
+  BOPDS_MapOfPaveBlock doneBlocks;
 
-  //-----------------------------------------------------------------------------
-  // Prepare intersections checker.
-  //-----------------------------------------------------------------------------
+  const BOPDS_PDS& pDS = filler.PDS();
 
-  if ( edges.empty() )
+  std::vector< TopoDS_Edge > topoEdges;
+
+  const int nb = pDS->NbSourceShapes();
+
+  for ( int n = 0; n < nb; ++n )
+  {
+    const BOPDS_ShapeInfo& si = pDS->ShapeInfo(n);
+
+    if ( si.ShapeType() != TopAbs_EDGE )
+    {
+      continue;
+    }
+
+    if ( pDS->IsNewShape(n) )
+      continue;
+
+    if ( !pDS->HasPaveBlocks(n) )
+    {
+      // Take the initial edge.
+      topoEdges.push_back( TopoDS::Edge( pDS->Shape(n) ) );
+
+      continue;
+    }
+
+    const BOPDS_ListOfPaveBlock& blocks = pDS->PaveBlocks( n );
+
+    BOPDS_ListOfPaveBlock::Iterator bIter( blocks );
+    for ( ; bIter.More(); bIter.Next() )
+    {
+      Handle(BOPDS_PaveBlock)& block = bIter.Value();
+
+      if ( doneBlocks.Contains( block ) )
+      {
+        continue;
+      }
+
+      block->Range( t1, t2 );
+
+      // To keep only a single instance for a common block.
+      if ( pDS->IsCommonBlock( block ) )
+      {
+        Handle(BOPDS_CommonBlock) common = pDS->CommonBlock( block );
+
+        BOPDS_ListOfPaveBlock::Iterator cIter( common->PaveBlocks() );
+        for ( ; cIter.More(); cIter.Next() )
+        {
+          Handle(BOPDS_PaveBlock)& otherBlock = cIter.Value();
+
+          doneBlocks.Add( otherBlock );
+        }
+      }
+
+      // Add edge from the block.
+      double f, l;
+      Handle(Geom_Curve) c3d = BRep_Tool::Curve( TopoDS::Edge( pDS->Shape( block->OriginalEdge() ) ), f, l );
+
+      topoEdges.push_back( BRepBuilderAPI_MakeEdge( c3d, t1, t2 ) );
+    }
+  }
+
+  if ( topoEdges.empty() )
   {
     return false;
   }
 
-  // Fill the tree by edges prepared for recognition.
+  std::vector< Handle(edgeInfo) > edges;
+
+  i = 0;
+  for ( auto& edge : topoEdges )
+  {
+    edges.push_back( new edgeInfo( edge, plane, i++ ) );
+  }
+
+  //TIMER_FINISH
+  //TIMER_COUT_RESULT_NOTIFIER( m_progress, "BOPAlgo_PaveFiller" )
+
+#ifdef DRAW_DEBUG
+  Handle(HRealArray)   coords = new HRealArray  ( 0, (int) edges.size() * 3 - 1, 0. );
+  Handle(HStringArray) labels = new HStringArray( 0, (int) edges.size() - 1 );
+
+  int coordIdx = 0;
+  int lblIdx = 0;
+
+  for ( Handle(edgeInfo)& edge : edges )
+  {
+    gp_Pnt midP;
+    edge->C3d->D0( ( edge->f + edge->l ) * 0.5, midP );
+
+    coords->ChangeValue(coordIdx)     = midP.X();
+    coords->ChangeValue(coordIdx + 1) = midP.Y();
+    coords->ChangeValue(coordIdx + 2) = midP.Z();
+
+    labels->ChangeValue(lblIdx++)     = edge->index;
+
+    coordIdx += 3;
+  }
+
+  m_plotter.REDRAW_LABELS( "initial_indices", coords, labels, Color_White );
+  drawEdges( edges, "initial_edges", m_plotter );
+#endif
+
+  //-----------------------------------------------------------------------------
+  // Resolve rays positions.
+  //-----------------------------------------------------------------------------
+
   boxBndTree   bbTree;
   boxBndFiller treeFiller( bbTree );
 
-  Selector_FindIntersections treeSelector( edges, dir, m_linearTolerance );
+  Selector_FindIntersections treeSelector( edges, m_plotter );
 
+  for ( Handle(edgeInfo)& edgeData : edges )
+  {
+    treeFiller.Add( edgeData->index + 1, edgeData->box );
+  }
+
+  treeFiller.Fill();
+
+  for ( Handle(edgeInfo)& edgeData : edges )
   {
 #ifdef DRAW_DEBUG
-    Handle(HRealArray)   coords = new HRealArray  ( 0, (int) treeSelector.m_data.size() * 3 - 1, 0. );
-    Handle(HStringArray) labels = new HStringArray( 0, (int) treeSelector.m_data.size() - 1 );
-
-    int coordIdx = 0;
-    int lblIdx = 0;
+    const int id = edgeData->index;
 #endif
 
-    for ( auto& edgeData : treeSelector.m_data )
-    {
-      treeFiller.Add( *edgeData.seqIndex, edgeData.box );
+    // Left side.
+    findRayPosition( bbTree, treeSelector, edgeData, true, plane, m_progress, m_plotter );
 
-#ifdef DRAW_DEBUG
-      coords->ChangeValue(coordIdx)     = edgeData.midP.X();
-      coords->ChangeValue(coordIdx + 1) = edgeData.midP.Y();
-      coords->ChangeValue(coordIdx + 2) = edgeData.midP.Z();
-
-      labels->ChangeValue(lblIdx++)     = *edgeData.seqIndex;
-
-      coordIdx += 3;
-#endif
-    }
-
-#ifdef DRAW_DEBUG
-    m_plotter.REDRAW_LABELS( "indices", coords, labels, Color_White );
-#endif
-
-    treeFiller.Fill();
+    // Right side.
+    findRayPosition( bbTree, treeSelector, edgeData, false, plane, m_progress, m_plotter );
   }
 
   //-----------------------------------------------------------------------------
@@ -1148,18 +1634,22 @@ bool asiAlgo_ComputeOutline::Perform(const gp_Dir&    _dir,
     {
       isSomethingDone = false;
 
-      for ( auto& edgeData : treeSelector.m_data )
+      for ( Handle(edgeInfo)& edgeData : edges )
       {
-        if ( edgeData.status() != edgeInfo::Status_Undefined )
+#ifdef DRAW_DEBUG
+        const int id = edgeData->index;
+#endif
+
+        if ( edgeData->Status() != edgeInfo::Status_Undefined )
         {
           continue;
         }
 
         // Check left side.
-        checkSide( hitFacets, bbTree, treeSelector, edgeData, true, dir, isSomethingDone, checkingMode, m_progress, m_plotter );
+        checkSide( hitFacets, treeSelector, edgeData, true, plane, isSomethingDone, checkingMode, m_progress, m_plotter );
 
         // Check right side.
-        checkSide( hitFacets, bbTree, treeSelector, edgeData, false, dir, isSomethingDone, checkingMode, m_progress, m_plotter );
+        checkSide( hitFacets, treeSelector, edgeData, false, plane, isSomethingDone, checkingMode, m_progress, m_plotter );
       }
     }
     while( isSomethingDone );
@@ -1175,47 +1665,52 @@ bool asiAlgo_ComputeOutline::Perform(const gp_Dir&    _dir,
   drawDebugInfoVec( "intersected",   Color_Yellow, debugInfoVec_Intersected,             m_plotter );
   drawDebugInfoVec( "toIntersected", Color_Orange, debugInfoVec_FromTargetToIntersected, m_plotter, true, false );
 
-  std::vector< TopoDS_Edge > totallyGoodEdges;
-  std::vector< TopoDS_Edge > totallyBadEdges;
-  std::vector< TopoDS_Edge > otherEdges;
+  std::vector< Handle(edgeInfo) > totallyGoodEdges;
+  std::vector< Handle(edgeInfo) > totallyBadEdges;
+  std::vector< Handle(edgeInfo) > danglingEdges;
+  std::vector< Handle(edgeInfo) > otherEdges;
 
   {
-    int i = 0;
-
-    for ( auto& edgeData : treeSelector.m_data )
+    for ( Handle(edgeInfo)& edgeData : edges )
     {
-      if ( edgeData.status() == edgeInfo::Status_Body )
+      if ( edgeData->Status() == edgeInfo::Status_Body )
       {
-        totallyBadEdges.push_back( edges[i] );
+        totallyBadEdges.push_back( edgeData );
       }
-      else if ( edgeData.status() == edgeInfo::Status_Border )
+      else if ( edgeData->Status() == edgeInfo::Status_Border )
       {
-        totallyGoodEdges.push_back( edges[i] );
+        totallyGoodEdges.push_back( edgeData );
+      }
+      else if ( edgeData->Status() == edgeInfo::Status_Dangling )
+      {
+        danglingEdges.push_back( edgeData );
       }
       else
       {
-        otherEdges.push_back( edges[i] );
+        otherEdges.push_back( edgeData );
       }
-
-      i++;
     }
   }
 
+  drawEdges( danglingEdges,    "dangling",         m_plotter, Color_Maroon );
   drawEdges( otherEdges,       "other",            m_plotter, Color_Yellow );
   drawEdges( totallyBadEdges,  "totallyBadEdges",  m_plotter, Color_Red    );
   drawEdges( totallyGoodEdges, "totallyGoodEdges", m_plotter, Color_Green  );
-
 #endif
 
   // Do we have anything?
   std::vector< TopoDS_Edge > filteredEdges;
 
   {
-    for ( auto& edgeData : treeSelector.m_data )
+    for ( Handle(edgeInfo)& edgeData : edges )
     {
-      if ( edgeData.status() == edgeInfo::Status_Border )
+      if ( edgeData->Status() == edgeInfo::Status_Border )
       {
-        filteredEdges.push_back( edges[ *edgeData.seqIndex - 1 ] );
+        filteredEdges.push_back( edgeData->E );
+      }
+      else if ( m_includeDanglingEdges && edgeData->Status() == edgeInfo::Status_Dangling )
+      {
+        filteredEdges.push_back( edgeData->E );
       }
     }
   }
@@ -1235,7 +1730,7 @@ bool asiAlgo_ComputeOutline::Perform(const gp_Dir&    _dir,
   if ( asiAlgo_Utils::ConnectEdgesToWires( filteredEdges,
                                            false,
                                            outlineWiresVec,
-                                           m_linearTolerance ) )
+                                           EdgesToWiresTol ) )
   {
     if ( outlineWiresVec.empty() )
     {
@@ -1296,5 +1791,22 @@ void asiAlgo_ComputeOutline::ExcludeFaces(const TopoDS_Shape& faces)
   for ( TopExp_Explorer it( faces, TopAbs_FACE ); it.More(); it.Next() )
   {
     m_facesToExclude.Add( m_aag->GetFaceId( TopoDS::Face( it.Current() ) ) );
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+void asiAlgo_ComputeOutline::SetDomain(const asiAlgo_Feature& domain)
+{
+  m_domain = domain;
+}
+
+//-----------------------------------------------------------------------------
+
+void asiAlgo_ComputeOutline::SetDomain(const TopoDS_Shape& faces)
+{
+  for ( TopExp_Explorer it( faces, TopAbs_FACE ); it.More(); it.Next() )
+  {
+    m_domain.Add( m_aag->GetFaceId( TopoDS::Face( it.Current() ) ) );
   }
 }

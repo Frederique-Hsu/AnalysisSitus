@@ -103,7 +103,6 @@ set (aux_H_FILES
   auxiliary/asiAlgo_FaceProbe.h
   auxiliary/asiAlgo_FindOptimalOrientation.h
   auxiliary/asiAlgo_FindVisibleFaces.h
-  auxiliary/asiAlgo_FixOverlappedEdges.h
   auxiliary/asiAlgo_FuncUnivariate.h
   auxiliary/asiAlgo_GeomSummary.h
   auxiliary/asiAlgo_HitFacet.h
@@ -119,6 +118,7 @@ set (aux_H_FILES
   auxiliary/asiAlgo_OBB.h
   auxiliary/asiAlgo_Optional.h
   auxiliary/asiAlgo_OrientCnc.h
+  auxiliary/asiAlgo_Outline.h
   auxiliary/asiAlgo_PointInPoly.h
   auxiliary/asiAlgo_ProjectPointOnMesh.h
   auxiliary/asiAlgo_QuickHull.h
@@ -129,7 +129,6 @@ set (aux_H_FILES
   auxiliary/asiAlgo_SegmentsInfoExtractor.h
   auxiliary/asiAlgo_SemanticCode.h
   auxiliary/asiAlgo_ShapeSerializer.h
-  auxiliary/asiAlgo_SplitEdgesByStartEndPoints.h
   auxiliary/asiAlgo_TopoSummary.h
   auxiliary/asiAlgo_UniformGrid.h
   auxiliary/asiAlgo_UnifySameDomain.h
@@ -162,7 +161,6 @@ set (aux_CPP_FILES
   auxiliary/asiAlgo_DivideByContinuity.cpp
   auxiliary/asiAlgo_FindOptimalOrientation.cpp
   auxiliary/asiAlgo_FindVisibleFaces.cpp
-  auxiliary/asiAlgo_FixOverlappedEdges.cpp
   auxiliary/asiAlgo_FuncUnivariate.cpp
   auxiliary/asiAlgo_HitFacet.cpp
   auxiliary/asiAlgo_IntersectBoxMesh.cpp
@@ -172,6 +170,7 @@ set (aux_CPP_FILES
   auxiliary/asiAlgo_ModelRefine.cpp
   auxiliary/asiAlgo_OBB.cpp
   auxiliary/asiAlgo_OrientCnc.cpp
+  auxiliary/asiAlgo_Outline.cpp
   auxiliary/asiAlgo_PointInPoly.cpp
   auxiliary/asiAlgo_ProjectPointOnMesh.cpp
   auxiliary/asiAlgo_QuickHull.cpp
@@ -182,7 +181,6 @@ set (aux_CPP_FILES
   auxiliary/asiAlgo_SegmentsInfoExtractor.cpp
   auxiliary/asiAlgo_SemanticCode.cpp
   auxiliary/asiAlgo_ShapeSerializer.cpp
-  auxiliary/asiAlgo_SplitEdgesByStartEndPoints.cpp
   auxiliary/asiAlgo_UnifySameDomain.cpp
   auxiliary/asiAlgo_Utils.cpp
 )

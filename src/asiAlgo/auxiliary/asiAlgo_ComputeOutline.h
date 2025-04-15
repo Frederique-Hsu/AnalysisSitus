@@ -39,8 +39,10 @@
 // asiAlgo includes
 #include <asiAlgo_AAG.h>
 #include <asiAlgo_Optional.h>
+#include <asiAlgo_Outline.h>
 
 // OCCT includes
+#include <BRepTools_History.hxx>
 #include <Precision.hxx>
 #include <TopoDS_Shape.hxx>
 
@@ -102,11 +104,30 @@ class asiAlgo_ComputeOutline : public ActAPI_IAlgorithm
                    TopoDS_Compound& outlineWires,
                    const Mode       mode = Mode_Precise);
 
+    //! Perform.
+    //!
+    //! \param[in]  dir      the direction of the view to build the outline.
+    //! \param[out] outlines the resulting vector of outlines.
+    //! \param[in]  mode     the HLR computation mode (precise is the default).
+    //!
+    //! \return true in case of success, false -- otherwise.
+    asiAlgo_EXPORT
+      bool Perform(const gp_Dir&                                dir,
+                   std::vector<Handle(asiAlgo::algo::Outline)>& outlines,
+                   const Mode                                   mode = Mode_Precise);
+
   public:
 
     void SetLinearTolerance(const double& linTol)
     {
       m_linearTolerance = linTol;
+    }
+
+    //! Sets the flag to take dangling edges to the resulting outline or not.
+    //! Dangling edges do not have material at both sides (left and right).
+    void SetIncludeDanglingEdges(const bool include)
+    {
+      m_includeDanglingEdges = include;
     }
 
     //! Sets the set of faces IDs to exclude their projections from the outlines.
@@ -121,10 +142,25 @@ class asiAlgo_ComputeOutline : public ActAPI_IAlgorithm
     asiAlgo_EXPORT
       void ExcludeFaces(const TopoDS_Shape& faces);
 
+    //! Sets the universum of faces to project outline.
+    //!
+    //! \param[in] domain the faces to project outline.
+    asiAlgo_EXPORT
+      void SetDomain(const asiAlgo_Feature& domain);
+
+    //! Sets the universum of faces to project outline.
+    //!
+    //! \param[in] faces the passed shape's faces will be used as domain for projection.
+    asiAlgo_EXPORT
+      void SetDomain(const TopoDS_Shape& faces);
+
   protected:
 
-    Mode                m_mode;
-    Handle(asiAlgo_AAG) m_aag;
-    asiAlgo_Feature     m_facesToExclude;  //!< Faces ids to exclude their projections from the outline.
-    double              m_linearTolerance;
+    Mode                      m_mode;
+    Handle(asiAlgo_AAG)       m_aag;
+    asiAlgo_Feature           m_domain;          //!< Universum.
+    asiAlgo_Feature           m_facesToExclude;  //!< Faces ids to exclude their projections from the outline.
+    double                    m_linearTolerance;
+    Handle(BRepTools_History) m_history;
+    bool                      m_includeDanglingEdges;
 };
