@@ -100,13 +100,13 @@
 <div align="center"><a href="../imgs/ext/cnc-lathing_surfaces.png"><img src="../imgs/ext/cnc-lathing_surfaces.png" width="60%"/></a></div>
 
 <p>
-  The detected milled and unrecognized features are all spanned by the constructed minimal turned state (MTS) of geometry:
+  The detected milled and unrecognized features are all spanned by the constructed maximal turned state (MTS) of geometry:
 </p>
 
 <div align="center"><a href="../imgs/ext/cnc-lathing_05.png"><img src="../imgs/ext/cnc-lathing_05.png" width="60%"/></a></div>
 
 <p>
-  This minimal turned state is used to decompose the entire "delta volume" of the turned part onto the elementary negative volume cells (which we also call "negative cells" for brevity).
+  This maximal turned state is used to decompose the entire "delta volume" of the turned part onto the elementary negative volume cells (which we also call "negative cells" for brevity).
 </p>
 
 <div align="center"><a href="../imgs/ext/cnc-lathing_06.png"><img src="../imgs/ext/cnc-lathing_06.png" width="60%"/></a></div>
@@ -124,6 +124,66 @@
 </ul>
 
 <div align="center"><a href="../imgs/ext/cnc-lathing_negative-cells.png"><img src="../imgs/ext/cnc-lathing_negative-cells.png" width="60%"/></a></div>
+
+<p>
+  The reported negative volumes should be matched with the solid geometry of the maximal turned state (MTS) and not with the original part. Let's take a part illustrated in the following image as an example.
+</p>
+
+<div align="center"><a href="../imgs/ext/cnc-nv_01.png"><img src="../imgs/ext/cnc-nv_01.png" width="60%"/></a></div>
+
+<p>
+  The face n.34 is reported as a <span class="code-inline">turnFace</span> type, i.e., it is a planar feature perpendicular to the main turning axis.
+</p>
+
+<div align="center"><a href="../imgs/ext/cnc-nv_02.png"><img src="../imgs/ext/cnc-nv_02.png" width="60%"/></a></div>
+
+<p>
+  The <span class="code-inline">turnFaces</span> array does not specify any further properties of a feature. Its purpose is to group faces of a specific type together. Then, because a part contains milling features, there is also an MTS solid being constructed. Because MTS is a different part, there is no matching between the face IDs in the initial part and its MTS.
+</p>
+
+<p class="note">
+  Introducing such matching, i.e., the history of modification between the original part and its corresponding MTS is left for the future improvements in Analysis Situs SDK.
+</p>
+
+<p>
+  E.g., the face n.34 has another index in MTS (face n.19 in the image below):
+</p>
+
+<div align="center"><a href="../imgs/ext/cnc-nv_03.png"><img src="../imgs/ext/cnc-nv_03.png" width="60%"/></a></div>
+
+<p>
+  All negative volumes ("steps", "grooves", and "holes") are associated with the MTS solid and not with the initial part. A negative volume is represented with a two-dimensional profile called a "cell." Each cell is associated with specific segments on a turned profile. E.g., a groove near the face n.19 (w.r.t. MTS) has the following segments attached:
+</p>
+
+<div align="center"><a href="../imgs/ext/cnc-nv_04.png"><img src="../imgs/ext/cnc-nv_04.png" width="60%"/></a></div>
+
+<p>
+  Each segment memorizes the face ID of the corresponding CAD face in the MTS shape. E.g., segment n.24 originates from face n.19:
+</p>
+
+<div align="center"><a href="../imgs/ext/cnc-nv_05.png"><img src="../imgs/ext/cnc-nv_05.png" width="60%"/></a></div>
+
+<p>
+  By iterating over the relationships between negative cells, segments, and CAD faces, it is possible to establish a link between the finished MTS faces and the constructed volumetric features:
+</p>
+
+<div align="center"><a href="../imgs/ext/cnc-nv_06.png"><img src="../imgs/ext/cnc-nv_06.png" width="60%"/></a></div>
+
+<p>
+  The following scheme illustrates the central relationships employed in the <span class="code-inline">nvFeatures</span> section for turned and turned+milled parts (a single groove feature is highlighted for illustration purposes):
+</p>
+
+<div align="center"><a href="../imgs/svg/cnc-nv.svg"><img src="../imgs/ext/cnc-nv-scheme.png" width="40%"/></a></div>
+
+
+<!-- Optional references to community resources -->
+<div class="mg">
+  <div class="mg-headline">Community reading:</div>
+  <ul>
+    <li class="fancy_ul_item">MG // <a href="https://quaoar.su/blog/page/assess-the-swept-volume-for-a-turned-part">Build a swept volume for a turned part</a>.</li>
+    <li class="fancy_ul_item">MG // <a href="https://quaoar.su/blog/page/to-the-automatic-milling-feature-recognition">Open challenges in automatic feature recognition</a>.</li>
+  </ul>
+</div>
 
 <!-- [END] contents -->
 </div>

@@ -40,6 +40,7 @@
 // exe includes
 #include <exe_CommonFacilities.h>
 #include <exe_GenerateDocs.h>
+#include <exe_InjectLinks.h>
 #include <exe_Keywords.h>
 #include <exe_MainWindow.h>
 
@@ -476,6 +477,12 @@ int main(int argc, char** argv)
 
       /* Generate documentation page with all Tcl commands listed */
       exe_GenerateDocs::Perform(cf->Interp, docFnIn, docFnOut);
+
+      /* Replace all variable placeholders with links */
+      exe_InjectLinks injLinks(asiAlgo_Utils::Env::AsiDocs(), cf->Progress);
+      //
+      if ( !injLinks.Perform() )
+        return 1;
     }
     else
     {

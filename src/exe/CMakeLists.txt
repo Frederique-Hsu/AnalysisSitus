@@ -6,10 +6,13 @@ project(asiExe)
 
 set (H_FILES
   exe_GenerateDocs.h
+  exe_InjectLinks.h
+  exe_InjectLinksDict.h
   exe_Keywords.h
 )
 set (CPP_FILES
   exe_GenerateDocs.cpp
+  exe_InjectLinks.cpp
   exe_Main.cpp
 )
 

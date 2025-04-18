@@ -25,8 +25,7 @@
     <script src="../js/toc.js"></script>
 
   <!-- [begin] Code highlight -->
-  <link rel="stylesheet" href="../css/highlight.min.css">
-  <script src="../js/highlight.min.js"></script>
+  <link rel="stylesheet" href="../css/prism.css">
   <!-- [end] Code highlight -->
 
   <!-- [begin] Pseudocode -->
@@ -48,7 +47,11 @@
   <!-- [end] Pseudocode -->
 
 </head>
+
 <body>
+
+<script src="https://prismjs.com/prism.js"></script>
+<script src="https://prismjs.com/plugins/autolinker/prism-autolinker.js"></script>
 
 <a name="top"></a> <!-- anchor for 'back to top' link -->
 <table width="100%"><tr><td>
@@ -248,11 +251,11 @@
 <h2 id="toc-graphbased-aag-api">AAG API</h2>
 
 <p>
-  To construct AAG, use the ctor of <span class="code-inline">asiAlgo_AAG</span> class passing there the <span class="code-inline">TopoDS_Shape</span> data structure as an argument. At construction time, the AAG will index your topology to assign a unique 1-based index with each face. Other exploration maps can be requested by explicit invocations, such as of <span class="code-inline">asiAlgo_AAG::RequestMapOf*()</span>. At construction time, the graph is build and the dihedral angle attributes are associated with the graph arcs.
+  To construct AAG, use the ctor of <span class="code-inline">%%asiAlgo_AAG</span> class passing there the <span class="code-inline">TopoDS_Shape</span> data structure as an argument. At construction time, the AAG will index your topology to assign a unique 1-based index with each face. Other exploration maps can be requested by explicit invocations, such as of <span class="code-inline">%%asiAlgo_AAG::RequestMapOf*()</span>. At construction time, the graph is build and the dihedral angle attributes are associated with the graph arcs.
 </p>
 
 <div class="code">
-  Handle(asiAlgo_AAG) aag = new asiAlgo_AAG(shape);
+  Handle(%%asiAlgo_AAG) aag = new %%asiAlgo_AAG(shape);
 </div>
 
 <p>
@@ -268,7 +271,7 @@
 </p>
 
 <p>
-  To access the initial shape from AAG, use its <span class="code-inline">asiAlgo_AAG::GetMasterShape()</span> method. You can always dump the contents of your AAG to a text stream calling its <span class="code-inline">asiAlgo_AAG::DumpJSON()</span> method.
+  To access the initial shape from AAG, use its <span class="code-inline">%%asiAlgo_AAG::GetMasterShape()</span> method. You can always dump the contents of your AAG to a text stream calling its <span class="code-inline">%%asiAlgo_AAG::DumpJSON()</span> method.
 </p>
 
 <pre class="code">
@@ -293,14 +296,14 @@ filestream.close();
 </p>
 
 <pre class="code">
-asiAlgo_Feature feature;
+!!asiAlgo_Feature feature;
 //
 feature.Add(10);
 feature.Add(20);
 feature.Add(13);
 // ...
   
-aag->PushSubgraph(feature);
+aag->!!PushSubgraph(feature);
 {
   std::vector&lt;asiAlgo_Feature&gt; ccomps;
   aag->GetConnectedComponents(ccomps);
@@ -311,28 +314,28 @@ aag->PushSubgraph(feature);
     // Do something...
   }
 }
-aag->PopSubgraph();
+aag->!!PopSubgraph();
 </pre>
 
 <p>
-  The <span class="code-inline">asiAlgo_AAG::PopSubgraph()</span> invocation restores the previous state of the graph available on the stack. This push/pop pair of functions is pretty instrumental as it allows to capture only the faces of interest and then undo the modification.
+  The <span class="code-inline">%%asiAlgo_AAG::!!PopSubgraph()</span> invocation restores the previous state of the graph available on the stack. This push/pop pair of functions is pretty instrumental as it allows to capture only the faces of interest and then undo the modification.
 </p>
 
 <p>
-  To iterate over AAG, you can use one of the available subclasses of <span class="code-inline">asiAlgo_AAGIterator</span>. The following code illustrates how to iterate all the faces in the graph. For each face, we also check its neighbors in the loop using the <span class="code-inline">asiAlgo_AAG::GetNeighbors()</span> function.
+  To iterate over AAG, you can use one of the available subclasses of <span class="code-inline">%%asiAlgo_AAGIterator</span>. The following code illustrates how to iterate all the faces in the graph. For each face, we also check its neighbors in the loop using the <span class="code-inline">%%asiAlgo_AAG::GetNeighbors()</span> function.
 </p>
 
 <pre class="code">
-for ( asiAlgo_AAGRandomIterator it(aag); it.More(); it.Next() )
+for ( %%asiAlgo_AAGRandomIterator it(aag); it.More(); it.Next() )
 {
   const int              fid  = it.GetFaceId();
-  const asiAlgo_Feature& nids = aag->GetNeighbors(fid);
+  const !!asiAlgo_Feature& nids = aag->GetNeighbors(fid);
   // ...
 }
 </pre>
 
 <p>
-  If you want to virtually suppress some faces in the AAG while keeping the incident arcs stitched, use <span class="code-inline">asiAlgo_AAG::Collapse()</span> function. This function is useful if, for example, you want to check the neighbor faces across blends and chamfers while ignoring the latter (see the image below).
+  If you want to virtually suppress some faces in the AAG while keeping the incident arcs stitched, use <span class="code-inline">%%asiAlgo_AAG::Collapse()</span> function. This function is useful if, for example, you want to check the neighbor faces across blends and chamfers while ignoring the latter (see the image below).
 </p>
 
 <div align="center"><img src="../imgs/collapsed-blends.png"/></div>
@@ -349,7 +352,6 @@ for ( asiAlgo_AAGRandomIterator it(aag); it.More(); it.Next() )
 </table>
 
 <script>
-hljs.highlightAll();
 pseudocode.renderClass("pseudocode");
 </script>
 
