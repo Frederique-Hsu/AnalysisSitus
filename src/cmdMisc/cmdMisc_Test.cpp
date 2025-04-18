@@ -43,9 +43,6 @@
 
 #if defined USE_MOBIUS
   #include <mobius/poly_Mesh.h>
-  #include <mobius/core_Polygon.h>
-  #include <mobius/cascade.h>
-  #include <mobius/nest_Part.h>
   using namespace mobius;
 #endif
 
@@ -66,79 +63,24 @@
 #include <ShapeAnalysis_Curve.hxx>
 
 #include <GC_MakeArcOfCircle.hxx>
-#include <asiAlgo_Timer.h>
-
-//2D implementation of the Ramer-Douglas-Peucker algorithm
-//By Tim Sheerman-Chase, 2016
-//Released under CC0
-//https://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm
-
-#include <iostream>
-#include <cmath>
-#include <utility>
-#include <vector>
-#include <stdexcept>
 
 //-----------------------------------------------------------------------------
 
 int MISC_Test(const Handle(asiTcl_Interp)& interp,
               int                          /*argc*/,
-              const char**                 argv)
+              const char**                 /*argv*/)
 {
-  t_ptr<nest_Part> part = nest_Part::Import(argv[1]);
-  //
-  if ( part.IsNull() )
-  {
-    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Cannot read a part from '%1'."
-                                                        << argv[1]);
-    return TCL_ERROR;
-  }
+  gp_Pnt p1 (0, 0, 0);
+  gp_Pnt p2(2, 2, 0);
+  gp_Pnt center(2, 0, 0);
+  gp_Circ circ(gp_Ax2(center, gp_Dir(0, 0, 1)), 2);
+  gp_Circ circ2(gp_Ax2(center, gp_Dir(0, 0, 1)), 3);
 
-  TIMER_NEW
-  TIMER_GO
+  Handle(Geom_TrimmedCurve) anArcOfCircle =  GC_MakeArcOfCircle(circ, p2, p1, true);
+  Handle(Geom_TrimmedCurve) anArcOfCircle2 = GC_MakeArcOfCircle(circ2, p2, p1, false);
 
-  int    numPolesInit = 0;
-  int    numPolesOut  = 0;
-  double eps          = 1.0;
-
-  std::vector< t_ptr<t_polygon> > loops, loopsOut;
-  //
-  part->GetAllLoops(loops);
-  //
-  for ( const auto& loop : loops )
-  {
-    // Construct the simplified polygon.
-    t_ptr<t_polygon> loopOut = loop->Simplify(eps);
-    //
-    if ( !loopOut.IsNull() )
-    {
-      loopsOut.push_back(loopOut);
-      //
-      numPolesOut += (int) ( loopOut->GetPoles().size() );
-    }
-
-    // Count poles.
-    numPolesInit += (int) ( loop->GetPoles().size() );
-  }
-
-  TIMER_FINISH
-  TIMER_COUT_RESULT_NOTIFIER(interp->GetProgress(), "Ramer-Douglas-Peucker")
-
-  interp->GetProgress().SendLogMessage( LogNotice(Normal) << "Initial num. of poles: %1."
-                                                          << numPolesInit );
-
-  interp->GetProgress().SendLogMessage( LogNotice(Normal) << "Optimized num. of poles: %1."
-                                                          << numPolesOut );
-
-  for ( size_t k = 0; k < loops.size(); ++k )
-  {
-    interp->GetPlotter().DRAW_SHAPE(cascade::GetOpenCascadeFace(loops[k]), Color_White, 1., true, "pgon");
-  }
-  //
-  for ( size_t k = 0; k < loopsOut.size(); ++k )
-  {
-    interp->GetPlotter().DRAW_SHAPE(cascade::GetOpenCascadeFace(loopsOut[k]), Color_Red, 1., true, "pgonOut");
-  }
+  interp->GetPlotter().REDRAW_CURVE("c1", anArcOfCircle,  Color_Red, true);
+  interp->GetPlotter().REDRAW_CURVE("c2", anArcOfCircle2, Color_Red, true);
 
   return TCL_OK;
 }
