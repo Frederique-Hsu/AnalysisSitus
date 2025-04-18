@@ -3900,7 +3900,7 @@ int MISC_ConvertFacePoly(const Handle(asiTcl_Interp)& interp,
     asiAlgo_ConvertCurve::Convert2Polyline(w, polyWire);
 
     // Construct a new polygon.
-    t_ptr<core_Polygon> mbPolygon = new core_Polygon;
+    t_ptr<geom_Polygon> mbPolygon = new geom_Polygon;
 
     // Turn the polygonal wire into a Mobius polygon.
     for ( BRepTools_WireExplorer wexp(polyWire); wexp.More(); wexp.Next() )
