@@ -17,6 +17,12 @@
   </script>
   <!-- [end] Google Analytics -->
 
+  <!--
+     Quick navigation script. Use a div with "toc-panel" class having a
+     nested div with "toc" id to place the navigation panel.
+    -->
+  <script src="../js/jquery-3.5.1.min.js"></script>
+  <script src="../js/toc.js"></script>
 
   <!-- [begin] Code highlight -->
   <link rel="stylesheet" href="../css/highlight.min.css">
@@ -77,7 +83,11 @@
 <div class="content-body">
 <!-- [BEGIN] contents -->
 
-<h1>Classify dihedral angles</h1>
+<h1 id="toc-dih">Classify dihedral angles</h1>
+
+<div class="toc-panel"><div id="toc"></div></div>
+
+<h2 id="toc-dih-overview">Overview</h2>
 
 <p>
 Classification of boundary edges by the vexity of their dihedral angles is the basic
@@ -109,6 +119,26 @@ the adjacent faces (such recomputation uses Newton iterations and is more expens
 when the basic check). It is a common practice to use the computed angles as the
 attributes for constructing an <a href="./features_aag.html">Attributed Adjacency Graph</a> (AAG).
 </p>
+
+<h2 id="toc-dih-sdk">SDK use</h2>
+
+<pre class="code">
+// Check angle between the two faces named F and G.
+TopTools_IndexedMapOfShape commonEdges;
+%%asiAlgo_CheckDihedralAngle dihAngle;
+//
+double angRad = 0.0;
+const bool allowSmooth = false; // Precise "smooth" angles to "convex" and "concave".
+const double smoothAngularTol = 0.001; // Smoothness detection tolerance.
+
+!!asiAlgo_FeatureAngleType
+  angleType = dihAngle.!!AngleBetweenFaces(F,
+                                         G,
+                                         allowSmooth,
+                                         smoothAngularTol,
+                                         commonEdges,
+                                         angRad);
+</pre>
 
 <!-- [END] contents -->
 </div>
