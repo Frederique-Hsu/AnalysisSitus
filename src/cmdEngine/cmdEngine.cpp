@@ -67,7 +67,6 @@ int ENGINE_EnableNotifier(const Handle(asiTcl_Interp)& interp,
   return TCL_OK;
 }
 
-
 //-----------------------------------------------------------------------------
 
 int ENGINE_Notifier(const Handle(asiTcl_Interp)& interp,

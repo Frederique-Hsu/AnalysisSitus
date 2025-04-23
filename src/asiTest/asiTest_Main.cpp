@@ -42,6 +42,7 @@
 #include <asiTest_ConvertCanonical.h>
 #include <asiTest_ConvertToBezier.h>
 #include <asiTest_ConvertToC2.h>
+#include <asiTest_DDF.h>
 #include <asiTest_EdgeVexity.h>
 #include <asiTest_Exchange.h>
 #include <asiTest_ExchangeAstra.h>
@@ -147,6 +148,7 @@ int main(int argc, char* argv[])
   TEST_LOAD_MODULE("cmdAsm")
   TEST_LOAD_MODULE("cmdTest")
   TEST_LOAD_MODULE("cmdRE")
+  TEST_LOAD_MODULE("cmdDDF")
 
   // Populate launchers.
   std::cout << "asiTest : main()" << std::endl;
@@ -185,6 +187,7 @@ int main(int argc, char* argv[])
   CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<asiTest_BuildQuickHull>        );
   CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<asiTest_ReapproxContour>       );
   CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<asiTest_FindIsomorphisms>      );
+  CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<asiTest_DDF>                   );
 
   // Data exchange tests.
   CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<asiTest_Exchange>      );

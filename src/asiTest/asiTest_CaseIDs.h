@@ -76,6 +76,7 @@ enum asiTest_CaseID
   CaseID_UntrimSurf,
   CaseID_JoinSurf,
   CaseID_ReapproxContour,
+  CaseID_DDF,
 
 /* ------------------------------------------------------------------------ */
 

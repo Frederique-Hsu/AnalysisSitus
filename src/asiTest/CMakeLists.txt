@@ -199,6 +199,7 @@ set (cases_modeling_H_FILES
   cases/modeling/asiTest_AppSurf.h
   cases/modeling/asiTest_BuildGordonSurf.h
   cases/modeling/asiTest_ClassifyPointSolid.h
+  cases/modeling/asiTest_DDF.h
   cases/modeling/asiTest_JoinEdges.h
   cases/modeling/asiTest_JoinSurf.h
   cases/modeling/asiTest_UntrimSurf.h
@@ -207,6 +208,7 @@ set (cases_modeling_CPP_FILES
   cases/modeling/asiTest_AppSurf.cpp
   cases/modeling/asiTest_BuildGordonSurf.cpp
   cases/modeling/asiTest_ClassifyPointSolid.cpp
+  cases/modeling/asiTest_DDF.cpp
   cases/modeling/asiTest_JoinEdges.cpp
   cases/modeling/asiTest_JoinSurf.cpp
   cases/modeling/asiTest_UntrimSurf.cpp

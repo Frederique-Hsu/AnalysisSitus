@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
-// Created on: 03 December 2024
+// Created on: 23 April 2025
 //-----------------------------------------------------------------------------
-// Copyright (c) 2024-present, Andrey Voevodin
+// Copyright (c) 2025-present, Sergey Slyadnev
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -28,15 +28,15 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-----------------------------------------------------------------------------
 
-#ifndef asiTest_ClassifyPointSolid_HeaderFile
-#define asiTest_ClassifyPointSolid_HeaderFile
+#ifndef asiTest_DDF_HeaderFile
+#define asiTest_DDF_HeaderFile
 
 // asiTest includes
 #include <asiTest_CaseIDs.h>
 #include <asiTest_TclTestCase.h>
 
-//! Test functions for point-solid classifier.
-class asiTest_ClassifyPointSolid : public asiTest_TclTestCase
+//! Test functions for DDF.
+class asiTest_DDF : public asiTest_TclTestCase
 {
 public:
 
@@ -44,14 +44,14 @@ public:
   //! \return ID of the Test Case.
   static int ID()
   {
-    return CaseID_ClassifyPointSolid;
+    return CaseID_DDF;
   }
 
   //! Returns filename for the description.
   //! \return filename for the description of the Test Case.
   static std::string DescriptionFn()
   {
-    return "asiTest_ClassifyPointSolid";
+    return "asiTest_DDF";
   }
 
   //! Returns Test Case description directory.
@@ -72,11 +72,6 @@ public:
   static void Functions(asiTestFunctions& functions)
   {
     functions << &test01
-              << &test02
-              << &test03
-              << &test04
-              << &test05
-              << &test06
     ; // Put semicolon here for convenient adding new functions above ;)
   }
 
@@ -88,11 +83,6 @@ private:
 private:
 
   static outcome test01(const int funcID, const bool);
-  static outcome test02(const int funcID, const bool);
-  static outcome test03(const int funcID, const bool);
-  static outcome test04(const int funcID, const bool);
-  static outcome test05(const int funcID, const bool);
-  static outcome test06(const int funcID, const bool);
 
 };
 

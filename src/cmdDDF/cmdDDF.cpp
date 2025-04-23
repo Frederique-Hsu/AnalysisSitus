@@ -38,10 +38,12 @@
 #include <asiEngine_Triangulation.h>
 
 // asiVisu includes
+#include <asiVisu_OctreeDataProvider.h>
 #include <asiVisu_OctreePipeline.h>
 #include <asiVisu_OctreePrs.h>
 
 // asiAlgo includes
+#include <asiAlgo_MeshGen.h>
 #include <asiAlgo_ProjectPointOnMesh.h>
 #include <asiAlgo_Timer.h>
 //
@@ -69,6 +71,9 @@
 #pragma warning(push, 0)
 #include <vtkXMLUnstructuredGridWriter.h>
 #pragma warning(pop)
+
+#define IsGui \
+  !cmdDDF::cf.IsNull()
 
 //-----------------------------------------------------------------------------
 
@@ -150,6 +155,35 @@ int DDF_BuildSVO(const Handle(asiTcl_Interp)& interp,
   //
   M->OpenCommand();
   {
+    // If there is no mesh in the part, let's mesh it first.
+    Handle(asiData_PartNode)
+      partNode = Handle(asiData_PartNode)::DownCast(ownerNode);
+    //
+    if ( !partNode.IsNull() )
+    {
+      TopoDS_Shape partShape = partNode->GetShape();
+
+      asiAlgo_MeshInfo
+        facetsInfo = asiAlgo_MeshInfo::Extract(partShape);
+      //
+      if ( !facetsInfo.nFacets )
+      {
+        const double linDefl = asiAlgo_MeshGen::AutoSelectLinearDeflection(partShape);
+        const double angDefl = asiAlgo_MeshGen::AutoSelectAngularDeflection(partShape);
+        //
+        interp->GetProgress().SendLogMessage(LogInfo(Normal) << "Meshing the part shape "
+                                                                "with linear deflection %1 "
+                                                                "and angular deflection %2."
+                                                             << linDefl << angDefl);
+        //
+        asiAlgo_MeshGen::DoNative( partShape,
+                                   linDefl,
+                                   angDefl,
+                                   facetsInfo );
+      }
+    }
+
+    // Construct octree.
     octreeNode = asiEngine_Octree(M).CreateOctree(ownerNode, CSG_Primitive);
 
     // Get the constructed BVH.
@@ -173,8 +207,11 @@ int DDF_BuildSVO(const Handle(asiTcl_Interp)& interp,
   M->CommitCommand();
 
   // Update UI.
-  cmdDDF::cf->ObjectBrowser->Populate();
-  cmdDDF::cf->ViewerPart->PrsMgr()->Actualize(octreeNode);
+  if ( IsGui )
+  {
+    cmdDDF::cf->ObjectBrowser->Populate();
+    cmdDDF::cf->ViewerPart->PrsMgr()->Actualize(octreeNode);
+  }
 
   // Size of a single voxel for information.
   interp->GetProgress().SendLogMessage( LogInfo(Normal) << "Size of a single voxel (bytes): %1."
@@ -227,23 +264,43 @@ int DDF_DumpVTU(const Handle(asiTcl_Interp)& interp,
     return TCL_ERROR;
   }
 
-  if ( !cmdDDF::cf->ViewerPart )
+  // Take the octree source from the viewer or construct a new one.
+  vtkSmartPointer<asiVisu_OctreeSource> octreeSource;
+  //
+  if ( IsGui )
   {
-    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Part viewer is not available.");
-    return TCL_ERROR;
-  }
+    Handle(asiVisu_OctreePrs)
+      octreePrs = Handle(asiVisu_OctreePrs)::DownCast( cmdDDF::cf->ViewerPart->PrsMgr()->GetPresentation(octreeNode) );
 
-  // Get octree pipeline to access the data source.
-  Handle(asiVisu_OctreePrs)
-    partPrs = Handle(asiVisu_OctreePrs)::DownCast( cmdDDF::cf->ViewerPart->PrsMgr()->GetPresentation(octreeNode) );
-  //
-  Handle(asiVisu_OctreePipeline)
-    octreePl = Handle(asiVisu_OctreePipeline)::DownCast( partPrs->GetPipeline(asiVisu_OctreePrs::Pipeline_Main) );
-  //
-  const vtkSmartPointer<asiVisu_OctreeSource>& octreeSource = octreePl->GetSource();
+    // Get octree pipeline to access the data source.
+    Handle(asiVisu_OctreePipeline)
+      octreePl = Handle(asiVisu_OctreePipeline)::DownCast( octreePrs->GetPipeline(asiVisu_OctreePrs::Pipeline_Main) );
+    //
+    octreeSource = octreePl->GetSource();
+  }
+  else
+  {
+    // Create data provider.
+    Handle(asiVisu_OctreeDataProvider)
+      provider = new asiVisu_OctreeDataProvider(octreeNode);
+
+    // Construct a new source.
+    octreeSource = vtkSmartPointer<asiVisu_OctreeSource>::New();
+    //
+    octreeSource->SetInputFacets      ( provider->GetFacets() );
+    octreeSource->SetInputOctree      ( provider->GetOctree() );
+    octreeSource->SetInputGrid        ( provider->GetUniformGrid() );
+    octreeSource->SetSamplingStrategy ( provider->GetSamplingStrategy() );
+    octreeSource->SetExtractPoints    ( provider->IsPointExtraction() );
+    octreeSource->SetUniform          ( provider->IsUniform() );
+  }
 
   // Update and dump to file.
   octreeSource->Update();
+
+  // Save VTU.
+  interp->GetProgress().SendLogMessage(LogInfo(Normal) << "Writing to %1..."
+                                                       << argv[2]);
   //
   vtkSmartPointer<vtkXMLUnstructuredGridWriter>
     writer = vtkSmartPointer<vtkXMLUnstructuredGridWriter>::New();
@@ -353,8 +410,11 @@ int DDF_SetSVO(const Handle(asiTcl_Interp)& interp,
     interp->GetProgress().SendLogMessage( LogInfo(Normal) << "Scalar 7: %1 vs %2 evaluated." << pNode->GetScalar(7) << f7 );
   }
   M->CommitCommand();
-  //
-  cmdDDF::cf->ViewerPart->PrsMgr()->Actualize(octreeNode);
+
+  if ( IsGui )
+  {
+    cmdDDF::cf->ViewerPart->PrsMgr()->Actualize(octreeNode);
+  }
 
   return TCL_OK;
 #else
@@ -569,8 +629,11 @@ int DDF_PolygonizeCell(const Handle(asiTcl_Interp)& interp,
     octreeNode->SetOctree(pNode);
   }
   M->CommitCommand();
-  //
-  cmdDDF::cf->ViewerPart->PrsMgr()->Actualize(octreeNode);
+
+  if ( IsGui )
+  {
+    cmdDDF::cf->ViewerPart->PrsMgr()->Actualize(octreeNode);
+  }
 
   // Construct distance field to serve as a function for the
   // reconstruction algorithm.
@@ -792,8 +855,11 @@ int DDF_Unite(const Handle(asiTcl_Interp)& interp,
   M->CommitCommand();
 
   // Update UI.
-  cmdDDF::cf->ObjectBrowser->Populate();
-  cmdDDF::cf->ViewerPart->PrsMgr()->Actualize(octreeNode);
+  if ( IsGui )
+  {
+    cmdDDF::cf->ObjectBrowser->Populate();
+    cmdDDF::cf->ViewerPart->PrsMgr()->Actualize(octreeNode);
+  }
 
   return TCL_OK;
 #else
@@ -859,8 +925,11 @@ int DDF_Common(const Handle(asiTcl_Interp)& interp,
   M->CommitCommand();
 
   // Update UI.
-  cmdDDF::cf->ObjectBrowser->Populate();
-  cmdDDF::cf->ViewerPart->PrsMgr()->Actualize(octreeNode);
+  if ( IsGui )
+  {
+    cmdDDF::cf->ObjectBrowser->Populate();
+    cmdDDF::cf->ViewerPart->PrsMgr()->Actualize(octreeNode);
+  }
 
   return TCL_OK;
 #else
@@ -926,8 +995,11 @@ int DDF_Cut(const Handle(asiTcl_Interp)& interp,
   M->CommitCommand();
 
   // Update UI.
-  cmdDDF::cf->ObjectBrowser->Populate();
-  cmdDDF::cf->ViewerPart->PrsMgr()->Actualize(octreeNode);
+  if ( IsGui )
+  {
+    cmdDDF::cf->ObjectBrowser->Populate();
+    cmdDDF::cf->ViewerPart->PrsMgr()->Actualize(octreeNode);
+  }
 
   return TCL_OK;
 #else
@@ -986,7 +1058,8 @@ int DDF_ExtractOutsideLeaves(const Handle(asiTcl_Interp)& interp,
   // TODO: NYI
 
   // Update UI.
-  cmdDDF::cf->ViewerPart->PrsMgr()->Actualize( M->GetTessellationNode() );
+  if ( IsGui )
+    cmdDDF::cf->ViewerPart->PrsMgr()->Actualize( M->GetTessellationNode() );
 
   return TCL_OK;
 #else
