@@ -962,6 +962,9 @@ public:
                 const mobius::core_Color&            color,
                 const std::string&                   name)
   {
+    if ( coordsVec.empty() )
+      return;
+
     int idx = 0;
     Handle(TColStd_HArray1OfReal) coordsOcc = new TColStd_HArray1OfReal(0, int( coordsVec.size() )*3 - 1);
     //
@@ -1104,6 +1107,30 @@ public:
                             mobius::cascade::GetOpenCascadePnt2d(P1),
                             mobius::cascade::GetOpenCascadePnt2d(P2),
                             this->getColor(color) );
+  }
+
+  virtual void
+    DRAW_POLYGON(const mobius::t_ptr<mobius::geom_Polygon>& pgon,
+                 const mobius::core_Color&                  color,
+                 const std::string&                         name)
+  {
+    m_plotter->DRAW_SHAPE( mobius::cascade::GetOpenCascadeFace(pgon),
+                           this->getColor(color),
+                           1.,
+                           true,
+                           name.c_str() );
+  }
+
+  virtual void
+    REDRAW_POLYGON(const std::string&                         name,
+                   const mobius::t_ptr<mobius::geom_Polygon>& pgon,
+                   const mobius::core_Color&                  color)
+  {
+    m_plotter->REDRAW_SHAPE( name.c_str(),
+                             mobius::cascade::GetOpenCascadeFace(pgon),
+                             this->getColor(color),
+                             1.,
+                             true );
   }
 
 private:
