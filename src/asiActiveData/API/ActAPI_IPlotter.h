@@ -127,13 +127,13 @@ protected:
 //-----------------------------------------------------------------------------
 
 #define Color_Default   ActAPI_Color(Quantity_NOC_SNOW)
-#define Color_Red       ActAPI_Color(Quantity_NOC_RED)
+#define Color_Red       ActAPI_Color(250./255., 60./255., 15./255., Quantity_TOC_RGB)
 #define Color_Orange    ActAPI_Color(Quantity_NOC_ORANGE)
 #define Color_Purple    ActAPI_Color(Quantity_NOC_PURPLE)
 #define Color_Pink      ActAPI_Color(Quantity_NOC_PINK)
-#define Color_Green     ActAPI_Color(Quantity_NOC_GREEN)
+#define Color_Green     ActAPI_Color(140./255., 220./255., 40./255., Quantity_TOC_RGB)
 #define Color_Khaki     ActAPI_Color(Quantity_NOC_KHAKI)
-#define Color_Blue      ActAPI_Color(Quantity_NOC_BLUE1)
+#define Color_Blue      ActAPI_Color(50./255., 150./255., 255./255., Quantity_TOC_RGB)
 #define Color_Yellow    ActAPI_Color(Quantity_NOC_YELLOW)
 #define Color_White     ActAPI_Color(Quantity_NOC_WHITE)
 #define Color_Snow      ActAPI_Color(Quantity_NOC_SNOW)
