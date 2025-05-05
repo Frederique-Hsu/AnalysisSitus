@@ -3189,6 +3189,16 @@ void Doc::expand(const TDF_Label&                                    expandedLab
   Handle(XCAFDoc_ShapeTool) shapeTool = this->GetShapeTool();
   TopoDS_Shape              mainShape = this->GetShape(expandedLabel);
 
+  // Get the name attribute.
+  t_extString name = this->GetObjectName(expandedLabel);
+
+  // Numbers for naming.
+  int nbSubshapes  = 0;
+  int subShapeCounter = 0;
+  //
+  for ( TopoDS_Iterator it(mainShape); it.More(); it.Next() )
+    nbSubshapes++;
+
   // Mark the expanded label as an assembly. This is done by means of a dedicated
   // User Attribute in XDE.
   TDataStd_UAttribute::Set( expandedLabel, XCAFDoc::AssemblyGUID() );
@@ -3199,13 +3209,23 @@ void Doc::expand(const TDF_Label&                                    expandedLab
 
     // Try to find child shape as already existing part.
     TDF_Label partL;
-    const bool
-      isAlreadyExist = shapeTool->FindShape( childShape.Located( TopLoc_Location() ), partL );
     //
-    if ( !isAlreadyExist )
+    const bool
+      alreadyExist = shapeTool->FindShape( childShape.Located( TopLoc_Location() ), partL );
+    //
+    if ( !alreadyExist )
     {
+      // Generate a nice name like "<originalName> <subShapeCounter>/<numSubshapes>".
+      ++subShapeCounter;
+      //
+      t_extString subName;
+      //
+      if ( nbSubshapes )
+        subName = name + " " + subShapeCounter + "/" + nbSubshapes;
+
       // Create new part to link child shape.
-      partL = this->__addPart( childShape.Located( TopLoc_Location() ) );
+      partL = this->__addPart( childShape.Located( TopLoc_Location() ),
+                               t_asciiString(subName).ToCString() );
     }
 
     // Add a new component.
@@ -3221,10 +3241,11 @@ void Doc::expand(const TDF_Label&                                    expandedLab
       subshapeMap.UnBind( childShape.Located( TopLoc_Location() ) );
     }
 
-    if ( !isAlreadyExist )
+    if ( !alreadyExist )
     {
       if ( childShape.ShapeType() == TopAbs_COMPOUND )
       {
+        // Proceed recursively.
         this->expand(partL, curLoc * childShape.Location(), subshapeMap, newParts);
       }
       else

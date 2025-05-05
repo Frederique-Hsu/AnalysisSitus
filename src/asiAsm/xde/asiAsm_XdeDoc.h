@@ -1166,8 +1166,8 @@ protected:
     expandCompoundsRecursively(const AssemblyItemIds& items,
                                TDF_LabelMap&          processed);
 
-  //! Internal mechanics for compounds expansion. This method works the
-  //! at TDF_Label's level.
+  //! Internal mechanics for compounds expansion. This method works at the
+  //! low level of `TDF_Label` data type.
   asiAsm_EXPORT void
     expand(const TDF_Label&                                      expandedLabel,
            const TopLoc_Location&                                curLoc,
