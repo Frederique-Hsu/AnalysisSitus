@@ -38,7 +38,10 @@
 #include <asiEngine_Triangulation.h>
 
 // asiAlgo includes
+#include <asiAlgo_MeshExtractPortion.h>
+#include <asiAlgo_IntersectMeshMesh.h>
 #include <asiAlgo_MeshComputeNorms.h>
+#include <asiAlgo_MeshConvert.h>
 #include <asiAlgo_MeshGen.h>
 #include <asiAlgo_MeshMerge.h>
 #include <asiAlgo_MeshOrient.h>
@@ -63,6 +66,8 @@
 #include <gp_Pln.hxx>
 #include <Intf_InterferencePolygon2d.hxx>
 #include <Intf_Polygon2d.hxx>
+
+using namespace asiAlgo;
 
 typedef std::unordered_set<int> t_domain;
 
@@ -2397,6 +2402,112 @@ int MOBIUS_POLY_Orient(const Handle(asiTcl_Interp)& interp,
 
 //-----------------------------------------------------------------------------
 
+int MOBIUS_POLY_IntersectMeshes(const Handle(asiTcl_Interp)& interp,
+                                int                          argc,
+                                const char**                 argv)
+{
+  (void) argc;
+  (void) argv;
+
+  Handle(asiEngine_Model)
+    M = Handle(asiEngine_Model)::DownCast( interp->GetModel() );
+
+  // 1-st argument.
+  Handle(asiData_IVTessItemNode)
+    tessNode1 = Handle(asiData_IVTessItemNode)::DownCast( M->FindNodeByName(argv[1]) );
+  //
+  if ( tessNode1.IsNull() )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "There is no tessellation named '%1'."
+                                                        << argv[1]);
+    return TCL_ERROR;
+  }
+
+  // 2-nd argument.
+  Handle(asiData_IVTessItemNode)
+    tessNode2 = Handle(asiData_IVTessItemNode)::DownCast( M->FindNodeByName(argv[2]) );
+  //
+  if ( tessNode2.IsNull() )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "There is no tessellation named '%1'."
+                                                        << argv[2]);
+    return TCL_ERROR;
+  }
+
+  Handle(ActData_Mesh) M1 = tessNode1->GetMesh();
+  Handle(ActData_Mesh) M2 = tessNode2->GetMesh();
+
+  TIMER_NEW
+  TIMER_GO
+
+  // Prepare BVH structures for both operand meshes.
+  Handle(asiAlgo_BVHFacets) bvh1 = new asiAlgo_BVHFacets(M1);
+  Handle(asiAlgo_BVHFacets) bvh2 = new asiAlgo_BVHFacets(M2);
+
+  // Intersect meshes.
+  collide::IntersectMeshMesh collider(bvh1, bvh2);
+  //
+  // Compute collisions.
+  if ( !collider.Perform() )
+  {
+    interp->GetProgress().SendLogMessage(LogInfo(Normal) << "No collisions detected.");
+    return TCL_OK; // No collisions.
+  }
+
+  const std::vector<int>& ints = collider.GetIntersectionIndexes();
+  //
+  if ( ints.empty() )
+  {
+    interp->GetProgress().SendLogMessage(LogInfo(Normal) << "No collisions detected.");
+    return TCL_OK; // No collisions.
+  }
+
+  std::vector<int> m_idx1, m_idx2;
+  const size_t size = ints.size();
+
+  m_idx1.resize(size/ 2);
+  m_idx2.resize(size/ 2);
+  TColStd_PackedMapOfInteger idx1, idx2;
+  for ( size_t ii = 0; ii < size; ii += 2 )
+  {
+    const int lidx1 = ints[ii];
+    const int lidx2 = ints[ii + 1];
+    idx1.Add(lidx1);
+    idx2.Add(lidx2);
+
+    m_idx1[ii / 2] = lidx1;
+    m_idx2[ii / 2] = lidx2;
+  }
+
+  Handle(Poly_Triangulation) collision1, collision2;
+
+  asiAlgo_MeshExtractPortion extractor1(M1);
+  //
+  if ( !extractor1.Perform(idx1, collision1) )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Cannot extract the collision zone for M1.");
+    return TCL_ERROR;
+  }
+
+  asiAlgo_MeshExtractPortion extractor2(M2);
+  //
+  if ( !extractor2.Perform(idx2, collision2) )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Cannot extract the collision zone for M2.");
+    return TCL_ERROR;
+  }
+
+  TIMER_FINISH
+  TIMER_COUT_RESULT_NOTIFIER(interp->GetProgress(), "Collide meshes")
+
+  interp->GetPlotter().REDRAW_TRIANGULATION("collision1", collision1, Color_Red, 1.);
+  interp->GetPlotter().REDRAW_TRIANGULATION("collision2", collision2, Color_Red, 1.);
+
+  return TCL_OK;
+}
+
+//-----------------------------------------------------------------------------
+
 void cmdMobius::Factory(const Handle(asiTcl_Interp)&      interp,
                         const Handle(Standard_Transient)& data)
 {
@@ -2630,6 +2741,14 @@ void cmdMobius::Factory(const Handle(asiTcl_Interp)&      interp,
     "\t Reorients the active triangulation so it gets more suitable axes frame.",
     //
     __FILE__, group, MOBIUS_POLY_Orient);
+
+  //-------------------------------------------------------------------------//
+  interp->AddCommand("poly-intersect-meshes",
+    //
+    "poly-intersect-meshes <mesh1> <mesh2>\n"
+    "\t Intersects two passed meshes.",
+    //
+    __FILE__, group, MOBIUS_POLY_IntersectMeshes);
 }
 
 // Declare entry point PLUGINFACTORY

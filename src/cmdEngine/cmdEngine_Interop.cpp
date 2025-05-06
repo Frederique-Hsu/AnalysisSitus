@@ -1059,12 +1059,16 @@ int ENGINE_LoadSTL(const Handle(asiTcl_Interp)& interp,
                    int                          argc,
                    const char**                 argv)
 {
-  if ( argc != 2 )
+  if ( argc < 2 )
   {
     return interp->ErrorOnWrongArgs(argv[0]);
   }
 
   TCollection_AsciiString filename(argv[1]);
+
+  // Check if variable name is supplied.
+  TCollection_AsciiString varname;
+  interp->GetKeyValue(argc, argv, "var", varname);
 
   // Read STL
   Handle(Poly_Triangulation) mesh;
@@ -1074,7 +1078,16 @@ int ENGINE_LoadSTL(const Handle(asiTcl_Interp)& interp,
     return TCL_ERROR;
   }
 
-  onModelLoaded(mesh);
+  if ( varname.IsEmpty() )
+  {
+    // Proceed with the active triangulation.
+    onModelLoaded(mesh);
+  }
+  else
+  {
+    // Add a variable.
+    interp->GetPlotter().REDRAW_TRIANGULATION(varname, mesh, Color_Default, 1.);
+  }
 
   return TCL_OK;
 }
@@ -1898,8 +1911,8 @@ void cmdEngine::Commands_Interop(const Handle(asiTcl_Interp)&      interp,
   //-------------------------------------------------------------------------//
   interp->AddCommand("load-stl",
     //
-    "load-stl <filename>\n"
-    "\t Loads STL file to the active triangulation.",
+    "load-stl <filename> [-var <varname>\\n"
+    "\t Loads an STL file to the active triangulation or to a variable (if its name is provided).",
     //
     __FILE__, group, ENGINE_LoadSTL);
 
