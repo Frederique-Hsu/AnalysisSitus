@@ -38,10 +38,11 @@
 #include <asiEngine_Triangulation.h>
 
 // asiAlgo includes
-#include <asiAlgo_MeshExtractPortion.h>
+#include <asiAlgo_ConvertCurve.h>
 #include <asiAlgo_IntersectMeshMesh.h>
 #include <asiAlgo_MeshComputeNorms.h>
 #include <asiAlgo_MeshConvert.h>
+#include <asiAlgo_MeshExtractPortion.h>
 #include <asiAlgo_MeshGen.h>
 #include <asiAlgo_MeshMerge.h>
 #include <asiAlgo_MeshOrient.h>
@@ -55,6 +56,7 @@
 #ifdef USE_MOBIUS
   #include <mobius/cascade.h>
   #include <mobius/cascade_Triangulation.h>
+  #include <mobius/geom_PolygonPart.h>
   #include <mobius/poly_Mesh.h>
   #include <mobius/poly_SurfAdapter.h>
 
@@ -63,9 +65,12 @@
 
 // OpenCascade includes
 #include <BRepBuilderAPI_Transform.hxx>
+#include <BRepTools_WireExplorer.hxx>
+#include <ElSLib.hxx>
 #include <gp_Pln.hxx>
 #include <Intf_InterferencePolygon2d.hxx>
 #include <Intf_Polygon2d.hxx>
+#include <TopExp_Explorer.hxx>
 
 using namespace asiAlgo;
 
@@ -2508,6 +2513,152 @@ int MOBIUS_POLY_IntersectMeshes(const Handle(asiTcl_Interp)& interp,
 
 //-----------------------------------------------------------------------------
 
+int MOBIUS_POLY_DecimatePolygon(const Handle(asiTcl_Interp)& interp,
+                                int                          argc,
+                                const char**                 argv)
+{
+#if defined USE_MOBIUS
+  if ( argc < 2 )
+  {
+    return interp->ErrorOnWrongArgs(argv[0]);
+  }
+
+  Handle(asiEngine_Model)
+    M = Handle(asiEngine_Model)::DownCast( interp->GetModel() );
+
+  const double eps = Atof(argv[1]);
+  //
+  interp->GetProgress().SendLogMessage(LogNotice(Normal) << "Ramer–Douglas–Peucker with epsilon = %1."
+                                                         << eps);
+
+  /* =====================
+   *  Get the target face.
+   * ===================== */
+
+  Handle(asiAlgo_AAG) G = M->GetPartNode()->GetAAG();
+  //
+  if ( G.IsNull() )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Part's AAG is null.");
+    return TCL_ERROR;
+  }
+
+  // Access selected faces (if any).
+  asiAlgo_Feature selected;
+  //
+  asiEngine_Part partApi(M, (cmdMobius::cf && cmdMobius::cf->ViewerPart) ? cmdMobius::cf->ViewerPart->PrsMgr() 
+                                                                         : nullptr);
+  //
+  if ( !cmdMobius::cf.IsNull() )
+  {
+    partApi.GetHighlightedFaces(selected);
+  }
+
+  int fid = 0;
+  TCollection_AsciiString fidStr;
+  if ( interp->GetKeyValue(argc, argv, "fid", fidStr) )
+  {
+    fid = fidStr.IntegerValue();
+  }
+
+  if ( fid >= 1 )
+  {
+    selected.Add(fid);
+  }
+
+  if ( !selected.Extent() == 1 )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Please, select exactly one face to proceed with this command.");
+    return TCL_ERROR;
+  }
+
+  const TopoDS_Face& face = G->GetFace( selected.GetMinimalMapped() );
+
+  // Only planar faces are supported.
+  Handle(Geom_Plane) plane;
+  //
+  if ( !asiAlgo_Utils::IsPlanar(face, plane, false) )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "The target face should be planar.");
+    return TCL_ERROR;
+  }
+
+  /* =====================
+   *  Discretize the face.
+   * ===================== */
+
+  TIMER_NEW
+  TIMER_GO
+
+  // Find out which wire is the outer one.
+  TopoDS_Wire ow = asiAlgo_Utils::ComputeOuterWire(face);
+
+  // Construct a new discrete part.
+  t_ptr<geom_PolygonPart> mbPart = new geom_PolygonPart;
+
+  // Discretize wires.
+  for ( TopExp_Explorer exp(face.Oriented(TopAbs_FORWARD), TopAbs_WIRE); exp.More(); exp.Next() )
+  {
+    const TopoDS_Wire& w = TopoDS::Wire( exp.Current() );
+
+    TopoDS_Wire polyWire;
+
+    asiAlgo_ConvertCurve::Convert2Polyline(w, polyWire);
+
+    // Construct a new polygon.
+    t_ptr<geom_Polygon> mbPolygon = new geom_Polygon;
+
+    // Turn the polygonal wire into a Mobius polygon.
+    for ( BRepTools_WireExplorer wexp(polyWire); wexp.More(); wexp.Next() )
+    {
+      const TopoDS_Vertex& V = wexp.CurrentVertex();
+      gp_Pnt               P = BRep_Tool::Pnt(V);
+
+      // Project `P` onto a plane.
+      double u, v;
+      gp_Pln pln = plane->Pln();
+      ElSLib::Parameters(pln, P, u, v);
+
+      // Populate the polygon.
+      mbPolygon->AddPole( t_uv(u, v) );
+    }
+
+    // Apply RDP.
+    mbPolygon = mbPolygon->Simplify(eps);
+
+    // Set to part.
+    if ( w.IsPartner(ow) )
+    {
+      mbPart->SetOuterLoop(mbPolygon);
+    }
+    else
+    {
+      mbPart->AddInnerLoop(mbPolygon);
+    }
+  }
+
+  // Initialize optional properties.
+  mbPart->SetName( "FACE_" + asiAlgo_Utils::Str::ToString( selected.GetMinimalMapped() ) );
+
+  TIMER_FINISH
+  TIMER_COUT_RESULT_NOTIFIER(interp->GetProgress(), "Polygonize & simplify")
+
+  // Draw.
+  interp->GetPlotter().DRAW_SHAPE(cascade::GetOpenCascadeFace(mbPart, plane), Color_Default, 1., false, "polygonalPart");
+
+  return TCL_OK;
+#else
+  (void) argc;
+  (void) argv;
+
+  interp->GetProgress().SendLogMessage(LogErr(Normal) << "Mobius is not available.");
+
+  return TCL_ERROR;
+#endif
+}
+
+//-----------------------------------------------------------------------------
+
 void cmdMobius::Factory(const Handle(asiTcl_Interp)&      interp,
                         const Handle(Standard_Transient)& data)
 {
@@ -2749,6 +2900,14 @@ void cmdMobius::Factory(const Handle(asiTcl_Interp)&      interp,
     "\t Intersects two passed meshes.",
     //
     __FILE__, group, MOBIUS_POLY_IntersectMeshes);
+
+  //-------------------------------------------------------------------------//
+  interp->AddCommand("poly-decimate-polygon",
+    //
+    "poly-decimate-polygon <eps> [-fid <fid>]\n"
+    "\t Decimates a polygonal representation of the passed face.",
+    //
+    __FILE__, group, MOBIUS_POLY_DecimatePolygon);
 }
 
 // Declare entry point PLUGINFACTORY
