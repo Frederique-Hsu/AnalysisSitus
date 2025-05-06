@@ -290,13 +290,31 @@ int ENGINE_Load(const Handle(asiTcl_Interp)& interp,
     return interp->ErrorOnWrongArgs(argv[0]);
   }
 
+  cmdEngine::cf->ViewerPart   ->PrsMgr()->DeleteAllPresentations();
+  cmdEngine::cf->ViewerDomain ->PrsMgr()->DeleteAllPresentations();
+  cmdEngine::cf->ViewerHost   ->PrsMgr()->DeleteAllPresentations();
+
   // Release current project.
   cmdEngine::model->Release();
 
   // Open.
   if ( !cmdEngine::model->Open( argv[1], interp->GetProgress() ) )
   {
-    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Loading failed.");
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Loading from '%1' failed."
+                                                        << argv[1]);
+
+    // Make sure we have a new model.
+    cmdEngine::model->NewEmpty();
+    //
+    cmdEngine::model->DisableTransactions();
+    {
+      cmdEngine::model->Populate();
+    }
+    cmdEngine::model->EnableTransactions();
+
+    // Update UI.
+    cmdEngine::cf->ObjectBrowser->Populate();
+
     return TCL_ERROR;
   }
   //
@@ -306,15 +324,11 @@ int ENGINE_Load(const Handle(asiTcl_Interp)& interp,
   // Find all presentable Nodes.
   Handle(ActAPI_HNodeList)
     nodes = asiEngine_Base(cmdEngine::model).FindPresentableNodes();
+  //
+  cmdEngine::cf->ViewerPart->PrsMgr()->ActualizeCol(nodes);
 
   // Update UI.
   cmdEngine::cf->ObjectBrowser->Populate();
-  //
-  cmdEngine::cf->ViewerPart   ->PrsMgr()->DeleteAllPresentations();
-  cmdEngine::cf->ViewerDomain ->PrsMgr()->DeleteAllPresentations();
-  cmdEngine::cf->ViewerHost   ->PrsMgr()->DeleteAllPresentations();
-  //
-  cmdEngine::cf->ViewerPart->PrsMgr()->ActualizeCol(nodes);
 
   return TCL_OK;
 }
