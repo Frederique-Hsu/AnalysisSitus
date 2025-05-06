@@ -10,6 +10,6 @@ add_definitions (-DUSE_RAPIDJSON)
 
 ASITUS_FIND_PRODUCT_DIR ("${3RDPARTY_DIR}" "rapidjson" RAPIDJSON_DIR)
 
-set (3RDPARTY_rapidjson_DIR "${3RDPARTY_DIR}/${RAPIDJSON_DIR}/include" CACHE PATH "The directory containing Rapidjson." FORCE)
+set (3RDPARTY_rapidjson_DIR "${3RDPARTY_DIR}/${RAPIDJSON_DIR}/include" CACHE PATH "The directory containing Rapidjson.")
 
 message (STATUS "... Rapidjson dir: ${3RDPARTY_rapidjson_DIR}")
