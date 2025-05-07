@@ -1,4 +1,64 @@
 -------------------------------------------------------------------------------
+v2025.1, 09 May 2025
+
+Milestone "ver 2025.1": https://gitlab.com/ssv/AnalysisSitus/-/milestones/6
+-------------------------------------------------------------------------------
+
+## Core
+
+- Introduce outliner algorithm.
+- #344: Introduce `poly-orient` command for finding a better placement/orientation for a surface triangulation.
+- Rework SVG export to make it orders of magnitude faster.
+- Use a correct ellipse transformation for SVG export.
+- Add `collide` namespace with fast mesh intersection algorithm.
+- #355: Visualize angle labels at vertices on the `check-vertex-vexity` command. Measure vertex angles and finish up their reporting in 3D.
+- #354: Make sure that the vertices with planar angles ~0 deg. are reported as "concave."
+- #350: Make `angleToNextSegment` reporting consistent.
+- Display names from the naming service in the viewer; pass names from XDE to the naming service of a Part.
+- Enable collecting history in face maximization.
+- Introduce `NamingInfo` serializable data structure for face IDs with names.
+- Use intelligent naming on compound expansion.
+- Protect `Doc::GetParts()` from infinite recursion on empty documents.
+- Pass an option to the XDE document to load subshape names from STEP files.
+- Make sure to skip prototype IDs in the assembly item IDs reported in Scene Trees.
+- #359: Add a function to combine assemblies into compound parts.
+- Introduce Ramer–Douglas–Peucker algorithm for polygon decimation.
+- Add `scale-triangulation` Tcl command.
+- Add `asiAlgo_MeshExtractPortion` tool for the selection of mesh elements algorithmically.
+- Introduce `bop-common` Tcl command.
+- Optionally disable distance evaluation in `asiAlgo_ClassifyPointSolid` for the sake of better performance. (#342)
+- Add BVH initialization logic from OMFDS structures.
+- #349: Introduce `misc-convert-face-poly` command to convert planar faces to polygonal representations with inner loops.
+- #356: Add `misc-load-polygon-part` command to import polygon parts generated for the 2D nesting core in Mobius.
+- Get rid of excessive computation in `asiAlgo_Utils::AreParallel()` for a couple of planes as arguments.
+- Make sure to pass the IDs of `ActData` mesh elements to BVH structures for collision testing.
+- Disable delta(s) in the OCAF attribute for OMFDS meshes as practically useless and hunt down memory leaks.
+- Introduce experimental `-planeOnly` mode in canonical conversion.
+- Extend the `asiAlgo_Utils::IsPlanar()` method to recognize as planar those surfaces that are not defined as analytic planes.
+- Add a couple of handy methods for JSON (de)serialization applied to XY coordinate pairs.
+- Count the "meshed" vs "total B-rep" faces in order to decide whether to remesh the input part in optimal orientation.
+- Introduce `set-param` Tcl command.
+- Make DDF construction and API work without GUI.
+- #348: Fix application crash after loading an invalid path through the `load` command.
+
+## Infrastructure/Configuration
+
+- Fix compilation with TBB and make it one of the core dependencies in our Docker environment.
+- #345: Fork VTK and migrate to `vtk-analysis-situs` (ver. 8.2, patched).
+- #322: Allow setting custom rapidjson dir.
+- Fork OpenCascade ver. 7.6.
+- Update documentation pages and introduce links expansion mechanics.
+
+## UI and Visualization
+
+- #346 Make the `vglinfo` command print useful information about graphics hardware and software on Windows.
+- Make point size and labels configurable on IV draw calls for point clouds.
+- #340: Add ".brp" file extension to the list of supported extensions.
+- #341: Add toolbar buttons to zoom in & out the Part viewer.
+- Slightly rework the treatment of display modes for IV shapes.
+- Pass custom display mode to the `asiAlgo_Utils::Graphics::GeneratePixmap()` function as an argument.
+
+-------------------------------------------------------------------------------
 v2024.2, 22 November 2024
 
 Milestone "ver 2024.2": https://gitlab.com/ssv/AnalysisSitus/-/milestones/2
