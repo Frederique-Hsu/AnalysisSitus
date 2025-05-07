@@ -41,16 +41,17 @@
 // Analysis Situs version
 //-----------------------------------------------------------------------------
 
-#define ASITUS_VERSION_YEAR 2024 // Year of release.
-#define ASITUS_VERSION_NUM 2     // Number of release within the current year.
+#define ASITUS_VERSION_YEAR 2025 // Year of release.
+#define ASITUS_VERSION_NUM 1     // Number of release within the current year.
 
 //-----------------------------------------------------------------------------
 
-#define ASITUS_VERSION_STRING "2024.2"
+#define ASITUS_VERSION_STRING "2025.1"
 #define ASITUS_APP_NAME "Analysis Situs"
 
 //! \ingroup ASI_CORE
 //!
+//! Global technical namespace.
 namespace asi
 {
   //! Returns build number as the compilation timestamp.
