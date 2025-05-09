@@ -163,8 +163,35 @@
 </table>
 
 <p>
-  Bent pipe recognition is not activated by default. You have to enable the corresponding option in the recognizer by providing the dedicated <span class="code-inline">-bentPipes</span> flag to the SMRU executable or the Tcl command. If activated, the recognizer operates in the normal mode and then tries to recognize a part as a bent pipe whenever the default recognition attempts were unsuccessful.
+  If bent pipe recognition is enabled, the recognizer operates in normal mode and then attempts to recognize a part as a bent pipe if the default recognition attempts fail.
 </p>
+
+<table align="center" style="border: 1px solid rgb(100, 100, 100);" cellpadding="5" cellspacing="0" width="100%">
+  <tr>
+    <td align="center" class="table-content-header" width="40%">
+      Distribution
+    </td>
+    <td class="table-content-header">
+      Activation
+    </td>
+  </tr>
+  <tr>
+    <td align="center" class="table-content-block" width="40%">
+      CLI/Executable
+    </td>
+    <td class="table-content-block code">
+      -bentPipes
+    </td>
+  </tr>
+  <tr>
+    <td align="center" class="table-content-block" width="40%">
+      C++/C#
+    </td>
+    <td class="table-content-block code">
+      InspectFile::SetRecognizeBentPipes()
+    </td>
+  </tr>
+</table>
 
 <h3 id="toc-details-smru-dxf-welding">Contacting solids</h3>
 
@@ -180,8 +207,35 @@
 <div align="center"><a href="../../imgs/versions/v2025.1/weldings.png"><img src="../../imgs/versions/v2025.1/weldings.png" width="40%"/></a></div>
 
 <p>
-  We devoted a technical article to explain different approaches to welding identification: "<a href="https://quaoar.su/blog/page/how-to-identify-contact-zones-between-solids">To automatic identification of welding joints in CAD assemblies</a>." This algorithm is now available as an option in SMRU if the dedicated <span class="code-inline">-weldings</span> flags is passed to the executable or the Tcl command. The reported contact zones between solids are dumped to glTF format. Their corresponding lengths are reported in the outcome JSON file.
+  We devoted a technical article to explain different approaches to welding identification: "<a href="https://quaoar.su/blog/page/how-to-identify-contact-zones-between-solids">To automatic identification of welding joints in CAD assemblies</a>." The reported contact zones between solids are dumped to glTF format. Their corresponding lengths are reported in the outcome JSON file.
 </p>
+
+<table align="center" style="border: 1px solid rgb(100, 100, 100);" cellpadding="5" cellspacing="0" width="100%">
+  <tr>
+    <td align="center" class="table-content-header" width="40%">
+      Distribution
+    </td>
+    <td class="table-content-header">
+      Activation
+    </td>
+  </tr>
+  <tr>
+    <td align="center" class="table-content-block" width="40%">
+      CLI/Executable
+    </td>
+    <td class="table-content-block code">
+      -weldings
+    </td>
+  </tr>
+  <tr>
+    <td align="center" class="table-content-block" width="40%">
+      C++/C#
+    </td>
+    <td class="table-content-block code">
+      InspectFile::SetFindWeldings()
+    </td>
+  </tr>
+</table>
 
 <h3 id="toc-details-smru-dxf-revamped-dxf">Revamped DXF with layers</h3>
 
@@ -192,7 +246,7 @@
 <div align="center"><a href="../../imgs/versions/v2025.1/unfolding.png"><img src="../../imgs/versions/v2025.1/unfolding.png" width="40%"/></a></div>
 
 <p>
-  The 3-rd party option requires a separate license and has limited flexibility for customization. Therefore, we started an R&D project to revamp the open-sourced solution and make more functionally rich. The new DXF translator has the capacity of maintaining separate layers. In ver.2025.1, this new capacity is used to report bend lines on top of the cutting contours.
+  The 3-rd party option requires a separate license and has limited flexibility for customization. Therefore, we started an R&D project to revamp the open-sourced solution and make it more functionally rich. The new DXF translator has the capacity of maintaining separate layers. In ver.2025.1, this new capacity is used to report bend lines on top of the cutting contours.
 </p>
 
 <div align="center"><a href="../../imgs/versions/v2025.1/dxf-bend-lines.png"><img src="../../imgs/versions/v2025.1/dxf-bend-lines_small.png" width="40%"/></a></div>
@@ -216,7 +270,7 @@
 <h3 id="toc-details-smru-dxf-segments">Cutting contour segments</h3>
 
 <p>
-  SMRU reports cutting length for all contours, including the outer perimeter and cutouts. It may happen that single cutting length is not enough and you need more factorized information about the cutting contours to assess machining time. For that, SMRU provides an option called <span class="code-inline">-segments</span> that decomposes each contour into its elementary primitives, such as straight line segments and arcs.
+  SMRU reports cutting length for all contours, including the outer perimeters and cutouts. It may happen that single cutting length is not enough and you need more factorized information about the cutting contours to assess machining time. For segment extraction, SMRU decomposes each contour into its elementary primitives, such as straight line segments and arcs.
 </p>
 
 <div align="center"><a href="../../imgs/versions/v2025.1/segments.png"><img src="../../imgs/versions/v2025.1/segments.png" width="60%"/></a></div>
@@ -224,6 +278,33 @@
 <p>
   In the new release, the algorithm of segments extraction has been redesigned to provide stable output with consistent information about convexity of connection points. You may want to read more about this algorithm on our blog: "<a href="https://quaoar.su/blog/page/segments-over-a-planar-contour">Segments over a planar contour</a>."
 </p>
+
+<table align="center" style="border: 1px solid rgb(100, 100, 100);" cellpadding="5" cellspacing="0" width="100%">
+  <tr>
+    <td align="center" class="table-content-header" width="40%">
+      Distribution
+    </td>
+    <td class="table-content-header">
+      Activation
+    </td>
+  </tr>
+  <tr>
+    <td align="center" class="table-content-block" width="40%">
+      CLI/Executable
+    </td>
+    <td class="table-content-block code">
+      -segments
+    </td>
+  </tr>
+  <tr>
+    <td align="center" class="table-content-block" width="40%">
+      C++/C#
+    </td>
+    <td class="table-content-block code">
+      InspectFile::SetExtractSegmentsInfo()
+    </td>
+  </tr>
+</table>
 
 <h3 id="toc-details-smru-dxf-simulation">Bending simulation preview</h3>
 
@@ -252,9 +333,32 @@
   The simulation algorithm is data-driven. You are allowed to define your own punches as two-dimensional geometric profiles that will be automatically loaded by the algorithm in the beginning of the simulation process. If no custom punches are provided, the algorithm will use its default tools that are good enough for a "glance" feasibility check. You may want to read more about the algorithm on our blog here: "<a href="https://quaoar.su/blog/page/on-sheet-metal-unfolding-part-12-searching-for-feasible-bends">On sheet metal unfolding. Part 12: searching for feasible bends</a>."
 </p>
 
-<p>
-  To enable the simulation algorithm, you need pass the optional <span class="code-inline">-simulate</span> argument to the SMRU executable or Tcl command.
-</p>
+<table align="center" style="border: 1px solid rgb(100, 100, 100);" cellpadding="5" cellspacing="0" width="100%">
+  <tr>
+    <td align="center" class="table-content-header" width="40%">
+      Distribution
+    </td>
+    <td class="table-content-header">
+      Activation
+    </td>
+  </tr>
+  <tr>
+    <td align="center" class="table-content-block" width="40%">
+      CLI/Executable
+    </td>
+    <td class="table-content-block code">
+      -simulate
+    </td>
+  </tr>
+  <tr>
+    <td align="center" class="table-content-block" width="40%">
+      C++/C#
+    </td>
+    <td class="table-content-block code">
+      InspectFile::SetSimulateBending()
+    </td>
+  </tr>
+</table>
 
 <h2 id="toc-details-cnc">CNC</h2>
 
@@ -283,6 +387,33 @@
 <p>
   It is easy to see that the original pocket feature does not contain this contour among its own edges inherently, i.e., the outline can only be synthetized by projection. The projected outline can be used for machining time estimation directly or in the derived algorithms (such as delta volume construction).
 </p>
+
+<table align="center" style="border: 1px solid rgb(100, 100, 100);" cellpadding="5" cellspacing="0" width="100%">
+  <tr>
+    <td align="center" class="table-content-header" width="40%">
+      Distribution
+    </td>
+    <td class="table-content-header">
+      Activation
+    </td>
+  </tr>
+  <tr>
+    <td align="center" class="table-content-block" width="40%">
+      CLI/Executable
+    </td>
+    <td class="table-content-block code">
+      -outline
+    </td>
+  </tr>
+  <tr>
+    <td align="center" class="table-content-block" width="40%">
+      C++/C#
+    </td>
+    <td class="table-content-block code">
+      InspectFile::SetComputeOutline()
+    </td>
+  </tr>
+</table>
 
 <h2 id="toc-details-alm">ALM</h2>
 
@@ -327,7 +458,7 @@
 <div align="center"><a href="../../imgs/versions/v2025.1/webviewer.gif"><img src="../../imgs/versions/v2025.1/webviewer.gif" width="70%"/></a></div>
 
 <p>
-  We deliver our web viewer in sources and invite our customers to use it as guidline example for their own development. The web viewer demonstrates how CAD data is communicated between the frontend GUI and the artifact files (JSON, glTF, PNG, etc.) generated by a server.
+  We deliver our web viewer in sources and invite our customers to use it as a guidline example for their own development. The web viewer demonstrates how CAD data is communicated between the frontend GUI and the artifact files (JSON, glTF, PNG, etc.) generated by a server.
 </p>
 
 <!-- Commits -->
