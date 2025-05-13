@@ -2783,10 +2783,17 @@ bool asiAlgo_UnifySameDomain::IntUnifyFaces(const TopoDS_Shape&                 
       else if (NewFaces.Length() == 1)
       {
         TopoDS_Shape aNewFace = NewFaces(1).Oriented (TopAbs_FORWARD);
+
         for (Standard_Integer ii = 1; ii <= NewWires.Length(); ii++)
+        {
           BB.Add(aNewFace, NewWires(ii));
+        }
+
         for (Standard_Integer ii = 1; ii <= InternalWires.Length(); ii++)
+        {
           BB.Add(aNewFace, InternalWires(ii));
+        }
+
         myContext->Merge(faces, NewFaces(1));
       }
       else
@@ -2831,7 +2838,7 @@ bool asiAlgo_UnifySameDomain::IntUnifyFaces(const TopoDS_Shape&                 
 
 //=======================================================================
 //function : UnifyEdges
-//purpose  : 
+//purpose  :
 //=======================================================================
 void asiAlgo_UnifySameDomain::UnifyEdges()
 {
@@ -2963,7 +2970,7 @@ bool asiAlgo_UnifySameDomain::Build()
     UnifyEdges();
 
   // All faces should be closed in UV space as a result of maximization.
-  const bool isOk = !myFailed && CheckClosedContours(myShape);
+  const bool isOk = !myFailed && CheckClosedContours(myShape) && checkInvalidImbricationOfWires();
 
 #if defined DRAW_DEBUG
   static int numInvalid = 0;
@@ -2982,4 +2989,194 @@ bool asiAlgo_UnifySameDomain::Build()
 #endif
 
   return isOk;
+}
+
+//=======================================================================
+//function : IsInside
+//purpose  :
+//=======================================================================
+
+static Standard_Boolean IsInside(const TopoDS_Wire&             theWire,
+                                 const Standard_Boolean         WireBienOriente,
+                                 const BRepTopAdaptor_FClass2d& FClass2d,
+                                 const TopoDS_Face&             theFace)
+{
+  Standard_Real aParameter, aFirst, aLast;
+
+  TopExp_Explorer anExplorer(theWire, TopAbs_EDGE);
+  for (; anExplorer.More(); anExplorer.Next())
+  {
+    const TopoDS_Edge& anEdge = TopoDS::Edge( anExplorer.Current() );
+    Handle(Geom2d_Curve) aCurve2D = BRep_Tool::CurveOnSurface( anEdge, theFace, aFirst, aLast );
+
+    // Selects the parameter of point on the curve
+    if (!Precision::IsNegativeInfinite(aFirst) &&
+        !Precision::IsPositiveInfinite(aLast))
+    {
+      aParameter = (aFirst + aLast) * 0.5;
+
+      // Edge is skipped if its parametric range is too small
+      if (Abs(aParameter - aFirst) < Precision::PConfusion())
+      {
+        continue;
+      }
+
+      //Edge is skipped if its length is too small
+      Standard_Real aFirst3D, aLast3D;
+      Handle(Geom_Curve) aCurve = BRep_Tool::Curve( anEdge, aFirst3D, aLast3D );
+      if (aCurve.IsNull())
+      {
+        continue;
+      }
+
+      gp_Pnt aPoints[2];
+      // Compute start point of edge
+      aCurve->D0( aFirst, aPoints[0] );
+      // Compute middle point of edge
+      aCurve->D0( (aFirst3D+aLast3D)/2., aPoints[1] );
+      if (aPoints[0].Distance(aPoints[1]) < Precision::Confusion())
+      {
+        continue;
+      }
+    }
+    else
+    {
+      if (Precision::IsNegativeInfinite(aFirst) &&
+          Precision::IsPositiveInfinite(aLast))
+      {
+        aParameter = 0.;
+      }
+      else if (Precision::IsNegativeInfinite(aFirst))
+      {
+        aParameter = aLast - 1.;
+      }
+      else
+      {
+        aParameter = aFirst + 1.;
+      }
+    }
+
+    // Find point on curve (edge)
+    gp_Pnt2d aPoint2D(aCurve2D->Value(aParameter));
+    // Compute the topological position of a point relative to face
+    TopAbs_State aState = FClass2d.Perform(aPoint2D, Standard_False);
+
+    if (WireBienOriente)
+    {
+      return aState == TopAbs_OUT;
+    }
+    else
+    {
+      return aState == TopAbs_IN;
+    }
+  }
+  return Standard_False;
+}
+
+//=======================================================================
+//function : checkInvalidImbricationOfWires
+//purpose  : checks InvalidImbricationOfWires status.
+//=======================================================================
+bool asiAlgo_UnifySameDomain::checkInvalidImbricationOfWires()
+{
+  for (TopExp_Explorer exp(myShape, TopAbs_FACE); exp.More(); exp.Next())
+  {
+    const TopoDS_Face& face = TopoDS::Face(exp.Value());
+
+    if (!myContext->IsNewShape(face))
+    {
+      continue;
+    }
+
+    TopTools_DataMapOfShapeListOfShape mapImb;
+    TopTools_ListOfShape listOfShape;
+    TopExp_Explorer expW;
+    expW.Init(face.Oriented(TopAbs_FORWARD), TopAbs_WIRE);
+    while (expW.More())
+    {
+      if (!mapImb.IsBound(expW.Current()))
+      {
+        mapImb.Bind(expW.Current(), listOfShape);
+      }
+      else
+      {
+        return false;
+      }
+      expW.Next();
+    }
+
+    Standard_Integer Nbwire = mapImb.Extent();
+    if (Nbwire < 1)
+    {
+      return false;
+    }
+
+    BRep_Builder B;
+    TopExp_Explorer exp1, exp2;
+    TopTools_ListOfShape theListOfShape;
+    for (exp1.Init(face.Oriented(TopAbs_FORWARD), TopAbs_WIRE); exp1.More(); exp1.Next())
+    {
+
+      const TopoDS_Wire& wir1 = TopoDS::Wire(exp1.Current());
+      TopoDS_Shape aLocalShape = face.EmptyCopied();
+      TopoDS_Face newFace = TopoDS::Face(aLocalShape);
+
+      newFace.Orientation(TopAbs_FORWARD);
+      B.Add(newFace, wir1);
+
+      BRepTopAdaptor_FClass2d FClass2d(newFace, Precision::PConfusion());
+      Standard_Boolean WireBienOriente = Standard_False;
+      if (FClass2d.PerformInfinitePoint() != TopAbs_OUT)
+      {
+        WireBienOriente = Standard_True;
+        // the given wire defines a hole
+        mapImb.UnBind(wir1);
+        mapImb.Bind(wir1.Reversed(), theListOfShape);
+      }
+
+      for (exp2.Init(face.Oriented(TopAbs_FORWARD), TopAbs_WIRE); exp2.More(); exp2.Next())
+      {
+        const TopoDS_Wire& wir2 = TopoDS::Wire(exp2.Current());
+        if (!wir2.IsSame(wir1))
+        {
+          if (IsInside(wir2, WireBienOriente, FClass2d, newFace))
+          {
+            mapImb(wir1).Append(wir2);
+          }
+        }
+      }
+    }
+
+    // It is required to have 1 wire that contains all others, and the others should not
+    // contain anything (case solid ended) or
+    // the wires do not contain anything : in this case the wires should be
+    // holes in an infinite face.
+    TopoDS_Wire Wext;
+    for (TopTools_DataMapIteratorOfDataMapOfShapeListOfShape itm(mapImb); itm.More(); itm.Next())
+    {
+      if (!itm.Value().IsEmpty())
+      {
+        if (Wext.IsNull())
+        {
+          Wext = TopoDS::Wire(itm.Key());
+        }
+        else
+        {
+          return false;
+        }
+      }
+    }
+
+    if (!Wext.IsNull())
+    {
+      // verifies that the list contains nbwire-1 elements
+      if (mapImb(Wext).Extent() != Nbwire-1)
+      {
+        return false;
+      }
+    }
+
+  }
+
+  return true;
 }

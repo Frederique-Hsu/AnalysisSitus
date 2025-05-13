@@ -161,6 +161,10 @@ protected:
   bool IntUnifyFaces(const TopoDS_Shape& theInpShape,
                      TopTools_IndexedDataMapOfShapeListOfShape& theGMapEdgeFaces);
 
+  //! Checks InvalidImbricationOfWires status.
+  //! \return true/false.
+  bool checkInvalidImbricationOfWires();
+
 private:
 
   TopoDS_Shape myInitShape;

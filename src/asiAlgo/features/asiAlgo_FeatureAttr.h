@@ -32,6 +32,7 @@
 #define asiAlgo_FeatureAttr_h
 
 // asiAlgo includes
+#include <asiAlgo_JsonDict.h>
 #include <asiAlgo.h>
 
 // Active Data includes

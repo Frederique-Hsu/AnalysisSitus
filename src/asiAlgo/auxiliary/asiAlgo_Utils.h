@@ -95,7 +95,9 @@
 //-----------------------------------------------------------------------------
 
 #define asiAlgo_TooSmallValue 1.0e-4
+#define asiAlgo_RangeLinPrec  0.01
 #define asiAlgo_SlashStr      "/"
+#define asiAlgo_QuoteStr      "\""
 
 //-----------------------------------------------------------------------------
 
@@ -167,6 +169,22 @@ namespace asiAlgo_Utils
       SubStr(const std::string& source,
              const int          idx_F,
              const int          length);
+
+    //! Returns the passed string ensuring that it is surrounded with quote
+    //! characters. This is an equivalent function for `std::quoted()` to
+    //! be used in C++11 development environment.
+    //! \param[in] strIN input string.
+    //! \return modified string.
+    asiAlgo_EXPORT std::string
+      Quoted(const char* strIN);
+
+    //! Returns the passed string ensuring that it is surrounded with quote
+    //! characters. This is an equivalent function for `std::quoted()` to
+    //! be used in C++11 development environment.
+    //! \param[in] strIN input string.
+    //! \return modified string.
+    asiAlgo_EXPORT std::string
+      Quoted(const std::string& strIN);
 
     //! Returns the passed string ensuring that it has a trailing slash.
     //! \param[in] strIN input string.
@@ -520,10 +538,15 @@ namespace asiAlgo_Utils
     //! Checks if the first range contains the second one.
     //! \param[in] range1 the first range to check.
     //! \param[in] range2 the second range to check.
+    //! \param[in] strict the Boolean flag indicating whether the range
+    //!                   check should use strict inequality checks.
+    //! \param[in] tol    the tolerance to use for non-strict inequality test.
     //! \return true/false.
     asiAlgo_EXPORT bool
       Contains(const t_range& range1,
-               const t_range& range2);
+               const t_range& range2,
+               const bool     strict,
+               const double   tol = asiAlgo_RangeLinPrec);
 
     //! Checks if the passed ranges are geometrically coincident.
     //! \param[in] range1 the first range to check.
@@ -531,7 +554,7 @@ namespace asiAlgo_Utils
     //! \return true/false.
     asiAlgo_EXPORT bool
       Coincide(const t_range& range1,
-                const t_range& range2);
+               const t_range& range2);
 
     //! Checks if the passed `range1` left-overlaps or included into `range2`.
     //! Run this function twice with the swapped arguments to perform full test.
@@ -665,6 +688,84 @@ namespace asiAlgo_Utils
   //! \return address of TShape as string.
   asiAlgo_EXPORT std::string
     ShapeAddr(const TopoDS_Shape& shape);
+
+    //! Checks curve type.
+  //! \param[in]  curve     the curve to check.
+  //! \param[out] basecurve the extracted basis curve if the originally
+  //!                       passed one is trimmed.
+  //! \return true/false.
+  template<typename TCurve>
+  bool IsTypeOf(const Handle(Geom2d_Curve)& curve,
+                Handle(TCurve)&             basecurve)
+  {
+    if( curve.IsNull() ) {
+      return false;
+    }
+
+    if ( curve->IsInstance( STANDARD_TYPE(TCurve) ) )
+    {
+      basecurve = Handle(TCurve)::DownCast(curve);
+      return true;
+    }
+
+    if ( curve->IsInstance( STANDARD_TYPE(Geom2d_TrimmedCurve) ) )
+    {
+      Handle(Geom2d_TrimmedCurve) trimmed =
+        Handle(Geom2d_TrimmedCurve)::DownCast(curve);
+
+      if( trimmed.IsNull() ) {
+        return false;
+      }
+
+      Handle(Geom2d_Curve) basis = trimmed->BasisCurve();
+
+      if ( IsTypeOf<TCurve>(basis, basecurve) )
+      {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  //! Checks curve type.
+  //! \param[in]  curve     the curve to check.
+  //! \param[out] basecurve the extracted basis curve if the originally
+  //!                       passed one is trimmed.
+  //! \return true/false.
+  template<typename TCurve>
+  bool IsTypeOf(const Handle(Geom_Curve)& curve,
+                Handle(TCurve)&           basecurve)
+  {
+    if( curve.IsNull() ) {
+      return false;
+    }
+
+    if ( curve->IsInstance( STANDARD_TYPE(TCurve) ) )
+    {
+      basecurve = Handle(TCurve)::DownCast(curve);
+      return true;
+    }
+
+    if ( curve->IsInstance( STANDARD_TYPE(Geom_TrimmedCurve) ) )
+    {
+      Handle(Geom_TrimmedCurve) trimmed =
+        Handle(Geom_TrimmedCurve)::DownCast(curve);
+
+      if( trimmed.IsNull() ) {
+        return false;
+      }
+
+      Handle(Geom_Curve) basis = trimmed->BasisCurve();
+
+      if ( IsTypeOf<TCurve>(basis, basecurve) )
+      {
+        return true;
+      }
+    }
+
+    return false;
+  }
 
   //! Checks curve type.
   //! \param[in] curve curve to check.
@@ -1230,6 +1331,35 @@ namespace asiAlgo_Utils
                       double&                    umax,
                       double&                    vmin,
                       double&                    vmax);
+
+  //! Computes length of the passed face by projecting its vertices
+  //! to the given axis.
+  //! \param[in]  face the face in question.
+  //! \param[in]  axis the axis in question.
+  //! \param[in]  tris the Boolean flag indicating whether to use triangulation
+  //!                  or just get start/middle/end vertices of each edge.
+  //! \param[out] hmin the lower bound of the axial range.
+  //! \param[out] hmax the upper bound of the axial range.
+  //! \return the computed face length w.r.t. the passed axis.
+  asiAlgo_EXPORT double
+    ComputeFaceLength(const TopoDS_Face& face,
+                      const gp_Ax1&      axis,
+                      const bool         useTriangulation,
+                      double&            hmin,
+                      double&            hmax);
+
+  //! Handles getting face axial range using the AAG as a cache.
+  //! \param[in]  fid  the AAG node id of the face.
+  //! \param[in]  aag  the AAG instance.
+  //! \param[in]  ax   the axis of rotation.
+  //! \param[out] hmin the left bound.
+  //! \param[out] hmax the right bound.
+  asiAlgo_EXPORT void
+    CacheFaceRange(const int                  fid,
+                    const Handle(asiAlgo_AAG)& aag,
+                    const gp_Ax1&              ax,
+                    double&                    hmin,
+                    double&                    hmax);
 
   //! Finds trasformation to move the reference frame `B` so that it is
   //! superimposed with the reference frame `A`.
@@ -2241,10 +2371,14 @@ namespace asiAlgo_Utils
                  ActAPI_PlotterEntry       plotter = nullptr);
 
   //! Returns a set of points presumably lying on the given face.
-  //! \param[in]  face the face in question.
-  //! \param[out] pts  the sampled points on a face.
+  //! \param[in]  face         the face in question.
+  //! \param[in]  midPoints    the Boolean flag indicating whether to add each edge's middle points.
+  //! \param[in]  triangPoints the Boolean flag indicating whether to add face triangulation points.
+  //! \param[out] pts          the sampled points.
   asiAlgo_EXPORT void
     GetFacePoints(const TopoDS_Face&   face,
+                  const bool           midPoints,
+                  const bool           triangPoints,
                   std::vector<gp_XYZ>& pts);
 
   //! Returns a set of points lying on the triangulation of the given face.

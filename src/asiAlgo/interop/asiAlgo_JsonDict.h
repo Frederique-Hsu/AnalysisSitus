@@ -67,6 +67,8 @@
 #define PropName_Volume                           "volume"
 #define PropName_StatusCodes                      "codes"
 #define PropName_SemanticCodes                    "semanticCodes"
+#define PropName_Hmin                             "hmin"
+#define PropName_Hmax                             "hmax"
 
 // JSON properties
 #define asiPropName_ExtrasCanRecSummary            "canrecSummary"
