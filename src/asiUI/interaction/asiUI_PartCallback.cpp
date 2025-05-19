@@ -95,4 +95,10 @@ void asiUI_PartCallback::Execute(vtkObject*    asiVisu_NotUsed(pCaller),
 
   if ( eventId == EVENT_DEFEATURE )
     emit defeature();
+
+  if (eventId == EVENT_BUILD_HLR_OUTLINE)
+    emit buildHLROutline();
+
+  if (eventId == EVENT_BUILD_HLR_OUTLINE_DISCR)
+    emit buildHLRDiscrOutline();
 }

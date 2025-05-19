@@ -147,14 +147,14 @@ ActAPI_ProgressStatus asiAlgo_ProgressNotifier::ProgressStatus() const
 
 void asiAlgo_ProgressNotifier::Cancel()
 {
-  // Do nothing, no way to cancel in Draw console
+  m_status = Progress_Canceled;
 }
 
 //-----------------------------------------------------------------------------
 
 bool asiAlgo_ProgressNotifier::IsCancelling()
 {
-  return false;
+  return m_status == Progress_Canceled;
 }
 
 //-----------------------------------------------------------------------------
@@ -178,6 +178,13 @@ bool asiAlgo_ProgressNotifier::IsFailed()
 int asiAlgo_ProgressNotifier::CurrentProgress() const
 {
   return m_iProgress;
+}
+
+//-----------------------------------------------------------------------------
+
+void asiAlgo_ProgressNotifier::ProcessEvents() const
+{
+  // Do nothing.
 }
 
 //-----------------------------------------------------------------------------

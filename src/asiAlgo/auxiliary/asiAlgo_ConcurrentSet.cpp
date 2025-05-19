@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
-// Created on: 13 July 2016
+// Created on: 08 February 2024
 //-----------------------------------------------------------------------------
-// Copyright (c) 2017, Sergey Slyadnev
+// Copyright (c) 2024-present, Sergey Slyadnev
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -28,67 +28,10 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-----------------------------------------------------------------------------
 
-#ifndef asiUI_PartCallback_h
-#define asiUI_PartCallback_h
+// Own include
+#include <asiAlgo_ConcurrentSet.h>
 
-// asiUI includes
-#include <asiUI_ViewerCallback.h>
+//-----------------------------------------------------------------------------
 
-// VTK includes
-#pragma warning(push, 0)
-#include <vtkRenderer.h>
-#include <vtkSmartPointer.h>
-#pragma warning(pop)
-
-// Qt includes
-#pragma warning(push, 0)
-#include <QObject>
-#pragma warning(pop)
-
-//! Callback for operations in Part viewer.
-class asiUI_PartCallback : public QObject,
-                           public asiUI_ViewerCallback
-{
-  Q_OBJECT
-
-public:
-
-  asiUI_EXPORT static asiUI_PartCallback*
-    New();
-
-  asiUI_EXPORT static asiUI_PartCallback*
-    New(asiUI_Viewer* pViewer);
-
-  vtkTypeMacro(asiUI_PartCallback, asiUI_ViewerCallback)
-
-public:
-
-  asiUI_EXPORT virtual void
-    Execute(vtkObject*    pCaller,
-            unsigned long eventId,
-            void*         pCallData);
-
-signals:
-
-  void findFace();
-  void findEdge();
-  void findVertex();
-  void refineTessellation();
-  void buildHLR();
-  void buildHLRDiscr();
-  void selectAll();
-  void defeature();
-  void buildHLROutline();
-  void buildHLRDiscrOutline();
-
-private:
-
-  asiUI_EXPORT
-    asiUI_PartCallback(asiUI_Viewer* pViewer);
-
-  asiUI_EXPORT
-    ~asiUI_PartCallback();
-
-};
-
-#endif
+// Instantiate for allowed types
+template class asiAlgo_ConcurrentSet<size_t>;

@@ -48,16 +48,51 @@ class Geom_Surface;
 class Poly_Triangulation;
 class ActData_Mesh;
 
-typedef TCollection_ExtendedString t_extString;
-
 //-----------------------------------------------------------------------------
 
-//! \ingroup AD_API
+//! \ingroup AD_DF
 //!
 //! Wrapper for Quantity_Color which allows undefined colors (we need such
 //! for "default color" option in imperative plotter).
 class ActAPI_Color : public Quantity_Color
 {
+public:
+
+  //! Converts integer value to a color.
+  //! \param[in] icolor integer color code.
+  //! \return converted value
+  static ActAPI_Color IntToColor(const int icolor)
+  {
+    unsigned char uRed   = ( icolor >> 16 ) & 0xFF;
+    unsigned char uGreen = ( icolor >>  8 ) & 0xFF;
+    unsigned char uBlue  =   icolor         & 0xFF;
+    return ActAPI_Color(uRed/255., uGreen/255., uBlue/255., Quantity_TOC_RGB);
+  }
+
+  //! Converts RGB color to integer.
+  //! \param[in] r red component.
+  //! \param[in] g green component.
+  //! \param[in] b blue component.
+  //! \return converted value.
+  static int ColorToInt(unsigned int r, unsigned int g, unsigned int b)
+  {
+    return r << 16 | g << 8 | b;
+  }
+
+  //! Converts RGB color to integer.
+  //! \param[in] r red component of the color.
+  //! \param[in] g green component of the color.
+  //! \param[in] b blue component of the color.
+  //! \return converted value.
+  static int ColorToInt(const double r, const double g, const double b)
+  {
+    unsigned char red   = (unsigned char) ( floor(r >= 1.0 ? 255 : r * 256.0) );
+    unsigned char green = (unsigned char) ( floor(g >= 1.0 ? 255 : g * 256.0) );
+    unsigned char blue  = (unsigned char) ( floor(b >= 1.0 ? 255 : b * 256.0) );
+    //
+    return red << 16 | green << 8 | blue;
+  }
+
 public:
 
   //! Ctor.
@@ -92,13 +127,13 @@ protected:
 //-----------------------------------------------------------------------------
 
 #define Color_Default   ActAPI_Color(Quantity_NOC_SNOW)
-#define Color_Red       ActAPI_Color(Quantity_NOC_RED)
+#define Color_Red       ActAPI_Color(250./255., 60./255., 15./255., Quantity_TOC_RGB)
 #define Color_Orange    ActAPI_Color(Quantity_NOC_ORANGE)
 #define Color_Purple    ActAPI_Color(Quantity_NOC_PURPLE)
 #define Color_Pink      ActAPI_Color(Quantity_NOC_PINK)
-#define Color_Green     ActAPI_Color(Quantity_NOC_GREEN)
+#define Color_Green     ActAPI_Color(140./255., 220./255., 40./255., Quantity_TOC_RGB)
 #define Color_Khaki     ActAPI_Color(Quantity_NOC_KHAKI)
-#define Color_Blue      ActAPI_Color(Quantity_NOC_BLUE1)
+#define Color_Blue      ActAPI_Color(50./255., 150./255., 255./255., Quantity_TOC_RGB)
 #define Color_Yellow    ActAPI_Color(Quantity_NOC_YELLOW)
 #define Color_White     ActAPI_Color(Quantity_NOC_WHITE)
 #define Color_Snow      ActAPI_Color(Quantity_NOC_SNOW)
@@ -111,7 +146,7 @@ protected:
 
 //-----------------------------------------------------------------------------
 
-//! \ingroup AD_API
+//! \ingroup AD_DF
 //!
 //! Interface for Imperative Viewer. A particular algorithm may benefit
 //! from immediate plotting of its geometric variables in a unified way
@@ -196,6 +231,13 @@ public:
                 const t_extString&) {}
 
   virtual void
+    DRAW_POINTS(const Handle(HRealArray)&,
+                const float,
+                const bool,
+                const ActAPI_Color&,
+                const t_extString&) {}
+
+  virtual void
     DRAW_POINTS(const std::vector<gp_XYZ>&,
                 const ActAPI_Color&,
                 const t_extString&) {}
@@ -203,6 +245,13 @@ public:
   virtual void
     REDRAW_POINTS(const t_extString&,
                   const Handle(HRealArray)&,
+                  const ActAPI_Color&) {}
+
+  virtual void
+    REDRAW_POINTS(const t_extString&,
+                  const Handle(HRealArray)&,
+                  const float,
+                  const bool,
                   const ActAPI_Color&) {}
 
   virtual void
@@ -255,6 +304,50 @@ public:
   //-------------------------------------------------------------------------//
 
   virtual void
+    DRAW_VECTORS(const Handle(HRealArray)&,
+                 const Handle(HRealArray)&,
+                 const ActAPI_Color&,
+                 const bool, // with tip
+                 const bool, // rescale
+                 const t_extString&) {}
+
+  virtual void
+    REDRAW_VECTORS(const t_extString&,
+                   const Handle(HRealArray)&,
+                   const Handle(HRealArray)&,
+                   const ActAPI_Color&,
+                   const bool,    // with tip
+                   const bool) {} // rescale
+
+  //-------------------------------------------------------------------------//
+
+  virtual void
+    DRAW_LABELS(const Handle(HRealArray)&,
+                const Handle(HStringArray)&,
+                const ActAPI_Color&,
+                const t_extString&) {}
+
+  virtual void
+    REDRAW_LABELS(const t_extString&,
+                  const Handle(HRealArray)&,
+                  const Handle(HStringArray)&,
+                  const ActAPI_Color&) {}
+
+  virtual void
+    DRAW_LABEL(const gp_XYZ&,
+               const t_asciiString&,
+               const ActAPI_Color&,
+               const t_extString&) {}
+
+  virtual void
+    REDRAW_LABEL(const t_extString&,
+                 const gp_XYZ&,
+                 const t_asciiString&,
+                 const ActAPI_Color&) {}
+
+  //-------------------------------------------------------------------------//
+
+  virtual void
     DRAW_RECT(const gp_Pnt2d&,
               const gp_Pnt2d&,
               const ActAPI_Color&,
@@ -290,7 +383,12 @@ public:
     DRAW_CURVE(const Handle(Geom_Curve)&,
                const ActAPI_Color&,
                const bool,
-               const TCollection_ExtendedString&) {}
+               const t_extString&) {}
+
+  virtual void
+    DRAW_CURVE(const Handle(Geom_Curve)&,
+               const ActAPI_Color&,
+               const t_extString&) {}
 
   virtual void
     REDRAW_CURVE(const TCollection_ExtendedString&,
@@ -298,12 +396,29 @@ public:
                  const ActAPI_Color&,
                  const bool) {}
 
+  virtual void
+    REDRAW_CURVE(const TCollection_ExtendedString&,
+                 const Handle(Geom_Curve)&,
+                 const ActAPI_Color&) {}
+
   //-------------------------------------------------------------------------//
 
   virtual void
     DRAW_CURVE2D(const Handle(Geom2d_Curve)&,
                  const ActAPI_Color&,
+                 const bool,
                  const t_extString&) {}
+
+  virtual void
+    DRAW_CURVE2D(const Handle(Geom2d_Curve)&,
+                 const ActAPI_Color&,
+                 const t_extString&) {}
+
+  virtual void
+    REDRAW_CURVE2D(const t_extString&,
+                   const Handle(Geom2d_Curve)&,
+                   const ActAPI_Color&,
+                   const bool) {}
 
   virtual void
     REDRAW_CURVE2D(const t_extString&,
@@ -604,7 +719,7 @@ public:
 
 //-----------------------------------------------------------------------------
 
-//! \ingroup AD_API
+//! \ingroup AD_DF
 //!
 //! Safe entry to IV.
 class ActAPI_PlotterEntry
@@ -780,6 +895,20 @@ public:
 //---------------------------------------------------------------------------//
 
   void
+    DRAW_POINTS(const Handle(HRealArray)& coords,
+                const float               size,
+                const bool                labels,
+                const ActAPI_Color&       color,
+                const t_extString&        name = "")
+  {
+    if ( m_iv.IsNull() ) return;
+    //
+    m_iv->DRAW_POINTS(coords, size, labels, color, name);
+  }
+
+//---------------------------------------------------------------------------//
+
+  void
     DRAW_POINTS(const std::vector<gp_XYZ>& pts,
                 const ActAPI_Color&        color,
                 const t_extString&         name = "")
@@ -799,6 +928,20 @@ public:
     if ( m_iv.IsNull() ) return;
     //
     m_iv->REDRAW_POINTS(name, coords, color);
+  }
+
+//---------------------------------------------------------------------------//
+
+  void
+    REDRAW_POINTS(const t_extString&        name,
+                  const Handle(HRealArray)& coords,
+                  const float               size,
+                  const bool                labels,
+                  const ActAPI_Color&       color)
+  {
+    if ( m_iv.IsNull() ) return;
+    //
+    m_iv->REDRAW_POINTS(name, coords, size, labels, color);
   }
 
 //---------------------------------------------------------------------------//
@@ -837,6 +980,88 @@ public:
     if ( m_iv.IsNull() ) return;
     //
     m_iv->REDRAW_VECTORS(name, points, vectors, color);
+  }
+
+//-------------------------------------------------------------------------//
+
+  virtual void
+    DRAW_VECTORS(const Handle(HRealArray)& points,
+                 const Handle(HRealArray)& vectors,
+                 const ActAPI_Color&       color,
+                 const bool                tips,
+                 const bool                rescale,
+                 const t_extString&        name)
+  {
+    if ( m_iv.IsNull() ) return;
+    //
+    m_iv->DRAW_VECTORS(points, vectors, color, tips, rescale, name);
+  }
+
+//-------------------------------------------------------------------------//
+
+  virtual void
+    REDRAW_VECTORS(const t_extString&        name,
+                   const Handle(HRealArray)& points,
+                   const Handle(HRealArray)& vectors,
+                   const ActAPI_Color&       color,
+                   const bool                tips,
+                   const bool                rescale)
+  {
+    if ( m_iv.IsNull() ) return;
+    //
+    m_iv->REDRAW_VECTORS(name, points, vectors, color, tips, rescale);
+  }
+
+//-------------------------------------------------------------------------//
+
+  virtual void
+    DRAW_LABELS(const Handle(HRealArray)&   points,
+                const Handle(HStringArray)& labels,
+                const ActAPI_Color&         color,
+                const t_extString&          name)
+  {
+    if ( m_iv.IsNull() ) return;
+    //
+    m_iv->DRAW_LABELS(points, labels, color, name);
+  }
+
+//-------------------------------------------------------------------------//
+
+  virtual void
+    REDRAW_LABELS(const t_extString&          name,
+                  const Handle(HRealArray)&   points,
+                  const Handle(HStringArray)& labels,
+                  const ActAPI_Color&         color)
+  {
+    if ( m_iv.IsNull() ) return;
+    //
+    m_iv->REDRAW_LABELS(name, points, labels, color);
+  }
+
+//-------------------------------------------------------------------------//
+
+  virtual void
+    DRAW_LABEL(const gp_XYZ&        point,
+               const t_asciiString& label,
+               const ActAPI_Color&  color,
+               const t_extString&   name)
+  {
+    if ( m_iv.IsNull() ) return;
+    //
+    m_iv->DRAW_LABEL(point, label, color, name);
+  }
+
+//-------------------------------------------------------------------------//
+
+  virtual void
+    REDRAW_LABEL(const t_extString&   name,
+                 const gp_XYZ&        point,
+                 const t_asciiString& label,
+                 const ActAPI_Color&  color)
+  {
+    if ( m_iv.IsNull() ) return;
+    //
+    m_iv->REDRAW_LABEL(name, point, label, color);
   }
 
 //---------------------------------------------------------------------------//
@@ -950,10 +1175,10 @@ public:
 //---------------------------------------------------------------------------//
 
   void
-    DRAW_CURVE(const Handle(Geom_Curve)& curve,
-               const ActAPI_Color&       color,
-               const bool                showOri,
-               const TCollection_ExtendedString&        name = "")
+    DRAW_CURVE(const Handle(Geom_Curve)&         curve,
+               const ActAPI_Color&               color,
+               const bool                        showOri,
+               const TCollection_ExtendedString& name = "")
   {
     if ( m_iv.IsNull() ) return;
     //
@@ -963,14 +1188,51 @@ public:
 //---------------------------------------------------------------------------//
 
   void
-    REDRAW_CURVE(const TCollection_ExtendedString&        name,
-                 const Handle(Geom_Curve)& curve,
-                 const ActAPI_Color&       color,
-                 const bool                showOri)
+    DRAW_CURVE(const Handle(Geom_Curve)&         curve,
+               const ActAPI_Color&               color,
+               const TCollection_ExtendedString& name = "")
+  {
+    if ( m_iv.IsNull() ) return;
+    //
+    m_iv->DRAW_CURVE(curve, color, true, name);
+  }
+
+//---------------------------------------------------------------------------//
+
+  void
+    REDRAW_CURVE(const TCollection_ExtendedString& name,
+                 const Handle(Geom_Curve)&         curve,
+                 const ActAPI_Color&               color,
+                 const bool                        showOri)
   {
     if ( m_iv.IsNull() ) return;
     //
     m_iv->REDRAW_CURVE(name, curve, color, showOri);
+  }
+
+//---------------------------------------------------------------------------//
+
+  void
+    REDRAW_CURVE(const TCollection_ExtendedString& name,
+                 const Handle(Geom_Curve)&         curve,
+                 const ActAPI_Color&               color)
+  {
+    if ( m_iv.IsNull() ) return;
+    //
+    m_iv->REDRAW_CURVE(name, curve, color, true);
+  }
+
+//---------------------------------------------------------------------------//
+
+  void
+    DRAW_CURVE2D(const Handle(Geom2d_Curve)& curve,
+                 const ActAPI_Color&         color,
+                 const bool                  showOri,
+                 const t_extString&          name = "")
+  {
+    if ( m_iv.IsNull() ) return;
+    //
+    m_iv->DRAW_CURVE2D(curve, color, showOri, name);
   }
 
 //---------------------------------------------------------------------------//
@@ -982,7 +1244,20 @@ public:
   {
     if ( m_iv.IsNull() ) return;
     //
-    m_iv->DRAW_CURVE2D(curve, color, name);
+    m_iv->DRAW_CURVE2D(curve, color, true, name);
+  }
+
+//---------------------------------------------------------------------------//
+
+  void
+    REDRAW_CURVE2D(const t_extString&          name,
+                   const Handle(Geom2d_Curve)& curve,
+                   const ActAPI_Color&         color,
+                   const bool                  showOri)
+  {
+    if ( m_iv.IsNull() ) return;
+    //
+    m_iv->REDRAW_CURVE2D(name, curve, color, showOri);
   }
 
 //---------------------------------------------------------------------------//
@@ -994,7 +1269,7 @@ public:
   {
     if ( m_iv.IsNull() ) return;
     //
-    m_iv->REDRAW_CURVE2D(name, curve, color);
+    m_iv->REDRAW_CURVE2D(name, curve, color, true);
   }
 
 //---------------------------------------------------------------------------//

@@ -51,6 +51,8 @@ set (aux_H_FILES
   auxiliary/asiAlgo_Collections.h
   auxiliary/asiAlgo_CompleteEdgeLoop.h
   auxiliary/asiAlgo_ComputeNegativeVolume.h
+  auxiliary/asiAlgo_ComputeOutline.h
+  auxiliary/asiAlgo_ConcurrentSet.h
   auxiliary/asiAlgo_ConvertCurve.h
   auxiliary/asiAlgo_CSG.h
   auxiliary/asiAlgo_DesignLaw.h
@@ -71,6 +73,7 @@ set (aux_H_FILES
   auxiliary/asiAlgo_OBB.h
   auxiliary/asiAlgo_Optional.h
   auxiliary/asiAlgo_OrientCnc.h
+  auxiliary/asiAlgo_Outline.h
   auxiliary/asiAlgo_PointInPoly.h
   auxiliary/asiAlgo_ProjectPointOnMesh.h
   auxiliary/asiAlgo_QuickHull.h
@@ -103,6 +106,8 @@ set (aux_CPP_FILES
   auxiliary/asiAlgo_ClassifyPointFace.cpp
   auxiliary/asiAlgo_CompleteEdgeLoop.cpp
   auxiliary/asiAlgo_ComputeNegativeVolume.cpp
+  auxiliary/asiAlgo_ComputeOutline.cpp
+  auxiliary/asiAlgo_ConcurrentSet.cpp
   auxiliary/asiAlgo_ConvertCurve.cpp
   auxiliary/asiAlgo_DesignLaw.cpp
   auxiliary/asiAlgo_DivideByContinuity.cpp
@@ -116,6 +121,7 @@ set (aux_CPP_FILES
   auxiliary/asiAlgo_ModelRefine.cpp
   auxiliary/asiAlgo_OBB.cpp
   auxiliary/asiAlgo_OrientCnc.cpp
+  auxiliary/asiAlgo_Outline.cpp
   auxiliary/asiAlgo_PointInPoly.cpp
   auxiliary/asiAlgo_ProjectPointOnMesh.cpp
   auxiliary/asiAlgo_QuickHull.cpp
@@ -366,6 +372,23 @@ set (features_CPP_FILES
 )
 
 #------------------------------------------------------------------------------
+# HLR
+#------------------------------------------------------------------------------
+
+set (hlr_H_FILES
+  hlr/asiAlgo_HlrHider.h
+  hlr/asiAlgo_HlrInternalAlgo.h
+  hlr/asiAlgo_HlrPreciseAlgo.h
+  hlr/asiAlgo_HlrToShape.h
+)
+set (hlr_CPP_FILES
+  hlr/asiAlgo_HlrHider.cpp
+  hlr/asiAlgo_HlrInternalAlgo.cpp
+  hlr/asiAlgo_HlrPreciseAlgo.cpp
+  hlr/asiAlgo_HlrToShape.cpp
+)
+
+#------------------------------------------------------------------------------
 # Interoperability
 #------------------------------------------------------------------------------
 
@@ -546,6 +569,7 @@ set (utils_H_FILES
   utils/asiAlgo_TimeStamp.h
   utils/asiAlgo_Variable.h
   utils/MemTracker.h
+  utils/asiAlgo_Thread.h
 )
 set (utils_CPP_FILES
   utils/asiAlgo_FileDumper.cpp
@@ -554,6 +578,7 @@ set (utils_CPP_FILES
   utils/asiAlgo_ProgressNotifier.cpp
   utils/asiAlgo_TimeStamp.cpp
   utils/MemTracker.cpp
+  utils/asiAlgo_Thread.cpp
 )
 
 if (USE_MOBIUS)
@@ -770,6 +795,14 @@ foreach (FILE ${features_CPP_FILES})
   source_group ("Source Files\\Features" FILES "${FILE}")
 endforeach (FILE)
 
+foreach (FILE ${hlr_H_FILES})
+  source_group ("Header Files\\HLR" FILES "${FILE}")
+endforeach (FILE)
+
+foreach (FILE ${hlr_CPP_FILES})
+  source_group ("Source Files\\HLR" FILES "${FILE}")
+endforeach (FILE)
+
 foreach (FILE ${interop_H_FILES})
   source_group ("Header Files\\Interoperability" FILES "${FILE}")
 endforeach (FILE)
@@ -841,6 +874,7 @@ set (asiAlgo_include_dir_loc "${CMAKE_CURRENT_SOURCE_DIR};\
   ${CMAKE_CURRENT_SOURCE_DIR}/dict/salome;\
   ${CMAKE_CURRENT_SOURCE_DIR}/editing;\
   ${CMAKE_CURRENT_SOURCE_DIR}/features;\
+  ${CMAKE_CURRENT_SOURCE_DIR}/hlr;\
   ${CMAKE_CURRENT_SOURCE_DIR}/interop;\
   ${CMAKE_CURRENT_SOURCE_DIR}/mesh;\
   ${CMAKE_CURRENT_SOURCE_DIR}/opt;\
@@ -902,6 +936,7 @@ add_library (asiAlgo SHARED
   ${dict_salome_H_FILES} ${dict_salome_CPP_FILES}
   ${editing_H_FILES}     ${editing_CPP_FILES}
   ${features_H_FILES}    ${features_CPP_FILES}
+  ${hlr_H_FILES}         ${hlr_CPP_FILES}
   ${interop_H_FILES}     ${interop_CPP_FILES}
   ${mesh_H_FILES}        ${mesh_CPP_FILES}
   ${opt_H_FILES}         ${opt_CPP_FILES}
@@ -1028,6 +1063,7 @@ install (FILES ${dict_H_FILES}        DESTINATION ${SDK_INSTALL_SUBDIR}include)
 install (FILES ${dict_salome_H_FILES} DESTINATION ${SDK_INSTALL_SUBDIR}include)
 install (FILES ${editing_H_FILES}     DESTINATION ${SDK_INSTALL_SUBDIR}include)
 install (FILES ${features_H_FILES}    DESTINATION ${SDK_INSTALL_SUBDIR}include)
+install (FILES ${hlr_H_FILES}         DESTINATION ${SDK_INSTALL_SUBDIR}include)
 install (FILES ${interop_H_FILES}     DESTINATION ${SDK_INSTALL_SUBDIR}include)
 install (FILES ${mesh_H_FILES}        DESTINATION ${SDK_INSTALL_SUBDIR}include)
 install (FILES ${opt_H_FILES}         DESTINATION ${SDK_INSTALL_SUBDIR}include)

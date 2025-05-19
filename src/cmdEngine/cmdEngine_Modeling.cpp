@@ -42,6 +42,7 @@
 
 // asiAlgo includes
 #include <asiAlgo_BuildHLR.h>
+#include <asiAlgo_ComputeOutline.h>
 #include <asiAlgo_MeshOBB.h>
 #include <asiAlgo_BuildOBB.h>
 #include <asiAlgo_MeshOffset.h>
@@ -1455,18 +1456,136 @@ int ENGINE_HLR(const Handle(asiTcl_Interp)& interp,
    *  Perform HLR algorithm
    * ======================= */
 
-  asiAlgo_BuildHLR buildHLR( partShape, interp->GetProgress(), interp->GetPlotter() );
+  // Set a filter for the hidden edges.
+  asiAlgo_BuildHLR::t_outputEdges filter;
   //
-  if ( !buildHLR.Perform(dir) )
+  if ( Handle(asiData_RootNode)::DownCast( cmdEngine::model->GetRootNode() )->IsEnabledHiddenInHlr() )
+  {
+    filter.OutputHiddenSharpEdges   = true;
+    filter.OutputHiddenOutlineEdges = true;
+    filter.OutputHiddenSmoothEdges  = true;
+    filter.OutputHiddenIsoLines     = true;
+    filter.OutputHiddenSewnEdges    = true;
+  }
+
+  asiAlgo_BuildHLR buildHLR( partShape,
+                             interp->GetProgress(),
+                             interp->GetPlotter() );
+  //
+  if ( !buildHLR.Perform(dir, asiAlgo_BuildHLR::Mode_Precise, filter) )
   {
     interp->GetProgress().SendLogMessage(LogErr(Normal) << "Cannot build HLR.");
     return TCL_ERROR;
   }
 
-  TopoDS_Shape result = buildHLR.GetResult();
+  const TopoDS_Shape& result = buildHLR.GetResult();
 
   // Draw the result.
-  interp->GetPlotter().REDRAW_SHAPE(argv[1], result, Color_Black);
+  interp->GetPlotter().REDRAW_SHAPE(argv[1], result, Color_White);
+
+  return TCL_OK;
+}
+
+//-----------------------------------------------------------------------------
+
+int ENGINE_ComputeOutline(const Handle(asiTcl_Interp)& interp,
+                          int                          argc,
+                          const char**                 argv)
+{
+  // Get the part's AAG.
+  Handle(asiData_PartNode) partNode = cmdEngine::model->GetPartNode();
+
+  if (partNode.IsNull() || !partNode->IsWellFormed())
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Part Node is null or ill-defined.");
+    return TCL_ERROR;
+  }
+
+  Handle(asiAlgo_AAG) aag = partNode->GetAAG();
+
+  asiAlgo_Feature selectedFaceIds;
+  if (interp->HasKeyword(argc, argv, "fids"))
+  {
+    std::vector<int> values;
+    if (interp->CollectValues(argc, argv, "fids", values))
+    {
+      std::vector<int>::const_iterator itV = values.cbegin();
+      for (; itV != values.cend(); ++itV)
+      {
+        selectedFaceIds.Add(*itV);
+      }
+    }
+  }
+  else
+  {
+    const int nFaces = aag->GetNumberOfNodes();
+    for (int k = 1; k <= nFaces; ++k)
+    {
+      selectedFaceIds.Add(k);
+    }
+  }
+
+  asiAlgo_Feature excludeFaceIds;
+  if (interp->HasKeyword(argc, argv, "exclude"))
+  {
+    std::vector<int> values;
+    if (interp->CollectValues(argc, argv, "exclude", values))
+    {
+      std::vector<int>::const_iterator itV = values.cbegin();
+      for (; itV != values.cend(); ++itV)
+      {
+        excludeFaceIds.Add(*itV);
+      }
+    }
+  }
+
+  if (selectedFaceIds.IsEmpty())
+  {
+    interp->GetProgress().SendLogMessage(LogNotice(Normal) << "No face selected.");
+    return TCL_ERROR;
+  }
+
+  const bool isDiscr = interp->HasKeyword(argc, argv, "discr");
+
+  gp_Dir dir;
+  if (interp->HasKeyword(argc, argv, "dir"))
+  {
+    std::vector<double> values;
+    if (interp->CollectFloatValues(argc, argv, "dir", values))
+    {
+      if (values.size() != 3)
+      {
+        interp->GetProgress().SendLogMessage(LogNotice(Normal) << "Direction not set.");
+        return TCL_ERROR;
+      }
+
+      try
+      {
+        dir = gp_Dir(values[0], values[1], values[2]);
+      }
+      catch (...)
+      {
+        interp->GetProgress().SendLogMessage(LogNotice(Normal) << "Direction not set.");
+        return TCL_ERROR;
+      }
+    }
+  }
+
+  asiAlgo_ComputeOutline outliner(aag->GetMasterShape(), interp->GetProgress(), interp->GetPlotter());
+
+  outliner.SetLinearTolerance(0.01);
+  outliner.SetDomain(selectedFaceIds);
+  outliner.ExcludeFaces(excludeFaceIds);
+
+  TopoDS_Compound outlineWires;
+  if (!outliner.Perform(gp_Ax1(gp_Pnt(), dir), outlineWires, isDiscr ? asiAlgo_ComputeOutline::Mode_Discrete :
+                                                                       asiAlgo_ComputeOutline::Mode_Precise))
+  {
+    interp->GetProgress().SendLogMessage(LogNotice(Normal) << "Outline calculation failed.");
+    return TCL_ERROR;
+  }
+
+  interp->GetPlotter().DRAW_SHAPE(outlineWires, Color_White, "outline");
 
   return TCL_OK;
 }
@@ -2150,6 +2269,14 @@ void cmdEngine::Commands_Modeling(const Handle(asiTcl_Interp)&      interp,
     "\t projection plane with <nX>, <nY>, <nZ> as its normal direction.",
     //
     __FILE__, group, ENGINE_HLR);
+
+  //-------------------------------------------------------------------------//
+  interp->AddCommand("make-outline",
+    //
+    "make-outline -dir <dirX> <dirY> <dirZ> [-fids <fid1>...<fidn> [-exclude <fidm>...<fidk>]] [-discr]\n"
+    "\t Computes outline on faces <fid1>...<fidn>, excluding <fidm>...<fidk>.",
+    //
+    __FILE__, group, ENGINE_ComputeOutline);
 
   //-------------------------------------------------------------------------//
   interp->AddCommand("make-fillet",

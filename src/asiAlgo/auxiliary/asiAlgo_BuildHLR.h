@@ -32,19 +32,20 @@
 #define asiAlgo_BuildHLR_h
 
 // asiAlgo includes
-#include <asiAlgo.h>
+#include <asiAlgo_ConcurrentSet.h>
+#include <asiAlgo_Thread.h>
 
 // Active Data includes
 #include <ActAPI_IAlgorithm.h>
 
 //-----------------------------------------------------------------------------
 
+//! \ingroup ASI_MODELING
+//!
 //! Performs hidden line removal for the input shape. The result is returned
 //! as a compound of edges representing the extracted feature lines.
 class asiAlgo_BuildHLR : public ActAPI_IAlgorithm
 {
-public:
-
   // OCCT RTTI
   DEFINE_STANDARD_RTTI_INLINE(asiAlgo_BuildHLR, ActAPI_IAlgorithm)
 
@@ -56,6 +57,52 @@ public:
     Mode_Precise = 0, //!< Precise.
     Mode_Discrete     //!< Discrete.
   };
+
+  //! Settings to control which types of edges to output
+  struct t_outputEdges
+  {
+    bool OutputVisibleSharpEdges;
+    bool OutputVisibleSmoothEdges;
+    bool OutputVisibleOutlineEdges;
+    bool OutputVisibleSewnEdges;
+    bool OutputVisibleIsoLines;
+    bool OutputHiddenSharpEdges;
+    bool OutputHiddenSmoothEdges;
+    bool OutputHiddenOutlineEdges;
+    bool OutputHiddenSewnEdges;
+    bool OutputHiddenIsoLines;
+
+    t_outputEdges()
+    : OutputVisibleSharpEdges   (true),
+      OutputVisibleSmoothEdges  (true),
+      OutputVisibleOutlineEdges (true),
+      OutputVisibleSewnEdges    (true),
+      OutputVisibleIsoLines     (true),
+      OutputHiddenSharpEdges    (false),
+      OutputHiddenSmoothEdges   (false),
+      OutputHiddenOutlineEdges  (false),
+      OutputHiddenSewnEdges     (false),
+      OutputHiddenIsoLines      (false)
+    {}
+  };
+
+  //! Data to pass to a thread function.
+  struct t_threadData
+  {
+    TopoDS_Shape                     input;    //!< Shape to project with HLR.
+    gp_Dir                           dir;      //!< Projection direction.
+    t_outputEdges                    style;    //!< Filter for the projected edges.
+    TopoDS_Shape                     output;   //!< Projected shape.
+    Handle(ActAPI_IProgressNotifier) progress; //!< Progress notifier.
+
+    t_threadData() = default;
+  };
+
+public:
+
+  //! Cleans up shared static data for threading.
+  asiAlgo_EXPORT static void
+    ClearThreads(ActAPI_ProgressEntry progress = nullptr);
 
 public:
 
@@ -73,10 +120,26 @@ public:
   //! Performs HLR.
   //! \param[in] projectionDir the direction of projection to use.
   //! \param[in] mode          the HLR computation mode (precise is the default).
+  //! \param[in] visibility    the projection styles.
   //! \return true in case of success, false -- otherwise.
   asiAlgo_EXPORT bool
-    Perform(const gp_Dir& projectionDir,
-            const Mode    mode = Mode_Precise);
+    Perform(const gp_Dir&        projectionDir,
+            const Mode           mode       = Mode_Precise,
+            const t_outputEdges& visibility = t_outputEdges());
+
+  //! Runs HLR in parallel threads.
+  //! \param[in] projectionDir the direction of projection to use.
+  //! \param[in] memChunk      the memory chunk index from 0 to 10.
+  //! \param[in] timeout_ms    the timeout for processing.
+  //! \param[in] visibility    the projection styles.
+  //! \return true in case of success, false -- otherwise.
+  asiAlgo_EXPORT bool
+    PerformParallel(const gp_Dir&        projectionDir,
+                    const size_t         memChunk,
+                    const int            timeout_ms = 500,
+                    const t_outputEdges& visibility = t_outputEdges());
+
+public:
 
   //! \return the extracted feature lines.
   asiAlgo_EXPORT const TopoDS_Shape&
@@ -84,28 +147,25 @@ public:
 
 protected:
 
-  //! Runs precise HLR.
-  //! \param[in] projectionDir the direction of projection to use.
-  //! \return true in case of success, false -- otherwise.
-  asiAlgo_EXPORT bool
-    performPrecise(const gp_Dir& projectionDir);
-
-  //! Runs discrete HLR.
-  //! \param[in] projectionDir the direction of projection to use.
-  //! \return true in case of success, false -- otherwise.
-  asiAlgo_EXPORT bool
-    performDiscrete(const gp_Dir& projectionDir);
-
-  //! Build 3Ds curves out of the 2D curves constructed by HLR.
-  //! \param[in] shape the input shape.
-  //! \return the shape with reconstructed 3D curves.
-  asiAlgo_EXPORT const TopoDS_Shape&
-    build3dCurves(const TopoDS_Shape& shape);
-
-protected:
-
   TopoDS_Shape m_input;  //!< Input shape.
   TopoDS_Shape m_result; //!< Result shape.
+
+public:
+
+  // X+ precise  [0]
+  //    discrete [1]
+  // X- precise  [2]
+  //    discrete [3]
+  // Y+ precise  [4]
+  //    discrete [5]
+  // Y- precise  [6]
+  //    discrete [7]
+  // Z+ precise  [8]
+  //    discrete [9]
+  // Z- precise  [10]
+  //    discrete [11]
+  static t_threadData                             __ThreadData[12];
+  static asiAlgo_ConcurrentSet<Standard_ThreadId> __ThreadsAbandoned;
 
 };
 

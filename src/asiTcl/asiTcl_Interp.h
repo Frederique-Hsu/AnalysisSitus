@@ -460,6 +460,40 @@ public:
     return true;
   }
 
+  //! Collects float values.
+  //! \param[in]  argc   number of command line arguments.
+  //! \param[in]  argv   command line arguments.
+  //! \param[in]  key    key.
+  //! \param[out] values values.
+  //! \return true/false.
+  bool CollectFloatValues(const int            argc,
+                          const char**         argv,
+                          const std::string&   key,
+                          std::vector<double>& values)
+  {
+    std::vector<std::string> valuesStr;
+
+    if ( !CollectValues(argc, argv, key, valuesStr) )
+    {
+      return false;
+    }
+
+    try
+    {
+      std::vector<std::string>::const_iterator itVS = valuesStr.cbegin();
+      for ( ; itVS != valuesStr.cend(); ++itVS )
+      {
+        values.push_back(std::atof(itVS->c_str()));
+      }
+    }
+    catch ( ... )
+    {
+      return false;
+    }
+
+    return true;
+  }
+
   //! Reads value as a hex number.
   bool GetKeyValueHex(const int          argc,
                       const char**       argv,

@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
-// Created on: 13 July 2016
+// Created on: 08 February 2024
 //-----------------------------------------------------------------------------
-// Copyright (c) 2017, Sergey Slyadnev
+// Copyright (c) 2024-present, Sergey Slyadnev
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -28,67 +28,56 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-----------------------------------------------------------------------------
 
-#ifndef asiUI_PartCallback_h
-#define asiUI_PartCallback_h
+#ifndef asiAlgo_ConcurrentSet_h
+#define asiAlgo_ConcurrentSet_h
 
-// asiUI includes
-#include <asiUI_ViewerCallback.h>
+// asiAlgo includes
+#include <asiAlgo.h>
 
-// VTK includes
-#pragma warning(push, 0)
-#include <vtkRenderer.h>
-#include <vtkSmartPointer.h>
-#pragma warning(pop)
+// Standard includes
+#include <mutex>
+#include <set>
 
-// Qt includes
-#pragma warning(push, 0)
-#include <QObject>
-#pragma warning(pop)
+//-----------------------------------------------------------------------------
 
-//! Callback for operations in Part viewer.
-class asiUI_PartCallback : public QObject,
-                           public asiUI_ViewerCallback
+//! \ingroup ASI_CORE
+//!
+//! Concurrent set to be accessed from parallel worker threads. This class is not
+//! efficient as it uses mutex locks. Any TBB version of the same tool is expected
+//! to behave better in terms of performance.
+template <typename T, typename Compare = std::less<T>>
+class asiAlgo_ConcurrentSet
 {
-  Q_OBJECT
-
-public:
-
-  asiUI_EXPORT static asiUI_PartCallback*
-    New();
-
-  asiUI_EXPORT static asiUI_PartCallback*
-    New(asiUI_Viewer* pViewer);
-
-  vtkTypeMacro(asiUI_PartCallback, asiUI_ViewerCallback)
-
-public:
-
-  asiUI_EXPORT virtual void
-    Execute(vtkObject*    pCaller,
-            unsigned long eventId,
-            void*         pCallData);
-
-signals:
-
-  void findFace();
-  void findEdge();
-  void findVertex();
-  void refineTessellation();
-  void buildHLR();
-  void buildHLRDiscr();
-  void selectAll();
-  void defeature();
-  void buildHLROutline();
-  void buildHLRDiscrOutline();
-
 private:
+  std::set<T, Compare> set_;
+  mutable std::mutex mutex_;
 
-  asiUI_EXPORT
-    asiUI_PartCallback(asiUI_Viewer* pViewer);
+public:
+  typedef typename std::set<T, Compare>::iterator iterator;
 
-  asiUI_EXPORT
-    ~asiUI_PartCallback();
+  std::pair<iterator, bool>
+  insert(const T& val)
+  {
+    std::unique_lock<std::mutex> lock(mutex_);
+    return set_.insert(val);
+  }
 
+  size_t size() const
+  {
+    std::unique_lock<std::mutex> lock(mutex_);
+    return set_.size();
+  }
+
+  bool contains(const T& val)
+  {
+    std::unique_lock<std::mutex> lock(mutex_);
+    return set_.find(val) != set_.end();
+  }
+
+  void clear_unsafe()
+  {
+    set_.clear();
+  }
 };
 
 #endif

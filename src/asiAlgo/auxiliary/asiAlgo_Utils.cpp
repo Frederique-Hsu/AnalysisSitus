@@ -155,6 +155,7 @@ typedef rapidjson::Document::Object    t_jsonObject;
 #include <RWStl.hxx>
 #include <ShapeAnalysis_Curve.hxx>
 #include <ShapeAnalysis_Edge.hxx>
+#include <ShapeAnalysis_FreeBounds.hxx>
 #include <ShapeAnalysis_ShapeTolerance.hxx>
 #include <ShapeAnalysis_Surface.hxx>
 #include <ShapeBuild_Edge.hxx>
@@ -202,6 +203,7 @@ typedef rapidjson::Document::Object    t_jsonObject;
 
 #define BUFSIZE              1000
 #define NUM_INTEGRATION_BINS 500
+#define ASI_FORTRAN_BUFSIZE  15
 
 #undef COUT_DEBUG
 #if defined COUT_DEBUG
@@ -435,6 +437,41 @@ protected:
   Handle(Geom_Curve) m_curve; //!< Curve.
 
 };
+
+namespace
+{
+
+  void fixprint(char *s, const int len)
+  {
+    if ( s[0] == '-' )
+    {
+      for ( int j = 2; j < len; ++j  )
+        s[j-1] = s[j];
+    
+      s[len-1] = '\0'; // Zero-trailing.
+    }
+  }
+
+  char* format_fortran_float(char*    result,
+                             unsigned width,
+                             double   number)
+  {
+    int exponent = 0;
+    for (; fabs(number) > 1.0; exponent++) number /= 10;
+  
+    sprintf( result, "%.*fE%+03d", 7, number, exponent );
+  
+    fixprint(result, width);
+  
+    return result;
+  }
+
+  char* fortranize(const double val,
+                   char*        buff)
+  {
+    return format_fortran_float(buff, ASI_FORTRAN_BUFSIZE, val);
+  }
+}
 
 //-----------------------------------------------------------------------------
 
@@ -1172,6 +1209,54 @@ std::string asiAlgo_Utils::FaceGeometryName(const TopoDS_Face& face)
 
 //-----------------------------------------------------------------------------
 
+std::string asiAlgo_Utils::DirName(const gp_Dir& dir)
+{
+  if ( dir.IsEqual( gp::DX(), Precision::Angular() ) )
+  {
+    return "X+";
+  }
+
+  if ( dir.IsEqual( -gp::DX(), Precision::Angular() ) )
+  {
+    return "X-";
+  }
+
+  if ( dir.IsEqual( gp::DY(), Precision::Angular() ) )
+  {
+    return "Y+";
+  }
+
+  if ( dir.IsEqual( -gp::DY(), Precision::Angular() ) )
+  {
+    return "Y-";
+  }
+
+  if ( dir.IsEqual( gp::DZ(), Precision::Angular() ) )
+  {
+    return "Z+";
+  }
+
+  if ( dir.IsEqual( -gp::DZ(), Precision::Angular() ) )
+  {
+    return "Z-";
+  }
+
+  char buff[ASI_FORTRAN_BUFSIZE];
+  std::string xStr = ::fortranize(dir.X(), buff);
+  std::string yStr = ::fortranize(dir.Y(), buff);
+  std::string zStr = ::fortranize(dir.Z(), buff);
+  //
+  std::string res = xStr;
+  res += "_";
+  res += yStr;
+  res += "_";
+  res += zStr;
+
+  return res;
+}
+
+//-----------------------------------------------------------------------------
+
 TCollection_AsciiString
   asiAlgo_Utils::FeatureAngleToString(const asiAlgo_FeatureAngleType angle)
 {
@@ -1341,6 +1426,55 @@ TCollection_AsciiString
   }
 
   return contStr;
+}
+
+//-----------------------------------------------------------------------------
+
+bool asiAlgo_Utils::
+  ConnectEdgesToWires(const std::vector<TopoDS_Edge>& edges,
+                      const bool                      isShared,
+                      std::vector<TopoDS_Wire>&       contours,
+                      const double                    tolerance)
+{
+  Handle(TopTools_HSequenceOfShape) edgesSeq = new TopTools_HSequenceOfShape();
+  //
+  std::vector<TopoDS_Edge>::const_iterator itE = edges.cbegin();
+  for ( ; itE != edges.cend(); ++itE )
+  {
+    if ( BRep_Tool::Degenerated(*itE) )
+      continue;
+    //
+    edgesSeq->Append(*itE);
+  }
+  //
+  return ConnectEdgesToWires(isShared, edgesSeq, contours, tolerance);
+}
+
+//-----------------------------------------------------------------------------
+
+bool asiAlgo_Utils::
+  ConnectEdgesToWires(const bool                         isShared,
+                      Handle(TopTools_HSequenceOfShape)& edges,
+                      std::vector<TopoDS_Wire>&          contours,
+                      const double                       tolerance)
+{
+  if ( edges.IsNull() )
+    return false;
+  //
+  // Compose border wires from the naked edges.
+  Handle(TopTools_HSequenceOfShape) borderWires;
+  ShapeAnalysis_FreeBounds::ConnectEdgesToWires(edges, tolerance, isShared, borderWires);
+  //
+  if ( borderWires.IsNull() )
+    return false;
+  //
+  for ( TopTools_HSequenceOfShape::Iterator wit(*borderWires); wit.More(); wit.Next() )
+  {
+    TopoDS_Wire wire = TopoDS::Wire( wit.Value() );
+    contours.push_back(wire);
+  }
+  //
+  return true;
 }
 
 //-----------------------------------------------------------------------------
@@ -2273,6 +2407,48 @@ bool asiAlgo_Utils::Bounds(const Handle(Poly_Triangulation)& tris,
   BRep_Builder().UpdateFace(fictiveFace, tris);
 
   return Bounds(fictiveFace, XMin, YMin, ZMin, XMax, YMax, ZMax, tolerance);
+}
+
+//-----------------------------------------------------------------------------
+
+tl::optional<gp_Ax3>
+  asiAlgo_Utils::GetBboxSideFrame(const gp_Dir& dir,
+                                  const double  xMin,
+                                  const double  yMin,
+                                  const double  zMin,
+                                  const double  xMax,
+                                  const double  yMax,
+                                  const double  zMax)
+{
+  tl::optional<gp_Ax3> T_A;
+
+  // Find local axes for the bbox side.
+  if ( dir.IsEqual( gp::DX(), Precision::Angular() ) )
+  {
+    T_A = gp_Ax3( gp_Pnt(xMax, (yMin + yMax)*0.5, (zMin + zMax)*0.5), gp::DX() );
+  }
+  else if ( dir.IsEqual( -gp::DX(), Precision::Angular() ) )
+  {
+    T_A = gp_Ax3( gp_Pnt(xMin, (yMin + yMax)*0.5, (zMin + zMax)*0.5), -gp::DX() );
+  }
+  else if ( dir.IsEqual( gp::DY(), Precision::Angular() ) )
+  {
+    T_A = gp_Ax3( gp_Pnt((xMin + xMax)*0.5, yMax, (zMin + zMax)*0.5), gp::DY() );
+  }
+  else if ( dir.IsEqual( -gp::DY(), Precision::Angular() ) )
+  {
+    T_A = gp_Ax3( gp_Pnt((xMin + xMax)*0.5, yMin, (zMin + zMax)*0.5), -gp::DY() );
+  }
+  else if ( dir.IsEqual( gp::DZ(), Precision::Angular() ) )
+  {
+    T_A = gp_Ax3( gp_Pnt((xMin + xMax)*0.5, (yMin + yMax)*0.5, zMax), gp::DZ() );
+  }
+  else if ( dir.IsEqual( -gp::DZ(), Precision::Angular() ) )
+  {
+    T_A = gp_Ax3( gp_Pnt((xMin + xMax)*0.5, (yMin + yMax)*0.5, zMin), -gp::DZ() );
+  }
+
+  return T_A;
 }
 
 //-----------------------------------------------------------------------------

@@ -102,6 +102,8 @@ public slots:
   asiUI_EXPORT void onRefineTessellation();
   asiUI_EXPORT void onBuildHLR();
   asiUI_EXPORT void onBuildHLRDiscr();
+  asiUI_EXPORT void onBuildHLROutline();
+  asiUI_EXPORT void onBuildHLRDiscrOutline();
   asiUI_EXPORT void onContextMenu(const QPoint&);
   asiUI_EXPORT void onDefaultView();
   asiUI_EXPORT void onBackView();
@@ -110,6 +112,8 @@ public slots:
   asiUI_EXPORT void onLeftView();
   asiUI_EXPORT void onRightView();
   asiUI_EXPORT void onTopView();
+  asiUI_EXPORT void onZoomIn();
+  asiUI_EXPORT void onZoomOut();
   asiUI_EXPORT void onSelectAll();
   asiUI_EXPORT void onDefeature();
 

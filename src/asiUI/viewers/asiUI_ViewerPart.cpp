@@ -33,6 +33,7 @@
 
 // asiAlgo includes
 #include <asiAlgo_BuildHLR.h>
+#include <asiAlgo_ComputeOutline.h>
 #include <asiAlgo_SuppressFeatures.h>
 #include <asiAlgo_Timer.h>
 
@@ -70,12 +71,120 @@
 #pragma warning(pop)
 
 // OCCT includes
+#include <BRepPrimAPI_MakeBox.hxx>
 #include <TColStd_MapIteratorOfPackedMapOfInteger.hxx>
 
 #undef COUT_DEBUG
 #if defined COUT_DEBUG
   #pragma message("===== warning: COUT_DEBUG is enabled")
 #endif
+
+#define ZOOM_FACTOR 0.1
+#define DISCRETE_LINES_COLOR ActAPI_Color(40./255., 190./255., 255./255., Quantity_TOC_RGB)
+
+namespace
+{
+  void MakeHLROutline(const Handle(asiEngine_Model)&             model,
+                      asiAlgo_ComputeOutline::Mode               mode,
+                      const vtkSmartPointer<asiVisu_PrsManager>& prsMgr,
+                      const t_asciiString&                       name,
+                      const ActAPI_Color&                        color,
+                      ActAPI_ProgressEntry                       progress,
+                      ActAPI_PlotterEntry                        plotter)
+  {
+    TIMER_NEW
+    TIMER_GO
+
+     Handle(asiData_PartNode) geom_n = model->GetPartNode();
+
+    // Get indices of the active sub-shapes.
+    Handle(TColStd_HPackedMapOfInteger)
+      gids = geom_n->GetFaceRepresentation()->GetSelectedFaces();
+
+    if ( gids.IsNull() )
+    {
+      return;
+    }
+
+    TColStd_PackedMapOfInteger sel = gids->Map();
+
+    if ( geom_n->GetAAG().IsNull() )
+    {
+      progress.SendLogMessage( LogErr(Normal) << "Null AAG. Part data is incomplete." );
+      return;
+    }
+
+    // Get sub-shapes map.
+    const TopTools_IndexedMapOfShape&
+      allSubShapes = geom_n->GetAAG()->RequestMapOfSubShapes();
+
+    // Get map of faces.
+    const TopTools_IndexedMapOfShape&
+      allFaces = geom_n->GetAAG()->GetMapOfFaces();
+
+    // Loop over the selected faces.
+    asiAlgo_Feature fids;
+    //
+    for ( TColStd_PackedMapOfInteger::Iterator git(sel); git.More(); git.Next() )
+    {
+      const int globalId = git.Key();
+      //
+      if ( globalId < 1 || globalId > allSubShapes.Extent() )
+      {
+        continue;
+      }
+
+      // Get sub-shape.
+      const TopoDS_Shape& subShape = allSubShapes(globalId);
+
+      // Get pedigree index.
+      const int pedigreeId = allFaces.FindIndex(subShape);
+      fids.Add(pedigreeId);
+    }
+
+    // Read part shape.
+    TopoDS_Shape partShape = geom_n->GetAAG()->GetMasterShape();
+
+    //
+    if ( partShape.IsNull() )
+      return;
+
+    // Read projection direction.
+    double dX, dY, dZ;
+    //
+    prsMgr->GetRenderer()->GetActiveCamera()->GetViewPlaneNormal(dX, dY, dZ);
+
+    gp_Dir dir( dX, dY, dZ );
+
+    gp_Pnt location;
+
+    asiAlgo_ComputeOutline outliner( partShape, progress, plotter );
+
+    outliner.SetLinearTolerance( 0.01 );
+    outliner.SetDomain(fids);
+
+    TopoDS_Compound outlineWires;
+
+    if ( !outliner.Perform( gp_Ax1(location, dir), outlineWires, mode ) )
+    {
+      return;
+    }
+
+    // Draw the result with the default color.
+    plotter.REDRAW_SHAPE( name,
+                          outlineWires,
+                          color,
+                          1.,
+                          true );
+
+    TIMER_FINISH
+
+    if ( mode == asiAlgo_ComputeOutline::Mode_Precise )
+      TIMER_COUT_RESULT_NOTIFIER(progress, "HLR outline projection")
+    else
+      TIMER_COUT_RESULT_NOTIFIER(progress, "DHLR outline projection")
+  }
+}
 
 //-----------------------------------------------------------------------------
 
@@ -216,6 +325,14 @@ asiUI_ViewerPart::asiUI_ViewerPart(const Handle(asiEngine_Model)& model,
     if ( !m_prs_mgr->GetDefaultInteractorStyle()->HasObserver(EVENT_BUILD_HLR_DISCR) )
       m_prs_mgr->GetDefaultInteractorStyle()->AddObserver(EVENT_BUILD_HLR_DISCR, m_partCallback);
 
+    // Set observer for HLR (outline mode)
+    if (!m_prs_mgr->GetDefaultInteractorStyle()->HasObserver(EVENT_BUILD_HLR_OUTLINE))
+      m_prs_mgr->GetDefaultInteractorStyle()->AddObserver(EVENT_BUILD_HLR_OUTLINE, m_partCallback);
+
+    // Set observer for discrete HLR (outline mode)
+    if (!m_prs_mgr->GetDefaultInteractorStyle()->HasObserver(EVENT_BUILD_HLR_OUTLINE_DISCR))
+      m_prs_mgr->GetDefaultInteractorStyle()->AddObserver(EVENT_BUILD_HLR_OUTLINE_DISCR, m_partCallback);
+
     // Set observer for defeaturing
     if ( !m_prs_mgr->GetDefaultInteractorStyle()->HasObserver(EVENT_DEFEATURE) )
       m_prs_mgr->GetDefaultInteractorStyle()->AddObserver(EVENT_DEFEATURE, m_partCallback);
@@ -228,14 +345,16 @@ asiUI_ViewerPart::asiUI_ViewerPart(const Handle(asiEngine_Model)& model,
     connect(m_pickCallback, SIGNAL(highlighted()), this, SLOT(onSubShapesHighlighted()));
 
     // Get notified about part events
-    connect( m_partCallback, SIGNAL( findFace() ),           this, SLOT( onFindFace() ) );
-    connect( m_partCallback, SIGNAL( findEdge() ),           this, SLOT( onFindEdge() ) );
-    connect( m_partCallback, SIGNAL( findVertex() ),         this, SLOT( onFindVertex() ) );
-    connect( m_partCallback, SIGNAL( refineTessellation() ), this, SLOT( onRefineTessellation() ) );
-    connect( m_partCallback, SIGNAL( buildHLR() ),           this, SLOT( onBuildHLR() ) );
-    connect( m_partCallback, SIGNAL( buildHLRDiscr() ),      this, SLOT( onBuildHLRDiscr() ) );
-    connect( m_partCallback, SIGNAL( selectAll() ),          this, SLOT( onSelectAll() ) );
-    connect( m_partCallback, SIGNAL( defeature() ),          this, SLOT( onDefeature() ) );
+    connect( m_partCallback, SIGNAL( findFace() ),             this, SLOT( onFindFace() ) );
+    connect( m_partCallback, SIGNAL( findEdge() ),             this, SLOT( onFindEdge() ) );
+    connect( m_partCallback, SIGNAL( findVertex() ),           this, SLOT( onFindVertex() ) );
+    connect( m_partCallback, SIGNAL( refineTessellation() ),   this, SLOT( onRefineTessellation() ) );
+    connect( m_partCallback, SIGNAL( buildHLR() ),             this, SLOT( onBuildHLR() ) );
+    connect( m_partCallback, SIGNAL( buildHLRDiscr() ),        this, SLOT( onBuildHLRDiscr() ) );
+    connect( m_partCallback, SIGNAL( selectAll() ),            this, SLOT( onSelectAll() ) );
+    connect( m_partCallback, SIGNAL( defeature() ),            this, SLOT( onDefeature() ) );
+    connect( m_partCallback, SIGNAL( buildHLROutline() ),      this, SLOT( onBuildHLROutline() ) );
+    connect( m_partCallback, SIGNAL( buildHLRDiscrOutline() ), this, SLOT( onBuildHLRDiscrOutline() ) );
 
     /* ===============================
      *  Setting up rotation callbacks
@@ -647,6 +766,34 @@ void asiUI_ViewerPart::onBuildHLRDiscr()
 
 //-----------------------------------------------------------------------------
 
+//! Callback for constructing outline HLR representation.
+void asiUI_ViewerPart::onBuildHLROutline()
+{
+  ::MakeHLROutline(m_model,
+                   asiAlgo_ComputeOutline::Mode_Precise,
+                   this->PrsMgr(),
+                  "HLROutline",
+                   Color_White,
+                   m_progress,
+                   m_plotter);
+}
+
+//-----------------------------------------------------------------------------
+
+//! Callback for constructing discrete outline HLR representation.
+void asiUI_ViewerPart::onBuildHLRDiscrOutline()
+{
+  ::MakeHLROutline(m_model,
+                   asiAlgo_ComputeOutline::Mode_Discrete,
+                   this->PrsMgr(),
+                  "DHLROutline",
+                   DISCRETE_LINES_COLOR,
+                   m_progress,
+                   m_plotter);
+}
+
+//-----------------------------------------------------------------------------
+
 void asiUI_ViewerPart::onContextMenu(const QPoint& pos)
 {
   asiVisu_QVTKWidget* pViewer   = m_prs_mgr->GetQVTKWidget();
@@ -727,6 +874,24 @@ void asiUI_ViewerPart::onTopView()
 
 //-----------------------------------------------------------------------------
 
+void asiUI_ViewerPart::onZoomIn()
+{
+  asiVisu_Utils::Zoom( m_prs_mgr->GetRenderer(), 1 + ZOOM_FACTOR );
+  //
+  this->Repaint();
+}
+
+//-----------------------------------------------------------------------------
+
+void asiUI_ViewerPart::onZoomOut()
+{
+  asiVisu_Utils::Zoom( m_prs_mgr->GetRenderer(), 1 - ZOOM_FACTOR );
+  //
+  this->Repaint();
+}
+
+//-----------------------------------------------------------------------------
+
 void asiUI_ViewerPart::onSelectAll()
 {
   asiEngine_Part partApi(m_model, m_prs_mgr, m_progress, m_plotter);
@@ -790,6 +955,8 @@ void asiUI_ViewerPart::createActions()
   QAction* pLeftViewAction   = new QAction("Left",   this);
   QAction* pRightViewAction  = new QAction("Right",  this);
   QAction* pTopViewAction    = new QAction("Top",    this);
+  QAction* pZoomInAction     = new QAction("+",      this);
+  QAction* pZoomOutAction    = new QAction("-",      this);
   //
   connect( pFitAllAction,     SIGNAL( triggered() ), this, SLOT( onFitAll      () ) );
   connect( pResetViewAction,  SIGNAL( triggered() ), this, SLOT( onDefaultView () ) );
@@ -799,6 +966,8 @@ void asiUI_ViewerPart::createActions()
   connect( pLeftViewAction,   SIGNAL( triggered() ), this, SLOT( onLeftView    () ) );
   connect( pRightViewAction,  SIGNAL( triggered() ), this, SLOT( onRightView   () ) );
   connect( pTopViewAction,    SIGNAL( triggered() ), this, SLOT( onTopView     () ) );
+  connect( pZoomInAction,     SIGNAL( triggered() ), this, SLOT( onZoomIn      () ) );
+  connect( pZoomOutAction,    SIGNAL( triggered() ), this, SLOT( onZoomOut     () ) );
 
   // Add action to the toolbar
   m_toolBar->addAction(pFitAllAction);
@@ -809,4 +978,6 @@ void asiUI_ViewerPart::createActions()
   m_toolBar->addAction(pLeftViewAction);
   m_toolBar->addAction(pRightViewAction);
   m_toolBar->addAction(pTopViewAction);
+  m_toolBar->addAction(pZoomInAction);
+  m_toolBar->addAction(pZoomOutAction);
 }

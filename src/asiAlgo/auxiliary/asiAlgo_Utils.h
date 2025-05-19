@@ -606,6 +606,12 @@ namespace asiAlgo_Utils
 
   } // Range namespace.
 
+  //! Returns a human-readable name of the passed direction.
+  //! \param[in] dir the direction to get a string name for.
+  //! \return label.
+  asiAlgo_EXPORT std::string
+    DirName(const gp_Dir& dir);
+
   //! Returns geometry of a face as a string label.
   //! \param face [in] face to inspect.
   //! \return label.
@@ -640,6 +646,35 @@ namespace asiAlgo_Utils
   //! \return string representation of continuity.
   asiAlgo_EXPORT TCollection_AsciiString
     ContinuityToString(const GeomAbs_Shape cont);
+
+  //! Method for combining edges to wires.
+  //! \param[in]  edges     edges.
+  //! \param[in]  isShared  indicator showing how the merge should take place.
+  //!                       If true, then edges with the same vertex are merged.
+  //!                       If false, then the edges are merged within the tolerance.
+  //! \param[out] contours  extracted contours.
+  //! \param[in]  tolerance tolerance.
+  //! \return true in case of success, false -- otherwise.
+  asiAlgo_EXPORT bool
+    ConnectEdgesToWires(const std::vector<TopoDS_Edge>& edges,
+                        const bool                      isShared,
+                        std::vector<TopoDS_Wire>&       contours,
+                        const double                    tolerance = 1e-3);
+
+  //! Method for combining edges to wires.
+  //! Note: there is no check for degenerate edges. External verification required.
+  //! \param[in]      isShared  indicator showing how the merge should take place.
+  //!                           If true, then edges with the same vertex are merged.
+  //!                           If false, then the edges are merged within the tolerance.
+  //! \param[in, out] edges     edges.
+  //! \param[out]     contours  extracted contours.
+  //! \param[in]      tolerance tolerance.
+  //! \return true in case of success, false -- otherwise.
+  asiAlgo_EXPORT bool
+    ConnectEdgesToWires(const bool                         isShared,
+                        Handle(TopTools_HSequenceOfShape)& edges,
+                        std::vector<TopoDS_Wire>&          contours,
+                        const double                       tolerance = 1e-3);
 
   //! Converts the passed location to string.
   //! \param loc [in] location to convert.
@@ -1270,6 +1305,17 @@ namespace asiAlgo_Utils
            double& XMin, double& YMin, double& ZMin,
            double& XMax, double& YMax, double& ZMax,
            const double tolerance = 0.0);
+
+  //! Computes the reference axes on a side of a bounding box which
+  //! corresponds to the passed direction vector `dir`.
+  asiAlgo_EXPORT tl::optional<gp_Ax3>
+    GetBboxSideFrame(const gp_Dir& dir,
+                     const double  xMin,
+                     const double  yMin,
+                     const double  zMin,
+                     const double  xMax,
+                     const double  yMax,
+                     const double  zMax);
 
   //! Computes axis-aligned bounding box volume of the passed shape.
   //! \param[in] shape     the shape in question.

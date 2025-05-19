@@ -74,6 +74,9 @@
   ASSERT(expr, Standard_ProgramError::Raise( \
       "*** ERROR: ASSERT in file " __FILE__ ": \n" mess " (" #expr ")" ) )
 
+
+typedef TCollection_AsciiString    t_asciiString;
+typedef TCollection_ExtendedString t_extString;
 //-----------------------------------------------------------------------------
 // DOXY group definition
 //-----------------------------------------------------------------------------

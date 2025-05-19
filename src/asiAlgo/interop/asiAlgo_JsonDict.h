@@ -69,6 +69,9 @@
 #define PropName_SemanticCodes                    "semanticCodes"
 #define PropName_Hmin                             "hmin"
 #define PropName_Hmax                             "hmax"
+#define PropName_OutlineIsClosed                  "isClosed"
+#define PropName_OutlineNbEdges                   "nbEdges"
+#define PropName_Length                           "length"
 
 // JSON properties
 #define asiPropName_ExtrasCanRecSummary            "canrecSummary"

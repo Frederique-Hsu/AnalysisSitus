@@ -174,6 +174,10 @@ public:
     ResetCamera(vtkRenderer*       theRenderer,
                 vtkPropCollection* thePropsToSkip);
 
+  asiVisu_EXPORT static void
+    Zoom(vtkRenderer* renderer,
+         const double factor);
+
   asiVisu_EXPORT static bool
     AdjustCamera(vtkRenderer*       theRenderer,
                  vtkPropCollection* thePropsToSkip,
