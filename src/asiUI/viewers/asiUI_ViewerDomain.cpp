@@ -55,7 +55,7 @@
 #pragma warning(pop)
 
 // Qt-VTK includes
-#include <asiVisu_QVTKWidget.h>
+#include <QVTKOpenGLNativeWidget.h>
 
 // Qt includes
 #pragma warning(push, 0)
@@ -99,8 +99,8 @@ asiUI_ViewerDomain::asiUI_ViewerDomain(const Handle(asiEngine_Model)& model,
     m_prs_mgr->GetCellPicker()->SetTolerance(0.005);
 
   // Widgets and layouts
-  asiVisu_QVTKWidget* pViewer     = m_prs_mgr->GetQVTKWidget();
-  QHBoxLayout*        pBaseLayout = new QHBoxLayout(this);
+  QVTKOpenGLNativeWidget* pViewer     = m_prs_mgr->GetQVTKWidget();
+  QHBoxLayout*            pBaseLayout = new QHBoxLayout(this);
 
   pBaseLayout->addWidget(pViewer);
 
@@ -220,7 +220,7 @@ QSize asiUI_ViewerDomain::sizeHint() const
 //! Updates viewer.
 void asiUI_ViewerDomain::Repaint()
 {
-  m_prs_mgr->GetQVTKWidget()->GetRenderWindow()->Render();
+  m_prs_mgr->GetQVTKWidget()->renderWindow()->Render();
 }
 
 //-----------------------------------------------------------------------------
@@ -230,7 +230,7 @@ void asiUI_ViewerDomain::onResetView()
 {
   asiVisu_Utils::CameraOnTop( m_prs_mgr->GetRenderer() );
   m_selectedEdgesCache = TColStd_PackedMapOfInteger();
-  this->Repaint();
+  //this->Repaint();
 }
 
 //-----------------------------------------------------------------------------
@@ -468,8 +468,8 @@ void asiUI_ViewerDomain::onScaleV()
 
 void asiUI_ViewerDomain::onContextMenu(const QPoint& pos)
 {
-  asiVisu_QVTKWidget* pViewer   = m_prs_mgr->GetQVTKWidget();
-  QPoint              globalPos = pViewer->mapToGlobal(pos);
+  QVTKOpenGLNativeWidget* pViewer   = m_prs_mgr->GetQVTKWidget();
+  QPoint                  globalPos = pViewer->mapToGlobal(pos);
 
   emit contextMenu(globalPos);
 }

@@ -32,7 +32,8 @@
 #define asiUI_Plot2d_h
 
 // asiUI includes
-#include <asiUI_VtkWindow.h>
+#include <asiUI.h>
+#include <QVTKOpenGLNativeWidget.h>
 
 // asiEngine includes
 #include <asiEngine_Model.h>
@@ -91,7 +92,7 @@ protected:
 
   bool                            m_bLogScale;   //!< Whether log scale is used.
   vtkSmartPointer<vtkContextView> m_contextView; //!< VTK context view.
-  asiUI_VtkWindow*                m_pViewer;     //!< Viewer widget.
+  QVTKOpenGLNativeWidget*         m_pViewer;     //!< Viewer widget.
   ActAPI_ProgressEntry            m_progress;    //!< Progress notifier.
   ActAPI_PlotterEntry             m_plotter;     //!< Imperative plotter.
 

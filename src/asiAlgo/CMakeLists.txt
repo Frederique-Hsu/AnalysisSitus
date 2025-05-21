@@ -780,25 +780,25 @@ endif()
 #------------------------------------------------------------------------------
 if (NOT BUILD_ALGO_ONLY)
   set (VTK_LIB_FILES
-    vtkCommonCore-8.2
-    vtkCommonDataModel-8.2
-    vtkCommonExecutionModel-8.2
-    vtkCommonMath-8.2
-    vtkCommonTransforms-8.2
-    vtkCommonMisc-8.2
-    vtkFiltersCore-8.2
-    vtkFiltersGeneral-8.2
-    vtkFiltersSources-8.2
-    vtkFiltersGeometry-8.2
-    vtkFiltersParallel-8.2
-    vtkFiltersExtraction-8.2
-    vtkFiltersModeling-8.2
-    vtkIOCore-8.2
-    vtkIOImage-8.2
-    vtkIOExport-8.2
-    vtkIOXML-8.2
-    vtkImagingCore-8.2
-    vtkInteractionStyle-8.2
+    vtkCommonCore-${3RDPARTY_VTK_VERSION}
+    vtkCommonDataModel-${3RDPARTY_VTK_VERSION}
+    vtkCommonExecutionModel-${3RDPARTY_VTK_VERSION}
+    vtkCommonMath-${3RDPARTY_VTK_VERSION}
+    vtkCommonTransforms-${3RDPARTY_VTK_VERSION}
+    vtkCommonMisc-${3RDPARTY_VTK_VERSION}
+    vtkFiltersCore-${3RDPARTY_VTK_VERSION}
+    vtkFiltersGeneral-${3RDPARTY_VTK_VERSION}
+    vtkFiltersSources-${3RDPARTY_VTK_VERSION}
+    vtkFiltersGeometry-${3RDPARTY_VTK_VERSION}
+    vtkFiltersParallel-${3RDPARTY_VTK_VERSION}
+    vtkFiltersExtraction-${3RDPARTY_VTK_VERSION}
+    vtkFiltersModeling-${3RDPARTY_VTK_VERSION}
+    vtkIOCore-${3RDPARTY_VTK_VERSION}
+    vtkIOImage-${3RDPARTY_VTK_VERSION}
+    vtkIOExport-${3RDPARTY_VTK_VERSION}
+    vtkIOXML-${3RDPARTY_VTK_VERSION}
+    vtkImagingCore-${3RDPARTY_VTK_VERSION}
+    vtkInteractionStyle-${3RDPARTY_VTK_VERSION}
   )
 endif()
 

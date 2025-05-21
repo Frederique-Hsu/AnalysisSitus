@@ -35,7 +35,7 @@
 #include <asiEngine_Model.h>
 
 // asiUI includes
-#include <asiUI_VtkWindow.h>
+#include <QVTKOpenGLNativeWidget.h>
 
 // VTK includes
 #pragma warning(push, 0)

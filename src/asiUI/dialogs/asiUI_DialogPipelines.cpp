@@ -35,7 +35,7 @@
 #include <asiUI_Common.h>
 
 // asiVisu includes
-#include <asiVisu_QVTKWidget.h>
+#include <QVTKOpenGLNativeWidget.h>
 
 // Qt includes
 #pragma warning(push, 0)
@@ -122,7 +122,7 @@ void asiUI_DialogPipelines::onStateChanged(QTableWidgetItem* pItem)
   //
   this->toggleVisibility(pl);
   //
-  m_prsMgr->GetQVTKWidget()->GetRenderWindow()->Render();
+  m_prsMgr->GetQVTKWidget()->renderWindow()->Render();
 }
 
 //-----------------------------------------------------------------------------

@@ -167,9 +167,9 @@ void asiUI_PartGraph::Render(const vtkSmartPointer<vtkGraph>& graph,
 
   // Create Qt window. NOTICE that interactor should be already given to
   // the render window at this stage
-  m_pWidget = new asiUI_VtkWindow();
+  m_pWidget = new QVTKOpenGLNativeWidget();
   m_pWidget->setAttribute( Qt::WA_DeleteOnClose );
-  m_pWidget->SetRenderWindow( renderWindow.GetPointer() );
+  m_pWidget->setRenderWindow( renderWindow.GetPointer() );
 
   /* ========================
    *  Add legend and summary
@@ -186,7 +186,7 @@ void asiUI_PartGraph::Render(const vtkSmartPointer<vtkGraph>& graph,
   textRep->SetTextActor(textActor);
   //
   m_textWidget->GetTextActor()->SetInput( regime == Regime_Topology ? LEGEND_TITLE_ACCESSORY : LEGEND_TITLE_ADJACENCY );
-  m_textWidget->SetInteractor( m_pWidget->GetInteractor() );
+  m_textWidget->SetInteractor( m_pWidget->interactor() );
   m_textWidget->SetDefaultRenderer( renderer );
   m_textWidget->SetCurrentRenderer( renderer );
 
@@ -209,7 +209,7 @@ void asiUI_PartGraph::Render(const vtkSmartPointer<vtkGraph>& graph,
   //
   m_summaryWidget->GetTextActor()->SetInput( shapeInfo.ToCString() );
   //
-  m_summaryWidget->SetInteractor      ( m_pWidget->GetInteractor() );
+  m_summaryWidget->SetInteractor      ( m_pWidget->interactor() );
   m_summaryWidget->SetDefaultRenderer ( renderer );
   m_summaryWidget->SetCurrentRenderer ( renderer );
 
@@ -220,14 +220,14 @@ void asiUI_PartGraph::Render(const vtkSmartPointer<vtkGraph>& graph,
   renderWindow->SetLineSmoothing(true);
   renderWindow->SetWindowName( regime == Regime_Topology ? "Topology Graph" : "Face Adjacency Graph" );
   //
-  graphItem->StartLayoutAnimation( m_pWidget->GetInteractor() );
+  graphItem->StartLayoutAnimation( m_pWidget->interactor() );
   //
-  m_pWidget->GetInteractor()->Initialize();
+  m_pWidget->interactor()->Initialize();
   m_pWidget->resize(400, 400);
   m_pWidget->show();
 
   // Set callback on rendering
-  m_pWidget->GetRenderWindow()->AddObserver(vtkCommand::RenderEvent, this, &asiUI_PartGraph::RenderEventCallback);
+  m_pWidget->renderWindow()->AddObserver(vtkCommand::RenderEvent, this, &asiUI_PartGraph::RenderEventCallback);
 }
 
 //-----------------------------------------------------------------------------

@@ -461,16 +461,12 @@ set (utils_CPP_FILES
 #------------------------------------------------------------------------------
 
 set (widgets_H_UI_FILES
-  widgets/asiVisu_QVTKWidget.h
 )
 set (widgets_H_FILES
   widgets/asiVisu_PlaneWidget.h
-  widgets/asiVisu_QVTKPaintEngine.h
 )
 set (widgets_CPP_FILES
   widgets/asiVisu_PlaneWidget.cpp
-  widgets/asiVisu_QVTKPaintEngine.cpp
-  widgets/asiVisu_QVTKWidget.cpp
 )
 
 #------------------------------------------------------------------------------
@@ -510,30 +506,30 @@ set (TBB_LIB_FILES
 )
 #------------------------------------------------------------------------------
 set (VTK_LIB_FILES
-  vtkCommonCore-8.2
-  vtkCommonColor-8.2
-  vtkCommonDataModel-8.2
-  vtkCommonExecutionModel-8.2
-  vtkCommonMath-8.2
-  vtkCommonTransforms-8.2
-  vtkCommonMisc-8.2
-  vtkFiltersCore-8.2
-  vtkFiltersGeneral-8.2
-  vtkFiltersSources-8.2
-  vtkFiltersGeometry-8.2
-  vtkFiltersParallel-8.2
-  vtkFiltersExtraction-8.2
-  vtkFiltersModeling-8.2
-  vtkGUISupportQt-8.2
-  vtkIOCore-8.2
-  vtkIOImage-8.2
-  vtkImagingCore-8.2
-  vtkInteractionStyle-8.2
-  vtkInteractionWidgets-8.2
-  vtkRenderingAnnotation-8.2
-  vtkRenderingCore-8.2
-  vtkRenderingOpenGL2-8.2
-  vtkRenderingLabel-8.2
+  vtkCommonCore-${3RDPARTY_VTK_VERSION}
+  vtkCommonColor-${3RDPARTY_VTK_VERSION}
+  vtkCommonDataModel-${3RDPARTY_VTK_VERSION}
+  vtkCommonExecutionModel-${3RDPARTY_VTK_VERSION}
+  vtkCommonMath-${3RDPARTY_VTK_VERSION}
+  vtkCommonTransforms-${3RDPARTY_VTK_VERSION}
+  vtkCommonMisc-${3RDPARTY_VTK_VERSION}
+  vtkFiltersCore-${3RDPARTY_VTK_VERSION}
+  vtkFiltersGeneral-${3RDPARTY_VTK_VERSION}
+  vtkFiltersSources-${3RDPARTY_VTK_VERSION}
+  vtkFiltersGeometry-${3RDPARTY_VTK_VERSION}
+  vtkFiltersParallel-${3RDPARTY_VTK_VERSION}
+  vtkFiltersExtraction-${3RDPARTY_VTK_VERSION}
+  vtkFiltersModeling-${3RDPARTY_VTK_VERSION}
+  vtkGUISupportQt-${3RDPARTY_VTK_VERSION}
+  vtkIOCore-${3RDPARTY_VTK_VERSION}
+  vtkIOImage-${3RDPARTY_VTK_VERSION}
+  vtkImagingCore-${3RDPARTY_VTK_VERSION}
+  vtkInteractionStyle-${3RDPARTY_VTK_VERSION}
+  vtkInteractionWidgets-${3RDPARTY_VTK_VERSION}
+  vtkRenderingAnnotation-${3RDPARTY_VTK_VERSION}
+  vtkRenderingCore-${3RDPARTY_VTK_VERSION}
+  vtkRenderingOpenGL2-${3RDPARTY_VTK_VERSION}
+  vtkRenderingLabel-${3RDPARTY_VTK_VERSION}
 )
 
 #------------------------------------------------------------------------------

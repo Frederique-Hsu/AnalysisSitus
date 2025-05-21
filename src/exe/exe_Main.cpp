@@ -122,13 +122,17 @@
 #include <QTimer>
 #pragma warning(pop)
 
+#include <QVTKOpenGLNativeWidget.h>
+
 // Activate object factories
+/*
 VTK_MODULE_INIT(vtkRenderingContextOpenGL2)
 VTK_MODULE_INIT(vtkRenderingOpenGL2)
 VTK_MODULE_INIT(vtkInteractionStyle)
 VTK_MODULE_INIT(vtkRenderingFreeType)
-VTK_MODULE_INIT(vtkIOExportOpenGL2)
+VTK_MODULE_INIT(vtkIOExportGL2PS)
 VTK_MODULE_INIT(vtkRenderingGL2PSOpenGL2)
+*/
 
 #define EXE_LOAD_MODULE(__cf, name) \
 { \
@@ -292,20 +296,7 @@ int main(int argc, char** argv)
   if ( !isBatch )
   {
     // Needed to ensure appropriate OpenGL context is created for VTK rendering.
-    QSurfaceFormat fmt;
-    fmt.setRenderableType(QSurfaceFormat::OpenGL);
-    fmt.setVersion(3, 2);
-    fmt.setProfile(QSurfaceFormat::CoreProfile);
-    fmt.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
-    fmt.setRedBufferSize(1);
-    fmt.setGreenBufferSize(1);
-    fmt.setBlueBufferSize(1);
-    fmt.setDepthBufferSize(1);
-    fmt.setStencilBufferSize(0);
-    fmt.setStereo(false);
-    fmt.setSamples( vtkOpenGLRenderWindow::GetGlobalMaximumNumberOfMultiSamples() );
-    //
-    QSurfaceFormat::setDefaultFormat(fmt);
+    QSurfaceFormat::setDefaultFormat( QVTKOpenGLNativeWidget::defaultFormat() );
 
     // Prepare application.
     QApplication app(argc, argv);
@@ -505,180 +496,154 @@ int main(int argc, char** argv)
 
 #else
 
-// VTK init
-#include <vtkAutoInit.h>
-#include <vtkPolyDataMapper.h>
+#include <QVTKOpenGLNativeWidget.h>
 #include <vtkActor.h>
-#include <vtkRenderWindow.h>
-#include <vtkRenderer.h>
-#include <vtkPolyData.h>
-#include <vtkSmartPointer.h>
-#include <vtkSphereSource.h>
-#include <vtkWindowToImageFilter.h>
-#include <vtkPNGWriter.h>
-
-#include <vtkActor.h>
-#include <vtkActor2D.h>
-#include <vtkGlyph3DMapper.h>
-#include <vtkLabeledDataMapper.h>
-#include <vtkNamedColors.h>
-#include <vtkNew.h>
-#include <vtkPointSource.h>
-#include <vtkPoints.h>
-#include <vtkPolyData.h>
-#include <vtkPolyDataMapper.h>
-#include <vtkProperty.h>
-#include <vtkRenderWindow.h>
-#include <vtkRenderWindowInteractor.h>
-#include <vtkRenderer.h>
-#include <vtkSmartPointer.h>
-#include <vtkSphereSource.h>
-#include <vtkTextProperty.h>
-
-VTK_MODULE_INIT(vtkRenderingOpenGL2); // VTK was built with vtkRenderingOpenGL2
-VTK_MODULE_INIT(vtkInteractionStyle);
-VTK_MODULE_INIT(vtkRenderingFreeType);
-
-#include <vtkActor.h>
-#include <vtkActor2D.h>
-#include <vtkGlyph3DMapper.h>
-#include <vtkIntArray.h>
-#include <vtkLabelPlacementMapper.h>
-#include <vtkNamedColors.h>
-#include <vtkNew.h>
+#include <vtkDataSetMapper.h>
+#include <vtkDoubleArray.h>
+#include <vtkGenericOpenGLRenderWindow.h>
 #include <vtkPointData.h>
-#include <vtkPointSetToLabelHierarchy.h>
-#include <vtkPointSource.h>
-#include <vtkPoints.h>
-#include <vtkPolyData.h>
-#include <vtkPolyDataMapper.h>
 #include <vtkProperty.h>
-#include <vtkProperty2D.h>
-#include <vtkRenderWindow.h>
-#include <vtkRenderWindowInteractor.h>
-#include <vtkRenderer.h>
-#include <vtkSmartPointer.h>
-#include <vtkSphereSource.h>
-#include <vtkStringArray.h>
-#include <vtkTextProperty.h>
-#include <vtkActor.h>
-#include <vtkCallbackCommand.h>
-#include <vtkCamera.h>
-#include <vtkCommand.h>
-#include <vtkNamedColors.h>
-#include <vtkNew.h>
-#include <vtkPolyDataMapper.h>
-#include <vtkProperty.h>
-#include <vtkRenderWindow.h>
-#include <vtkRenderWindowInteractor.h>
 #include <vtkRenderer.h>
 #include <vtkSphereSource.h>
+
+#include <QApplication>
+#include <QDockWidget>
+#include <QGridLayout>
+#include <QLabel>
+#include <QMainWindow>
+#include <QPointer>
+#include <QPushButton>
+#include <QVBoxLayout>
+
+#include <cmath>
+#include <cstdlib>
+#include <random>
 
 namespace {
-class vtkTimerCallback2 : public vtkCallbackCommand
-{
-public:
-  vtkTimerCallback2() = default;
-
-  static vtkTimerCallback2* New()
-  {
-    vtkTimerCallback2* cb = new vtkTimerCallback2;
-    cb->TimerCount = 0;
-    return cb;
-  }
-
-  virtual void Execute(vtkObject* caller, unsigned long eventId,
-                       void* vtkNotUsed(callData))
-  {
-    if (vtkCommand::TimerEvent == eventId)
-    {
-      ++this->TimerCount;
-    }
-    std::cout << this->TimerCount << std::endl;
-    actor->SetPosition(this->TimerCount, this->TimerCount, 0);
-    if (this->TimerCount < this->maxCount)
-    {
-
-      vtkRenderWindowInteractor* iren =
-          dynamic_cast<vtkRenderWindowInteractor*>(caller);
-      iren->GetRenderWindow()->Render();
-    }
-    else
-    {
-      vtkRenderWindowInteractor* iren =
-          dynamic_cast<vtkRenderWindowInteractor*>(caller);
-      if (this->timerId > -1)
-      {
-        iren->DestroyTimer(this->timerId);
-      }
-    }
-  }
-
-private:
-  int TimerCount = 0;
-
-public:
-  vtkActor* actor = nullptr;
-  int timerId = 0;
-  int maxCount = -1;
-};
+/**
+ * Deform the sphere source using a random amplitude and modes and render it in
+ * the window
+ *
+ * @param sphere the original sphere source
+ * @param mapper the mapper for the scene
+ * @param window the window to render to
+ * @param randEng the random number generator engine
+ */
+void Randomize(vtkSphereSource* sphere, vtkDataSetMapper* mapper,
+               vtkGenericOpenGLRenderWindow* window, std::mt19937& randEng);
 } // namespace
 
-int main(int, char*[])
+int main(int argc, char* argv[])
 {
-  vtkNew<vtkNamedColors> colors;
+  QSurfaceFormat::setDefaultFormat(QVTKOpenGLNativeWidget::defaultFormat());
 
-  // Create a sphere
-  vtkNew<vtkSphereSource> sphereSource;
-  sphereSource->SetCenter(0.0, 0.0, 0.0);
-  sphereSource->SetRadius(2.0);
-  sphereSource->SetPhiResolution(30);
-  sphereSource->SetThetaResolution(30);
+  QApplication app(argc, argv);
 
-  // Create a mapper and actor
-  vtkNew<vtkPolyDataMapper> mapper;
-  mapper->SetInputConnection(sphereSource->GetOutputPort());
+  // Main window.
+  QMainWindow mainWindow;
+  mainWindow.resize(1200, 900);
+
+  // Control area.
+  QDockWidget controlDock;
+  mainWindow.addDockWidget(Qt::LeftDockWidgetArea, &controlDock);
+
+  QLabel controlDockTitle("Control Dock");
+  controlDockTitle.setMargin(20);
+  controlDock.setTitleBarWidget(&controlDockTitle);
+
+  QPointer<QVBoxLayout> dockLayout = new QVBoxLayout();
+  QWidget layoutContainer;
+  layoutContainer.setLayout(dockLayout);
+  controlDock.setWidget(&layoutContainer);
+
+  QPushButton randomizeButton;
+  randomizeButton.setText("Randomize");
+  dockLayout->addWidget(&randomizeButton);
+
+  // Render area.
+  QPointer<QVTKOpenGLNativeWidget> vtkRenderWidget =
+      new QVTKOpenGLNativeWidget();
+  mainWindow.setCentralWidget(vtkRenderWidget);
+
+  // VTK part.
+  vtkNew<vtkGenericOpenGLRenderWindow> window;
+  vtkRenderWidget->setRenderWindow(window.Get());
+
+  vtkNew<vtkSphereSource> sphere;
+  sphere->SetRadius(1.0);
+  sphere->SetThetaResolution(100);
+  sphere->SetPhiResolution(100);
+
+  vtkNew<vtkDataSetMapper> mapper;
+  mapper->SetInputConnection(sphere->GetOutputPort());
+
   vtkNew<vtkActor> actor;
   actor->SetMapper(mapper);
-  actor->GetProperty()->SetSpecular(0.6);
-  actor->GetProperty()->SetSpecularPower(30);
-  actor->GetProperty()->SetColor(colors->GetColor3d("Peacock").GetData());
+  actor->GetProperty()->SetEdgeVisibility(true);
+  actor->GetProperty()->SetRepresentationToSurface();
 
-  // Create a renderer, render window, and interactor
   vtkNew<vtkRenderer> renderer;
-  vtkNew<vtkRenderWindow> renderWindow;
-  renderWindow->AddRenderer(renderer);
-  renderWindow->SetWindowName("Animation");
-
-  vtkNew<vtkRenderWindowInteractor> renderWindowInteractor;
-  renderWindowInteractor->SetRenderWindow(renderWindow);
-
-  // Add the actor to the scene
   renderer->AddActor(actor);
-  renderer->SetBackground(colors->GetColor3d("MistyRose").GetData());
 
-  // Render and interact
-  renderWindow->Render();
-  renderer->GetActiveCamera()->Zoom(0.18);
-  renderWindow->Render();
+  window->AddRenderer(renderer);
 
-  // Initialize must be called prior to creating timer events.
-  renderWindowInteractor->Initialize();
+  // Setup initial status.
+  std::mt19937 randEng(0);
+  ::Randomize(sphere, mapper, window, randEng);
 
-  // Sign up to receive TimerEvent
-  vtkNew<vtkTimerCallback2> cb;
-  cb->actor = actor;
-  renderWindowInteractor->AddObserver(vtkCommand::TimerEvent, cb);
+  // connect the buttons
+  QObject::connect(&randomizeButton, &QPushButton::released,
+                   [&]() { ::Randomize(sphere, mapper, window, randEng); });
 
-  int timerId = renderWindowInteractor->CreateRepeatingTimer(50);
-  std::cout << "timerId: " << timerId << std::endl;
-  // Destroy the timer when maxCount is reached.
-  cb->maxCount = 30;
-  cb->timerId = timerId;
-  // Start the interaction and timer
-  renderWindowInteractor->Start();
+  mainWindow.show();
 
-  return EXIT_SUCCESS;
+  return app.exec();
 }
+
+namespace {
+void Randomize(vtkSphereSource* sphere, vtkDataSetMapper* mapper,
+               vtkGenericOpenGLRenderWindow* window, std::mt19937& randEng)
+{
+  // Generate randomness.
+  double randAmp = 0.2 + ((randEng() % 1000) / 1000.0) * 0.2;
+  double randThetaFreq = 1.0 + (randEng() % 9);
+  double randPhiFreq = 1.0 + (randEng() % 9);
+
+  // Extract and prepare data.
+  sphere->Update();
+  vtkSmartPointer<vtkPolyData> newSphere;
+  newSphere.TakeReference(sphere->GetOutput()->NewInstance());
+  newSphere->DeepCopy(sphere->GetOutput());
+  vtkNew<vtkDoubleArray> height;
+  height->SetName("Height");
+  height->SetNumberOfComponents(1);
+  height->SetNumberOfTuples(newSphere->GetNumberOfPoints());
+  newSphere->GetPointData()->AddArray(height);
+
+  // Deform the sphere.
+  for (int iP = 0; iP < newSphere->GetNumberOfPoints(); iP++)
+  {
+    double pt[3] = {0.0};
+    newSphere->GetPoint(iP, pt);
+    double theta = std::atan2(pt[1], pt[0]);
+    double phi =
+        std::atan2(pt[2], std::sqrt(std::pow(pt[0], 2) + std::pow(pt[1], 2)));
+    double thisAmp =
+        randAmp * std::cos(randThetaFreq * theta) * std::sin(randPhiFreq * phi);
+    height->SetValue(iP, thisAmp);
+    pt[0] += thisAmp * std::cos(theta) * std::cos(phi);
+    pt[1] += thisAmp * std::sin(theta) * std::cos(phi);
+    pt[2] += thisAmp * std::sin(phi);
+    newSphere->GetPoints()->SetPoint(iP, pt);
+  }
+  newSphere->GetPointData()->SetScalars(height);
+
+  // Reconfigure the pipeline to take the new deformed sphere.
+  mapper->SetInputDataObject(newSphere);
+  mapper->SetScalarModeToUsePointData();
+  mapper->ColorByArrayComponent("Height", 0);
+  window->Render();
+}
+} // namespace
 
 #endif

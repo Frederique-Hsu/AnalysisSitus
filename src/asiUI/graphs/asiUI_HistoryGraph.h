@@ -33,7 +33,7 @@
 
 // asiUI includes
 #include <asiUI_ViewerPart.h>
-#include <asiUI_VtkWindow.h>
+#include <QVTKOpenGLNativeWidget.h>
 
 // asiAlgo includes
 #include <asiAlgo_Naming.h>
@@ -89,8 +89,8 @@ protected slots:
 
 protected:
 
-  asiUI_VtkWindow* m_pWidget;    //!< Widget.
-  vtkTextWidget*   m_textWidget; //!< Text.
+  QVTKOpenGLNativeWidget* m_pWidget;    //!< Widget.
+  vtkTextWidget*          m_textWidget; //!< Text.
   //
   Handle(asiEngine_Model) m_model;    //!< Data Model instance.
   Handle(asiAlgo_Naming)  m_naming;   //!< Naming service (optional).

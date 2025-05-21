@@ -62,7 +62,7 @@
 
 // Qt-VTK includes
 #pragma warning(push, 0)
-#include <asiVisu_QVTKWidget.h>
+#include <QVTKOpenGLNativeWidget.h>
 #pragma warning(pop)
 
 // Qt includes
@@ -404,8 +404,8 @@ asiUI_ViewerPart::asiUI_ViewerPart(const Handle(asiEngine_Model)& model,
   m_prs_mgr->SetSelectionMode(SelectionMode_Face);
 
   // Widgets and layouts
-  asiVisu_QVTKWidget* pViewer     = m_prs_mgr->GetQVTKWidget();
-  QVBoxLayout*        pBaseLayout = new QVBoxLayout(this);
+  QVTKOpenGLNativeWidget* pViewer     = m_prs_mgr->GetQVTKWidget();
+  QVBoxLayout*            pBaseLayout = new QVBoxLayout(this);
 
   // Create toolbar
   m_toolBar = new QToolBar(this);
@@ -569,7 +569,7 @@ asiUI_ViewerPart::asiUI_ViewerPart(const Handle(asiEngine_Model)& model,
     connect( pViewer, SIGNAL ( customContextMenuRequested(const QPoint&) ),
              this,    SLOT   ( onContextMenu(const QPoint&) ) );
 
-    this->onResetView();
+    //this->onResetView();
   }
 }
 
@@ -599,7 +599,7 @@ QSize asiUI_ViewerPart::sizeHint() const
 void asiUI_ViewerPart::Repaint()
 {
   if ( m_prs_mgr->GetQVTKWidget() )
-    m_prs_mgr->GetQVTKWidget()->GetRenderWindow()->Render();
+    m_prs_mgr->GetQVTKWidget()->renderWindow()->Render();
 }
 
 //-----------------------------------------------------------------------------
@@ -953,8 +953,8 @@ void asiUI_ViewerPart::onBuildHLRDiscrOutline()
 
 void asiUI_ViewerPart::onContextMenu(const QPoint& pos)
 {
-  asiVisu_QVTKWidget* pViewer   = m_prs_mgr->GetQVTKWidget();
-  QPoint              globalPos = pViewer->mapToGlobal(pos);
+  QVTKOpenGLNativeWidget* pViewer   = m_prs_mgr->GetQVTKWidget();
+  QPoint                  globalPos = pViewer->mapToGlobal(pos);
 
   emit contextMenu(globalPos);
 }

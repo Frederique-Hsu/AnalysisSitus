@@ -415,8 +415,8 @@ void asiTcl_Interp::Init(const bool overrideChannels)
 
   if ( overrideChannels )
   {
-    OverrideTclChannel(this, TCL_STDOUT);
-    OverrideTclChannel(this, TCL_STDERR);
+    //OverrideTclChannel(this, TCL_STDOUT);
+    //OverrideTclChannel(this, TCL_STDERR);
   }
 
   // Output available channels.

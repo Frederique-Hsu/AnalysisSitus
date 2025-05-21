@@ -33,7 +33,7 @@
 
 // asiUI includes
 #include <asiUI_ViewerPart.h>
-#include <asiUI_VtkWindow.h>
+#include <QVTKOpenGLNativeWidget.h>
 
 // asiAlgo includes
 #include <asiAlgo_AAG.h>
@@ -136,7 +136,7 @@ protected slots:
 
 protected:
 
-  asiUI_VtkWindow*          m_pWidget;       //!< Widget.
+  QVTKOpenGLNativeWidget*   m_pWidget;       //!< Widget.
   vtkTextWidget*            m_textWidget;    //!< Text.
   vtkTextWidget*            m_summaryWidget; //!< Summary.
   asiUI_ViewerPart*         m_partViewer;    //!< Part viewer.

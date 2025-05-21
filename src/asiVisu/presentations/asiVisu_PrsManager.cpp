@@ -35,7 +35,6 @@
 #include <asiVisu_PartNodeInfo.h>
 #include <asiVisu_Prs.h>
 #include <asiVisu_Pipeline.h>
-#include <asiVisu_QVTKWidget.h>
 #include <asiVisu_Selection.h>
 
 // asiAlgo includes
@@ -629,7 +628,7 @@ void asiVisu_PrsManager::SetSelectionMode(const int mode)
   m_currentSelection.PopAll(m_renderer, SelectionNature_Persistent);
   m_currentSelection.PopAll(m_renderer, SelectionNature_Detection);
 
-  m_renderWindow->Render();
+  //m_renderWindow->Render();
 }
 
 //-----------------------------------------------------------------------------
@@ -1071,14 +1070,14 @@ void asiVisu_PrsManager::Initialize(QWidget* pWidget, const bool isOffscreen)
   if ( !isOffscreen )
   {
     // Initialize widget.
-    m_widget = new asiVisu_QVTKWidget(pWidget);
+    m_widget = new QVTKOpenGLNativeWidget(pWidget);
 
     // Initialize render window.
-    m_renderWindow = vtkSmartPointer<vtkRenderWindow>::New();
+    m_renderWindow = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
     //
-    m_renderWindow->SetMultiSamples(64);
-    m_renderWindow->SetLineSmoothing(true);
-    m_widget->SetRenderWindow(m_renderWindow);
+    //m_renderWindow->SetMultiSamples(64);
+    //m_renderWindow->SetLineSmoothing(true);
+    m_widget->setRenderWindow(m_renderWindow);
 
     // Initialize renderer.
     m_renderer = vtkSmartPointer<vtkRenderer>::New();
@@ -1097,7 +1096,7 @@ void asiVisu_PrsManager::Initialize(QWidget* pWidget, const bool isOffscreen)
 
     // Initialize Render Window Interactor.
     m_renderWindowInteractor = m_renderWindow->GetInteractor();
-    m_renderWindowInteractor->SetInteractorStyle(m_interactorStyleImage);
+    //m_renderWindowInteractor->SetInteractorStyle(m_interactorStyleImage);
 
     // Initialize employed pickers.
     this->InitializePickers( Handle(ActAPI_INode)() );
@@ -1159,7 +1158,7 @@ void asiVisu_PrsManager::InitializePickers(const Handle(ActAPI_INode)& node)
 
 //! Returns QVTK widget handled by Presentation Manager.
 //! \return QVTK widget.
-asiVisu_QVTKWidget* asiVisu_PrsManager::GetQVTKWidget() const
+QVTKOpenGLNativeWidget* asiVisu_PrsManager::GetQVTKWidget() const
 {
   return m_widget;
 }

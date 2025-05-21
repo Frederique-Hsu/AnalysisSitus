@@ -91,7 +91,7 @@
 <h2 id="toc-get-ready">Getting ready</h2>
 
 <p>
-  This guide is a step-by-step tutorial explaining how to build Analysis Situs from sources on Linux OS. Ubuntu 22.04 is used as a reference system, although the compilation process should be similar for other Linux distributives. It should be noted that Analysis Situs is a C++-written project whose language support is deliberately narrowed down to C++11 standard for the sake of better compatibility with older compilers.
+  This guide is a step-by-step tutorial explaining how to build Analysis Situs from sources on Linux OS. Ubuntu 22.04 and Fedora 42 are used throughout this guide, although the compilation process should be similar for other Linux distros. It should be noted that Analysis Situs is a C++-written project whose language support is deliberately narrowed down to C++11 standard for the sake of better compatibility with older compilers.
 </p>
 
 <p>
@@ -102,6 +102,10 @@
   <li>GitKraken as a git client.</li>
   <li>CLion as a C++ IDE.</li>
 </ol>
+
+<p class="note">
+  None of these commercial tools are required to build Analysis Situs. We only recommend using them for the development and maintenance although you might also prefer VS Code or any other IDEs and tools by your choice.
+</p>
 
 <p>
   The compilation procedure given below assumes that you have a "clean" installation of Linux. As a result, it goes through all of the steps to install the required third-party dependencies, some of which your system may already have installed. If this is the case, you may skip the corresponding steps. Also, keep in mind that Analysis Situs is a rapidly evolving project. Although we try to minimize the dependencies and keep the compilation process as clean as possible, some inconsistencies may pop up. Please, <a href='http://quaoar.su/blog/contact'>report</a>, if you encounter any.
@@ -115,17 +119,41 @@
 Analysis Situs is configured with CMake. To install CMake, you go like this:
 </p>
 
-<pre class="code">
-sudo apt install cmake-qt-gui
+<table class="ui-control" style="margin: 10px">
+  <tr>
+    <td class="table-content-header">Ubuntu</td>
+  </tr>
+  <tr>
+    <td>
+      <pre class="code-cell">sudo apt install cmake-qt-gui</pre>
+    </td>
+  </tr>
+</table>
+
+<table class="ui-control" style="margin: 10px">
+  <tr>
+    <td class="table-content-header">Fedora</td>
+  </tr>
+  <tr>
+    <td>
+      <pre class="code-cell">sudo dnf install cmake
+sudo dnf install cmake-gui.x86_64
 </pre>
+    </td>
+  </tr>
+</table>
 
 <p>
 To make sure that CMake is installed properly, run it like this from the Terminal:
 </p>
 
-<pre class="code">
-cmake-gui&
-</pre>
+<table class="ui-control" style="margin: 10px">
+  <tr>
+    <td>
+      <pre class="code-cell">cmake-gui&</pre>
+    </td>
+  </tr>
+</table>
 
 <p>
 You should be able to see the CMake window:
@@ -140,6 +168,42 @@ It is recommended to try to configure the project for the first time to observe 
 <div align="center"><img src="../imgs/build-on-linux/cmake-filled.png"/></div>
 
 <p>
+  On a clean installation, you might also need to install the compiler.
+</p>
+
+<table class="ui-control" style="margin: 10px">
+  <tr>
+    <td class="table-content-header">Fedora</td>
+  </tr>
+  <tr>
+    <td>
+      <pre class="code-cell">sudo dnf install gcc-c++.x86_64</pre>
+    </td>
+  </tr>
+</table>
+
+<p>
+  If this is not done, CMake may claim that it cannot recognize the language:
+</p>
+
+<pre class="code">
+CMake Error at CMakeLists.txt:39 (project):
+  No CMAKE_C_COMPILER could be found.
+
+  Tell CMake where to find the compiler by setting either the environment
+  variable "CC" or the CMake cache entry CMAKE_C_COMPILER to the full path to
+  the compiler, or to the compiler name if it is in the PATH.
+
+
+CMake Error at CMakeLists.txt:39 (project):
+  No CMAKE_CXX_COMPILER could be found.
+
+  Tell CMake where to find the compiler by setting either the environment
+  variable "CXX" or the CMake cache entry CMAKE_CXX_COMPILER to the full path
+  to the compiler, or to the compiler name if it is in the PATH.
+</pre>
+
+<p>
 The next stage is to specify "/usr/lib" as the value of "3RDPARTY_DIR" and set "INSTALL_DIR" to the directory where Analysis Situs will be copied upon successful compilation. Also, specify "Release" as "CMAKE_BUILD_TYPE" to compile the project in the optimized mode (for debugging, you may want to type "Debug").
 </p>
 
@@ -149,15 +213,41 @@ The next stage is to specify "/usr/lib" as the value of "3RDPARTY_DIR" and set "
 Keep the CMake GUI dialog open and proceed with installation of other 3-rd party libraries following this guide.
 </p>
 
+<p class="note">
+  It should be noted that on Linux systems, the "/usr/lib" path is used as a default value for the "3RDPARTY_DIR" CMake variable.
+</p>
+
 <h3 id="toc-tools-rapidjson">Rapidjson</h3>
 
 <p>
 Analysis Situs provides a comprehensive framework for feature recognition. To output the recognition results in a persistent way, it uses JSON format. At the level of C++, JSON documents are manipulated with Rapidjson library. To install Rapidjson, use the following command:
 </p>
 
-<pre class="code">
-sudo apt-get -y install rapidjson-dev
-</pre>
+<table class="ui-control" style="margin: 10px">
+  <tr>
+    <td class="table-content-header">Ubuntu</td>
+  </tr>
+  <tr>
+    <td>
+      <pre class="code-cell">sudo apt-get -y install rapidjson-dev</pre>
+    </td>
+  </tr>
+</table>
+
+<table class="ui-control" style="margin: 10px">
+  <tr>
+    <td class="table-content-header">Fedora</td>
+  </tr>
+  <tr>
+    <td>
+      <pre class="code-cell">sudo dnf install rapidjson-devel.x86_64</pre>
+    </td>
+  </tr>
+</table>
+
+<p>
+  Rapidjson is a header-only library, so we do not need to configure the linker and install any binaries.
+</p>
 
 <h3 id="toc-tools-eigen">Eigen</h3>
 
@@ -165,9 +255,27 @@ sudo apt-get -y install rapidjson-dev
 Eigen is a header-only library for linear algebra. Install the development version as follows:
 </p>
 
-<pre class="code">
-sudo apt-get -y install libeigen3-dev
-</pre>
+<table class="ui-control" style="margin: 10px">
+  <tr>
+    <td class="table-content-header">Ubuntu</td>
+  </tr>
+  <tr>
+    <td>
+      <pre class="code-cell">sudo apt-get -y install libeigen3-dev</pre>
+    </td>
+  </tr>
+</table>
+
+<table class="ui-control" style="margin: 10px">
+  <tr>
+    <td class="table-content-header">Fedora</td>
+  </tr>
+  <tr>
+    <td>
+      <pre class="code-cell">sudo dnf install eigen3-devel</pre>
+    </td>
+  </tr>
+</table>
 
 <h3 id="toc-tools-opencascade-deps">OpenCascade dependencies</h3>
 
@@ -175,39 +283,93 @@ sudo apt-get -y install libeigen3-dev
 Tcl/Tk and freeimage are the dependencies of OpenCascade. Install with:
 </p>
 
-<pre class="code">
-sudo apt-get install -y tcl tcl-dev tk tk-dev libfreeimage-dev
+<table class="ui-control" style="margin: 10px">
+  <tr>
+    <td class="table-content-header">Ubuntu</td>
+  </tr>
+  <tr>
+    <td>
+      <pre class="code-cell">sudo apt-get install -y tcl tcl-dev tk tk-dev libfreeimage-dev</pre>
+    </td>
+  </tr>
+</table>
+
+<table class="ui-control" style="margin: 10px">
+  <tr>
+    <td class="table-content-header">Fedora</td>
+  </tr>
+  <tr>
+    <td>
+      <pre class="code-cell">sudo dnf install tcl-devel.x86_64
+sudo dnf install tk-devel.x86_64
+sudo dnf install freeimage-devel.x86_64
 </pre>
+    </td>
+  </tr>
+</table>
+
+<h3 id="toc-tools-opengl">OpenGL</h3>
 
 <p>
-Other dependencies for graphics are to be installed in the following way:
+More dependencies for graphics are to be installed in the following way:
+</p>
+
+<table class="ui-control" style="margin: 10px">
+  <tr>
+    <td class="table-content-header">Ubuntu</td>
+  </tr>
+  <tr>
+    <td>
+      <pre class="code-cell">sudo apt-get install -y libxmu-dev libxi-dev
+sudo apt-get install -y libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev libosmesa6-dev</pre>
+    </td>
+  </tr>
+</table>
+
+<table class="ui-control" style="margin: 10px">
+  <tr>
+    <td class="table-content-header">Fedora</td>
+  </tr>
+  <tr>
+    <td>
+      <pre class="code-cell">sudo dnf install mesa-libGL-devel.x86_64</pre>
+    </td>
+  </tr>
+</table>
+
+<p>
+  Without MESA driver available, an attempt to build OpenCascade may result in the following error:
 </p>
 
 <pre class="code">
-sudo apt-get install -y libxmu-dev libxi-dev
-sudo apt-get install -y libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev libosmesa6-dev
+...OpenGl_GlFunctions.hxx:65:12: fatal error: GL/gl.h: No such file or directory
+   65 |   #include &lt;GL/gl.h&gt;
 </pre>
 
 <h3 id="toc-tools-opencascade">OpenCascade</h3>
 
 <p>
-Analysis Situs uses OpenCascade 7.6 as a geometric kernel. We prefer to build OpenCascade from sources. To do that, execute the following commands one after another (make sure to set your working directory properly):
+Analysis Situs uses a <a href="https://gitlab.com/ssv/opencascade-analysis-situs">fork of OpenCascade 7.6</a> as a geometric kernel. We prefer to build OpenCascade from sources. To do so, execute the following commands one after another (make sure to set your working directory properly):
 </p>
 
-<pre class="code">
-mkdir /home/quaoar/work/opencascade
+<table class="ui-control" style="margin: 10px">
+  <tr>
+    <td>
+      <pre class="code-cell">mkdir /home/quaoar/work/opencascade
 cd /home/quaoar/work/opencascade
-wget https://github.com/Open-Cascade-SAS/OCCT/archive/refs/tags/V7_6_0.tar.gz
-tar zxvf V7_6_0.tar.gz
-mkdir /home/quaoar/work/opencascade/OCCT-7_6_0/build
-cd /home/quaoar/work/opencascade/OCCT-7_6_0/build
+git clone https://gitlab.com/ssv/opencascade-analysis-situs.git ./
+mkdir ./build
+cd ./build
 cmake .. \
     -DCMAKE_BUILD_TYPE=release \
     -DCMAKE_INSTALL_PREFIX=/usr \
-    -DUSE_FREEIMAGE=ON
+    -DUSE_FREEIMAGE=ON \
+    -DUSE_FREETYPE=ON
 make -j8
-sudo make install
-</pre>
+sudo make install</pre>
+    </td>
+  </tr>
+</table>
 
 <p>
 It should be noted that here we install OpenCascade into the system directory "/usr". That is why you would need administrative permissions for "make install".
@@ -248,25 +410,51 @@ It should be noted that on Linux, OpenCascade uses MESA (i.e. software rendering
 Qt is the UI framework used by Analysis Situs. Install it with the following commands:
 </p>
 
-<pre class="code">
-sudo apt-get update
+<table class="ui-control" style="margin: 10px">
+  <tr>
+    <td class="table-content-header">Ubuntu</td>
+  </tr>
+  <tr>
+    <td>
+      <pre class="code-cell">sudo apt-get update
 sudo apt-get -y install libqt5x11extras5-dev
-sudo apt-get -y install qttools5-dev
-</pre>
+sudo apt-get -y install qttools5-dev</pre>
+    </td>
+  </tr>
+</table>
 
-<h3 id="toc-tools-vtk">VTK</h3>
+<table class="ui-control" style="margin: 10px">
+  <tr>
+    <td class="table-content-header">Fedora</td>
+  </tr>
+  <tr>
+    <td>
+      <pre class="code-cell">sudo dnf install qt5-qttools-devel.x86_64
+sudo dnf install libXt-devel.x86_64
+sudo dnf install qt5-qtx11extras-devel</pre>
+    </td>
+  </tr>
+</table>
 
 <p>
-The visualization in Analysis Situs is based entirely on VTK framework. Unlike Qt, here it is necessary to have a specific version of the library. We prefer to build VTK from sources. To do that, use the following commands:
+  Notice that we also install "X11 Extras" and "X11_Xt_LIB" packages. If they are missing, you will have problems at VTK configuration stage.
 </p>
 
-<pre class="code">
-cd /home/quaoar/work
-wget https://www.vtk.org/files/release/8.2/VTK-8.2.0.tar.gz
-tar xvfz ./VTK-8.2.0.tar.gz
-cd /home/quaoar/work/VTK-8.2.0
-mkdir build
-cd /home/quaoar/work/VTK-8.2.0/build
+<h3 id="toc-tools-vtk">VTK (fork)</h3>
+
+<p>
+The visualization module of Analysis Situs is based entirely on VTK framework. Unlike Qt, here it is necessary to have a specific version of the library, which is the patched ver.8.2 in our case. We prefer to build VTK from sources. To do that, use the following commands:
+</p>
+
+<table class="ui-control" style="margin: 10px">
+  <tr>
+    <td>
+      <pre class="code-cell">cd /home/quaoar/work
+mkdir ./vtk
+cd ./vtk
+git clone https://gitlab.com/ssv/vtk-analysis-situs.git ./
+mkdir ./build
+cd ./build
 cmake .. \
     -DVTK_Group_Qt=ON \
     -DVTK_QT_VERSION=5 \
@@ -274,19 +462,24 @@ cmake .. \
     -DVTK_Group_Imaging=YES \
     -DVTK_Group_Qt=YES \
     -DVTK_Group_Views=YES \
+    -DVTK_REPORT_OPENGL_ERRORS=NO \
     -DBUILD_SHARED_LIBS=ON \
+    -DVTK_USE_SYSTEM_LIBXML2=ON \
+    -DVTK_USE_SYSTEM_EIGEN=ON\
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr
 make -j8
-sudo make install
-</pre>
-
-<p>
-  It might happen that you encounter compilation or linking problems because VTK-8.2 is quite obsolete, while gcc compiler, Qt and potentially something else in your Linux environment is more up-to-date. For example, VTK-8.2 would not see any compilation issues on Ubuntu 20.04, while on Ubuntu 22.04 the situation becomes worse. Ideally, Analysis Situs should be migrated to a newer version of VTK, but that was hardly possible <a href="https://quaoar.su/blog/page/what-enduring-software-is">last time we tried it</a>.
-</p>
+sudo make install</pre>
+    </td>
+  </tr>
+</table>
 
 <p class="note">
-  You may want to use our fork of the VTK-8.2 library (<a href="https://gitlab.com/ssv/vtk-analysis-situs">https://gitlab.com/ssv/vtk-analysis-situs</a>) with the compilation issues resolved. See also the supplementary "community links" at the end of this page.
+  It might happen that you encounter compilation or linking problems if using the official VTK-8.2 package from Kitware. The ver.8.2 of VTK is already quite obsolete, while gcc compiler, Qt and potentially something else in your Linux environment keeps evolving. For example, VTK-8.2 would not see any compilation issues on Ubuntu 20.04, while on Ubuntu 22.04 the situation becomes worse. Ideally, Analysis Situs should be migrated to a newer version of VTK, but that was hardly possible <a href="https://quaoar.su/blog/page/what-enduring-software-is">last time we tried it</a>.
+</p>
+
+<p>
+  It should be noted that VTK comes with a set of bundled 3-rd party libraries. These libraries are being compiled from sources, but, with the changes in Linux kernel and newer versions of gcc, the bundled sources may get outdated. We therefore recommend building VTK against system libraries (libXml2 and Eigen), which is indicated by enabling the corresponding CMake flags "VTK_USE_SYSTEM_LIBXML2" and "VTK_USE_SYSTEM_EIGEN" above.
 </p>
 
 <p>
@@ -294,6 +487,36 @@ sudo make install
 </p>
 
 <div align="center"><a href="../imgs/vtk-cmake.png"><img src="../imgs/vtk-cmake.png" width="70%"/></a></div>
+
+<h3 id="toc-tools-vtk-official">VTK (official)</h3>
+
+<p>
+  With some adjustments and limitations, Analysis Situs UI can be backed by more modern versions of the VTK library. If you'd like to use the official release of VTK (such as ver.9.5), you may compile it from sources using the following commands:
+</p>
+
+<table class="ui-control" style="margin: 10px">
+  <tr>
+    <td>
+      <pre class="code-cell">cd /home/quaoar/work
+mkdir ./vtk
+cd ./vtk
+git clone https://gitlab.kitware.com/vtk/vtk.git ./
+git checkout v9.5.0.rc1
+mkdir ./build
+cd ./build
+cmake .. \
+    -DVTK_GROUP_ENABLE_Qt=YES \
+    -DVTK_QT_VERSION=5 \
+    -DVTK_MODULE_ENABLE_VTK_GUISupportQtQuick=NO \
+    -DVTK_REPORT_OPENGL_ERRORS=NO \
+    -DBUILD_SHARED_LIBS=ON \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr
+make -j8
+sudo make install</pre>
+    </td>
+  </tr>
+</table>
 
 <h2 id="toc-tools-getting-back-to-cmake">Generate Makefiles</h2>
 
@@ -304,15 +527,31 @@ At this point you can try reconfiguring Analysis Situs in CMake:
 <div align="center"><img src="../imgs/build-on-linux/cmake-build-cache.png"/></div>
 
 <p>
-Once the configuration is done, you can head over to the build directory of Analysis Situs and try making it for the first time:
+  Alternatively, you may want to configure and build Analysis Situs entirely from the terminal:
 </p>
 
-<div align="center"><img src="../imgs/build-on-linux/compilation-log.png"/></div>
-
-<pre class="code">
-make
-make install
+<table class="ui-control" style="margin: 10px">
+  <tr>
+    <td>
+      <pre class="code-cell">cd /home/quaoar/work
+mkdir ./analysissitus
+cd ./analysissitus/
+git clone https://gitlab.com/ssv/AnalysisSitus.git ./
+mkdir ./build
+cd ./build
+cmake .. \
+ -DCMAKE_BUILD_TYPE=Release \
+ -D3RDPARTY_vtk_LIBRARY_DIR=/usr/lib64/ \
+ -D3RDPARTY_vtk_INCLUDE_DIR=/usr/include/vtk-9.5 \
+ -DINSTALL_DIR=/usr/local/bin/analysissitus
+make -j8
+sudo make install
 </pre>
+    </td>
+  </tr>
+</table>
+
+<div align="center"><img src="../imgs/build-on-linux/compilation-log.png"/></div>
 
 <p>
 To run Analysis Situs, navigate to the installation directory and run its bash executable like this:

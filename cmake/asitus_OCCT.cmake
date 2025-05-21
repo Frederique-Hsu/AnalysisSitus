@@ -1,8 +1,18 @@
-ASITUS_THIRDPARTY_PRODUCT("OCCT" "" "Standard.hxx" "TKernel")
+if (UNIX)
+  find_package(OpenCASCADE)
+
+  set(3RDPARTY_OCCT_INCLUDE_DIR ${OpenCASCADE_INCLUDE_DIR} CACHE PATH "The directory containing OpenCascade includes")
+  set(3RDPARTY_OCCT_LIBRARY_DIR ${OpenCASCADE_LIBRARY_DIR} CACHE PATH "The directory containing OpenCascade libraries")
+else()
+  ASITUS_THIRDPARTY_PRODUCT("OCCT" "" "Standard.hxx" "TKernel")
+endif()
 
 message (STATUS "... OCCT Include dirs: ${3RDPARTY_OCCT_INCLUDE_DIR}")
 message (STATUS "... OCCT Library dirs: ${3RDPARTY_OCCT_LIBRARY_DIR}")
-message (STATUS "... OCCT Binary  dirs: ${3RDPARTY_OCCT_DLL_DIR}")
+
+if (WIN32)
+  message (STATUS "... OCCT Binary  dirs: ${3RDPARTY_OCCT_DLL_DIR}")
+endif()
 
 string (REPLACE lib libd 3RDPARTY_OCCT_LIBRARY_DIR_DEBUG ${3RDPARTY_OCCT_LIBRARY_DIR})
 if (3RDPARTY_OCCT_LIBRARY_DIR_DEBUG AND EXISTS "${3RDPARTY_OCCT_LIBRARY_DIR_DEBUG}")

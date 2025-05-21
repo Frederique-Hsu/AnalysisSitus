@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.0.0 FATAL_ERROR)
+cmake_minimum_required (VERSION 3.12.0 FATAL_ERROR)
 
 # Project name
 project (AnalysisSitus CXX)
@@ -56,7 +56,11 @@ endif()
 #-------------------------------------------------------------------------------
 
 # Set a directory containing all 3-rd parties
-set (3RDPARTY_DIR "" CACHE PATH "The root directory for all 3-rd parties.")
+if (WIN32)
+  set (3RDPARTY_DIR "" CACHE PATH "The root directory for all 3-rd parties.")
+else()
+  set (3RDPARTY_DIR "/usr/lib" CACHE PATH "The root directory for all 3-rd parties.")
+endif()
 
 if (NOT DEFINED ${3RDPARTY_DIR} AND ${3RDPARTY_DIR} STREQUAL "")
   message (FATAL_ERROR "... root 3rdparty directory was not found.\nPlease, set 3RDPARTY_DIR variable.")
@@ -121,6 +125,7 @@ if (NOT BUILD_ALGO_ONLY)
   include (${CMAKE_SOURCE_DIR}/cmake/asitus_OCCT_3rdparty.cmake)
 
   # VTK
+  set (3RDPARTY_VTK_VERSION "9.5" CACHE STRING "Preferred VTK version." FORCE)
   include (${CMAKE_SOURCE_DIR}/cmake/asitus_VTK.cmake)
 
   # Inno Setup for installation
@@ -236,7 +241,7 @@ if (MSVC)
   add_definitions (-D_CRT_SECURE_NO_WARNINGS)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /EHa")
 elseif (CMAKE_COMPILER_IS_GNUCXX)
-  add_definitions (-Wall -pedantic -Wno-unknown-pragmas)
+  add_definitions (-Wall -pedantic -Wno-unknown-pragmas -fpermissive)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++0x")
   add_definitions(-DUSE_GCC)
 else()

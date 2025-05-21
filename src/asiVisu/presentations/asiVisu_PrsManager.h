@@ -423,7 +423,7 @@ public:
 
 //-----------------------------------------------------------------------------
 
-  asiVisu_EXPORT asiVisu_QVTKWidget*
+  asiVisu_EXPORT QVTKOpenGLNativeWidget*
     GetQVTKWidget() const;
 
   asiVisu_EXPORT const vtkSmartPointer<asiVisu_InteractorStylePick>&
@@ -527,7 +527,7 @@ private:
 private:
 
   //! QVTK widget.
-  asiVisu_QVTKWidget* m_widget;
+  QVTKOpenGLNativeWidget* m_widget;
 
   //! Active renderer.
   vtkSmartPointer<vtkRenderer> m_renderer;

@@ -29,15 +29,9 @@ set (OCCT_LIB_FILES
   TKMath
 )
 
-if (WIN32)
-  set (TCL_LIB_FILES
-    tcl86
-  )
-else()
-  set (TCL_LIB_FILES
-    tcl8.6
-  )
-endif()
+set (TCL_LIB_FILES
+  ${TCL_LIBRARY_SHORTNAME}
+)
 
 #------------------------------------------------------------------------------
 # Add sources
@@ -101,7 +95,7 @@ foreach (LIB_FILE ${TCL_LIB_FILES})
   if (WIN32)
     set (LIB_FILENAME "${LIB_FILE}${CMAKE_STATIC_LIBRARY_SUFFIX}")
   else()
-    set (LIB_FILENAME "lib${LIB_FILE}${CMAKE_SHARED_LIBRARY_SUFFIX}")
+    set (LIB_FILENAME "${LIB_FILE}${CMAKE_SHARED_LIBRARY_SUFFIX}")
   endif()
 
   target_link_libraries (asiTcl ${3RDPARTY_tcl_LIBRARY_DIR}/${LIB_FILENAME})
