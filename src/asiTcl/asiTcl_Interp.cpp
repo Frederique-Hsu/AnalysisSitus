@@ -106,7 +106,7 @@ static void	ConsoleWatch(ClientData instanceData,
 
 static const Tcl_ChannelType consoleChannelType = {
     "console",              /* Type name. */
-    TCL_CHANNEL_VERSION_4,  /* v4 channel */
+    TCL_CHANNEL_VERSION_5,  /* v5 channel */
     ConsoleClose,           /* Close proc. */
     ConsoleInput,           /* Input proc. */
     ConsoleOutput,          /* Output proc. */

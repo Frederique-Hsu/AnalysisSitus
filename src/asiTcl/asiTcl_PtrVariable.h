@@ -1,8 +1,8 @@
 //-----------------------------------------------------------------------------
-// Created on: 18 December 2020
+// Created on: 19 May 2025
 // Created by: Sergey SLYADNEV
 //-----------------------------------------------------------------------------
-// Copyright (c) 2020-present, Sergey Slyadnev
+// Copyright (c) 2025-present, Sergey Slyadnev
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -29,52 +29,60 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-----------------------------------------------------------------------------
 
-#ifndef asiTcl_Variable_h
-#define asiTcl_Variable_h
+#ifndef asiTcl_PtrVariable_h
+#define asiTcl_PtrVariable_h
 
 // asiTcl includes
-#include <asiTcl.h>
+#include <asiTcl_Variable.h>
 
-// OpenCascade includes
-#include <Standard_Type.hxx>
+// Standard includes
+#include <sstream>
 
 //-----------------------------------------------------------------------------
 
-//! Variable in a Tcl session.
-class asiTcl_Variable : public Standard_Transient
+//! Variable in a Tcl session that stores a raw pointer.
+class asiTcl_PtrVariable : public asiTcl_Variable
 {
   // OCCT RTTI
-  DEFINE_STANDARD_RTTI_INLINE(asiTcl_Variable, Standard_Transient)
+  DEFINE_STANDARD_RTTI_INLINE(asiTcl_PtrVariable, asiTcl_Variable)
 
 public:
 
   //! Ctor.
-  asiTcl_EXPORT
-    asiTcl_Variable();
+  asiTcl_PtrVariable(void* ptr) : m_pPtr(ptr)
+  {}
 
 public:
 
-  //! Sets variable name.
-  //! \param[in] name the name to set.
-  asiTcl_EXPORT void
-    SetName(const std::string& name);
-
-  //! \return variable name.
-  asiTcl_EXPORT const std::string&
-    GetName() const;
+  //! \return the stored raw pointer.
+  void* GetPtr() const
+  {
+    return m_pPtr;
+  }
 
 public:
 
   //! \return brief description "what is" this object.
-  virtual std::string WhatIs() const = 0;
+  virtual std::string WhatIs() const
+  {
+    return "raw pointer";
+  }
 
   //! Dumps this variable to the passed output stream.
   //! \param[in,out] out the output stream.
-  virtual void Dump(std::ostream& out) const = 0;
+  virtual void Dump(std::ostream& out) const
+  {
+    std::string addr_str;
+    std::ostringstream ost;
+    ost << m_pPtr;
+    addr_str = ost.str();
+
+    out << addr_str;
+  }
 
 protected:
 
-  std::string m_name; //!< Name of the variable.
+  void* m_pPtr; //!< Stored raw pointer.
 
 };
 

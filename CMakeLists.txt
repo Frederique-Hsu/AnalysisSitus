@@ -148,6 +148,7 @@ else()
   ASITUS_UNSET_3RDPARTY("vtk")
   ASITUS_UNSET_3RDPARTY("tcl")
   ASITUS_UNSET_3RDPARTY("freetype")
+  ASITUS_UNSET_3RDPARTY("freeimage")
 
   ASITUS_UNSET         ("3RDPARTY_QT_DIR")
   ASITUS_UNSET         ("QMAKE_EXECUTABLE")
@@ -166,6 +167,7 @@ endif()
 set (3RDPARTY_DLL_PATH "${3RDPARTY_tcl_DLL_DIR};\
 ${3RDPARTY_tbb_DLL_DIR};\
 ${3RDPARTY_freetype_DLL_DIR};\
+${3RDPARTY_freeimage_DLL_DIR};\
 ${3RDPARTY_zlib_DLL_DIR};\
 ${3RDPARTY_QT_DIR}/bin;")
 

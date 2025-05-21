@@ -7,6 +7,7 @@ project(cmdEngine)
 set (H_FILES
   cmdEngine.h
   cmdEngine_IStream.h
+  cmdEngine_PlotData.h
 )
 set (CPP_FILES
   cmdEngine.cpp

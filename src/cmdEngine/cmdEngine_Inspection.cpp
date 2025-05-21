@@ -29,7 +29,7 @@
 //-----------------------------------------------------------------------------
 
 // cmdEngine includes
-#include <cmdEngine.h>
+#include <cmdEngine_PlotData.h>
 
 // asiTcl includes
 #include <asiTcl_PluginMacro.h>
@@ -3222,11 +3222,6 @@ int ENGINE_DrawPlot(const Handle(asiTcl_Interp)& interp,
                     int                          argc,
                     const char**                 argv)
 {
-  if ( argc < 5 )
-  {
-    return interp->ErrorOnWrongArgs(argv[0]);
-  }
-
   const bool isLogScale = interp->HasKeyword(argc, argv, "log");
 
   int numFunc = 1; // One by default.
@@ -3239,11 +3234,20 @@ int ENGINE_DrawPlot(const Handle(asiTcl_Interp)& interp,
   for ( int k = 0; k < numFunc; ++k )
     fxvec.push_back( std::vector<double>() );
 
-  // Collect data.
-  for ( int k = 1; k < argc; k += (numFunc + 1) )
+  // Check if the `-values` key has been passed.
+  int valuesIdx = 0;
+  //
+  if ( !interp->HasKeyword(argc, argv, "values", valuesIdx) )
   {
-    if ( interp->IsKeyword(argv[k], "log") ) continue;
-    if ( interp->IsKeyword(argv[k], "numFunc") ) break;
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Please, use the '-values' key before data tuples.");
+    return TCL_ERROR;
+  }
+
+  // Collect data.
+  for ( int k = valuesIdx + 1; k < argc; k += (numFunc + 1) )
+  {
+    if ( interp->IsKeyword(argv[k]) )
+      break;
 
     // Coordinate value.
     const double x = atof(argv[k]);
@@ -3258,14 +3262,57 @@ int ENGINE_DrawPlot(const Handle(asiTcl_Interp)& interp,
     xvec.push_back(x);
   }
 
+  // Access a named plot if already exists.
+  std::string                name;
+  Handle(cmdEngine_PlotData) funcVar;
+  //
+  if ( interp->GetKeyValue(argc, argv, "name", name) )
+  {
+    funcVar = Handle(cmdEngine_PlotData)::DownCast( interp->GetVar(name) );
+    //
+    if ( funcVar.IsNull() )
+    {
+      interp->GetProgress().SendLogMessage(LogInfo(Normal) << "There is no plot-data variable named '%1'."
+                                                           << name);
+    }
+  }
+
   // Open curvature plot.
   asiUI_Plot2d*
     cPlot = new asiUI_Plot2d( interp->GetProgress(),
                               interp->GetPlotter() );
+
+  std::vector<double>                X         = xvec;
+  std::string                        labelX    = "x";
+  std::vector< std::vector<double> > FXs;
+  std::string                        labelY    = "fx";
+  std::string                        plotTitle = name.empty() ? "Plot 2d" : name;
+
+  // Compose functions.
+  if ( !funcVar.IsNull() )
+  {
+    for ( const auto& fx : funcVar->FXs )
+      FXs.push_back(fx);
+  }
   //
-  cPlot->SetLogScale(isLogScale);
+  for ( const auto& fx : fxvec )
+    FXs.push_back(fx);
+
+  // Configure and plot.
+  cPlot->SetLogScale( isLogScale );
   //
-  cPlot->Render(xvec, fxvec, "x", "fx", "Plot 2d");
+  cPlot->Render(X, FXs, labelX, labelY, plotTitle);
+
+  // Set a Tcl variable if the plot is named.
+  if ( !name.empty() && funcVar.IsNull() )
+  {
+    funcVar = new cmdEngine_PlotData;
+    //
+    interp->SetVar(name, funcVar);
+  }
+
+  if ( !funcVar.IsNull() )
+    funcVar->FXs = FXs;
 
   return TCL_OK;
 }
@@ -5733,7 +5780,7 @@ void cmdEngine::Commands_Inspection(const Handle(asiTcl_Interp)&      interp,
   //-------------------------------------------------------------------------//
   interp->AddCommand("draw-plot",
     //
-    "draw-plot <x1> <f1_1> [<f2_1> ...] <x2> <f1_2> [<f2_2> ...] [...] [-log] [-numFunc <numFunc>]\n"
+    "draw-plot -values <x1> <f1_1> [<f2_1> ...] <x2> <f1_2> [<f2_2> ...] [...] [-log] [-numFunc <numFunc>] [-name <name>]\n"
     "\t Draws two-dimensional plot of the given values.\n"
     "\t If the <numFunc> value is passed with the '-numFunc' key, then\n"
     "\t several functions can be plotted at once.",

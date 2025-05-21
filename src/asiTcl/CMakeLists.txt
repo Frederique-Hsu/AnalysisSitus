@@ -10,6 +10,7 @@ set (H_FILES
   asiTcl_Interp.h
   asiTcl_Plugin.h
   asiTcl_PluginMacro.h
+  asiTcl_PtrVariable.h
   asiTcl_Variable.h
 )
 

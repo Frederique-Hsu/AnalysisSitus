@@ -1,8 +1,8 @@
 //-----------------------------------------------------------------------------
-// Created on: 18 December 2020
+// Created on: 19 May 2025
 // Created by: Sergey SLYADNEV
 //-----------------------------------------------------------------------------
-// Copyright (c) 2020-present, Sergey Slyadnev
+// Copyright (c) 2025-present, Sergey Slyadnev
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -29,52 +29,53 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-----------------------------------------------------------------------------
 
-#ifndef asiTcl_Variable_h
-#define asiTcl_Variable_h
+#ifndef cmdEngine_PlotData_h
+#define cmdEngine_PlotData_h
+
+// cmdEngine includes
+#include <cmdEngine.h>
 
 // asiTcl includes
-#include <asiTcl.h>
-
-// OpenCascade includes
-#include <Standard_Type.hxx>
+#include <asiTcl_Variable.h>
 
 //-----------------------------------------------------------------------------
 
-//! Variable in a Tcl session.
-class asiTcl_Variable : public Standard_Transient
+//! Plot data in a Tcl session.
+class cmdEngine_PlotData : public asiTcl_Variable
 {
   // OCCT RTTI
-  DEFINE_STANDARD_RTTI_INLINE(asiTcl_Variable, Standard_Transient)
+  DEFINE_STANDARD_RTTI_INLINE(cmdEngine_PlotData, asiTcl_Variable)
 
 public:
 
   //! Ctor.
-  asiTcl_EXPORT
-    asiTcl_Variable();
+  //! \param[in] doc the document to set.
+  cmdEngine_PlotData() : asiTcl_Variable()
+  {
+  }
+
+  //! Dtor.
+  virtual ~cmdEngine_PlotData()
+  {
+  }
 
 public:
 
-  //! Sets variable name.
-  //! \param[in] name the name to set.
-  asiTcl_EXPORT void
-    SetName(const std::string& name);
-
-  //! \return variable name.
-  asiTcl_EXPORT const std::string&
-    GetName() const;
+  /* Data */
+  std::vector< std::vector<double> > FXs; //!< Function values.
 
 public:
 
   //! \return brief description "what is" this object.
-  virtual std::string WhatIs() const = 0;
+  virtual std::string WhatIs() const
+  {
+    return "plot data";
+  }
 
   //! Dumps this variable to the passed output stream.
   //! \param[in,out] out the output stream.
-  virtual void Dump(std::ostream& out) const = 0;
-
-protected:
-
-  std::string m_name; //!< Name of the variable.
+  virtual void Dump(std::ostream&) const
+  {}
 
 };
 

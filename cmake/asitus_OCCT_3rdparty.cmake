@@ -16,6 +16,9 @@ endif()
 # Freetype
 ASITUS_THIRDPARTY_PRODUCT("freetype" "" "ft2build.h" "freetype")
 
+# Freeimage
+ASITUS_THIRDPARTY_PRODUCT("freeimage" "" "FreeImage.h" "FreeImage")
+
 #--------------------------------------------------------------------------
 # Installation
 #--------------------------------------------------------------------------
