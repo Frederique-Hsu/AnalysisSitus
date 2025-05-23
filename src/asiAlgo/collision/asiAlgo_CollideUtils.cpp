@@ -38,6 +38,9 @@
 #include <gp_Pnt.hxx>
 #include <IntAna_QuadQuadGeo.hxx>
 
+// STL includes
+#include <algorithm>
+
 using namespace asiAlgo::collide;
 
 //-----------------------------------------------------------------------------
