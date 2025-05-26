@@ -61,10 +61,16 @@ public:
   asiAlgo_EXPORT Handle(Geom_Surface)
     Perform(const double tol);
 
+  //! Disables automatic tolerance calculation.
+  asiAlgo_EXPORT void
+    DisableAutomaticToleranceCalculation(const bool on);
+
 private:
 
-  Handle(Geom_Surface) m_surf; //!< Surface to convert.
-  double               m_fGap; //!< Fitting error.
+  Handle(Geom_Surface) m_surf;                //!< Surface to convert.
+  double               m_fGap;                //!< Fitting error.
+  bool                 m_bDisableAutoTolCalc; //!< Indicator showing whether automatic tolerance
+                                              //!  calculation is disabled (true) or not.
 
 };
 

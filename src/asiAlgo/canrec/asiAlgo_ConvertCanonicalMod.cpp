@@ -67,9 +67,10 @@ struct t_curveWithParams : public Standard_Transient
 asiAlgo_ConvertCanonicalMod::asiAlgo_ConvertCanonicalMod()
 : asiAlgo_BRepNormalization()
 {
-  m_fToler     = 0.;
-  m_bSurfMode  = true;
-  m_bCurveMode = true;
+  m_fToler              = 0.;
+  m_bSurfMode           = true;
+  m_bCurveMode          = true;
+  m_bDisableAutoTolCalc = false;
 }
 
 //-----------------------------------------------------------------------------
@@ -91,6 +92,14 @@ void asiAlgo_ConvertCanonicalMod::SetSurfaceMode(const bool SurfMode)
 void asiAlgo_ConvertCanonicalMod::SetCurveMode(const bool CurvMode)
 {
   m_bCurveMode = CurvMode;
+}
+
+//-----------------------------------------------------------------------------
+
+void asiAlgo_ConvertCanonicalMod::
+  DisableAutomaticToleranceCalculation(const bool on)
+{
+  m_bDisableAutoTolCalc = on;
 }
 
 //-----------------------------------------------------------------------------
@@ -118,6 +127,7 @@ bool asiAlgo_ConvertCanonicalMod::GetConverted(Handle(Geom_Surface)& S)
 
   // Perform conversion.
   asiAlgo_ConvertCanonicalSurface scs(S);
+  scs.DisableAutomaticToleranceCalculation(m_bDisableAutoTolCalc);
   Handle(Geom_Surface) newsurf;
   newsurf = scs.Perform(m_fToler);
 

@@ -45,8 +45,9 @@
 //-----------------------------------------------------------------------------
 
 asiAlgo_ConvertCanonicalSurface::asiAlgo_ConvertCanonicalSurface(const Handle(Geom_Surface)& S)
-: m_surf (S),
-  m_fGap (0.)
+: m_surf                (S),
+  m_fGap                (0.),
+  m_bDisableAutoTolCalc (false)
 {}
 
 //-----------------------------------------------------------------------------
@@ -54,6 +55,14 @@ asiAlgo_ConvertCanonicalSurface::asiAlgo_ConvertCanonicalSurface(const Handle(Ge
 double asiAlgo_ConvertCanonicalSurface::GetFitError() const
 {
   return m_fGap;
+}
+
+//-----------------------------------------------------------------------------
+
+void asiAlgo_ConvertCanonicalSurface::
+  DisableAutomaticToleranceCalculation(const bool on)
+{
+  m_bDisableAutoTolCalc = on;
 }
 
 //-----------------------------------------------------------------------------
@@ -96,7 +105,7 @@ Handle(Geom_Surface)
 
   double diagonal = m_surf->Value(U1, V1).Distance( m_surf->Value( (U1 + U2), (V1 + V2)/2 ) );
   //
-  if ( toler > diagonal/MagicTwist )
+  if ( !m_bDisableAutoTolCalc && toler > diagonal/MagicTwist )
     toler = diagonal/MagicTwist;
 
   bool isCylinderCone = false;

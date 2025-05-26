@@ -78,6 +78,10 @@ public:
   asiAlgo_EXPORT void
     SetCurveMode(const bool CurvMode);
 
+  //! Disables automatic tolerance calculation.
+  asiAlgo_EXPORT void
+    DisableAutomaticToleranceCalculation(const bool on);
+
 /* Modification API */
 public:
 
@@ -172,10 +176,12 @@ public:
 
 private:
 
-  double                                     m_fToler;     //!< Conversion tolerance.
-  TColStd_IndexedDataMapOfTransientTransient m_cache;      //!< Cached geometric entities.
-  bool                                       m_bSurfMode;  //!< Indicates whether to convert surfaces.
-  bool                                       m_bCurveMode; //!< Indicates whether to convert curves.
+  double                                     m_fToler;              //!< Conversion tolerance.
+  TColStd_IndexedDataMapOfTransientTransient m_cache;               //!< Cached geometric entities.
+  bool                                       m_bSurfMode;           //!< Indicates whether to convert surfaces.
+  bool                                       m_bCurveMode;          //!< Indicates whether to convert curves.
+  bool                                       m_bDisableAutoTolCalc; //!< Indicator showing whether automatic tolerance
+                                                                    //!  calculation is disabled (true) or not.
 
 };
 

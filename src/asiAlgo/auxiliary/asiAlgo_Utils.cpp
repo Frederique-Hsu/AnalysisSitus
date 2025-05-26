@@ -2921,6 +2921,7 @@ bool asiAlgo_Utils::ConvertCanonical(TopoDS_Shape&                    shape,
                                      const double                     tol,
                                      const bool                       checkValidity,
                                      asiAlgo_ConvertCanonicalSummary& summary,
+                                     const bool                       disableAutoTolCalc,
                                      ActAPI_ProgressEntry             progress)
 {
   TIMER_NEW
@@ -2928,6 +2929,7 @@ bool asiAlgo_Utils::ConvertCanonical(TopoDS_Shape&                    shape,
 
   // Convert.
   asiAlgo_ConvertCanonical converter(progress);
+  converter.DisableAutomaticToleranceCalculation(disableAutoTolCalc);
   //
   shape   = converter.Perform(shape, tol);
   summary = converter.GetSummary();

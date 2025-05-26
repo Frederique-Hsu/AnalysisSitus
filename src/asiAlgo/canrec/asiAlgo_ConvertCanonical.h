@@ -81,6 +81,12 @@ public:
     return m_summary;
   }
 
+  //! Disables automatic tolerance calculation.
+  void DisableAutomaticToleranceCalculation(const bool on)
+  {
+    m_bDisableAutoTolCalc = on;
+  }
+
 protected:
 
   //! Applies a bunch of post-treatment fixes to the faces of the
@@ -97,6 +103,9 @@ protected:
 
   //! Conversion summary.
   asiAlgo_ConvertCanonicalSummary m_summary;
+
+  //!< Indicator showing whether automatic tolerance calculation is disabled (true) or not.
+  bool m_bDisableAutoTolCalc;
 
 };
 

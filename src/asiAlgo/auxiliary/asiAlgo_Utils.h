@@ -1373,18 +1373,20 @@ namespace asiAlgo_Utils
                   Handle(BRepTools_History)& history);
 
   //! Converts the passed shape to a canonical form.
-  //! \param[in,out] shape         the shape to convert.
-  //! \param[in]     tol           the tolerance to use.
-  //! \param[in]     checkValidity the Boolean flag indicating whether to check for validity
-  //!                              after the conversion is done.
-  //! \param[out]    summary       the conversion summary.
-  //! \param[in]     progress      the progress notifier.
+  //! \param[in,out] shape              the shape to convert.
+  //! \param[in]     tol                the tolerance to use.
+  //! \param[in]     checkValidity      the Boolean flag indicating whether to check for validity
+  //!                                   after the conversion is done.
+  //! \param[out]    summary            the conversion summary.
+  //! \param[in]     disableAutoTolCalc indicator showing whether automatic tolerance calculation is disabled (true) or not. 
+  //! \param[in]     progress           the progress notifier.
   //! \return true in the case of success, false -- otherwise.
   asiAlgo_EXPORT bool
     ConvertCanonical(TopoDS_Shape&                    shape,
                      const double                     tol,
                      const bool                       checkValidity,
                      asiAlgo_ConvertCanonicalSummary& summary,
+                     const bool                       disableAutoTolCalc = false,
                      ActAPI_ProgressEntry             progress = nullptr);
 
   //! Interpolates the given collection of points with B-curve of the

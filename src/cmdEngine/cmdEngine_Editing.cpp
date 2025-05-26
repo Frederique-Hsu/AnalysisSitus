@@ -3241,12 +3241,14 @@ int ENGINE_ConvertToCanonical(const Handle(asiTcl_Interp)& interp,
   interp->GetProgress().SendLogMessage(LogNotice(Normal) << "Canonical conversion tolerance: %1."
                                                          << tol);
 
+  const bool disableAutoTolCalc = interp->HasKeyword(argc, argv, "disableAutoTolCalc");
+
   // Modify shape.
   cmdEngine::model->OpenCommand();
   {
     asiAlgo_ConvertCanonicalSummary summary;
     //
-    if ( !asiAlgo_Utils::ConvertCanonical( shape, tol, true, summary, interp->GetProgress() ) )
+    if ( !asiAlgo_Utils::ConvertCanonical( shape, tol, true, summary, disableAutoTolCalc, interp->GetProgress() ) )
     {
       interp->GetProgress().SendLogMessage(LogErr(Normal) << "Face maximization failed.");
       //
@@ -4049,7 +4051,7 @@ void cmdEngine::Commands_Editing(const Handle(asiTcl_Interp)&      interp,
   //-------------------------------------------------------------------------//
   interp->AddCommand("convert-to-canonical",
     //
-    "convert-to-canonical [-tol <tol>]\n"
+    "convert-to-canonical [-tol <tol>] [-disableAutoTolCalc]\n"
     "\t Attempts to convert a shape to a canonical form.",
     //
     __FILE__, group, ENGINE_ConvertToCanonical);
