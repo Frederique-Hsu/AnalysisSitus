@@ -100,7 +100,7 @@ public:
 
   //! Displays the geometric entities of the structure in the given plotter. 
   asiAsm_EXPORT void
-    Dislay(ActAPI_PlotterEntry plotter);
+    Display(ActAPI_PlotterEntry plotter);
 
 public:
 

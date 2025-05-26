@@ -1103,7 +1103,7 @@ void iterateInDepth(const std::vector<Handle(asiAsm_SceneTree_Object)>& allScene
 
 //-----------------------------------------------------------------------------
 
-void asiAsm_SceneTree::Dislay(ActAPI_PlotterEntry plotter)
+void asiAsm_SceneTree::Display(ActAPI_PlotterEntry plotter)
 {
   std::vector<Handle(asiAsm_SceneTree_Object)> sceneObjects;
   //

@@ -1816,7 +1816,7 @@ int ASMXDE_DisplayJson(const Handle(asiTcl_Interp)& interp,
   asiAsm_SceneTree::FromJSON(stream, sceneTree);
 
   // Visualize the scene tree content in 3D viewer.
-  sceneTree.Dislay(interp->GetPlotter());
+  sceneTree.Display(interp->GetPlotter());
 
   return TCL_OK;
 }

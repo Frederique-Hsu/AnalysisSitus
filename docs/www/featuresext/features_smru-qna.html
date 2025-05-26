@@ -213,6 +213,17 @@
   </p>
 </div>
 
+<br/>
+
+<div class="faq" id="q9">
+  <b>Question:</b> When importing a multi body STEP file, transformations are applied to each body individually. Is there a way to "undo" these transformations so that I can construct a 3D mesh of the original assembly file? This would include all locations of the instances of the body in case it was in multiple locations.
+  <hr>
+  <b>Answer:</b>
+  <p>
+    When you run recognition, you can pass the argument named <span class="code-inline">-asm</span> to the executable, which would dump a scene tree of the multibody file. When followed by the <span class="code-inline">-gltf</span> flag, this mode tells the recognizer to not apply the optimal orientation algorithm and rather dump meshes of parts in their own referentials. You should then parse the dumped scene tree and recover the transformations bottom-up to get the as-designed locations of parts in the assembly. Here is some more information about the structure of the scene tree: <a href="../features/features_asm-json-hierarchy.html#toc-asm-dump-json">assembly JSON hierarchy</a>.
+  </p>
+</div>
+
 <!-- [END] contents -->
 </div>
 <br/>
