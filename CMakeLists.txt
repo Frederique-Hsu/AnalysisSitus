@@ -125,7 +125,7 @@ if (NOT BUILD_ALGO_ONLY)
   include (${CMAKE_SOURCE_DIR}/cmake/asitus_OCCT_3rdparty.cmake)
 
   # VTK
-  set (3RDPARTY_VTK_VERSION "9.5" CACHE STRING "Preferred VTK version." FORCE)
+  set (3RDPARTY_VTK_VERSION "9.5" CACHE STRING "Preferred VTK version.")
   include (${CMAKE_SOURCE_DIR}/cmake/asitus_VTK.cmake)
 
   # Inno Setup for installation
