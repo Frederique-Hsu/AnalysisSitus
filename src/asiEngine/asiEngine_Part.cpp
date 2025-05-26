@@ -1003,6 +1003,9 @@ void asiEngine_Part::GetSubShapeIndicesByFaceIndices(const TColStd_PackedMapOfIn
 void asiEngine_Part::GetSubShapeIndicesByEdgeIndices(const TColStd_PackedMapOfInteger& edgeIndices,
                                                      TColStd_PackedMapOfInteger&       indices)
 {
+  if ( m_model->GetPartNode()->GetAAG().IsNull() )
+    return;
+
   const TopTools_IndexedMapOfShape&
     AllEdges = m_model->GetPartNode()->GetAAG()->RequestMapOfEdges();
   //
