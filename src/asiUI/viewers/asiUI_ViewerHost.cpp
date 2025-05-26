@@ -135,7 +135,7 @@ QSize asiUI_ViewerHost::sizeHint() const
 //! Updates viewer.
 void asiUI_ViewerHost::Repaint()
 {
-  m_prs_mgr->GetQVTKWidget()->renderWindow()->Render();
+  m_prs_mgr->GetQVTKWidget()->GetRenderWindow()->Render();
 }
 
 //-----------------------------------------------------------------------------

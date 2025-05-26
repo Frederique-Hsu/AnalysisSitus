@@ -122,7 +122,7 @@ void asiUI_DialogPipelines::onStateChanged(QTableWidgetItem* pItem)
   //
   this->toggleVisibility(pl);
   //
-  m_prsMgr->GetQVTKWidget()->renderWindow()->Render();
+  m_prsMgr->GetQVTKWidget()->GetRenderWindow()->Render();
 }
 
 //-----------------------------------------------------------------------------

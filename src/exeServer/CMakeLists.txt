@@ -67,7 +67,7 @@ set (VTK_LIB_FILES
   vtkInfovisLayout-${3RDPARTY_VTK_VERSION}
   vtkIOCore-${3RDPARTY_VTK_VERSION}
   vtkIOImage-${3RDPARTY_VTK_VERSION}
-  vtkIOExportGL2PS-${3RDPARTY_VTK_VERSION}
+  vtkIOExportOpenGL2-${3RDPARTY_VTK_VERSION}
   vtkImagingCore-${3RDPARTY_VTK_VERSION}
   vtkInteractionStyle-${3RDPARTY_VTK_VERSION}
   vtkInteractionWidgets-${3RDPARTY_VTK_VERSION}

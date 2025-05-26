@@ -1077,7 +1077,7 @@ void asiVisu_PrsManager::Initialize(QWidget* pWidget, const bool isOffscreen)
     //
     //m_renderWindow->SetMultiSamples(64);
     //m_renderWindow->SetLineSmoothing(true);
-    m_widget->setRenderWindow(m_renderWindow);
+    m_widget->SetRenderWindow(m_renderWindow);
 
     // Initialize renderer.
     m_renderer = vtkSmartPointer<vtkRenderer>::New();

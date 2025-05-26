@@ -599,7 +599,7 @@ QSize asiUI_ViewerPart::sizeHint() const
 void asiUI_ViewerPart::Repaint()
 {
   if ( m_prs_mgr->GetQVTKWidget() )
-    m_prs_mgr->GetQVTKWidget()->renderWindow()->Render();
+    m_prs_mgr->GetQVTKWidget()->GetRenderWindow ()->Render();
 }
 
 //-----------------------------------------------------------------------------

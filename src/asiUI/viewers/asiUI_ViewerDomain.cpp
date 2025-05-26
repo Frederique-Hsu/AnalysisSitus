@@ -220,7 +220,7 @@ QSize asiUI_ViewerDomain::sizeHint() const
 //! Updates viewer.
 void asiUI_ViewerDomain::Repaint()
 {
-  m_prs_mgr->GetQVTKWidget()->renderWindow()->Render();
+  m_prs_mgr->GetQVTKWidget()->GetRenderWindow()->Render();
 }
 
 //-----------------------------------------------------------------------------
