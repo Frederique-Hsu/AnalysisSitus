@@ -222,6 +222,9 @@
   <p>
     When you run recognition, you can pass the argument named <span class="code-inline">-asm</span> to the executable, which would dump a scene tree of the multibody file. When followed by the <span class="code-inline">-gltf</span> flag, this mode tells the recognizer to not apply the optimal orientation algorithm and rather dump meshes of parts in their own referentials. You should then parse the dumped scene tree and recover the transformations bottom-up to get the as-designed locations of parts in the assembly. Here is some more information about the structure of the scene tree: <a href="../features/features_asm-json-hierarchy.html#toc-asm-dump-json">assembly JSON hierarchy</a>.
   </p>
+  <p>
+    Here is how we collect transformations over the scene tree in C++: <a href="https://gitlab.com/ssv/AnalysisSitus/-/blob/master/src/asiAsm/entity/asiAsm_SceneTree.cpp?ref_type=heads#L1106">asiAsm_SceneTree::Display()</a>.
+  </p>
 </div>
 
 <!-- [END] contents -->

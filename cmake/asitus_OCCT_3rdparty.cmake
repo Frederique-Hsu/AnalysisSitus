@@ -38,10 +38,16 @@ if (NOT BUILD_ALGO_ONLY)
     install (FILES ${3RDPARTY_freetype_DIR}/bin/freetype.dll CONFIGURATIONS RelWithDebInfo DESTINATION bini)
     install (FILES ${3RDPARTY_freetype_DIR}/bin/freetype.dll CONFIGURATIONS Debug          DESTINATION bind)
 
-    if (USE_THREADING)
-      install (FILES ${3RDPARTY_tbb_DLL_DIR}/tbb12.dll           CONFIGURATIONS Release DESTINATION bin)
-      install (FILES ${3RDPARTY_tbb_DLL_DIR}/tbbmalloc.dll       CONFIGURATIONS Release DESTINATION bin)
-      install (FILES ${3RDPARTY_tbb_DLL_DIR}/tbbmalloc_proxy.dll CONFIGURATIONS Release DESTINATION bin)
+    # Freeimage
+    install (FILES ${3RDPARTY_freeimage_DIR}/bin/FreeImage.dll CONFIGURATIONS Release        DESTINATION bin)
+    install (FILES ${3RDPARTY_freeimage_DIR}/bin/FreeImage.dll CONFIGURATIONS RelWithDebInfo DESTINATION bini)
+    install (FILES ${3RDPARTY_freeimage_DIR}/bin/FreeImage.dll CONFIGURATIONS Debug          DESTINATION bind)
+
+    # TBB
+    if (3RDPARTY_tbb_DLL_DIR AND EXISTS "${3RDPARTY_tbb_DLL_DIR}")
+      install (FILES ${3RDPARTY_tbb_DLL_DIR}/tbb12.dll       CONFIGURATIONS Release        DESTINATION bin)
+      install (FILES ${3RDPARTY_tbb_DLL_DIR}/tbb12.dll       CONFIGURATIONS RelWithDebInfo DESTINATION bini)
+      install (FILES ${3RDPARTY_tbb_DLL_DIR}/tbb12_debug.dll CONFIGURATIONS RelWithDebInfo DESTINATION bind)
     endif()
   else()
     install (FILES ${3RDPARTY_tcl_LIBRARY_DIR}/libtcl8.6.so CONFIGURATIONS Release        DESTINATION bin)
