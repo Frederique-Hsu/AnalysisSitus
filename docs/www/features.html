@@ -92,7 +92,7 @@
 <div class="content-body">
 <!-- [BEGIN] contents -->
 
-<h1>Compilation</h1>
+<h1 id="core-compilation">Compilation</h1>
 
 <ul>
   <li class="menu-item"><a href="./features/features_build-windows.html">Build on Windows</a>.</li>
@@ -100,7 +100,7 @@
   <li class="menu-item"><a href="./features/features_build-linux-clion.html">Build on Linux in CLion</a>.</li>
 </ul>
 
-<h1>Getting started</h1>
+<h1 id="core-getting-started">Getting started</h1>
 
 <ul>
   <li class="menu-item"><a href="./features/features_feature-recognition-framework.html">CAD feature recognition framework</a>.</li>
@@ -108,7 +108,7 @@
   <li class="menu-item"><a href="./features/features_visualization-modes.html">Visualization modes</a>.</li>
 </ul>
 
-<h1>Feature Recognition</h1>
+<h1 id="core-feature-recognition">Feature Recognition</h1>
 
 <div class="note">
 This block contains description of the shape interrogation and feature recognition facilities
@@ -141,7 +141,18 @@ available in Analysis Situs. Feature recognition is a backbone for such use case
   <li class="menu-item"><a href="./features/features_recognition-anatomy-of-feature.html">The anatomy of a feature</a>.</li>
 </ul>
 
-<h1>Inspection and Healing</h1>
+<h1 id="core-inspection">Inspection</h1>
+
+<ul>
+  <li class="menu-item">Curvature plots and combs.</li>
+  <li class="menu-item">Gaussian and mean curvature maps.</li>
+  <li class="menu-item"><a href="./features/features_thickness.html">Check thickness distribution</a>.</li>
+  <li class="menu-item"><a href="./features/features_recognize-analytical.html">Check analytical shapes</a>.</li>
+ <li class="menu-item">Explode shapes to sub-shapes.</li>
+  <li class="menu-item">Compute distances between shapes.</li>
+</ul>
+
+<h1 id="core-healing">Healing</h1>
 
 <ul>
   <li class="menu-item"><a href="./features/features_check-shape.html">Check CAD model validity</a>.</li>
@@ -155,13 +166,9 @@ available in Analysis Situs. Feature recognition is a backbone for such use case
   <li class="menu-item">Fill gaps.</li>
   <li class="menu-item">Stitch faces.</li>
   <li class="menu-item">Maximize faces.</li>
-  <li class="menu-item">Curvature plots and combs.</li>
-  <li class="menu-item">Gaussian and mean curvature maps.</li>
-  <li class="menu-item"><a href="./features/features_thickness.html">Check thickness distribution</a>.</li>
-  <li class="menu-item"><a href="./features/features_recognize-analytical.html">Recognize analytical shapes</a>.</li>
 </ul>
 
-<h1>Assemblies</h1>
+<h1 id="core-assemblies">Assemblies</h1>
 
 <ul>
   <li class="menu-item"><a href="./features/features_asm-code-architecture.html">Architecture</a>.</li>
@@ -170,7 +177,7 @@ available in Analysis Situs. Feature recognition is a backbone for such use case
   <li class="menu-item"><a href="./features/features_asm-json-hierarchy.html">JSON hierarchy</a>.</li>
 </ul>
 
-<h1>Interoperability</h1>
+<h1 id="core-data-exchange">Data Exchange</h1>
 
 <ul>
   <li class="menu-item"><a href="./features/features_interop-step.html">Read/write STEP</a>.</li>
@@ -182,7 +189,7 @@ available in Analysis Situs. Feature recognition is a backbone for such use case
   <li class="menu-item"><a href="./features/features_interop-astra.html">Read/write ASTRA</a>.</li>
 </ul>
 
-<h1>Simplification</h1>
+<h1 id="core-direct-editing">Direct Editing</h1>
 
 <div class="note">
   Part-level simplification is also known as defeaturing. It becomes necessary in different engineering applications, such as IP protection or preparation for CAE simulations. Analysis Situs comes with a CAD simplification framework to serve these needs.
@@ -193,16 +200,22 @@ available in Analysis Situs. Feature recognition is a backbone for such use case
   <li class="menu-item"><a href="./features/features_repatch-faces.html">Repatch faces</a>.</li>
   <li class="menu-item"><a href="./features/features_suppress-blends.html">Suppress blends</a>.</li>
   <li class="menu-item"><a href="./features/features_fill-with-prism.html">Fill with prism</a>.</li>
-</ul>
-
-<h1>Modeling</h1>
-
-<ul>
-  <li class="menu-item"><a href="./features/features_bops.html">Boolean operations</a>.</li>
-  <li class="menu-item"><a href="./features/features_nurbs.html">NURBS modeling</a>.</li>
   <li class="menu-item"><a href="./features/features_topo-killer.html">Topology killer</a>.</li>
   <li class="menu-item"><a href="./features/features_euler-ops.html">Euler operators</a>.</li>
   <li class="menu-item"><a href="./features/features_rebuild-edge.html">Rebuild edge</a>.</li>
+</ul>
+
+<h1 id="core-modeling">Modeling Framework</h1>
+
+<ul>
+  <li class="menu-item">History of modifications.</li>
+  <li class="menu-item"><a href="./features/features_naming.html">On-fly naming service</a>.</li>
+</ul>
+
+<h1 id="core-surface-modeling">Surface Modeling</h1>
+
+<ul>
+  <li class="menu-item"><a href="./features/features_nurbs.html">NURBS modeling</a>.</li>
   <li class="menu-item"><a href="./features/features_concat-pcurves.html">PCONCAT: concatenate p-curves</a>.</li>
   <li class="menu-item"><a href="./features/features_concat-edges.html">ECONCAT: concatenate edges</a>.</li>
   <li class="menu-item"><a href="./features/features_appsurf2.html">APPSURF2: fit B-spline surfaces</a>.</li>
@@ -211,21 +224,15 @@ available in Analysis Situs. Feature recognition is a backbone for such use case
   <li class="menu-item"><a href="./features/features_joinsurf.html">JOINSURF: join surfaces</a>.</li>
   <li class="menu-item"><a href="./features/features_c1-c2.html">Convert C1 curves and surfaces to C2 continuity class</a>.</li>
   <li class="menu-item"><a href="./features/features_convert-to-bezier.html">Convert curves and surfaces to Bezier</a>.</li>
-  <li class="menu-item">Explode shapes to sub-shapes.</li>
-  <li class="menu-item">Compute distances between shapes.</li>
-  <li class="menu-item">History of modifications.</li>
-  <li class="menu-item"><a href="./features/features_naming.html">On-fly naming service</a>.</li>
 </ul>
 
-<h1>Mesh Toolkit</h1>
+<h1 id="core-solid-modeling">Solid Modeling</h1>
 
 <ul>
-  <li class="menu-item">Read/write STL and PLY.</li>
-  <li class="menu-item">Offset mesh shells.</li>
-  <li class="menu-item">Surface mesh quality.</li>
+  <li class="menu-item"><a href="./features/features_bops.html">Boolean operations</a>.</li>
 </ul>
 
-<h1>Reverse Engineering</h1>
+<h1 id="core-reverse-engineering">Reverse Engineering</h1>
 
 <div class="note">
 Reverse engineering eliminates the need to design from a blank sheet. The
@@ -256,7 +263,13 @@ techniques can contribute to solving the following tasks:
   <li class="menu-item">Extend surface.</li>
 </ul>
 
-<h1>Tips & Tricks</h1>
+<h1 id="core-poly-modeling">Polygonal modeling</h1>
+
+<ul>
+  <li class="menu-item"><a href="./features/features_voxelization.html">Voxelization of CAD models</a>.</li>
+</ul>
+
+<h1 id="core-tips-tricks">Tips & Tricks</h1>
 
 <ul>
   <li class="menu-item"><a href="./features/features_find-entity.html">Find entity</a>.</li>
@@ -264,7 +277,7 @@ techniques can contribute to solving the following tasks:
   <li class="menu-item">JSON representation of curves and surfaces.</li>
 </ul>
 
-<h1>Miscellaneous</h1>
+<h1 id="core-batch">Batch processing</h1>
 
 <ul>
   <li class="menu-item"><a href="./features/features_batch-mode.html">Batch processing</a>.</li>
@@ -273,11 +286,10 @@ techniques can contribute to solving the following tasks:
   <li class="menu-item"><a href="./features/features_listing-commands.html">List available Tcl commands</a>.</li>
   <li class="menu-item"><a href="./features/features_writing-plugins.html">Writing Tcl plugins</a>.</li>
   <li class="menu-item"><a href="./features/features_visu-pipelines.html">Manage visualization pipelines</a>.</li>
-  <li class="menu-item"><a href="./features/features_voxelization.html">Voxelization of CAD models</a>.</li>
   <li class="menu-item">Using Parameter Editor.</li>
 </ul>
 
-<h1>Architecture</h1>
+<h1 id="core-architecture">Architecture</h1>
 
 <ul>
   <li class="menu-item"><a href="./features/features_architecture.html">Architecture overview</a>.</li>
@@ -287,7 +299,7 @@ techniques can contribute to solving the following tasks:
   <li class="menu-item"><a href="./features/features_imperative-plotter.html">Imperative plotter</a>.</li>
 </ul>
 
-<h1>Examples</h1>
+<h1 id="core-examples">Examples</h1>
 
 <ul>
   <li class="menu-item"><a href="./features/features_ex-convert-brep-to-step.html">Batch: convert BREP to STEP</a>.</li>
