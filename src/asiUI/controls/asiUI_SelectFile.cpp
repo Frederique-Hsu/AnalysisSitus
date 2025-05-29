@@ -41,17 +41,19 @@
 //-----------------------------------------------------------------------------
 
 asiUI_SelectFile::asiUI_SelectFile(const QString&                     filter,
-                                   const QString&                     openTitle,
+                                   const QString&                     title,
                                    const QString&                     preferredName,
                                    const QImage&                      image,
                                    const asiUI_Common::OpenSaveAction action,
+                                   const bool                         multiple,
                                    QWidget*                           parent)
-: QLineEdit(parent),
-  m_filter(filter),
-  m_openTitle(openTitle),
-  m_preferredName(preferredName),
-  m_image(image),
-  m_action(action)
+: QLineEdit       (parent),
+  m_filter        (filter),
+  m_title         (title),
+  m_preferredName (preferredName),
+  m_image         (image),
+  m_action        (action),
+  m_bMultiple     (multiple)
 {
   reset();
 }
@@ -62,18 +64,21 @@ asiUI_SelectFile::~asiUI_SelectFile()
 {}
 
 //-----------------------------------------------------------------------------
+
 void asiUI_SelectFile::reset()
 {
-  setText(QString());
+  setText( QString() );
 }
 
 //-----------------------------------------------------------------------------
+
 bool asiUI_SelectFile::event(QEvent* event)
 {
-  if (event->type() == QEvent::MouseMove)
+  if ( event->type() == QEvent::MouseMove )
   {
     auto evt = dynamic_cast<QMouseEvent*>(event);
-    if (m_buttonRect.contains(evt->pos()))
+
+    if ( m_buttonRect.contains( evt->pos() ) )
     {
       setCursor(Qt::ArrowCursor);
     }
@@ -83,11 +88,11 @@ bool asiUI_SelectFile::event(QEvent* event)
     }
     return true;
   }
-  else if (event->type() == QEvent::MouseButtonPress
-        || event->type() == QEvent::MouseButtonDblClick)
+  else if ( event->type() == QEvent::MouseButtonPress
+         || event->type() == QEvent::MouseButtonDblClick )
   {
     auto evt = dynamic_cast<QMouseEvent*>(event);
-    if (m_buttonRect.contains(evt->pos()))
+    if ( m_buttonRect.contains( evt->pos() ) )
     {
       selectFileName();
       return true;
@@ -117,7 +122,7 @@ void asiUI_SelectFile::paintEvent(QPaintEvent* event)
 
   int margin = (centerOfLine - centerOfIcon) - marginOfLine;
 
-  if (!m_image.isNull())
+  if ( !m_image.isNull() )
   {
     QImage img = m_image.scaled(iconSize, iconSize);
     QPoint pos(r.right() - iconSize - margin, r.top() + margin);
@@ -131,10 +136,25 @@ void asiUI_SelectFile::paintEvent(QPaintEvent* event)
 
 void asiUI_SelectFile::selectFileName()
 {
-  QString fileName = asiUI_Common::selectFile(m_filter,
-                                              m_openTitle,
-                                              m_openTitle,
-                                              m_preferredName,
-                                              m_action);
-  setText(fileName);
+  if ( m_bMultiple )
+  {
+    m_selectedFiles = asiUI_Common::selectFilesOpen(m_filter,
+                                                    m_title,
+                                                    m_preferredName);
+
+    setText("*");
+  }
+  else
+  {
+    QString filename = asiUI_Common::selectFile(m_filter,
+                                                m_title,
+                                                m_title,
+                                                m_preferredName,
+                                                m_action);
+    setText(filename);
+
+    m_selectedFiles << filename;
+  }
+
+  emit filesSelected();
 }

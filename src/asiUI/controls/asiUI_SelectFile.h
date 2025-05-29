@@ -54,22 +54,26 @@ class asiUI_EXPORT asiUI_SelectFile : public QLineEdit
 
 public:
 
-  //! Creates a new instance of Json view.
-  //! \param[in] pFilter        filter for extensions.
-  //! \param[in] pOpenTitle;    title for open dialog.
-  //! \param[in] pPreferredName preferred filename.
-  //! \param[in] icon           icon to show in the line edit.
-  //! \param[in] pAction;       open/save action.
-  //! \param[in] parent         parent widget (if any).
-  asiUI_SelectFile(const QString&       filter,
-                   const QString&       openTitle,
-                   const QString&       preferredName,
-                   const QImage&        image,
+  //! Creates a new instance of a file selector.
+  //! \param[in] filter        filter for extensions.
+  //! \param[in] title         title for the dialog.
+  //! \param[in] preferredName preferred filename.
+  //! \param[in] image         icon to show in the line edit.
+  //! \param[in] action        open/save action.
+  //! \param[in] multiple      indicates whether multiple selection is allowed.
+  //! \param[in] parent        parent widget (if any).
+  asiUI_SelectFile(const QString&                     filter,
+                   const QString&                     title,
+                   const QString&                     preferredName,
+                   const QImage&                      image,
                    const asiUI_Common::OpenSaveAction action,
-                   QWidget*             parent = nullptr);
+                   const bool                         multiple,
+                   QWidget*                           parent);
 
   //! Destructor.
   virtual ~asiUI_SelectFile();
+
+public:
 
   //! Sets the empty text and fill place holder.
   void reset();
@@ -82,18 +86,34 @@ public:
   //! \param[in] event painting event
   void paintEvent(QPaintEvent* event) override;
 
+public:
+
+  //! \return the selected filenames.
+  const QStringList& getSelectedFilenames() const
+  {
+    return m_selectedFiles;
+  }
+
+signals:
+
+  void filesSelected();
+
 protected:
+
   //! Opens dialog to select file and fill line edit by the selected name.
   void selectFileName();
 
 private:
+
   QString                      m_filter;        //!< filter for extensions.
-  QString                      m_openTitle;     //!< title for open dialog.
+  QString                      m_title;         //!< title for the dialog.
   QString                      m_preferredName; //!< preferred filename.
   QImage                       m_image;         //!< icon to show in line edit.
-  asiUI_Common::OpenSaveAction m_action; //!< open/save action.
+  asiUI_Common::OpenSaveAction m_action;        //!< open/save action.
+  bool                         m_bMultiple;     //!< multiple selection mode.
+  QRect                        m_buttonRect;    //!< icon rect.
+  QStringList                  m_selectedFiles; //!< Selected filenames.
 
-  QRect                        m_buttonRect;    //!< icon rect
 };
 
 #pragma warning(default : 4251)

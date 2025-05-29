@@ -379,8 +379,8 @@ bool asiUI_ObjectBrowser::deleteChildrenNodes(const Handle(ActAPI_INode)& root_n
   {
     Handle(ActAPI_INode) child_n = cit->Value();
 
-    if ( child_n.IsNull()                                ||
-         !child_n->IsWellFormed()                        ||
+    if ( child_n.IsNull()                               ||
+        !child_n->IsWellFormed()                        ||
          child_n->GetUserFlags() & NodeFlag_IsStructural )
     {
       return false;

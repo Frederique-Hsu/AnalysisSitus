@@ -75,6 +75,7 @@ asiUI_DialogBreakDownAssembly::asiUI_DialogBreakDownAssembly(ActAPI_ProgressEntr
                                                           QString(),
                                                           QImage(":icons/asitus/select_xyz.svg"),
                                                           asiUI_Common::OpenSaveAction::OpenSaveAction_Open,
+                                                          false,
                                                           this);
 
   // Output directory.
@@ -84,6 +85,7 @@ asiUI_DialogBreakDownAssembly::asiUI_DialogBreakDownAssembly(ActAPI_ProgressEntr
                                                           QString(),
                                                           QImage(":icons/asitus/select_xyz.svg"),
                                                           asiUI_Common::OpenSaveAction::OpenSaveAction_OpenDirectory,
+                                                          false,
                                                           this);
 
   // Expand compounds.

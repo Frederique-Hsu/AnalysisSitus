@@ -158,6 +158,25 @@ QString asiUI_Common::selectDOTFile(const OpenSaveAction action)
   return selectFile(filter, "Select DOT file", "Save DOT file", action);
 }
 
+//! Selects multiple filenames for opening.
+//! \param filter        [in] filter for extensions.
+//! \param openTitle     [in] title for open dialog.
+//! \param preferredName [in] preferred filename.
+//! \return filenames selected by user.
+QStringList
+  asiUI_Common::selectFilesOpen(const QString& filter,
+                                const QString& openTitle,
+                                const QString& preferredName)
+{
+  QString dir = preferredName;
+
+  return QFileDialog::getOpenFileNames(nullptr, openTitle, dir, filter, nullptr
+#ifndef WIN32
+        , QFileDialog::DontUseNativeDialog
+#endif
+  );
+}
+
 //! Selects filename for opening or saving.
 //! \param filter        [in] filter for extensions.
 //! \param openTitle     [in] title for open dialog.
@@ -178,20 +197,26 @@ QString asiUI_Common::selectFile(const QString&       filter,
   {
     // Open or save
     if ( action == OpenSaveAction_Open )
+    {
       filename = QFileDialog::getOpenFileName(nullptr, openTitle, dir, filter, nullptr
 #ifndef WIN32
         , QFileDialog::DontUseNativeDialog
 #endif
       );
+    }
     else if ( action == OpenSaveAction_Save )
+    {
       filename = QFileDialog::getSaveFileName(nullptr, saveTitle, dir, filter, nullptr
 #ifndef WIN32
         , QFileDialog::DontUseNativeDialog
 #endif
       );
-    else 
+    }
+    else
+    {
       filename = QFileDialog::getExistingDirectory(nullptr, openTitle, dir, QFileDialog::ShowDirsOnly |
                                                                             QFileDialog::DontResolveSymlinks);
+    }
   }
   catch ( ... )
   {

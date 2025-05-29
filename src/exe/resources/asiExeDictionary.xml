@@ -5,6 +5,72 @@
   <!-- Common semantic IDs                                                  -->
   <!-- ==================================================================== -->
 
+  <datum id="Part_Dxf" format="" label="Part">
+    <domain type="String" />
+    <ui widget="OpenFilePath" widgetParams="title=Select file..." />
+    <description>File selector</description>
+  </datum>
+
+  <datum id="Part_Quantity" format="" label="Count">
+    <domain type="Integer" min="1" max="1e99" default="1"/>
+    <ui widget="SpinBox" widgetParams="step=1"/>
+    <description>Number of part instances.</description>
+  </datum>
+
+  <datum id="Part_Angle" format="" label="Angle">
+    <dimensions>
+      <dimension name="extra" value="deg" />
+    </dimensions>
+    <domain type="Float" min="0" max="360" />
+    <ui widget="SpinBox" widgetParams="step=10.0" />
+    <description>Allowed part rotation.</description>
+  </datum>
+
+  <datum id="Dx" format="%5.3x" label="Dx">
+    <dimensions>
+      <dimension name="extra" value="mm" />
+    </dimensions>
+    <domain type="Float" min="-1e99" max="1e99" />
+    <ui widget="SpinBox" widgetParams="step=1.0" />
+    <description>Dx</description>
+  </datum>
+
+  <datum id="Dy" format="%5.3x" label="Dy">
+    <dimensions>
+      <dimension name="extra" value="mm" />
+    </dimensions>
+    <domain type="Float" min="-1e99" max="1e99" />
+    <ui widget="SpinBox" widgetParams="step=1.0" />
+    <description>Dy</description>
+  </datum>
+
+  <datum id="CellSize" format="%5.3x" label="Cell size">
+    <dimensions>
+      <dimension name="extra" value="mm" />
+    </dimensions>
+    <domain type="Float" min="-1e99" max="1e99" />
+    <ui widget="SpinBox" widgetParams="step=1.0" />
+    <description>Cell size</description>
+  </datum>
+
+  <datum id="Margin" format="%5.3x" label="Margin">
+    <dimensions>
+      <dimension name="extra" value="mm" />
+    </dimensions>
+    <domain type="Float" min="-1e99" max="1e99" />
+    <ui widget="SpinBox" widgetParams="step=1.0" />
+    <description>Margin</description>
+  </datum>
+
+  <datum id="PartDistance" format="%5.3x" label="Min part distance">
+    <dimensions>
+      <dimension name="extra" value="mm" />
+    </dimensions>
+    <domain type="Float" min="-1e99" max="1e99" />
+    <ui widget="SpinBox" widgetParams="step=1.0" />
+    <description>Min part distance</description>
+  </datum>
+
   <datum id="POI_X" format="%5.3x" label="x">
     <dimensions>
       <dimension name="extra" value="mm" />

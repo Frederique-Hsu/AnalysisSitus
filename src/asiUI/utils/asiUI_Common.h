@@ -281,6 +281,11 @@ public:
 
 //-----------------------------------------------------------------------------
 
+  asiUI_EXPORT static QStringList
+    selectFilesOpen(const QString& filter,
+                    const QString& openTitle,
+                    const QString& preferredName);
+
   asiUI_EXPORT static QString
     selectFile(const QString&       filter,
                const QString&       openTitle,
@@ -291,7 +296,7 @@ public:
     selectFile(const QString&       filter,
                const QString&       openTitle,
                const QString&       saveTitle,
-               const QString&       savePreferredName,
+               const QString&       preferredName,
                const OpenSaveAction action);
 
 public:

@@ -190,6 +190,7 @@ asiUI_DialogAppSurf::asiUI_DialogAppSurf(const Handle(asiUI_WidgetFactory)& wf,
                                               QString(),
                                               QImage(":icons/asitus/select_xyz.svg"),
                                               asiUI_Common::OpenSaveAction::OpenSaveAction_Open,
+                                              false,
                                               this);
 
   // Table with point coordinates.
