@@ -127,6 +127,9 @@ RUN cmake .. \
   -D3RDPARTY_freetype_DIR=/usr \
   -D3RDPARTY_freetype_INCLUDE_DIR=/usr/include/freetype2 \
   -D3RDPARTY_freetype_LIBRARY_DIR=/usr/lib/x86_64-linux-gnu \
+  -D3RDPARTY_freeimage_DIR=/usr \
+  -D3RDPARTY_freeimage_INCLUDE_DIR=/usr/include \
+  -D3RDPARTY_freeimage_LIBRARY_DIR=/usr/lib \
   -DUSE_MOBIUS=off \
   -DUSE_INSTANT_MESHES=off \
   -DUSE_RAPIDJSON=off \
