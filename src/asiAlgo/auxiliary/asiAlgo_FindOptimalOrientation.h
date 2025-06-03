@@ -33,6 +33,7 @@
 
 // asiAlgo includes
 #include <asiAlgo_AAG.h>
+#include <asiAlgo_History.h>
 
 // Active Data includes
 #include <ActAPI_IAlgorithm.h>
@@ -96,6 +97,12 @@ public:
     return m_result;
   }
 
+  //! \return the modification history.
+  const Handle(asiAlgo_History)& GetHistory() const
+  {
+    return m_history;
+  }
+
 protected:
 
   TopoDS_Shape m_shape;            //!< Input shape.
@@ -103,8 +110,9 @@ protected:
   gp_Ax1       m_presetAxis;       //!< Preset axis. Fixed axis - necessary in case of turning.
 
   // Result.
-  gp_Trsf      m_trsf;   //!< Transformation to optimal position.
-  TopoDS_Shape m_result; //!< Result shape.
+  gp_Trsf                 m_trsf;    //!< Transformation to optimal position.
+  TopoDS_Shape            m_result;  //!< Result shape.
+  Handle(asiAlgo_History) m_history; //!< History of modification.
 
 };
 
