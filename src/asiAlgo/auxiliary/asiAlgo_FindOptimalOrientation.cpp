@@ -268,6 +268,18 @@ bool asiAlgo_FindOptimalOrientation::Perform()
     //
     m_result = BRepBuilderAPI_Transform(orientedShape, R, true);
     m_trsf.PreMultiply(R);
+
+    // Populate history.
+    m_history = new asiAlgo_History;
+    //
+    TopTools_IndexedMapOfShape initFaces, resultFaces;
+    TopExp::MapShapes(m_shape,  initFaces);
+    TopExp::MapShapes(m_result, resultFaces);
+    //
+    for ( int fid = 1; fid <= initFaces.Extent(); ++fid )
+    {
+      m_history->AddModified( initFaces(fid), resultFaces(fid) );
+    }
   }
 
   return true;
