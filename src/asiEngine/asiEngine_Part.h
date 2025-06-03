@@ -243,6 +243,10 @@ public:
   asiEngine_EXPORT void
     SetAAG(const Handle(asiAlgo_AAG)& aag);
 
+  //! Sets naming service for a part.
+  asiEngine_EXPORT void
+    SetNaming(const Handle(asiAlgo_Naming)& naming);
+
   asiEngine_EXPORT bool
     HasNaming() const;
 

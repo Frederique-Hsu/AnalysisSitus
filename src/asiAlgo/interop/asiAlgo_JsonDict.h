@@ -106,8 +106,9 @@
 #define asiPropName_Warnings                              "warnings"
 #define asiPropName_StatusCodes                           "codes"
 #define asiPropName_SemanticCodes                         "semanticCodes"
+#define asiPropName_Naming                                "naming"
 
-// JSON properties
+// Extras
 #define asiPropName_ExtrasCanRecSummary                   "canrecSummary"
 #define asiPropName_ExtrasCanRecSurfBezier                "nbSurfBezier"
 #define asiPropName_ExtrasCanRecSurfSpl                   "nbSurfSpl"

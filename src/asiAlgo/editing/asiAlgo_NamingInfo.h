@@ -65,6 +65,12 @@ struct asiAlgo_NamingInfo
            std::ostream&             out,
            const bool                pureJSON = false);
 
+  //! Checks if this data structure equals the passed `other` one.
+  //! \param[in] other the other data structure to compare with.
+  //! \return true in the case of equality, false -- otherwise.
+  asiAlgo_EXPORT bool
+    IsEqual(const asiAlgo_NamingInfo& other) const;
+
   int           fid;  //!< Face ID.
   t_asciiString name; //!< Face name.
 };

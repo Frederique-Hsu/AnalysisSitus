@@ -216,7 +216,7 @@
 <br/>
 
 <div class="faq" id="q9">
-  <b>Question:</b> When importing a multi body STEP file, transformations are applied to each body individually. Is there a way to "undo" these transformations so that I can construct a 3D mesh of the original assembly file? This would include all locations of the instances of the body in case it was in multiple locations.
+  <b>Question:</b> When importing a multibody STEP file, transformations are applied to each body individually. Is there a way to "undo" these transformations so that I can construct a 3D mesh of the original assembly file? This would include all locations of the instances of the body in case it was in multiple locations.
   <hr>
   <b>Answer:</b>
   <p>
@@ -225,6 +225,18 @@
   <p>
     Here is how we collect transformations over the scene tree in C++: <a href="https://gitlab.com/ssv/AnalysisSitus/-/blob/master/src/asiAsm/entity/asiAsm_SceneTree.cpp?ref_type=heads#L1106">asiAsm_SceneTree::Display()</a>.
   </p>
+</div>
+
+<br/>
+
+<div class="faq" id="q9">
+  <b>Question:</b> Can the angle to next segment be more than 180 in the <span class='code-inline'>-segments</span> mode?
+  <hr>
+  <b>Answer:</b>
+  <p>
+    Yes, since the angle is measured within the enclosed material, angles more than 180 degrees are perfectly allowed. They would correspond to vertices like here:
+  </p>
+  <div align="center"><a href="../imgs/ext/smru-qna_07.png"><img src="../imgs/ext/smru-qna_07.png" width="60%"/></a></div>
 </div>
 
 <!-- [END] contents -->

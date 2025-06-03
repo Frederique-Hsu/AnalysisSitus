@@ -769,6 +769,16 @@ void asiEngine_Part::SetAAG(const Handle(asiAlgo_AAG)& aag)
 
 //-----------------------------------------------------------------------------
 
+void asiEngine_Part::SetNaming(const Handle(asiAlgo_Naming)& naming)
+{
+  // Store AAG in the corresponding Parameter.
+  Handle(asiData_PartNode) partNode = m_model->GetPartNode();
+  //
+  partNode->SetNaming(naming);
+}
+
+//-----------------------------------------------------------------------------
+
 bool asiEngine_Part::HasNaming() const
 {
   // Get Part Node.

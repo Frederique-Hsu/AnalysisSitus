@@ -89,6 +89,19 @@ void asiAlgo_NamingInfo::ToJSON(const asiAlgo_NamingInfo& info,
     out << nl << qt << asiPropName_FaceId << qt << ": " << info.fid;
 
     // Name.
-    out << "," << nl << qt << asiPropName_Type << qt << ": " << qt << info.name << qt;
+    out << "," << nl << qt << asiPropName_Name << qt << ": " << qt << info.name << qt;
   }
+}
+
+//-----------------------------------------------------------------------------
+
+bool asiAlgo_NamingInfo::IsEqual(const asiAlgo_NamingInfo& other) const
+{
+  if ( this->fid != other.fid )
+    return false;
+
+  if ( this->name != other.name )
+    return false;
+
+  return true;
 }
