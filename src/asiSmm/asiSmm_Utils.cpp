@@ -1,7 +1,8 @@
 //-----------------------------------------------------------------------------
-// Created on: 18 December 2020
+// Created on: 05 June 2025
+// Created by: Sergey SLYADNEV
 //-----------------------------------------------------------------------------
-// Copyright (c) 2020-present, Sergey Slyadnev
+// Copyright (c) 2025-present, Sergey Slyadnev
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -28,57 +29,67 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-----------------------------------------------------------------------------
 
-// cmdAsm includes
-#include <cmdAsm.h>
+// Own include
+#include "asiSmm_Utils.h"
 
-// asiTcl includes
-#include <asiTcl_PluginMacro.h>
+// OpenCascade includes
+#include <BRepPrimAPI_MakeBox.hxx>
+#include <BRepPrimAPI_MakePrism.hxx>
+#include <BRepPrimAPI_MakeRevol.hxx>
+#include <TopoDS.hxx>
+#include <TopExp_Explorer.hxx>
 
-// asiUI includes
-#include <asiUI_CommonFacilities.h>
-
-//-----------------------------------------------------------------------------
-
-Handle(asiEngine_Model)        cmdAsm::model = nullptr;
-Handle(asiUI_CommonFacilities) cmdAsm::cf    = nullptr;
+using namespace asiSmm;
 
 //-----------------------------------------------------------------------------
 
-void cmdAsm::Factory(const Handle(asiTcl_Interp)&      interp,
-                     const Handle(Standard_Transient)& data)
+TopoDS_Solid Utils::BuildBaseBlock(const double dx,
+                                   const double dy,
+                                   const double dz)
 {
-  /* ==========================
-   *  Initialize UI facilities
-   * ========================== */
+  gp_XYZ O = gp::Origin().XYZ();
+  gp_XYZ D(dx, dy, dz);
 
-  // Get common facilities.
-  Handle(asiUI_CommonFacilities)
-    passedCF = Handle(asiUI_CommonFacilities)::DownCast(data);
-  //
-  if ( passedCF.IsNull() )
-    interp->GetProgress().SendLogMessage(LogWarn(Normal) << "[cmdAsm] UI facilities are not available. GUI may not be updated.");
-  else
-    cf = passedCF;
+  TopoDS_Shape
+    box = BRepPrimAPI_MakeBox(O, O + D);
 
-  /* ================================
-   *  Initialize Data Model instance
-   * ================================ */
-
-  model = Handle(asiEngine_Model)::DownCast( interp->GetModel() );
-  //
-  if ( model.IsNull() )
-  {
-    interp->GetProgress().SendLogMessage(LogErr(Normal) << "[cmdAsm] Data Model instance is null or not of asiEngine_Model kind.");
-    return;
-  }
-
-  /* =====================
-   *  Add custom commands
-   * ===================== */
-
-  // Load sub-modules.
-  Commands_XDE (interp, data);
+  return TopoDS::Solid(box);
 }
 
-// Declare entry point PLUGINFACTORY
-ASIPLUGIN(cmdAsm)
+//-----------------------------------------------------------------------------
+
+TopoDS_Solid
+  Utils::BuildRevolvedBlock(const TopoDS_Face& profile,
+                            const gp_Ax1&      axis,
+                            const double       angleDeg,
+                            TopoDS_Face&       lastFace)
+{
+  BRepPrimAPI_MakeRevol mkRevol(profile, axis, angleDeg*M_PI/180., true);
+
+  lastFace = TopoDS::Face( mkRevol.LastShape() );
+  TopoDS_Solid S = TopoDS::Solid( mkRevol.Shape() );
+
+  // Correct the orientation of the last face.
+  TopTools_IndexedMapOfShape allFaces;
+  TopExp::MapShapes(S, TopAbs_FACE, allFaces);
+  //
+  for ( int k = 1; k <= allFaces.Extent(); ++k )
+  {
+    if ( allFaces(k).IsPartner(lastFace) )
+    {
+      lastFace.Orientation( allFaces(k).Orientation() );
+      break;
+    }
+  }
+
+  return S;
+}
+
+//-----------------------------------------------------------------------------
+
+TopoDS_Solid
+  Utils::BuildExtrudedBlock(const TopoDS_Face& base,
+                            const gp_Vec&      V)
+{
+  return TopoDS::Solid( BRepPrimAPI_MakePrism(base, V) );
+}

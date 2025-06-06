@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
-// Created on: 18 December 2020
+// Created on: 06 June 2025
 //-----------------------------------------------------------------------------
-// Copyright (c) 2020-present, Sergey Slyadnev
+// Copyright (c) 2025-present, Sergey Slyadnev
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -28,8 +28,8 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-----------------------------------------------------------------------------
 
-// cmdAsm includes
-#include <cmdAsm.h>
+// cmdSmm includes
+#include "cmdSmm.h"
 
 // asiTcl includes
 #include <asiTcl_PluginMacro.h>
@@ -39,12 +39,12 @@
 
 //-----------------------------------------------------------------------------
 
-Handle(asiEngine_Model)        cmdAsm::model = nullptr;
-Handle(asiUI_CommonFacilities) cmdAsm::cf    = nullptr;
+Handle(asiEngine_Model)        cmdSmm::model = nullptr;
+Handle(asiUI_CommonFacilities) cmdSmm::cf    = nullptr;
 
 //-----------------------------------------------------------------------------
 
-void cmdAsm::Factory(const Handle(asiTcl_Interp)&      interp,
+void cmdSmm::Factory(const Handle(asiTcl_Interp)&      interp,
                      const Handle(Standard_Transient)& data)
 {
   /* ==========================
@@ -56,7 +56,7 @@ void cmdAsm::Factory(const Handle(asiTcl_Interp)&      interp,
     passedCF = Handle(asiUI_CommonFacilities)::DownCast(data);
   //
   if ( passedCF.IsNull() )
-    interp->GetProgress().SendLogMessage(LogWarn(Normal) << "[cmdAsm] UI facilities are not available. GUI may not be updated.");
+    interp->GetProgress().SendLogMessage(LogWarn(Normal) << "[cmdSmm] UI facilities are not available. GUI may not be updated.");
   else
     cf = passedCF;
 
@@ -68,7 +68,7 @@ void cmdAsm::Factory(const Handle(asiTcl_Interp)&      interp,
   //
   if ( model.IsNull() )
   {
-    interp->GetProgress().SendLogMessage(LogErr(Normal) << "[cmdAsm] Data Model instance is null or not of asiEngine_Model kind.");
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "[cmdSmm] Data Model instance is null or not of asiEngine_Model kind.");
     return;
   }
 
@@ -77,8 +77,8 @@ void cmdAsm::Factory(const Handle(asiTcl_Interp)&      interp,
    * ===================== */
 
   // Load sub-modules.
-  Commands_XDE (interp, data);
+  Commands(interp, data);
 }
 
 // Declare entry point PLUGINFACTORY
-ASIPLUGIN(cmdAsm)
+ASIPLUGIN(cmdSmm)

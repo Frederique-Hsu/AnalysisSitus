@@ -93,6 +93,7 @@
 #include <ShapeAnalysis_FreeBounds.hxx>
 #include <ShapeAnalysis_Surface.hxx>
 #include <ShapeCustom.hxx>
+#include <ShapeFix.hxx>
 #include <ShapeFix_Shape.hxx>
 #include <ShapeFix_ShapeTolerance.hxx>
 #include <ShapeUpgrade_ShapeDivideClosed.hxx>

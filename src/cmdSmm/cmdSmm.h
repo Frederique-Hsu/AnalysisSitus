@@ -1,7 +1,8 @@
 //-----------------------------------------------------------------------------
-// Created on: 18 December 2020
+// Created on: 05 June 2025
+// Created by: Sergey SLYADNEV
 //-----------------------------------------------------------------------------
-// Copyright (c) 2020-present, Sergey Slyadnev
+// Copyright (c) 2025-present, Sergey Slyadnev
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -28,57 +29,61 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-----------------------------------------------------------------------------
 
-// cmdAsm includes
-#include <cmdAsm.h>
+#ifndef cmdSmm_h
+#define cmdSmm_h
+
+#define cmdSmm_NotUsed(x)
+
+#ifdef _WIN32
+  #ifdef cmdSmm_EXPORTS
+    #define cmdSmm_EXPORT __declspec(dllexport)
+  #else
+    #define cmdSmm_EXPORT __declspec(dllimport)
+  #endif
+#else
+  #define cmdSmm_EXPORT
+#endif
+
+//-----------------------------------------------------------------------------
 
 // asiTcl includes
-#include <asiTcl_PluginMacro.h>
+#include <asiTcl_Interp.h>
 
-// asiUI includes
-#include <asiUI_CommonFacilities.h>
-
-//-----------------------------------------------------------------------------
-
-Handle(asiEngine_Model)        cmdAsm::model = nullptr;
-Handle(asiUI_CommonFacilities) cmdAsm::cf    = nullptr;
+// asiEngine includes
+#include <asiEngine_Model.h>
 
 //-----------------------------------------------------------------------------
 
-void cmdAsm::Factory(const Handle(asiTcl_Interp)&      interp,
-                     const Handle(Standard_Transient)& data)
+class asiUI_CommonFacilities;
+
+//-----------------------------------------------------------------------------
+
+//! Tcl commands for sheet metal modeling.
+class cmdSmm
 {
-  /* ==========================
-   *  Initialize UI facilities
-   * ========================== */
+public:
 
-  // Get common facilities.
-  Handle(asiUI_CommonFacilities)
-    passedCF = Handle(asiUI_CommonFacilities)::DownCast(data);
-  //
-  if ( passedCF.IsNull() )
-    interp->GetProgress().SendLogMessage(LogWarn(Normal) << "[cmdAsm] UI facilities are not available. GUI may not be updated.");
-  else
-    cf = passedCF;
+  //! Entry point to the plugin.
+  //! \param[in] interp the Tcl interpretor.
+  //! \param[in] data   the passed client's data.
+  cmdSmm_EXPORT static void
+    Factory(const Handle(asiTcl_Interp)&      interp,
+            const Handle(Standard_Transient)& data);
 
-  /* ================================
-   *  Initialize Data Model instance
-   * ================================ */
+public:
 
-  model = Handle(asiEngine_Model)::DownCast( interp->GetModel() );
-  //
-  if ( model.IsNull() )
-  {
-    interp->GetProgress().SendLogMessage(LogErr(Normal) << "[cmdAsm] Data Model instance is null or not of asiEngine_Model kind.");
-    return;
-  }
+  //! Tcl commands for sheet metal modeling.
+  //! \param[in] interp the Tcl interpretor.
+  //! \param[in] data   the passed client's data.
+  cmdSmm_EXPORT static void
+    Commands(const Handle(asiTcl_Interp)&      interp,
+             const Handle(Standard_Transient)& data);
 
-  /* =====================
-   *  Add custom commands
-   * ===================== */
+public:
 
-  // Load sub-modules.
-  Commands_XDE (interp, data);
-}
+  static Handle(asiEngine_Model)        model; //!< Data Model instance.
+  static Handle(asiUI_CommonFacilities) cf;    //!< UI common facilities.
 
-// Declare entry point PLUGINFACTORY
-ASIPLUGIN(cmdAsm)
+};
+
+#endif

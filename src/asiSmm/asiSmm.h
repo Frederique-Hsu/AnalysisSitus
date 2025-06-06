@@ -1,7 +1,8 @@
 //-----------------------------------------------------------------------------
-// Created on: 18 December 2020
+// Created on: 05 June 2025
+// Created by: Sergey SLYADNEV
 //-----------------------------------------------------------------------------
-// Copyright (c) 2020-present, Sergey Slyadnev
+// Copyright (c) 2025-present, Sergey Slyadnev
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -28,57 +29,27 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-----------------------------------------------------------------------------
 
-// cmdAsm includes
-#include <cmdAsm.h>
+#ifndef asiSmm_h
+#define asiSmm_h
 
-// asiTcl includes
-#include <asiTcl_PluginMacro.h>
+#define asiSmm_NotUsed(x)
 
-// asiUI includes
-#include <asiUI_CommonFacilities.h>
+#ifdef _WIN32
+  #ifdef asiSmm_EXPORTS
+    #define asiSmm_EXPORT __declspec(dllexport)
+  #else
+    #define asiSmm_EXPORT __declspec(dllimport)
+  #endif
+#else
+  #define asiSmm_EXPORT
+#endif
 
 //-----------------------------------------------------------------------------
-
-Handle(asiEngine_Model)        cmdAsm::model = nullptr;
-Handle(asiUI_CommonFacilities) cmdAsm::cf    = nullptr;
-
+// DOXY group definition
+//-----------------------------------------------------------------------------
+//! \defgroup ASI_SMM Sheet Metal Modeler
+//!
+//! Data structures and algorithms for sheet metal modeling.
 //-----------------------------------------------------------------------------
 
-void cmdAsm::Factory(const Handle(asiTcl_Interp)&      interp,
-                     const Handle(Standard_Transient)& data)
-{
-  /* ==========================
-   *  Initialize UI facilities
-   * ========================== */
-
-  // Get common facilities.
-  Handle(asiUI_CommonFacilities)
-    passedCF = Handle(asiUI_CommonFacilities)::DownCast(data);
-  //
-  if ( passedCF.IsNull() )
-    interp->GetProgress().SendLogMessage(LogWarn(Normal) << "[cmdAsm] UI facilities are not available. GUI may not be updated.");
-  else
-    cf = passedCF;
-
-  /* ================================
-   *  Initialize Data Model instance
-   * ================================ */
-
-  model = Handle(asiEngine_Model)::DownCast( interp->GetModel() );
-  //
-  if ( model.IsNull() )
-  {
-    interp->GetProgress().SendLogMessage(LogErr(Normal) << "[cmdAsm] Data Model instance is null or not of asiEngine_Model kind.");
-    return;
-  }
-
-  /* =====================
-   *  Add custom commands
-   * ===================== */
-
-  // Load sub-modules.
-  Commands_XDE (interp, data);
-}
-
-// Declare entry point PLUGINFACTORY
-ASIPLUGIN(cmdAsm)
+#endif

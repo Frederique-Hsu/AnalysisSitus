@@ -1,7 +1,8 @@
 //-----------------------------------------------------------------------------
-// Created on: 18 December 2020
+// Created on: 05 June 2025
+// Created by: Sergey SLYADNEV
 //-----------------------------------------------------------------------------
-// Copyright (c) 2020-present, Sergey Slyadnev
+// Copyright (c) 2025-present, Sergey Slyadnev
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -28,57 +29,38 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-----------------------------------------------------------------------------
 
-// cmdAsm includes
-#include <cmdAsm.h>
+#ifndef asiSmm_Utils_h
+#define asiSmm_Utils_h
 
-// asiTcl includes
-#include <asiTcl_PluginMacro.h>
+// asiSmm includes
+#include "asiSmm.h"
 
-// asiUI includes
-#include <asiUI_CommonFacilities.h>
+// OpenCascade includes
+#include <TopoDS_Face.hxx>
+#include <TopoDS_Solid.hxx>
 
-//-----------------------------------------------------------------------------
-
-Handle(asiEngine_Model)        cmdAsm::model = nullptr;
-Handle(asiUI_CommonFacilities) cmdAsm::cf    = nullptr;
-
-//-----------------------------------------------------------------------------
-
-void cmdAsm::Factory(const Handle(asiTcl_Interp)&      interp,
-                     const Handle(Standard_Transient)& data)
+//! \ingroup ASI_SMM
+//!
+//! Auxiliary functions for sheet metal modeling.
+namespace asiSmm
 {
-  /* ==========================
-   *  Initialize UI facilities
-   * ========================== */
-
-  // Get common facilities.
-  Handle(asiUI_CommonFacilities)
-    passedCF = Handle(asiUI_CommonFacilities)::DownCast(data);
-  //
-  if ( passedCF.IsNull() )
-    interp->GetProgress().SendLogMessage(LogWarn(Normal) << "[cmdAsm] UI facilities are not available. GUI may not be updated.");
-  else
-    cf = passedCF;
-
-  /* ================================
-   *  Initialize Data Model instance
-   * ================================ */
-
-  model = Handle(asiEngine_Model)::DownCast( interp->GetModel() );
-  //
-  if ( model.IsNull() )
+  namespace Utils
   {
-    interp->GetProgress().SendLogMessage(LogErr(Normal) << "[cmdAsm] Data Model instance is null or not of asiEngine_Model kind.");
-    return;
-  }
+    asiSmm_EXPORT TopoDS_Solid
+      BuildBaseBlock(const double dx,
+                     const double dy,
+                     const double dz);
 
-  /* =====================
-   *  Add custom commands
-   * ===================== */
+    asiSmm_EXPORT TopoDS_Solid
+      BuildRevolvedBlock(const TopoDS_Face& profile,
+                         const gp_Ax1&      axis,
+                         const double       angleDeg,
+                         TopoDS_Face&       lastFace);
 
-  // Load sub-modules.
-  Commands_XDE (interp, data);
-}
+    asiSmm_EXPORT TopoDS_Solid
+      BuildExtrudedBlock(const TopoDS_Face& base,
+                         const gp_Vec&      V);
+  } // Utils namespace.
+} // asiSmm namespace.
 
-// Declare entry point PLUGINFACTORY
-ASIPLUGIN(cmdAsm)
+#endif
