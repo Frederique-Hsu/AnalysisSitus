@@ -1815,8 +1815,16 @@ int ENGINE_SplitClosed(const Handle(asiTcl_Interp)& interp,
   {
     ShapeUpgrade_ShapeDivideClosed divider(shape);
     divider.Perform();
-    //
-    asiEngine_Part(cmdEngine::model).Update( divider.Result() );
+
+    // Shape divider often leaves the shape in a broken state, e.g.,
+    // see #377. In the OpenCascade's `DT_ClosedSplit` command, there
+    // is this trick of healing the shape post factum. Here we do
+    // the same.
+    TopoDS_Shape res = divider.Result();
+    ShapeFix::SameParameter(res, Standard_False);
+
+    // Update the active part.
+    asiEngine_Part(cmdEngine::model).Update(res);
   }
   cmdEngine::model->CommitCommand();
 
