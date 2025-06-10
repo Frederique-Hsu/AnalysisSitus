@@ -93,6 +93,7 @@
 #include <ShapeAnalysis_FreeBounds.hxx>
 #include <ShapeAnalysis_Surface.hxx>
 #include <ShapeCustom.hxx>
+#include <ShapeFix.hxx>
 #include <ShapeFix_Shape.hxx>
 #include <ShapeFix_ShapeTolerance.hxx>
 #include <ShapeUpgrade_ShapeDivideClosed.hxx>
@@ -1816,7 +1817,10 @@ int ENGINE_SplitClosed(const Handle(asiTcl_Interp)& interp,
     ShapeUpgrade_ShapeDivideClosed divider(shape);
     divider.Perform();
     //
-    asiEngine_Part(cmdEngine::model).Update( divider.Result() );
+    TopoDS_Shape res = divider.Result();
+    ShapeFix::SameParameter(res, Standard_False);
+    //
+    asiEngine_Part(cmdEngine::model).Update(res);
   }
   cmdEngine::model->CommitCommand();
 
