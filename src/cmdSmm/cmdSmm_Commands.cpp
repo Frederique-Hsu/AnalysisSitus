@@ -140,7 +140,7 @@ int SMM_MakeEdgeFlange(const Handle(asiTcl_Interp)& interp,
   // Initialize the flange builder tool.
   MakeEdgeFlange maker( partNode->GetAAG(),
                         interp->GetProgress(),
-                        interp->GetPlotter() );
+                        interp->HasKeyword(argc, argv, "draw") ? interp->GetPlotter() : nullptr );
 
   // Construct a flange.
   if ( !maker.Build(eid, bendAngleDeg, flangeLength) )
@@ -151,7 +151,15 @@ int SMM_MakeEdgeFlange(const Handle(asiTcl_Interp)& interp,
     return TCL_ERROR;
   }
 
-  // TODO: NYI
+  // Update part.
+  cmdSmm::model->OpenCommand();
+  {
+    asiEngine_Part(cmdSmm::model).Update( maker.GetResult() );
+  }
+  cmdSmm::model->CommitCommand();
+
+  // Update UI.
+  UpdateUi
 
   return TCL_OK;
 }
@@ -174,7 +182,7 @@ void cmdSmm::Commands(const Handle(asiTcl_Interp)&      interp,
   //-------------------------------------------------------------------------//
   interp->AddCommand("smm-make-edge-flange",
     //
-    "smm-make-edge-flange [-eid <eid>] -length <h> -angle <angDeg>\n"
+    "smm-make-edge-flange [-eid <eid>] -length <h> -angle <angDeg> [-draw]\n"
     "\t Makes a flange starting from the given edge. The provided length\n"
     "\t includes bend deduction contribution.",
     //

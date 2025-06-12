@@ -169,7 +169,19 @@ bool MakeEdgeFlange::Build(const int    eid,
 
   m_plotter.REDRAW_SHAPE( "wallSolid", wallSolid, Color_Green, 1. );
 
-  // TODO: NYI
+  /* =================
+   *  Fuse all bodies.
+   * ================= */
+
+  TopTools_ListOfShape args;
+  //
+  args.Append(m_baseShape);
+  args.Append(bendSolid);
+  args.Append(wallSolid);
+
+  Handle(BRepTools_History) H;
+
+  m_result = asiAlgo_Utils::BooleanFuse(args, false, H);
 
   return true;
 }

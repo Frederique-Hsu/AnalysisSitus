@@ -70,14 +70,13 @@ TopoDS_Solid
   TopoDS_Solid S = TopoDS::Solid( mkRevol.Shape() );
 
   // Correct the orientation of the last face.
-  TopTools_IndexedMapOfShape allFaces;
-  TopExp::MapShapes(S, TopAbs_FACE, allFaces);
-  //
-  for ( int k = 1; k <= allFaces.Extent(); ++k )
+  for ( TopExp_Explorer exp(S, TopAbs_FACE); exp.More(); exp.Next() )
   {
-    if ( allFaces(k).IsPartner(lastFace) )
+    const TopoDS_Shape& currentFace = exp.Current();
+    //
+    if ( currentFace.IsPartner(lastFace) )
     {
-      lastFace.Orientation( allFaces(k).Orientation() );
+      lastFace.Orientation( currentFace.Orientation() );
       break;
     }
   }
