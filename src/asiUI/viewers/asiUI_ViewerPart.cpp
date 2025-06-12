@@ -579,33 +579,16 @@ asiUI_ViewerPart::asiUI_ViewerPart(const Handle(asiEngine_Model)& model,
       m_prs_mgr->GetDefaultInteractorStyle()->AddObserver(EVENT_ROTATION_END, m_rotoCallback);
   }
 
-  /* ========================
-   *  Initialize axes widget
-   * ======================== */
+  /* ======================================
+   *  Initialize camera orientation widget
+   * ====================================== */
 
-  vtkSmartPointer<vtkAxesActor> axes = vtkSmartPointer<vtkAxesActor>::New();
-  //
-  axes->GetXAxisShaftProperty()->SetColor(XAXIS_R, XAXIS_G, XAXIS_B);
-  axes->GetXAxisTipProperty()  ->SetColor(XAXIS_R, XAXIS_G, XAXIS_B);
-  axes->GetYAxisShaftProperty()->SetColor(YAXIS_R, YAXIS_G, YAXIS_B);
-  axes->GetYAxisTipProperty()  ->SetColor(YAXIS_R, YAXIS_G, YAXIS_B);
-  axes->GetZAxisShaftProperty()->SetColor(ZAXIS_R, ZAXIS_G, ZAXIS_B);
-  axes->GetZAxisTipProperty()  ->SetColor(ZAXIS_R, ZAXIS_G, ZAXIS_B);
-
-  vtkSmartPointer<vtkAssembly>  assm = vtkSmartPointer<vtkAssembly>::New();
-  assm->AddPart(axes);
-  //
-  m_axesWidget = vtkSmartPointer<vtkOrientationMarkerWidget>::New();
-  m_axesWidget->SetOrientationMarker(assm);
-  //
   vtkRenderer* renderer = m_prs_mgr->GetRenderer();
   renderer->SetRenderWindow( m_prs_mgr->GetRenderWindow() );
-  //
-  m_axesWidget->SetCurrentRenderer( m_prs_mgr->GetRenderer() );
-  m_axesWidget->SetInteractor( m_prs_mgr->GetRenderWindow()->GetInteractor() );
-  m_axesWidget->SetEnabled(1);
-  m_axesWidget->SetInteractive(0);
-  m_axesWidget->SetViewport(0, 0, 0.25, 0.25);
+
+  m_cameraWidget = vtkSmartPointer<vtkCameraOrientationWidget>::New();
+  m_cameraWidget->SetParentRenderer(renderer);
+  m_cameraWidget->On();
 
   /* =====================================
    *  Finalize initial state of the scene

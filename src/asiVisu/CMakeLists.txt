@@ -466,11 +466,17 @@ set (widgets_H_UI_FILES
 set (widgets_H_FILES
   widgets/asiVisu_PlaneWidget.h
   widgets/asiVisu_QVTKPaintEngine.h
+  widgets/vtkCameraInterpolator.h
+  widgets/vtkCameraOrientationRepresentation.h
+  widgets/vtkCameraOrientationWidget.h
 )
 set (widgets_CPP_FILES
   widgets/asiVisu_PlaneWidget.cpp
   widgets/asiVisu_QVTKPaintEngine.cpp
   widgets/asiVisu_QVTKWidget.cpp
+  widgets/vtkCameraInterpolator.cxx
+  widgets/vtkCameraOrientationRepresentation.cxx
+  widgets/vtkCameraOrientationWidget.cxx
 )
 
 #------------------------------------------------------------------------------
@@ -534,6 +540,7 @@ set (VTK_LIB_FILES
   vtkRenderingCore-8.2
   vtkRenderingOpenGL2-8.2
   vtkRenderingLabel-8.2
+  vtkRenderingFreeType-8.2
 )
 
 #------------------------------------------------------------------------------
