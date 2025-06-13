@@ -232,6 +232,7 @@ set (dialogs_H_UI_FILES
   dialogs/asiUI_DialogGapFilling.h
   dialogs/asiUI_DialogGeomDef.h
   dialogs/asiUI_DialogJoinSurf.h
+  dialogs/asiUI_DialogMakeFlange.h
   dialogs/asiUI_DialogOCAFDump.h
   dialogs/asiUI_DialogPipelines.h
   dialogs/asiUI_DialogRefineTessellation.h
@@ -259,6 +260,7 @@ set (dialogs_CPP_FILES
   dialogs/asiUI_DialogGapFilling.cpp
   dialogs/asiUI_DialogGeomDef.cpp
   dialogs/asiUI_DialogJoinSurf.cpp
+  dialogs/asiUI_DialogMakeFlange.cpp
   dialogs/asiUI_DialogOCAFDump.cpp
   dialogs/asiUI_DialogPipelines.cpp
   dialogs/asiUI_DialogRefineTessellation.cpp
@@ -767,6 +769,7 @@ include_directories ( SYSTEM
                       ${asiActiveData_include_dir}
                       ${asiTcl_include_dir}
                       ${asiAlgo_include_dir}
+                      ${asiSmm_include_dir}
                       ${asiAsm_include_dir}
                       ${asiData_include_dir}
                       ${asiVisu_include_dir}
@@ -802,7 +805,7 @@ add_library (asiUI SHARED
 # Dependencies
 #------------------------------------------------------------------------------
 
-target_link_libraries(asiUI asiTcl asiAlgo asiAsm asiData asiVisu asiEngine)
+target_link_libraries(asiUI asiTcl asiAlgo asiSmm asiAsm asiData asiVisu asiEngine)
 
 qt5_use_modules(asiUI Core Widgets)
 

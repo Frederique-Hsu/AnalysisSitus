@@ -1,13 +1,13 @@
 // SPDX-FileCopyrightText: Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
 // SPDX-License-Identifier: BSD-3-Clause
-#include <vtkCameraInterpolator.h>
+#include <asiVisu_CameraInterpolator.h>
 #include <vtkCamera.h>
 #include <vtkObjectFactory.h>
 #include <vtkTransform.h>
 #include <vtkTupleInterpolator.h>
 #include <list>
 
-vtkStandardNewMacro(vtkCameraInterpolator);
+vtkStandardNewMacro(asiVisu_CameraInterpolator);
 
 // PIMPL STL encapsulation for list of cameras. This just keeps track of all
 // the data the user specifies, which is later dumped into the interpolators.
@@ -64,7 +64,7 @@ class vtkCameraList : public std::list<vtkICamera>
 typedef vtkCameraList::iterator CameraListIterator;
 
 //------------------------------------------------------------------------------
-vtkCameraInterpolator::vtkCameraInterpolator()
+asiVisu_CameraInterpolator::asiVisu_CameraInterpolator()
 {
   // Set up the interpolation
   this->InterpolationType = INTERPOLATION_TYPE_SPLINE;
@@ -83,7 +83,7 @@ vtkCameraInterpolator::vtkCameraInterpolator()
 }
 
 //------------------------------------------------------------------------------
-vtkCameraInterpolator::~vtkCameraInterpolator()
+asiVisu_CameraInterpolator::~asiVisu_CameraInterpolator()
 {
   delete this->CameraList;
 
@@ -96,7 +96,7 @@ vtkCameraInterpolator::~vtkCameraInterpolator()
 }
 
 //------------------------------------------------------------------------------
-vtkMTimeType vtkCameraInterpolator::GetMTime()
+vtkMTimeType asiVisu_CameraInterpolator::GetMTime()
 {
   vtkMTimeType mTime = this->Superclass::GetMTime();
   vtkMTimeType posMTime, fpMTime, vupMTime, vaMTime, psMTime, crMTime;
@@ -136,13 +136,13 @@ vtkMTimeType vtkCameraInterpolator::GetMTime()
 }
 
 //------------------------------------------------------------------------------
-int vtkCameraInterpolator::GetNumberOfCameras()
+int asiVisu_CameraInterpolator::GetNumberOfCameras()
 {
   return static_cast<int>(this->CameraList->size());
 }
 
 //------------------------------------------------------------------------------
-double vtkCameraInterpolator::GetMinimumT()
+double asiVisu_CameraInterpolator::GetMinimumT()
 {
   if (this->CameraList->empty())
   {
@@ -155,7 +155,7 @@ double vtkCameraInterpolator::GetMinimumT()
 }
 
 //------------------------------------------------------------------------------
-double vtkCameraInterpolator::GetMaximumT()
+double asiVisu_CameraInterpolator::GetMaximumT()
 {
   if (this->CameraList->empty())
   {
@@ -168,14 +168,14 @@ double vtkCameraInterpolator::GetMaximumT()
 }
 
 //------------------------------------------------------------------------------
-void vtkCameraInterpolator::Initialize()
+void asiVisu_CameraInterpolator::Initialize()
 {
   this->CameraList->clear();
   this->Initialized = 0;
 }
 
 //------------------------------------------------------------------------------
-void vtkCameraInterpolator::AddCamera(double t, vtkCamera* camera)
+void asiVisu_CameraInterpolator::AddCamera(double t, vtkCamera* camera)
 {
   int size = static_cast<int>(this->CameraList->size());
 
@@ -215,7 +215,7 @@ void vtkCameraInterpolator::AddCamera(double t, vtkCamera* camera)
 }
 
 //------------------------------------------------------------------------------
-void vtkCameraInterpolator::RemoveCamera(double t)
+void asiVisu_CameraInterpolator::RemoveCamera(double t)
 {
   if (t < this->CameraList->front().Time || t > this->CameraList->back().Time)
   {
@@ -233,7 +233,7 @@ void vtkCameraInterpolator::RemoveCamera(double t)
 }
 
 //------------------------------------------------------------------------------
-void vtkCameraInterpolator::SetPositionInterpolator(vtkTupleInterpolator* pi)
+void asiVisu_CameraInterpolator::SetPositionInterpolator(vtkTupleInterpolator* pi)
 {
   if (this->PositionInterpolator != pi)
   {
@@ -251,7 +251,7 @@ void vtkCameraInterpolator::SetPositionInterpolator(vtkTupleInterpolator* pi)
 }
 
 //------------------------------------------------------------------------------
-void vtkCameraInterpolator::SetFocalPointInterpolator(vtkTupleInterpolator* fpi)
+void asiVisu_CameraInterpolator::SetFocalPointInterpolator(vtkTupleInterpolator* fpi)
 {
   if (this->FocalPointInterpolator != fpi)
   {
@@ -269,7 +269,7 @@ void vtkCameraInterpolator::SetFocalPointInterpolator(vtkTupleInterpolator* fpi)
 }
 
 //------------------------------------------------------------------------------
-void vtkCameraInterpolator::SetViewUpInterpolator(vtkTupleInterpolator* vupi)
+void asiVisu_CameraInterpolator::SetViewUpInterpolator(vtkTupleInterpolator* vupi)
 {
   if (this->ViewUpInterpolator != vupi)
   {
@@ -287,7 +287,7 @@ void vtkCameraInterpolator::SetViewUpInterpolator(vtkTupleInterpolator* vupi)
 }
 
 //------------------------------------------------------------------------------
-void vtkCameraInterpolator::SetClippingRangeInterpolator(vtkTupleInterpolator* cri)
+void asiVisu_CameraInterpolator::SetClippingRangeInterpolator(vtkTupleInterpolator* cri)
 {
   if (this->ClippingRangeInterpolator != cri)
   {
@@ -305,7 +305,7 @@ void vtkCameraInterpolator::SetClippingRangeInterpolator(vtkTupleInterpolator* c
 }
 
 //------------------------------------------------------------------------------
-void vtkCameraInterpolator::SetParallelScaleInterpolator(vtkTupleInterpolator* psi)
+void asiVisu_CameraInterpolator::SetParallelScaleInterpolator(vtkTupleInterpolator* psi)
 {
   if (this->ParallelScaleInterpolator != psi)
   {
@@ -323,7 +323,7 @@ void vtkCameraInterpolator::SetParallelScaleInterpolator(vtkTupleInterpolator* p
 }
 
 //------------------------------------------------------------------------------
-void vtkCameraInterpolator::SetViewAngleInterpolator(vtkTupleInterpolator* interpolator)
+void asiVisu_CameraInterpolator::SetViewAngleInterpolator(vtkTupleInterpolator* interpolator)
 {
   if (this->ViewAngleInterpolator != interpolator)
   {
@@ -341,7 +341,7 @@ void vtkCameraInterpolator::SetViewAngleInterpolator(vtkTupleInterpolator* inter
 }
 
 //------------------------------------------------------------------------------
-void vtkCameraInterpolator::InitializeInterpolation()
+void asiVisu_CameraInterpolator::InitializeInterpolation()
 {
   if (this->CameraList->empty())
   {
@@ -431,7 +431,7 @@ void vtkCameraInterpolator::InitializeInterpolation()
 }
 
 //------------------------------------------------------------------------------
-void vtkCameraInterpolator::InterpolateCamera(double t, vtkCamera* camera)
+void asiVisu_CameraInterpolator::InterpolateCamera(double t, vtkCamera* camera)
 {
   if (this->CameraList->empty())
   {
@@ -469,7 +469,7 @@ void vtkCameraInterpolator::InterpolateCamera(double t, vtkCamera* camera)
 }
 
 //------------------------------------------------------------------------------
-void vtkCameraInterpolator::PrintSelf(ostream& os, vtkIndent indent)
+void asiVisu_CameraInterpolator::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 

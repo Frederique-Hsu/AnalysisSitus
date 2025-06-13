@@ -40,6 +40,12 @@
 
 // asiUI includes
 #include <asiUI_CommonFacilities.h>
+#include <asiUI_DialogMakeFlange.h>
+
+// Qt includes
+#pragma warning(push, 0)
+#include <QMainWindow>
+#pragma warning(pop)
 
 #define IsGui \
   !cmdSmm::cf.IsNull()
@@ -90,6 +96,20 @@ int SMM_MakeEdgeFlange(const Handle(asiTcl_Interp)& interp,
 {
   Handle(asiEngine_Model)
     M = Handle(asiEngine_Model)::DownCast( interp->GetModel() );
+
+  if ( argc == 1 )
+  {
+    asiUI_DialogMakeFlange*
+      pFlangeDlg = new asiUI_DialogMakeFlange( cmdSmm::cf,
+                                               M,
+                                               interp->GetProgress(),
+                                               interp->GetPlotter(),
+                                               cmdSmm::cf->MainWindow );
+    //
+    pFlangeDlg->show();
+
+    return TCL_OK;
+  }
 
   // Get part.
   Handle(asiData_PartNode) partNode = M->GetPartNode();
@@ -182,7 +202,7 @@ void cmdSmm::Commands(const Handle(asiTcl_Interp)&      interp,
   //-------------------------------------------------------------------------//
   interp->AddCommand("smm-make-edge-flange",
     //
-    "smm-make-edge-flange [-eid <eid>] -length <h> -angle <angDeg> [-draw]\n"
+    "smm-make-edge-flange [-eid <eid>] [-length <h>] [-angle <angDeg>] [-draw]\n"
     "\t Makes a flange starting from the given edge. The provided length\n"
     "\t includes bend deduction contribution.",
     //

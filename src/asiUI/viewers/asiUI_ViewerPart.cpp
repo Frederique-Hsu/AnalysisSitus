@@ -586,7 +586,7 @@ asiUI_ViewerPart::asiUI_ViewerPart(const Handle(asiEngine_Model)& model,
   vtkRenderer* renderer = m_prs_mgr->GetRenderer();
   renderer->SetRenderWindow( m_prs_mgr->GetRenderWindow() );
 
-  m_cameraWidget = vtkSmartPointer<vtkCameraOrientationWidget>::New();
+  m_cameraWidget = vtkSmartPointer<asiVisu_CameraOrientationWidget>::New();
   m_cameraWidget->SetParentRenderer(renderer);
   m_cameraWidget->On();
 

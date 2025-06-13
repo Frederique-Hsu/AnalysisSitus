@@ -114,7 +114,7 @@ public slots:
   //! Reaction on clicking "Apply" button.
   void onApply();
 
-  //! Cancel button clicked.
+  //! "Cancel" button clicked.
   void onCancel();
 
 private:

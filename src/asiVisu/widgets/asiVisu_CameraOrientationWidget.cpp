@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
 // SPDX-License-Identifier: BSD-3-Clause
-#include "vtkCameraOrientationWidget.h"
+#include "asiVisu_CameraOrientationWidget.h"
 
 #include <vtkAbstractWidget.h>
 #include <vtkCallbackCommand.h>
 #include <vtkCamera.h>
-#include <vtkCameraInterpolator.h>
-#include <vtkCameraOrientationRepresentation.h>
+#include <asiVisu_CameraInterpolator.h>
+#include <asiVisu_CameraOrientationRepresentation.h>
 #include <vtkCommand.h>
 #include <vtkEvent.h>
 #include <vtkObject.h>
@@ -22,18 +22,18 @@
 
 //----------------------------------------------------------------------------
 
-vtkStandardNewMacro(vtkCameraOrientationWidget);
+vtkStandardNewMacro(asiVisu_CameraOrientationWidget);
 
 //----------------------------------------------------------------------------
-vtkCameraOrientationWidget::vtkCameraOrientationWidget()
+asiVisu_CameraOrientationWidget::asiVisu_CameraOrientationWidget()
 {
   // Define widget events.
   this->CallbackMapper->SetCallbackMethod(vtkCommand::LeftButtonPressEvent, vtkEvent::NoModifier, 0,
-    0, nullptr, vtkWidgetEvent::Select, this, vtkCameraOrientationWidget::SelectAction);
+    0, nullptr, vtkWidgetEvent::Select, this, asiVisu_CameraOrientationWidget::SelectAction);
   this->CallbackMapper->SetCallbackMethod(vtkCommand::LeftButtonReleaseEvent, vtkEvent::NoModifier,
-    0, 0, nullptr, vtkWidgetEvent::EndSelect, this, vtkCameraOrientationWidget::EndSelectAction);
+    0, 0, nullptr, vtkWidgetEvent::EndSelect, this, asiVisu_CameraOrientationWidget::EndSelectAction);
   this->CallbackMapper->SetCallbackMethod(vtkCommand::MouseMoveEvent, vtkEvent::NoModifier, 0, 0,
-    nullptr, vtkWidgetEvent::Rotate, this, vtkCameraOrientationWidget::MoveAction);
+    nullptr, vtkWidgetEvent::Rotate, this, asiVisu_CameraOrientationWidget::MoveAction);
 
   this->CameraInterpolator->SetInterpolationTypeToSpline();
 
@@ -48,16 +48,16 @@ vtkCameraOrientationWidget::vtkCameraOrientationWidget()
 }
 
 //----------------------------------------------------------------------------
-vtkCameraOrientationWidget::~vtkCameraOrientationWidget() = default;
+asiVisu_CameraOrientationWidget::~asiVisu_CameraOrientationWidget() = default;
 
 //------------------------------------------------------------------------------
-vtkRenderer* vtkCameraOrientationWidget::GetParentRenderer()
+vtkRenderer* asiVisu_CameraOrientationWidget::GetParentRenderer()
 {
   return this->ParentRenderer;
 }
 
 //------------------------------------------------------------------------------
-void vtkCameraOrientationWidget::SetDefaultRenderer(vtkRenderer* renderer)
+void asiVisu_CameraOrientationWidget::SetDefaultRenderer(vtkRenderer* renderer)
 {
   if (renderer == this->DefaultRenderer)
   {
@@ -81,7 +81,7 @@ void vtkCameraOrientationWidget::SetDefaultRenderer(vtkRenderer* renderer)
 
   // install observer to sync camera widget orientation with that of parent renderer's camera
   this->ReorientObserverTag = renderer->AddObserver(
-    vtkCommand::StartEvent, this, &vtkCameraOrientationWidget::OrientWidgetRepresentation);
+    vtkCommand::StartEvent, this, &asiVisu_CameraOrientationWidget::OrientWidgetRepresentation);
   this->Superclass::SetDefaultRenderer(renderer);
 
   if (reEnable)
@@ -95,7 +95,7 @@ void vtkCameraOrientationWidget::SetDefaultRenderer(vtkRenderer* renderer)
 }
 
 //------------------------------------------------------------------------------
-void vtkCameraOrientationWidget::SetParentRenderer(vtkRenderer* parentRen)
+void asiVisu_CameraOrientationWidget::SetParentRenderer(vtkRenderer* parentRen)
 {
   if (this->ParentRenderer == parentRen)
   {
@@ -139,7 +139,7 @@ void vtkCameraOrientationWidget::SetParentRenderer(vtkRenderer* parentRen)
       // event is never triggered upon deserialization. This approach is acceptable since the
       // SquareResize method is quite efficient.
       this->ResizeObserverTag = renWin->AddObserver(
-        vtkCommand::StartEvent, this, &vtkCameraOrientationWidget::SquareResize);
+        vtkCommand::StartEvent, this, &asiVisu_CameraOrientationWidget::SquareResize);
     }
   }
 
@@ -149,23 +149,23 @@ void vtkCameraOrientationWidget::SetParentRenderer(vtkRenderer* parentRen)
 }
 
 //----------------------------------------------------------------------------
-void vtkCameraOrientationWidget::SetRepresentation(vtkCameraOrientationRepresentation* r)
+void asiVisu_CameraOrientationWidget::SetRepresentation(asiVisu_CameraOrientationRepresentation* r)
 {
   this->Superclass::SetWidgetRepresentation(r);
 }
 
 //----------------------------------------------------------------------------
-void vtkCameraOrientationWidget::CreateDefaultRepresentation()
+void asiVisu_CameraOrientationWidget::CreateDefaultRepresentation()
 {
   if (!this->WidgetRep)
   {
-    this->WidgetRep = vtkCameraOrientationRepresentation::New();
+    this->WidgetRep = asiVisu_CameraOrientationRepresentation::New();
   }
 }
 
-void vtkCameraOrientationWidget::ComputeWidgetState(int X, int Y, int modify /* =0*/)
+void asiVisu_CameraOrientationWidget::ComputeWidgetState(int X, int Y, int modify /* =0*/)
 {
-  auto rep = vtkCameraOrientationRepresentation::SafeDownCast(this->WidgetRep);
+  auto rep = asiVisu_CameraOrientationRepresentation::SafeDownCast(this->WidgetRep);
   if (rep == nullptr)
   {
     return;
@@ -176,11 +176,11 @@ void vtkCameraOrientationWidget::ComputeWidgetState(int X, int Y, int modify /* 
   const auto& interactionState = rep->GetInteractionStateAsEnum();
 
   // Synchronize widget state with representation.
-  if (interactionState == vtkCameraOrientationRepresentation::InteractionStateType::Outside)
+  if (interactionState == asiVisu_CameraOrientationRepresentation::InteractionStateType::Outside)
   {
     this->WidgetState = WidgetStateType::Inactive;
   }
-  else if (interactionState == vtkCameraOrientationRepresentation::InteractionStateType::Hovering)
+  else if (interactionState == asiVisu_CameraOrientationRepresentation::InteractionStateType::Hovering)
   {
     this->WidgetState = WidgetStateType::Hot;
   }
@@ -190,10 +190,10 @@ void vtkCameraOrientationWidget::ComputeWidgetState(int X, int Y, int modify /* 
 }
 
 //----------------------------------------------------------------------------
-void vtkCameraOrientationWidget::SelectAction(vtkAbstractWidget* w)
+void asiVisu_CameraOrientationWidget::SelectAction(vtkAbstractWidget* w)
 {
   // cast to ourself
-  vtkCameraOrientationWidget* const self = vtkCameraOrientationWidget::SafeDownCast(w);
+  asiVisu_CameraOrientationWidget* const self = asiVisu_CameraOrientationWidget::SafeDownCast(w);
   if (self == nullptr)
   {
     return;
@@ -228,15 +228,15 @@ void vtkCameraOrientationWidget::SelectAction(vtkAbstractWidget* w)
 }
 
 //----------------------------------------------------------------------------
-void vtkCameraOrientationWidget::EndSelectAction(vtkAbstractWidget* w)
+void asiVisu_CameraOrientationWidget::EndSelectAction(vtkAbstractWidget* w)
 {
   // cast to ourself
-  vtkCameraOrientationWidget* const self = vtkCameraOrientationWidget::SafeDownCast(w);
+  asiVisu_CameraOrientationWidget* const self = asiVisu_CameraOrientationWidget::SafeDownCast(w);
   if (self == nullptr)
   {
     return;
   }
-  auto rep = vtkCameraOrientationRepresentation::SafeDownCast(self->WidgetRep);
+  auto rep = asiVisu_CameraOrientationRepresentation::SafeDownCast(self->WidgetRep);
   if (rep == nullptr)
   {
     return;
@@ -269,7 +269,7 @@ void vtkCameraOrientationWidget::EndSelectAction(vtkAbstractWidget* w)
   // synchronize orientations
   if (rep->IsAnyHandleSelected() &&
     (rep->GetInteractionStateAsEnum() ==
-      vtkCameraOrientationRepresentation::InteractionStateType::Hovering))
+      asiVisu_CameraOrientationRepresentation::InteractionStateType::Hovering))
   {
     double back[3], up[3];
     rep->GetBack(back);
@@ -302,16 +302,16 @@ void vtkCameraOrientationWidget::EndSelectAction(vtkAbstractWidget* w)
 }
 
 //----------------------------------------------------------------------------
-void vtkCameraOrientationWidget::StartAnimation()
+void asiVisu_CameraOrientationWidget::StartAnimation()
 {
   this->AnimatorCurrentFrame = 1;
   this->AnimationTimerId = this->Interactor->CreateRepeatingTimer(1);
   this->AnimationTimerObserverTag = this->Interactor->AddObserver(
-    vtkCommand::TimerEvent, this, &vtkCameraOrientationWidget::PlayAnimationSingleFrame);
+    vtkCommand::TimerEvent, this, &asiVisu_CameraOrientationWidget::PlayAnimationSingleFrame);
 }
 
 //----------------------------------------------------------------------------
-void vtkCameraOrientationWidget::PlayAnimationSingleFrame(
+void asiVisu_CameraOrientationWidget::PlayAnimationSingleFrame(
   vtkObject*, unsigned long event, void* callData)
 {
   if (event == vtkCommand::TimerEvent &&
@@ -332,7 +332,7 @@ void vtkCameraOrientationWidget::PlayAnimationSingleFrame(
 }
 
 //----------------------------------------------------------------------------
-void vtkCameraOrientationWidget::StopAnimation()
+void asiVisu_CameraOrientationWidget::StopAnimation()
 {
   if (this->Interactor->DestroyTimer(this->AnimationTimerId))
   {
@@ -358,15 +358,15 @@ void vtkCameraOrientationWidget::StopAnimation()
 }
 
 //----------------------------------------------------------------------------
-void vtkCameraOrientationWidget::MoveAction(vtkAbstractWidget* w)
+void asiVisu_CameraOrientationWidget::MoveAction(vtkAbstractWidget* w)
 {
   // cast to ourself
-  vtkCameraOrientationWidget* const self = vtkCameraOrientationWidget::SafeDownCast(w);
+  asiVisu_CameraOrientationWidget* const self = asiVisu_CameraOrientationWidget::SafeDownCast(w);
   if (self == nullptr)
   {
     return;
   }
-  auto rep = vtkCameraOrientationRepresentation::SafeDownCast(self->WidgetRep);
+  auto rep = asiVisu_CameraOrientationRepresentation::SafeDownCast(self->WidgetRep);
   if (rep == nullptr)
   {
     return;
@@ -421,7 +421,7 @@ void vtkCameraOrientationWidget::MoveAction(vtkAbstractWidget* w)
 }
 
 //-----------------------------------------------------------------------------
-void vtkCameraOrientationWidget::OrientParentCamera(double back[3], double up[3])
+void asiVisu_CameraOrientationWidget::OrientParentCamera(double back[3], double up[3])
 {
   if (this->ParentRenderer == nullptr)
   {
@@ -456,13 +456,13 @@ void vtkCameraOrientationWidget::OrientParentCamera(double back[3], double up[3]
 }
 
 //-----------------------------------------------------------------------------
-void vtkCameraOrientationWidget::OrientWidgetRepresentation()
+void asiVisu_CameraOrientationWidget::OrientWidgetRepresentation()
 {
   if (this->ParentRenderer == nullptr)
   {
     return;
   }
-  auto rep = vtkCameraOrientationRepresentation::SafeDownCast(this->WidgetRep);
+  auto rep = asiVisu_CameraOrientationRepresentation::SafeDownCast(this->WidgetRep);
   if (rep == nullptr)
   {
     return;
@@ -480,7 +480,7 @@ void vtkCameraOrientationWidget::OrientWidgetRepresentation()
 }
 
 //-----------------------------------------------------------------------------
-void vtkCameraOrientationWidget::InterpolateCamera(int t)
+void asiVisu_CameraOrientationWidget::InterpolateCamera(int t)
 {
   if (this->ParentRenderer == nullptr)
   {
@@ -497,7 +497,7 @@ void vtkCameraOrientationWidget::InterpolateCamera(int t)
 }
 
 //----------------------------------------------------------------------------
-void vtkCameraOrientationWidget::SquareResize()
+void asiVisu_CameraOrientationWidget::SquareResize()
 {
   if (this->DefaultRenderer == nullptr)
   {
@@ -509,7 +509,7 @@ void vtkCameraOrientationWidget::SquareResize()
   {
     return;
   }
-  auto rep = vtkCameraOrientationRepresentation::SafeDownCast(this->WidgetRep);
+  auto rep = asiVisu_CameraOrientationRepresentation::SafeDownCast(this->WidgetRep);
   if (rep == nullptr)
   {
     return;
@@ -528,25 +528,25 @@ void vtkCameraOrientationWidget::SquareResize()
 
   switch (anchoredTo)
   {
-    case vtkCameraOrientationRepresentation::AnchorType::LowerLeft:
+    case asiVisu_CameraOrientationRepresentation::AnchorType::LowerLeft:
       xmin = 0. + vppadw;
       xmax = vpw + vppadw;
       ymin = 0. + vppadh;
       ymax = vph + vppadh;
       break;
-    case vtkCameraOrientationRepresentation::AnchorType::LowerRight:
+    case asiVisu_CameraOrientationRepresentation::AnchorType::LowerRight:
       xmin = 1. - vpw - vppadw;
       xmax = 1. - vppadw;
       ymin = 0. + vppadh;
       ymax = vph + vppadh;
       break;
-    case vtkCameraOrientationRepresentation::AnchorType::UpperLeft:
+    case asiVisu_CameraOrientationRepresentation::AnchorType::UpperLeft:
       xmin = 0.0 + vppadw;
       xmax = vpw + vppadw;
       ymin = 1. - vph - vppadh;
       ymax = 1. - vppadh;
       break;
-    case vtkCameraOrientationRepresentation::AnchorType::UpperRight:
+    case asiVisu_CameraOrientationRepresentation::AnchorType::UpperRight:
       xmin = 1. - vpw - vppadw;
       xmax = 1. - vppadw;
       ymin = 1. - vph - vppadh;
@@ -559,7 +559,7 @@ void vtkCameraOrientationWidget::SquareResize()
 }
 
 //----------------------------------------------------------------------------
-void vtkCameraOrientationWidget::PrintSelf(ostream& os, vtkIndent indent)
+void asiVisu_CameraOrientationWidget::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 }

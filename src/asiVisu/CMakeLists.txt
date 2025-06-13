@@ -464,19 +464,19 @@ set (widgets_H_UI_FILES
   widgets/asiVisu_QVTKWidget.h
 )
 set (widgets_H_FILES
+  widgets/asiVisu_CameraInterpolator.h
+  widgets/asiVisu_CameraOrientationRepresentation.h
+  widgets/asiVisu_CameraOrientationWidget.h
   widgets/asiVisu_PlaneWidget.h
   widgets/asiVisu_QVTKPaintEngine.h
-  widgets/vtkCameraInterpolator.h
-  widgets/vtkCameraOrientationRepresentation.h
-  widgets/vtkCameraOrientationWidget.h
 )
 set (widgets_CPP_FILES
+  widgets/asiVisu_CameraInterpolator.cpp
+  widgets/asiVisu_CameraOrientationRepresentation.cpp
+  widgets/asiVisu_CameraOrientationWidget.cpp
   widgets/asiVisu_PlaneWidget.cpp
   widgets/asiVisu_QVTKPaintEngine.cpp
   widgets/asiVisu_QVTKWidget.cpp
-  widgets/vtkCameraInterpolator.cxx
-  widgets/vtkCameraOrientationRepresentation.cxx
-  widgets/vtkCameraOrientationWidget.cxx
 )
 
 #------------------------------------------------------------------------------

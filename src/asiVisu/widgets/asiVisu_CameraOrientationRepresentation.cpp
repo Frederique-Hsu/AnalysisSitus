@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
 // SPDX-License-Identifier: BSD-3-Clause
-#include "vtkCameraOrientationRepresentation.h"
+#include "asiVisu_CameraOrientationRepresentation.h"
 
 #include <vtkActor.h>
 #include <vtkAssemblyPath.h>
@@ -41,7 +41,7 @@
 #include <asiVisu_Utils.h>
 
 #define GETLABELPROPERTY(DIM, DIR)                                                                 \
-  vtkTextProperty* vtkCameraOrientationRepresentation::Get##DIM##DIR##LabelProperty()              \
+  vtkTextProperty* asiVisu_CameraOrientationRepresentation::Get##DIM##DIR##LabelProperty()              \
   {                                                                                                \
     const auto& dim = to_underlying(HandleDimType::DIM);                                           \
     const auto& dir = to_underlying(HandleDirType::DIR);                                           \
@@ -50,7 +50,7 @@
 
 //-----------------------------------------------------------------------------
 
-vtkStandardNewMacro(vtkCameraOrientationRepresentation);
+vtkStandardNewMacro(asiVisu_CameraOrientationRepresentation);
 
 //-----------------------------------------------------------------------------
 namespace
@@ -81,7 +81,7 @@ constexpr typename std::underlying_type<EnumT>::type to_underlying(const EnumT& 
 }
 
 //-----------------------------------------------------------------------------
-vtkCameraOrientationRepresentation::vtkCameraOrientationRepresentation()
+asiVisu_CameraOrientationRepresentation::asiVisu_CameraOrientationRepresentation()
 {
   this->InteractionState = to_underlying(InteractionStateType::Outside);
   this->PickingManaged = true;
@@ -163,10 +163,10 @@ vtkCameraOrientationRepresentation::vtkCameraOrientationRepresentation()
 }
 
 //-----------------------------------------------------------------------------
-vtkCameraOrientationRepresentation::~vtkCameraOrientationRepresentation() = default;
+asiVisu_CameraOrientationRepresentation::~asiVisu_CameraOrientationRepresentation() = default;
 
 //-----------------------------------------------------------------------------
-void vtkCameraOrientationRepresentation::PositionHandles()
+void asiVisu_CameraOrientationRepresentation::PositionHandles()
 {
   // transform skeleton.
   auto data = vtkDoubleArray::SafeDownCast(this->Points->GetData());
@@ -213,7 +213,7 @@ void vtkCameraOrientationRepresentation::PositionHandles()
 }
 
 //-----------------------------------------------------------------------------
-void vtkCameraOrientationRepresentation::CreateDefaultGeometry()
+void asiVisu_CameraOrientationRepresentation::CreateDefaultGeometry()
 {
   // 1. Set positions of 6 handles.
   const double sl = this->TotalLength * (1. - this->NormalizedHandleDia); // shaft length
@@ -240,7 +240,7 @@ void vtkCameraOrientationRepresentation::CreateDefaultGeometry()
 }
 
 //-----------------------------------------------------------------------------
-void vtkCameraOrientationRepresentation::CreateDefaultProperties()
+void asiVisu_CameraOrientationRepresentation::CreateDefaultProperties()
 {
   // 1. Fill color arrays.
   this->AxesColors->SetNumberOfComponents(3);
@@ -321,9 +321,9 @@ void vtkCameraOrientationRepresentation::CreateDefaultProperties()
 }
 
 //-----------------------------------------------------------------------------
-void vtkCameraOrientationRepresentation::ShallowCopy(vtkProp* prop)
+void asiVisu_CameraOrientationRepresentation::ShallowCopy(vtkProp* prop)
 {
-  vtkCameraOrientationRepresentation* a = vtkCameraOrientationRepresentation::SafeDownCast(prop);
+  asiVisu_CameraOrientationRepresentation* a = asiVisu_CameraOrientationRepresentation::SafeDownCast(prop);
   if (a != nullptr)
   {
     for (int ax = 0; ax < 3; ++ax)
@@ -346,7 +346,7 @@ void vtkCameraOrientationRepresentation::ShallowCopy(vtkProp* prop)
 }
 
 //------------------------------------------------------------------------------
-void vtkCameraOrientationRepresentation::ApplyInteractionState(const InteractionStateType& state)
+void asiVisu_CameraOrientationRepresentation::ApplyInteractionState(const InteractionStateType& state)
 {
   // Depending on state, show/hide parts of representation
   switch (state)
@@ -365,7 +365,7 @@ void vtkCameraOrientationRepresentation::ApplyInteractionState(const Interaction
 }
 
 //-----------------------------------------------------------------------------
-void vtkCameraOrientationRepresentation::ApplyInteractionState(const int& state)
+void asiVisu_CameraOrientationRepresentation::ApplyInteractionState(const int& state)
 {
   // Clamp to allowable values
   const int clamped = state < 0 ? 0 : (state > 2 ? 2 : state);
@@ -373,7 +373,7 @@ void vtkCameraOrientationRepresentation::ApplyInteractionState(const int& state)
 }
 
 //-----------------------------------------------------------------------------
-void vtkCameraOrientationRepresentation::GetActors(vtkPropCollection* ac)
+void asiVisu_CameraOrientationRepresentation::GetActors(vtkPropCollection* ac)
 {
   if (ac != nullptr && this->GetVisibility())
   {
@@ -391,7 +391,7 @@ void vtkCameraOrientationRepresentation::GetActors(vtkPropCollection* ac)
 }
 
 //-----------------------------------------------------------------------------
-void vtkCameraOrientationRepresentation::BuildRepresentation()
+void asiVisu_CameraOrientationRepresentation::BuildRepresentation()
 {
   // Rebuild only if necessary
   if ((this->GetMTime() > this->BuildTime) || (this->Transform->GetMTime() >= this->BuildTime))
@@ -404,7 +404,7 @@ void vtkCameraOrientationRepresentation::BuildRepresentation()
 }
 
 //-----------------------------------------------------------------------------
-int vtkCameraOrientationRepresentation::ComputeInteractionState(int X, int Y, int modify /* = 0*/)
+int asiVisu_CameraOrientationRepresentation::ComputeInteractionState(int X, int Y, int modify /* = 0*/)
 {
   // compute interaction state.
   if (modify)
@@ -456,7 +456,7 @@ int vtkCameraOrientationRepresentation::ComputeInteractionState(int X, int Y, in
 }
 
 //-----------------------------------------------------------------------------
-void vtkCameraOrientationRepresentation::StartWidgetInteraction(double eventPos[2])
+void asiVisu_CameraOrientationRepresentation::StartWidgetInteraction(double eventPos[2])
 {
   this->StartEventPosition[0] = eventPos[0];
   this->StartEventPosition[1] = eventPos[1];
@@ -468,7 +468,7 @@ void vtkCameraOrientationRepresentation::StartWidgetInteraction(double eventPos[
 }
 
 //-----------------------------------------------------------------------------
-void vtkCameraOrientationRepresentation::WidgetInteraction(double newEventPos[2])
+void asiVisu_CameraOrientationRepresentation::WidgetInteraction(double newEventPos[2])
 {
   if (this->Renderer == nullptr)
   {
@@ -482,7 +482,7 @@ void vtkCameraOrientationRepresentation::WidgetInteraction(double newEventPos[2]
 }
 
 //-----------------------------------------------------------------------------
-void vtkCameraOrientationRepresentation::EndWidgetInteraction(double newEventPos[2])
+void asiVisu_CameraOrientationRepresentation::EndWidgetInteraction(double newEventPos[2])
 {
   if (this->GetInteractionStateAsEnum() == InteractionStateType::Rotating)
   {
@@ -500,7 +500,7 @@ void vtkCameraOrientationRepresentation::EndWidgetInteraction(double newEventPos
   this->LastEventPosition[2] = 0;
 }
 
-void vtkCameraOrientationRepresentation::Rotate(double newEventPos[2])
+void asiVisu_CameraOrientationRepresentation::Rotate(double newEventPos[2])
 {
   this->InteractionState = to_underlying(InteractionStateType::Rotating);
 
@@ -518,10 +518,10 @@ void vtkCameraOrientationRepresentation::Rotate(double newEventPos[2])
 }
 
 //-----------------------------------------------------------------------------
-void vtkCameraOrientationRepresentation::FinalizeHandlePicks()
+void asiVisu_CameraOrientationRepresentation::FinalizeHandlePicks()
 {
   if (this->InteractionState ==
-    to_underlying(vtkCameraOrientationRepresentation::InteractionStateType::Hovering))
+    to_underlying(asiVisu_CameraOrientationRepresentation::InteractionStateType::Hovering))
   {
     if ((this->LastPickedAx == this->PickedAxis) && (this->LastPickedAx != -1))
     {
@@ -622,7 +622,7 @@ void vtkCameraOrientationRepresentation::FinalizeHandlePicks()
 }
 
 //-----------------------------------------------------------------------------
-double* vtkCameraOrientationRepresentation::GetBounds()
+double* asiVisu_CameraOrientationRepresentation::GetBounds()
 {
   vtkBoundingBox bbox;
   bbox.SetBounds(this->Container->GetBounds());
@@ -640,13 +640,13 @@ double* vtkCameraOrientationRepresentation::GetBounds()
 }
 
 //-----------------------------------------------------------------------------
-vtkTransform* vtkCameraOrientationRepresentation::GetTransform()
+vtkTransform* asiVisu_CameraOrientationRepresentation::GetTransform()
 {
   return this->Transform;
 }
 
 //-----------------------------------------------------------------------------
-int vtkCameraOrientationRepresentation::RenderOpaqueGeometry(vtkViewport* vp)
+int asiVisu_CameraOrientationRepresentation::RenderOpaqueGeometry(vtkViewport* vp)
 {
   this->BuildRepresentation();
 
@@ -677,7 +677,7 @@ int vtkCameraOrientationRepresentation::RenderOpaqueGeometry(vtkViewport* vp)
 }
 
 //-----------------------------------------------------------------------------
-int vtkCameraOrientationRepresentation::RenderTranslucentPolygonalGeometry(vtkViewport* vp)
+int asiVisu_CameraOrientationRepresentation::RenderTranslucentPolygonalGeometry(vtkViewport* vp)
 {
   int count = 0;
 
@@ -706,7 +706,7 @@ int vtkCameraOrientationRepresentation::RenderTranslucentPolygonalGeometry(vtkVi
 }
 
 //-----------------------------------------------------------------------------
-vtkTypeBool vtkCameraOrientationRepresentation::HasTranslucentPolygonalGeometry()
+vtkTypeBool asiVisu_CameraOrientationRepresentation::HasTranslucentPolygonalGeometry()
 {
   this->Container->GetMapper()->Update();
   int count = 0;
@@ -728,7 +728,7 @@ vtkTypeBool vtkCameraOrientationRepresentation::HasTranslucentPolygonalGeometry(
 }
 
 //-----------------------------------------------------------------------------
-void vtkCameraOrientationRepresentation::ReleaseGraphicsResources(vtkWindow* win)
+void asiVisu_CameraOrientationRepresentation::ReleaseGraphicsResources(vtkWindow* win)
 {
   this->Container->ReleaseGraphicsResources(win);
   this->Shafts->ReleaseGraphicsResources(win);
@@ -756,26 +756,26 @@ GETLABELPROPERTY(Y, Minus)
 GETLABELPROPERTY(Z, Minus)
 
 //-----------------------------------------------------------------------------
-void vtkCameraOrientationRepresentation::SetContainerVisibility(bool state)
+void asiVisu_CameraOrientationRepresentation::SetContainerVisibility(bool state)
 {
   this->Container->SetVisibility(state);
   this->Modified();
 }
 
 //-----------------------------------------------------------------------------
-bool vtkCameraOrientationRepresentation::GetContainerVisibility()
+bool asiVisu_CameraOrientationRepresentation::GetContainerVisibility()
 {
   return this->Container->GetVisibility();
 }
 
 //-----------------------------------------------------------------------------
-vtkProperty* vtkCameraOrientationRepresentation::GetContainerProperty()
+vtkProperty* asiVisu_CameraOrientationRepresentation::GetContainerProperty()
 {
   return this->Container->GetProperty();
 }
 
 //-----------------------------------------------------------------------------
-void vtkCameraOrientationRepresentation::HighlightHandle()
+void asiVisu_CameraOrientationRepresentation::HighlightHandle()
 {
   int dpi = 100;
   if (this->Renderer == nullptr)
@@ -834,7 +834,7 @@ void vtkCameraOrientationRepresentation::HighlightHandle()
 }
 
 //-----------------------------------------------------------------------------
-void vtkCameraOrientationRepresentation::RegisterPickers()
+void asiVisu_CameraOrientationRepresentation::RegisterPickers()
 {
   vtkPickingManager* pm = this->GetPickingManager();
   if (pm != nullptr)
@@ -844,7 +844,7 @@ void vtkCameraOrientationRepresentation::RegisterPickers()
 }
 
 //-----------------------------------------------------------------------------
-void vtkCameraOrientationRepresentation::PrintSelf(ostream& os, vtkIndent indent)
+void asiVisu_CameraOrientationRepresentation::PrintSelf(ostream& os, vtkIndent indent)
 {
   os << indent << "Positioning:" << endl;
   os << indent << "Size: " << this->Size[0] << " " << this->Size[1] << endl;

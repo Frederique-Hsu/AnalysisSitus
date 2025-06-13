@@ -89,6 +89,9 @@ public:
   ActAPI_ProgressEntry& GetProgress() const { return m_progress; }
   ActAPI_PlotterEntry&  GetPlotter()  const { return m_plotter; }
 
+  void SetProgress(ActAPI_ProgressEntry progress) { m_progress = progress; }
+  void SetPlotter(ActAPI_PlotterEntry plotter) { m_plotter = plotter; }
+
 public:
 
   //! Sets a custom drawer to the algorithm.

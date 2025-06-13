@@ -64,6 +64,9 @@ TopoDS_Solid
                             const double       angleDeg,
                             TopoDS_Face&       lastFace)
 {
+  if ( angleDeg < Precision::Angular()*180./M_PI )
+    return TopoDS_Solid();
+
   BRepPrimAPI_MakeRevol mkRevol(profile, axis, angleDeg*M_PI/180., true);
 
   lastFace = TopoDS::Face( mkRevol.LastShape() );

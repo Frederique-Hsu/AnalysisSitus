@@ -771,9 +771,9 @@ int MISC_PushPull(const Handle(asiTcl_Interp)& interp,
     else
       fused = BRepAlgoAPI_Cut(result, prism);
 
-    ShapeUpgrade_UnifySameDomain Maximize(fused);
-    Maximize.Build();
-    result = Maximize.Shape();
+    /*ShapeUpgrade_UnifySameDomain Maximize(fused);
+    Maximize.Build();*/
+    result = fused; // Do not maximize intentionally: more edge means more flexibility.
   }
 
   // Modify Data Model.

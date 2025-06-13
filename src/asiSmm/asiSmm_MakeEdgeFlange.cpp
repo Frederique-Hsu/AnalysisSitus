@@ -55,11 +55,9 @@ MakeEdgeFlange::MakeEdgeFlange(const TopoDS_Shape&  baseShape,
                                ActAPI_ProgressEntry progress,
                                ActAPI_PlotterEntry  plotter)
 //
-: ActAPI_IAlgorithm (progress, plotter),
-  m_baseShape       (baseShape)
+: ActAPI_IAlgorithm(progress, plotter)
 {
-  // Construct AAG for the base shape.
-  m_baseG = new asiAlgo_AAG(m_baseShape, true); // `allowSmooth` == true
+  this->Initialize(baseShape);
 }
 
 //-----------------------------------------------------------------------------
@@ -76,9 +74,21 @@ MakeEdgeFlange::MakeEdgeFlange(const Handle(asiAlgo_AAG)& G,
 
 //-----------------------------------------------------------------------------
 
-bool MakeEdgeFlange::Build(const int    eid,
-                           const double alphaDeg,
-                           const double l)
+void MakeEdgeFlange::Initialize(const TopoDS_Shape& baseShape)
+{
+  m_baseShape = baseShape;
+
+  // Construct AAG for the base shape.
+  m_baseG = new asiAlgo_AAG(m_baseShape, true); // `allowSmooth` == true
+}
+
+//-----------------------------------------------------------------------------
+
+bool MakeEdgeFlange::BuildFeatureSolids(const int     eid,
+                                        const double  alphaDeg,
+                                        const double  l,
+                                        TopoDS_Solid& bend,
+                                        TopoDS_Solid& wall) const
 {
   /* ===========================
    *  Find thickness face `F_t`.
@@ -99,7 +109,7 @@ bool MakeEdgeFlange::Build(const int    eid,
 
   const TopoDS_Face& F_t = m_baseG->GetFace(fid_t);
 
-  m_plotter.REDRAW_SHAPE( "F_t", F_t, Color_Red, 1. );
+  m_plotter.REDRAW_SHAPE( t_asciiString("F_t_eid_") + eid, F_t, Color_Red, 1. );
 
   /* ================================
    *  Compute the axis of revolution.
@@ -124,8 +134,10 @@ bool MakeEdgeFlange::Build(const int    eid,
   // Prepare axis.
   gp_Ax1 ax(O, btri.V_x);
 
-  m_plotter.REDRAW_POINT( "O", O, Color_Red );
-  m_plotter.REDRAW_VECTOR_AT( "ax", ax.Location(), ax.Direction().XYZ()*t, Color_Red );
+  {
+    m_plotter.REDRAW_POINT( t_asciiString("O_eid_") + eid, O, Color_Red );
+    m_plotter.REDRAW_VECTOR_AT( t_asciiString("ax_eid_") + eid, ax.Location(), ax.Direction().XYZ()*t, Color_Red );
+  }
 
   /* ========================================================
    *  Revolve the thickness face to construct a bend feature.
@@ -135,8 +147,16 @@ bool MakeEdgeFlange::Build(const int    eid,
   //
   TopoDS_Solid bendSolid = Utils::BuildRevolvedBlock(F_t, ax, alphaDeg, F_l);
 
-  m_plotter.REDRAW_SHAPE( "bendSolid", bendSolid, Color_Red, 1. );
-  m_plotter.REDRAW_SHAPE( "F_l", F_l, Color_Green, 1. );
+  m_plotter.REDRAW_SHAPE( t_asciiString("bendSolid_eid_") + eid, bendSolid, Color_Red, 1. );
+  m_plotter.REDRAW_SHAPE( t_asciiString("F_l_eid_") + eid, F_l, Color_Green, 1. );
+
+  // Set the output argument.
+  bend = bendSolid;
+
+  // For a degenerated case (angle is 0 degrees), take the
+  // original thickness face as `F_l`.
+  if ( bend.IsNull() )
+    F_l = F_t;
 
   /* ====================
    *  Make a flange wall.
@@ -167,11 +187,27 @@ bool MakeEdgeFlange::Build(const int    eid,
     wallSolid = Utils::BuildExtrudedBlock(F_l, offset);
   }
 
-  m_plotter.REDRAW_SHAPE( "wallSolid", wallSolid, Color_Green, 1. );
+  m_plotter.REDRAW_SHAPE( t_asciiString("wallSolid_eid_") + eid, wallSolid, Color_Green, 1. );
 
-  /* =================
-   *  Fuse all bodies.
-   * ================= */
+  // Set the output argument.
+  wall = wallSolid;
+
+  return true;
+}
+
+//-----------------------------------------------------------------------------
+
+bool MakeEdgeFlange::Build(const int    eid,
+                           const double alphaDeg,
+                           const double l)
+{
+  /* Construct feature solids. */
+
+  TopoDS_Solid bendSolid, wallSolid;
+  //
+  this->BuildFeatureSolids(eid, alphaDeg, l, bendSolid, wallSolid);
+
+  /* Fuse all solid bodies. */
 
   TopTools_ListOfShape args;
   //

@@ -67,6 +67,27 @@ public:
 
 public:
 
+  //! Initializes the algorithm.
+  asiSmm_EXPORT void
+    Initialize(const TopoDS_Shape& baseShape);
+
+public:
+
+  //! Constructs feature shapes for the bend and the flange wall.
+  //! This function is exposed publicly to be used for a preview.
+  //! \param[in]  eid      the numerical 1-based ID of the seed edge.
+  //! \param[in]  alphaDeg the desired bend angle (in degrees).
+  //! \param[in]  l        the desired flange length.
+  //! \param[out] bend     the bend solid.
+  //! \param[out] wall     the flange wall solid.
+  //! \return true in the case of success, false -- otherwise.
+  asiSmm_EXPORT bool
+    BuildFeatureSolids(const int     eid,
+                       const double  alphaDeg,
+                       const double  l,
+                       TopoDS_Solid& bend,
+                       TopoDS_Solid& wall) const;
+
   //! Creates a flange starting from the given `edge` on the base shape.
   //! \param[in] eid      the numerical 1-based ID of the seed edge.
   //! \param[in] alphaDeg the desired bend angle (in degrees).

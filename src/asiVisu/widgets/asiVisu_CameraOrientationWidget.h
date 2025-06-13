@@ -1,11 +1,11 @@
 // SPDX-FileCopyrightText: Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
 // SPDX-License-Identifier: BSD-3-Clause
 /**
- * @class   vtkCameraOrientationWidget
- * @brief   A widget to manipulate vtkCameraOrientationWidget.
+ * @class   asiVisu_CameraOrientationWidget
+ * @brief   A widget to manipulate asiVisu_CameraOrientationWidget.
  *
  *
- * This 3D widget creates and manages its own vtkCameraOrientationRepresentation.
+ * This 3D widget creates and manages its own asiVisu_CameraOrientationRepresentation.
  * To use this widget, make sure you call SetParentRenderer() and enable the widget.
  * The jump-to-axis-viewpoint feature is animated over 20 frames. See SetAnimatorTotalFrames()
  * Turn off animation with AnimateOff()
@@ -25,7 +25,7 @@
  * @par Event Bindings:
  * Note that the event bindings described above can be changed using this
  * class's vtkWidgetEventTranslator, which translates VTK events
- * into the vtkCameraOrientationWidget's widget events:
+ * into the asiVisu_CameraOrientationWidget's widget events:
  * <pre>
  *   vtkWidgetEvent::Select -- some part of the widget has been selected
  *   vtkWidgetEvent::EndSelect -- the selection process has completed
@@ -33,15 +33,15 @@
  * </pre>
  *
  * @par Event Bindings:
- * This class, and the affiliated vtkCameraOrientationRepresentation,
+ * This class, and the affiliated asiVisu_CameraOrientationRepresentation,
  * are second generation VTK widgets.
  *
  * @sa
- * vtkCameraOrientationRepresentation
+ * asiVisu_CameraOrientationRepresentation
  */
 
-#ifndef vtkCameraOrientationWidget_h
-#define vtkCameraOrientationWidget_h
+#ifndef asiVisu_CameraOrientationWidget_h
+#define asiVisu_CameraOrientationWidget_h
 
 #include "asiVisu.h"
 
@@ -51,16 +51,16 @@
 #include <vtkWrappingHints.h>            // For VTK_MARSHALAUTO
 #include <vtkNew.h>
 
-class vtkCameraInterpolator;
-class vtkCameraOrientationRepresentation;
+class asiVisu_CameraInterpolator;
+class asiVisu_CameraOrientationRepresentation;
 class vtkRenderer;
 
-class asiVisu_EXPORT vtkCameraOrientationWidget
+class asiVisu_EXPORT asiVisu_CameraOrientationWidget
   : public vtkAbstractWidget
 {
 public:
-  static vtkCameraOrientationWidget* New();
-  vtkTypeMacro(vtkCameraOrientationWidget, vtkAbstractWidget);
+  static asiVisu_CameraOrientationWidget* New();
+  vtkTypeMacro(asiVisu_CameraOrientationWidget, vtkAbstractWidget);
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
   ///@{
@@ -86,10 +86,10 @@ public:
    * widget in the scene. Note that the representation is a subclass of vtkProp
    * so it can be added to the renderer independently of the widget.
    */
-  void SetRepresentation(vtkCameraOrientationRepresentation* r);
+  void SetRepresentation(asiVisu_CameraOrientationRepresentation* r);
 
   /**
-   * Create a vtkCameraOrientationRepresentation.
+   * Create a asiVisu_CameraOrientationRepresentation.
    */
   void CreateDefaultRepresentation() override;
 
@@ -118,8 +118,8 @@ public:
   ///@}
 
 protected:
-  vtkCameraOrientationWidget();
-  ~vtkCameraOrientationWidget() override;
+  asiVisu_CameraOrientationWidget();
+  ~asiVisu_CameraOrientationWidget() override;
 
   // These methods handle events
   void ComputeWidgetState(int X, int Y, int modify = 0);
@@ -148,7 +148,7 @@ protected:
   vtkWeakPointer<vtkRenderer> ParentRenderer;
 
   // Store camera interpolations.
-  vtkNew<vtkCameraInterpolator> CameraInterpolator;
+  vtkNew<asiVisu_CameraInterpolator> CameraInterpolator;
 
   bool Animate = true;
   int AnimatorTotalFrames = 20;
@@ -160,8 +160,8 @@ protected:
   int AnimationTimerObserverTag = -1;
 
 private:
-  vtkCameraOrientationWidget(const vtkCameraOrientationWidget&) = delete;
-  void operator=(const vtkCameraOrientationWidget&) = delete;
+  asiVisu_CameraOrientationWidget(const asiVisu_CameraOrientationWidget&) = delete;
+  void operator=(const asiVisu_CameraOrientationWidget&) = delete;
 };
 
 #endif

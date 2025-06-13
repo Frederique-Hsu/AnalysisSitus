@@ -82,6 +82,22 @@ public:
   asiUI_EXPORT virtual
     ~asiUI_IV();
 
+public:
+
+  //! \return true if Qt events are processed and waited for on each
+  //!         visualization call.
+  bool IsProcessEventsOn() const
+  {
+    return m_bProcEvtOn;
+  }
+
+  //! Sets the events processing flag for Qt events.
+  //! \param[in] flag the Boolean value to set.
+  void SetProcessEvents(const bool flag)
+  {
+    m_bProcEvtOn = flag;
+  }
+
 // COMMON:
 public:
 
@@ -884,6 +900,7 @@ protected:
   bool                                m_bBrowserOn; //!< Flag to enable/disable plotting.
   bool                                m_bVisuOn;    //!< Flag to enable/disable plotting.
   bool                                m_bRepaintOn; //!< Whether to repaint.
+  bool                                m_bProcEvtOn; //!< Whether to process events on each visualization call.
   bool                                m_bAsPart;    //!< Whether to draw shapes as Part Node.
   Handle(asiEngine_Model)             m_model;      //!< Data Model instance.
   vtkSmartPointer<asiVisu_PrsManager> m_prsMgr3d;   //!< Presentation manager 3D.

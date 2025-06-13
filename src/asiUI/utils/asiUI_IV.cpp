@@ -83,6 +83,7 @@ asiUI_IV::asiUI_IV(const Handle(asiEngine_Model)&             model,
   m_bBrowserOn    (true),
   m_bVisuOn       (true),
   m_bRepaintOn    (true),
+  m_bProcEvtOn    (true),
   m_bAsPart       (false),
   m_model         (model),
   m_prsMgr3d      (prsMgr3d),
@@ -1569,7 +1570,8 @@ void asiUI_IV::visualize(const bool                  is2d,
   if ( m_bVisuOn )
     this->prsManager(is2d)->Actualize(node.get(), false, false, m_bRepaintOn, false);
 
-  QCoreApplication::processEvents(QEventLoop::AllEvents, 10000);
+  if ( m_bProcEvtOn )
+    QCoreApplication::processEvents(QEventLoop::AllEvents, 10000);
 }
 
 //---------------------------------------------------------------------------//

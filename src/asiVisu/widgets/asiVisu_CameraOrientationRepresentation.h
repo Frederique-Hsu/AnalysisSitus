@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
 // SPDX-License-Identifier: BSD-3-Clause
 /**
- * @class   vtkCameraOrientationRepresentation
- * @brief   A 3D representation for vtkCameraOrientationWidget.
+ * @class   asiVisu_CameraOrientationRepresentation
+ * @brief   A 3D representation for asiVisu_CameraOrientationWidget.
  *
  * Hover over the representation and drag with LMB to orbit around the view.
  * Clicking on one of the axis labels will snap to that view.
@@ -12,12 +12,12 @@
  * viewport. See AnchorType.
  *
  * @sa
- * vtkCameraOrientationWidget
+ * asiVisu_CameraOrientationWidget
  *
  */
 
-#ifndef vtkCameraOrientationRepresentation_h
-#define vtkCameraOrientationRepresentation_h
+#ifndef asiVisu_CameraOrientationRepresentation_h
+#define asiVisu_CameraOrientationRepresentation_h
 
 #include <vtkInteractionWidgetsModule.h> // needed for export macro
 #include <vtkWidgetRepresentation.h>
@@ -37,23 +37,23 @@ class vtkTextProperty;
 class vtkTexture;
 class vtkTubeFilter;
 
-class vtkCameraOrientationRepresentation
+class asiVisu_CameraOrientationRepresentation
   : public vtkWidgetRepresentation
 {
 public:
-  static vtkCameraOrientationRepresentation* New();
-  vtkTypeMacro(vtkCameraOrientationRepresentation, vtkWidgetRepresentation);
+  static asiVisu_CameraOrientationRepresentation* New();
+  vtkTypeMacro(asiVisu_CameraOrientationRepresentation, vtkWidgetRepresentation);
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
   enum class InteractionStateType : int
   {
-    Outside = 0, // corresponds to vtkCameraOrientationWidget::Inactive
-    Hovering,    // corresponds to vtkCameraOrientationWidget::Hot
-    Rotating     // corresponds to vtkCameraOrientationWidget::Active
+    Outside = 0, // corresponds to asiVisu_CameraOrientationWidget::Inactive
+    Hovering,    // corresponds to asiVisu_CameraOrientationWidget::Hot
+    Rotating     // corresponds to asiVisu_CameraOrientationWidget::Active
   };
 
   /**
-   * The interaction state may be set from a widget (e.g., vtkCameraOrientationWidget) or
+   * The interaction state may be set from a widget (e.g., asiVisu_CameraOrientationWidget) or
    * other object. This call updates the representation to match the interaction state.
    */
   void ApplyInteractionState(const InteractionStateType& state);
@@ -101,8 +101,18 @@ public:
   /**
    * Get/Set the widget anchor type
    */
-  vtkSetMacro(AnchorPosition, AnchorType);
-  vtkGetMacro(AnchorPosition, AnchorType);
+  virtual AnchorType GetAnchorPosition()
+  {
+    return this->AnchorPosition;
+  }
+  virtual void SetAnchorPosition(AnchorType _arg)
+  {
+    if (this->AnchorPosition != _arg)
+    {
+      this->AnchorPosition = _arg;
+      this->Modified();
+    }
+  }
   void AnchorToLowerLeft()
   {
     this->AnchorPosition = AnchorType::LowerLeft;
@@ -319,8 +329,8 @@ public:
   bool IsAnyHandleSelected() { return (this->PickedAxis != -1) && (this->PickedDir != -1); }
 
 protected:
-  vtkCameraOrientationRepresentation();
-  ~vtkCameraOrientationRepresentation() override;
+  asiVisu_CameraOrientationRepresentation();
+  ~asiVisu_CameraOrientationRepresentation() override;
 
   virtual void CreateDefaultGeometry();
   virtual void CreateDefaultProperties();
@@ -387,8 +397,8 @@ protected:
   double LastEventPosition[3] = {};
 
 private:
-  vtkCameraOrientationRepresentation(const vtkCameraOrientationRepresentation&) = delete;
-  void operator=(const vtkCameraOrientationRepresentation&) = delete;
+  asiVisu_CameraOrientationRepresentation(const asiVisu_CameraOrientationRepresentation&) = delete;
+  void operator=(const asiVisu_CameraOrientationRepresentation&) = delete;
 };
 
 #endif

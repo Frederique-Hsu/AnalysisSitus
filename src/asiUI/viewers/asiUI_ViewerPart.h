@@ -46,7 +46,7 @@
 
 // VTK includes
 #pragma warning(push, 0)
-#include <vtkCameraOrientationWidget.h>
+#include <asiVisu_CameraOrientationWidget.h>
 #include <vtkOrientationMarkerWidget.h>
 #pragma warning(pop)
 
@@ -158,7 +158,7 @@ protected:
   vtkSmartPointer<asiUI_RotationCallback> m_rotoCallback;
 
   //! Interactive camera orientation handler.
-  vtkSmartPointer<vtkCameraOrientationWidget> m_cameraWidget;
+  vtkSmartPointer<asiVisu_CameraOrientationWidget> m_cameraWidget;
 
   //! Toolbar.
   QToolBar* m_toolBar;

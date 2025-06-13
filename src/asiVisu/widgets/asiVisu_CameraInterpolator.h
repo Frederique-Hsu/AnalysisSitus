@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
 // SPDX-License-Identifier: BSD-3-Clause
 /**
- * @class   vtkCameraInterpolator
+ * @class   asiVisu_CameraInterpolator
  * @brief   interpolate a series of cameras to update a new camera
  *
  * This class is used to interpolate a series of cameras to update a
@@ -34,8 +34,8 @@
  * future as an alternative interpolation method for camera orientation.
  */
 
-#ifndef vtkCameraInterpolator_h
-#define vtkCameraInterpolator_h
+#ifndef asiVisu_CameraInterpolator_h
+#define asiVisu_CameraInterpolator_h
 
 #include <vtkObject.h>
 #include <vtkRenderingCoreModule.h> // For export macro
@@ -45,16 +45,16 @@ class vtkCameraList;
 class vtkTupleInterpolator;
 class vtkCameraList;
 
-class vtkCameraInterpolator : public vtkObject
+class asiVisu_CameraInterpolator : public vtkObject
 {
 public:
-  vtkTypeMacro(vtkCameraInterpolator, vtkObject);
+  vtkTypeMacro(asiVisu_CameraInterpolator, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /**
    * Instantiate the class.
    */
-  static vtkCameraInterpolator* New();
+  static asiVisu_CameraInterpolator* New();
 
   /**
    * Return the number of cameras in the list of cameras.
@@ -197,8 +197,8 @@ public:
   vtkMTimeType GetMTime() override;
 
 protected:
-  vtkCameraInterpolator();
-  ~vtkCameraInterpolator() override;
+  asiVisu_CameraInterpolator();
+  ~asiVisu_CameraInterpolator() override;
 
   // Control the interpolation type
   int InterpolationType;
@@ -220,8 +220,8 @@ protected:
   vtkCameraList* CameraList;
 
 private:
-  vtkCameraInterpolator(const vtkCameraInterpolator&) = delete;
-  void operator=(const vtkCameraInterpolator&) = delete;
+  asiVisu_CameraInterpolator(const asiVisu_CameraInterpolator&) = delete;
+  void operator=(const asiVisu_CameraInterpolator&) = delete;
 };
 
 #endif
