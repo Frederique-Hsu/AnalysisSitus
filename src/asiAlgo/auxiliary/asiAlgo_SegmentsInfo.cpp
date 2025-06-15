@@ -48,20 +48,96 @@ typedef rapidjson::Document::ValueType t_jsonValue;
 
 #endif
 
+namespace
+{
+  tl::optional<asiAlgo_FeatureAngleType> StringToTypeConnection(const std::string& str)
+  {
+    tl::optional<asiAlgo_FeatureAngleType> type = tl::nullopt;
+
+    if (str == asiPropName_FATUndefined)
+    {
+      type = FeatureAngleType_Undefined;
+    }
+    else if (str == asiPropName_FATConcave)
+    {
+      type = FeatureAngleType_Concave;
+    }
+    else if (str == asiPropName_FATConvex)
+    {
+      type = FeatureAngleType_Convex;
+    }
+    else if (str == asiPropName_FATSmooth)
+    {
+      type = FeatureAngleType_Smooth;
+    }
+    else if (str == asiPropName_FATSmoothConcave)
+    {
+      type = FeatureAngleType_SmoothConcave;
+    }
+    else if (str == asiPropName_FATSmoothConvex)
+    {
+      type = FeatureAngleType_SmoothConvex;
+    }
+    else if (str == asiPropName_FATNonManifold)
+    {
+      type = FeatureAngleType_NonManifold;
+    }
+
+    return type;
+  }
+
+  const std::string TypeConnectionToString(const asiAlgo_FeatureAngleType& type)
+  {
+    std::string str = asiPropName_FATUndefined;
+
+    switch (type)
+    {
+      case FeatureAngleType_Undefined:
+        str = asiPropName_FATUndefined;
+        break;
+      case FeatureAngleType_Concave:
+        str = asiPropName_FATConcave;
+        break;
+      case FeatureAngleType_Convex:
+        str = asiPropName_FATConvex;
+        break;
+      case FeatureAngleType_Smooth:
+        str = asiPropName_FATSmooth;
+        break;
+      case FeatureAngleType_SmoothConcave:
+        str = asiPropName_FATSmoothConcave;
+        break;
+      case FeatureAngleType_SmoothConvex:
+        str = asiPropName_FATSmoothConvex;
+        break;
+      case FeatureAngleType_NonManifold:
+        str = asiPropName_FATNonManifold;
+        break;
+      default:
+        str = asiPropName_FATUndefined;
+        break;
+    }
+
+    return str;
+  }
+}
+
 //-----------------------------------------------------------------------------
 
-asiAlgo_SegmentsInfo::asiAlgo_SegmentsInfo(const double       _id,
+asiAlgo_SegmentsInfo::asiAlgo_SegmentsInfo(const int          _id,
                                            const std::string& _type,
-                                           const double       _cuttingLength)
-  : id( _id ),
-    type( _type ),
-    cuttingLength( _cuttingLength )
+                                           const double       _cuttingLength,
+                                           const bool         _isExternal)
+  : id            ( _id ),
+    type          ( _type ),
+    cuttingLength ( _cuttingLength ),
+    isExternal    ( _isExternal )
 {}
 
 //-----------------------------------------------------------------------------
 
 asiAlgo_SegmentsInfo::asiAlgo_SegmentsInfo()
-  : asiAlgo_SegmentsInfo( -1, "undefined", 0.0 )
+  : asiAlgo_SegmentsInfo( -1, "undefined", 0.0, true )
 {}
 
 //-----------------------------------------------------------------------------
@@ -82,6 +158,12 @@ bool asiAlgo_SegmentsInfo::IsEqual(const asiAlgo_SegmentsInfo& info,
     return false;
   }
 
+  // isExternal.
+  if (this->isExternal != info.isExternal)
+  {
+    return false;
+  }
+
   // Cutting length.
   if ( Abs( this->cuttingLength - info.cuttingLength ) > linToler )
   {
@@ -96,6 +178,18 @@ bool asiAlgo_SegmentsInfo::IsEqual(const asiAlgo_SegmentsInfo& info,
 
   if ( this->nextSegment.has_value() &&
        this->nextSegment != info.nextSegment )
+  {
+    return false;
+  }
+
+  // Prev segment ID.
+  if ( this->prevSegment.has_value() != info.prevSegment.has_value() )
+  {
+    return false;
+  }
+
+  if ( this->prevSegment.has_value() &&
+       this->prevSegment != info.prevSegment )
   {
     return false;
   }
@@ -126,6 +220,18 @@ bool asiAlgo_SegmentsInfo::IsEqual(const asiAlgo_SegmentsInfo& info,
 
   if (   this->connectionPointToNextSegment.has_value() &&
       !(*this->connectionPointToNextSegment).IsEqual( *info.connectionPointToNextSegment, linToler ) )
+  {
+    return false;
+  }
+
+  // Type connection point to next segment.
+  if ( this->typeConnectionPointToNextSegment.has_value() != info.typeConnectionPointToNextSegment.has_value() )
+  {
+    return false;
+  }
+
+  if ( this->typeConnectionPointToNextSegment.has_value() &&
+       this->typeConnectionPointToNextSegment != info.typeConnectionPointToNextSegment )
   {
     return false;
   }
@@ -211,6 +317,13 @@ void asiAlgo_SegmentsInfo::FromJSON(void*                 pJsonGenericObj,
         info.type = mit->value.GetString();
     }
 
+    // Type.
+    else if (prop == asiPropName_IsExternal)
+    {
+      if (!mit->value.IsNull())
+        info.isExternal = mit->value.GetBool();
+    }
+
     // Cutting length.
     else if ( prop == asiPropName_CuttingLength )
     {
@@ -223,6 +336,13 @@ void asiAlgo_SegmentsInfo::FromJSON(void*                 pJsonGenericObj,
     {
       if ( !mit->value.IsNull() )
         info.nextSegment = mit->value.GetInt();
+    }
+
+    // Next segment ID.
+    else if ( prop == asiPropName_PrevSegment )
+    {
+      if ( !mit->value.IsNull() )
+        info.prevSegment = mit->value.GetInt();
     }
 
     // Middle point of segment.
@@ -257,6 +377,15 @@ void asiAlgo_SegmentsInfo::FromJSON(void*                 pJsonGenericObj,
         asiAlgo_Utils::Json::ReadCoords(&arr, coords);
 
         info.connectionPointToNextSegment = gp_Pnt( coords );
+      }
+    }
+
+    // Type connection point to next segment.
+    else if ( prop == asiPropName_TypeConnectionPointToNextSegment )
+    {
+      if ( !mit->value.IsNull() )
+      {
+        info.typeConnectionPointToNextSegment = StringToTypeConnection(mit->value.GetString());
       }
     }
 
@@ -318,6 +447,9 @@ void asiAlgo_SegmentsInfo::ToJSON(const asiAlgo_SegmentsInfo& info,
     // Type.
     out << "," << nl << qt << asiPropName_Type << qt << ": " << qt << info.type << qt;
 
+    // isExternal
+    out << "," << nl << qt << asiPropName_IsExternal << qt << ": " << qt << (info.isExternal ? "true" : "false") << qt;
+
     // Cutting length.
     out << "," << nl << qt << asiPropName_CuttingLength << qt << ": " << info.cuttingLength;
 
@@ -340,6 +472,15 @@ void asiAlgo_SegmentsInfo::ToJSON(const asiAlgo_SegmentsInfo& info,
       std::string pointToNextStr = info.connectionPointToNextSegment.has_value() ? asiAlgo_Utils::Json::FromCoordsAsTuple( (*info.connectionPointToNextSegment).XYZ() )
                                                                                  : "null";
       out << "," << nl << qt << asiPropName_ConnectionPointToNextSegment << qt << ": " << pointToNextStr;
+
+      // Type connection point to next segment.
+      std::string typeConnectionPointToNextStr = info.typeConnectionPointToNextSegment.has_value() ? TypeConnectionToString(*info.typeConnectionPointToNextSegment) : "";
+      out << "," << nl << qt << asiPropName_TypeConnectionPointToNextSegment << qt << ": \"" << typeConnectionPointToNextStr << "\"";
+    }
+
+    if (info.prevSegment.has_value())
+    {
+      out << "," << nl << qt << asiPropName_PrevSegment << qt << ": " << asiAlgo_Utils::Str::ToString(*info.prevSegment);
     }
 
     // For circular curves.

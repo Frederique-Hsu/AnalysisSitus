@@ -32,6 +32,7 @@
 #define asiAlgo_SegmentsInfo_h
 
 // asiAlgo include
+#include <asiAlgo_FeatureAngleType.h>
 #include <asiAlgo_Optional.h>
 
 // OCCT includes
@@ -59,18 +60,23 @@ class asiAlgo_SegmentsInfo
 {
   public:
 
-    double      id;
+    int         id;
     std::string type;
     double      cuttingLength;
 
     gp_Pnt      midPnt;
 
-    tl::optional< int >    nextSegment;
-    tl::optional< double > turningAngleToNextSegment;
-    tl::optional< gp_Pnt > connectionPointToNextSegment;
+    tl::optional< int >                      prevSegment;
+    tl::optional< int >                      nextSegment;
+    tl::optional< double >                   turningAngleToNextSegment;
+    tl::optional< gp_Pnt >                   connectionPointToNextSegment;
+    tl::optional< asiAlgo_FeatureAngleType > typeConnectionPointToNextSegment;
 
     tl::optional< double > radius;
     tl::optional< double > angle;
+    tl::optional< gp_Pnt > center;
+
+    bool isExternal; // true, if it belongs to the outer wire.
 
   public:
 
@@ -80,9 +86,10 @@ class asiAlgo_SegmentsInfo
 
     //! Constructor.
     asiAlgo_EXPORT
-      asiAlgo_SegmentsInfo(const double       _id,
+      asiAlgo_SegmentsInfo(const int          _id,
                            const std::string& _type,
-                           const double       _cuttingLength);
+                           const double       _cuttingLength,
+                           const bool         _isExternal);
 
   public:
 

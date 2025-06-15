@@ -36,6 +36,7 @@
 #include <ActAPI_IAlgorithm.h>
 
 // OCCT includes
+#include <BRepTools_History.hxx>
 #include <Geom_Curve.hxx>
 #include <TopoDS_Wire.hxx>
 
@@ -47,14 +48,31 @@
 namespace asiAlgo_ConvertCurve
 {
   asiAlgo_EXPORT void
+    Convert2ArcLines(TopoDS_Shape&              shape,
+                     Handle(BRepTools_History)& history,
+                     double                     tolerance = 0.001,
+                     ActAPI_ProgressEntry       progress  = nullptr,
+                     ActAPI_PlotterEntry        plotter   = nullptr);
+
+  asiAlgo_EXPORT void
     Convert2ArcLines(TopoDS_Shape&        shape,
                      double               tolerance = 0.001,
                      ActAPI_ProgressEntry progress  = nullptr,
                      ActAPI_PlotterEntry  plotter   = nullptr);
 
   asiAlgo_EXPORT void
+    Convert2Polyline(const TopoDS_Wire&                                                   wire,
+                     std::vector<std::tuple<gp_Pnt, TColStd_PackedMapOfInteger, double>>& points, //<pnt, <edgeIds>, max edge tolerance>
+                     std::map<int, TopoDS_Edge>&                                          edgesMap);
+
+  asiAlgo_EXPORT void
     Convert2Polyline(const TopoDS_Wire&   wire,
                      std::vector<gp_Pnt>& points);
+
+  asiAlgo_EXPORT void
+    Convert2Polyline(const TopoDS_Wire&         wire,
+                     TopoDS_Wire&               polyWire,
+                     Handle(BRepTools_History)& history);
 
   asiAlgo_EXPORT void
     Convert2Polyline(const TopoDS_Wire& wire,
@@ -62,6 +80,10 @@ namespace asiAlgo_ConvertCurve
 
   asiAlgo_EXPORT void
     Convert2Polyline(TopoDS_Shape& shape);
+
+  asiAlgo_EXPORT void
+    Convert2Polyline(TopoDS_Shape&              shape,
+                     Handle(BRepTools_History)& history);
 
   asiAlgo_EXPORT double
     CheckMaxGap(const TopoDS_Shape&  shape,

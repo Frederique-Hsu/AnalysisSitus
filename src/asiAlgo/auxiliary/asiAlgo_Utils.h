@@ -1745,6 +1745,18 @@ namespace asiAlgo_Utils
         const double        tolerance,
         TopoDS_Shape&       result);
 
+  //! Performs sewing.
+  //! \param[in]  shape     shape to sew.
+  //! \param[in]  tolerance sewing tolerance.
+  //! \param[out] result    sewed shape.
+  //! \param[out] history   history.
+  //! \return true in case of success, false -- otherwise.
+  asiAlgo_EXPORT bool
+    Sew(const TopoDS_Shape&        shape,
+        const double               tolerance,
+        TopoDS_Shape&              result,
+        Handle(BRepTools_History)& history);
+
   //! Performs "same domain" expansion on faces and edges.
   //! \param[in,out] shape    the shape to modify.
   //! \param[in]     linToler the linear maximization tolerance.

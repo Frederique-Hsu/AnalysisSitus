@@ -3475,12 +3475,26 @@ bool asiAlgo_Utils::Sew(const TopoDS_Shape& shape,
                         const double        tolerance,
                         TopoDS_Shape&       result)
 {
+  Handle(BRepTools_History) history;
+  return Sew(shape, tolerance, result, history);
+}
+
+//-----------------------------------------------------------------------------
+
+bool asiAlgo_Utils::Sew(const TopoDS_Shape&        shape,
+                        const double               tolerance,
+                        TopoDS_Shape&              result,
+                        Handle(BRepTools_History)& history)
+{
   BRepBuilderAPI_Sewing Sewer(tolerance);
   Sewer.Load(shape);
 
   // Perform sewing
   Sewer.Perform();
   result = Sewer.SewedShape();
+
+  history = Sewer.GetContext()->History();
+
   return true;
 }
 

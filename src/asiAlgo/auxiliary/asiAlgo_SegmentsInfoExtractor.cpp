@@ -95,12 +95,22 @@ bool asiAlgo_SegmentsInfoExtractor::Perform(const TopoDS_Face&       face,
 
   algo.CheckContours( 1, vexity );
 
+  TopoDS_Wire owire = asiAlgo_Utils::CacheOuterWire(1, G);
+
   // Transfer results to segments information data structures.
   for ( TopExp_Explorer wexp( face, TopAbs_WIRE ); wexp.More(); wexp.Next() )
   {
     const TopoDS_Wire&                 W  = TopoDS::Wire( wexp.Current() );
     const Handle(ShapeExtend_WireData) WD = new ShapeExtend_WireData(W);
     const int                          ne = WD->NbEdges();
+
+    bool isExternal = false;
+    if ( W.IsPartner(owire) )
+      isExternal = true;
+
+    std::map<int, int> prevSegmentsMap;
+
+    asiAlgo_SegmentsInfoVec segmentsInfoVecLoc;
 
     // Edge by edge.
     for ( int eid = 1; eid <= ne; ++eid )
@@ -126,7 +136,7 @@ bool asiAlgo_SegmentsInfoExtractor::Perform(const TopoDS_Face&       face,
 
       const double length = nvsProps.Mass();
 
-      asiAlgo_SegmentsInfo info( eid, asiAlgo_Utils::CurveName( curve ), length < Precision::Confusion() ? 0. : length );
+      asiAlgo_SegmentsInfo info( eid, asiAlgo_Utils::CurveName( curve ), length < Precision::Confusion() ? 0. : length, isExternal);
 
       // Get middle point.
       curve->D0( ( U1 + U2 ) * 0.5, info.midPnt );
@@ -139,6 +149,7 @@ bool asiAlgo_SegmentsInfoExtractor::Perform(const TopoDS_Face&       face,
         {
           info.radius = circ.Radius();
           info.angle  = ( U2 - U1 ) / M_PI * 180.0;
+          info.center = circ.Location();
         }
       }
 
@@ -147,12 +158,15 @@ bool asiAlgo_SegmentsInfoExtractor::Perform(const TopoDS_Face&       face,
       {
         info.nextSegment = nextSegmentId;
 
+        prevSegmentsMap[info.nextSegment.value()] = info.id;
+
         TopoDS_Vertex commonVertex = asiAlgo_Utils::GetCommonVertex( E1, E2 );
 
         if ( vexity.IsBound( commonVertex ) )
         {
-          info.turningAngleToNextSegment    = ( vexity.Find( commonVertex ).angRad / M_PI ) * 180.0;
-          info.connectionPointToNextSegment = BRep_Tool::Pnt( commonVertex );
+          info.turningAngleToNextSegment        = ( vexity.Find( commonVertex ).angRad / M_PI ) * 180.0;
+          info.connectionPointToNextSegment     = BRep_Tool::Pnt( commonVertex );
+          info.typeConnectionPointToNextSegment = vexity.Find(commonVertex).angType;
         }
         else
         {
@@ -161,8 +175,20 @@ bool asiAlgo_SegmentsInfoExtractor::Perform(const TopoDS_Face&       face,
         }
       }
 
-      segmentsInfoVec.push_back( info );
+      segmentsInfoVecLoc.push_back( info );
     }
+
+    asiAlgo_SegmentsInfoVec::iterator itSIVL = segmentsInfoVecLoc.begin();
+    for (; itSIVL != segmentsInfoVecLoc.end(); ++itSIVL)
+    {
+      if (prevSegmentsMap.count(itSIVL->id))
+      {
+        itSIVL->prevSegment = prevSegmentsMap[itSIVL->id];
+      }
+
+      segmentsInfoVec.push_back(*itSIVL);
+    }
+
   }
 
   return true;

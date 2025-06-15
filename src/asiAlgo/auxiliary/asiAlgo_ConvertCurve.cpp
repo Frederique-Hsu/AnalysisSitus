@@ -57,9 +57,11 @@
 #include <gp_Circ.hxx>
 #include <gp_Lin.hxx>
 #include <ShapeAnalysis.hxx>
+#include <ShapeAnalysis_Edge.hxx>
 #include <ShapeAnalysis_Curve.hxx>
 #include <ShapeAnalysis_FreeBounds.hxx>
 #include <ShapeBuild_ReShape.hxx>
+#include <ShapeAnalysis_ShapeTolerance.hxx>
 #include <ShapeExtend_WireData.hxx>
 #include <ShapeFix_Wire.hxx>
 #include <TopExp_Explorer.hxx>
@@ -1069,11 +1071,27 @@ namespace
 
 //-----------------------------------------------------------------------------
 
-void asiAlgo_ConvertCurve::Convert2ArcLines(TopoDS_Shape&        shape,
-                                            double               tolerance,
-                                            ActAPI_ProgressEntry progress,
-                                            ActAPI_PlotterEntry  plotter)
+void asiAlgo_ConvertCurve::Convert2ArcLines(TopoDS_Shape&              shape,
+                                            double                     tolerance,
+                                            ActAPI_ProgressEntry       progress,
+                                            ActAPI_PlotterEntry        plotter)
 {
+  Handle(BRepTools_History) history;
+  asiAlgo_ConvertCurve::Convert2ArcLines(shape, history, tolerance, progress, plotter);
+}
+
+//-----------------------------------------------------------------------------
+
+void asiAlgo_ConvertCurve::Convert2ArcLines(TopoDS_Shape&              shape,
+                                            Handle(BRepTools_History)& history,
+                                            double                     tolerance,
+                                            ActAPI_ProgressEntry       progress,
+                                            ActAPI_PlotterEntry        plotter)
+{
+  ShapeAnalysis_Edge edgeAnalysis;
+
+  history = new BRepTools_History();
+
   Handle(ShapeBuild_ReShape) ctx = new ShapeBuild_ReShape;
 
   for ( TopExp_Explorer expW( shape, TopAbs_WIRE ); expW.More(); expW.Next() )
@@ -1083,6 +1101,8 @@ void asiAlgo_ConvertCurve::Convert2ArcLines(TopoDS_Shape&        shape,
     Handle(TopTools_HSequenceOfShape) inputEdges = new TopTools_HSequenceOfShape;
 
     bool isSomethingDone = false;
+
+    Handle(BRepTools_History) convertHistory = new BRepTools_History();
 
     for ( TopExp_Explorer expE( wire, TopAbs_EDGE ); expE.More(); expE.Next() )
     {
@@ -1107,6 +1127,7 @@ void asiAlgo_ConvertCurve::Convert2ArcLines(TopoDS_Shape&        shape,
         continue;
       }
 
+      bool isFirst = true;
       isSomethingDone = true;
 
       TopTools_SequenceOfShape::Iterator newEdgesIter( *localInputEdges );
@@ -1118,6 +1139,15 @@ void asiAlgo_ConvertCurve::Convert2ArcLines(TopoDS_Shape&        shape,
         }
 
         inputEdges->Append( newEdgesIter.Value() );
+        if (isFirst)
+        {
+          convertHistory->AddModified(edge, newEdgesIter.Value());
+          isFirst = false;
+        }
+        else
+        {
+          convertHistory->AddGenerated(edge, newEdgesIter.Value());
+        }
       }
     }
 
@@ -1131,6 +1161,46 @@ void asiAlgo_ConvertCurve::Convert2ArcLines(TopoDS_Shape&        shape,
       if ( wires->Length() == 1 && !wires->First().IsNull() )
       {
         ctx->Replace( wire, wires->First() );
+
+        history->Merge(convertHistory);
+
+        Handle(BRepTools_History) connectionHistory = new BRepTools_History();
+        for (TopExp_Explorer exp(wires->First(), TopAbs_EDGE); exp.More(); exp.Next())
+        {
+          const TopoDS_Edge& imageEdge = TopoDS::Edge(exp.Value());
+          const TopoDS_Vertex& firstVertex = edgeAnalysis.FirstVertex(imageEdge);
+          const TopoDS_Vertex& lastVertex = edgeAnalysis.LastVertex(imageEdge);
+          gp_Pnt fPnt = BRep_Tool::Pnt(firstVertex);
+          gp_Pnt lPnt = BRep_Tool::Pnt(lastVertex);
+
+          TopTools_SequenceOfShape::Iterator newEdgesIter(*inputEdges);
+          for (; newEdgesIter.More(); newEdgesIter.Next())
+          {
+            const TopoDS_Edge& originEdge = TopoDS::Edge(newEdgesIter.Value());
+            if (history->IsRemoved(originEdge) || imageEdge.IsEqual(originEdge))
+            {
+              continue;
+            }
+
+            const TopoDS_Vertex& firstVertexC = edgeAnalysis.FirstVertex(originEdge);
+            const TopoDS_Vertex& lastVertexC = edgeAnalysis.LastVertex(originEdge);
+            gp_Pnt fPntC = BRep_Tool::Pnt(firstVertexC);
+            gp_Pnt lPntC = BRep_Tool::Pnt(lastVertexC);
+
+            if (fPnt.IsEqual(fPntC, std::max(Precision::Confusion(), std::max(BRep_Tool::Tolerance(firstVertexC), BRep_Tool::Tolerance(firstVertex)))) &&
+              lPnt.IsEqual(lPntC, std::max(Precision::Confusion(), std::max(BRep_Tool::Tolerance(lastVertexC), BRep_Tool::Tolerance(lastVertex)))) ||
+              fPnt.IsEqual(lPntC, std::max(Precision::Confusion(), std::max(BRep_Tool::Tolerance(firstVertex), BRep_Tool::Tolerance(lastVertexC)))) &&
+              lPnt.IsEqual(fPntC, std::max(Precision::Confusion(), std::max(BRep_Tool::Tolerance(lastVertex), BRep_Tool::Tolerance(firstVertexC)))))
+            {
+              connectionHistory->AddModified(originEdge, imageEdge);
+              break;
+            }
+
+          }
+        }
+
+        history->Merge(connectionHistory);
+
       }
       else
       {
@@ -1141,14 +1211,44 @@ void asiAlgo_ConvertCurve::Convert2ArcLines(TopoDS_Shape&        shape,
 
   shape = ctx->Apply( shape );
 
+  if (!ctx->History().IsNull())
+  {
+    history->Merge(ctx->History());
+  }
+
   // Fix edges sharing problems if any.
-  asiAlgo_Utils::Sew( shape, sewTol, shape );
+  Handle(BRepTools_History) sewHistory;
+  asiAlgo_Utils::Sew( shape, sewTol, shape, sewHistory );
+  if (!sewHistory.IsNull())
+  {
+    history->Merge(sewHistory);
+  }
 }
 
 //-----------------------------------------------------------------------------
 
 void asiAlgo_ConvertCurve::Convert2Polyline(const TopoDS_Wire&   wire,
                                             std::vector<gp_Pnt>& points)
+{
+  std::vector<std::tuple<gp_Pnt, TColStd_PackedMapOfInteger, double>> locPoints;
+  std::map<int, TopoDS_Edge> edgesMap;
+
+  Convert2Polyline(wire, locPoints, edgesMap);
+
+  std::vector<std::tuple<gp_Pnt,
+                         TColStd_PackedMapOfInteger,
+                         double>>::const_iterator itP = locPoints.cbegin();
+  for (; itP != locPoints.cend(); ++itP)
+  {
+    points.push_back(std::get<0>(*itP));
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+void asiAlgo_ConvertCurve::Convert2Polyline(const TopoDS_Wire&                                                   wire,
+                                            std::vector<std::tuple<gp_Pnt, TColStd_PackedMapOfInteger, double>>& points,
+                                            std::map<int, TopoDS_Edge>&                                          edgesMap)
 {
   double length    = 0.0;
   int    nbPoints  = 0;
@@ -1160,15 +1260,22 @@ void asiAlgo_ConvertCurve::Convert2Polyline(const TopoDS_Wire&   wire,
 
   bool isForward = true;
 
+  ShapeAnalysis_ShapeTolerance TolerChecker;
+
+  int index = 1;
   BRepTools_WireExplorer exp( wire );
-  for ( ; exp.More(); exp.Next() )
+  for ( ; exp.More(); exp.Next(), ++index)
   {
     const TopoDS_Edge& edge = TopoDS::Edge( exp.Current() );
+
+    edgesMap[index] = edge;
 
     if ( edge.IsNull() )
     {
       continue;
     }
+
+    const double maxToler = TolerChecker.Tolerance(edge, 1);
 
     BRepAdaptor_Curve curve( edge );
 
@@ -1203,9 +1310,17 @@ void asiAlgo_ConvertCurve::Convert2Polyline(const TopoDS_Wire&   wire,
       curve.D0( tool.Parameter( i ), pnt );
 
       if ( points.empty() ||
-           ( !points.empty() && !points.back().IsEqual( pnt, Precision::Confusion() ) ) )
+           ( !points.empty() && !std::get<0>(points.back()).IsEqual( pnt, Precision::Confusion() ) ) )
       {
-        points.push_back( pnt );
+        TColStd_PackedMapOfInteger edgeIds;
+        edgeIds.Add(index);
+        points.push_back(std::tuple<gp_Pnt, TColStd_PackedMapOfInteger, double>(pnt, edgeIds, maxToler));
+      }
+
+      if (std::get<0>(points.back()).IsEqual(pnt, Precision::Confusion()))
+      {
+        std::get<1>(points.back()).Add(index);
+        std::get<2>(points.back()) = std::max(std::get<2>(points.back()), maxToler);
       }
 
       edgePts.push_back( pnt );
@@ -1229,31 +1344,114 @@ void asiAlgo_ConvertCurve::Convert2Polyline(const TopoDS_Wire&   wire,
 
 //-----------------------------------------------------------------------------
 
-void asiAlgo_ConvertCurve::Convert2Polyline(const TopoDS_Wire& wire,
-                                            TopoDS_Wire&       polyWire)
+void asiAlgo_ConvertCurve::Convert2Polyline(const TopoDS_Wire&         wire,
+                                            TopoDS_Wire&               polyWire)
 {
+  Handle(BRepTools_History) history;
+  asiAlgo_ConvertCurve::Convert2Polyline(wire, polyWire, history);
+}
+
+//-----------------------------------------------------------------------------
+
+void asiAlgo_ConvertCurve::Convert2Polyline(const TopoDS_Wire&         wire,
+                                            TopoDS_Wire&               polyWire,
+                                            Handle(BRepTools_History)& history)
+{
+  history = new BRepTools_History();
+
   // Extract points.
-  std::vector<gp_Pnt> points;
-  Convert2Polyline(wire, points);
+  std::map<int, TopoDS_Edge> edgesMap;
+  std::vector<std::tuple<gp_Pnt, TColStd_PackedMapOfInteger, double>> points;
+  Convert2Polyline(wire, points, edgesMap);
 
   // Create a new polygonal wire.
   BRepBuilderAPI_MakePolygon mkPolygon;
   //
   for ( const auto& pt : points )
   {
-    mkPolygon.Add(pt);
+    mkPolygon.Add(std::get<0>(pt));
   }
 
   if ( wire.Closed() )
-    mkPolygon.Add( points[0] );
+    mkPolygon.Add(std::get<0>(points[0]));
 
   polyWire = mkPolygon.Wire();
+
+  ShapeAnalysis_Edge edgeAnalysis;
+
+  // Fill history.
+  for (TopExp_Explorer expPW(polyWire, TopAbs_EDGE); expPW.More(); expPW.Next())
+  {
+    const TopoDS_Edge& pwEdge = TopoDS::Edge(expPW.Value());
+    const TopoDS_Vertex& firstVertex = edgeAnalysis.FirstVertex(pwEdge);
+    const TopoDS_Vertex& lastVertex = edgeAnalysis.LastVertex(pwEdge);
+    gp_Pnt fPnt = BRep_Tool::Pnt(firstVertex);
+    gp_Pnt lPnt = BRep_Tool::Pnt(lastVertex);
+
+    bool isFirstFound = false;
+    bool isSecondFound = false;
+    TColStd_PackedMapOfInteger fEdges, sEdges;
+    std::vector<std::tuple<gp_Pnt, TColStd_PackedMapOfInteger, double>>::const_iterator itPs = points.cbegin();
+    for (; itPs != points.cend(); ++itPs)
+    {
+      if (!isFirstFound && fPnt.IsEqual(std::get<0>(*itPs), std::max(Precision::Confusion(), std::get<2>(*itPs))))
+      {
+        isFirstFound = true;
+        fEdges = std::get<1>(*itPs);
+      }
+
+      if (!isSecondFound && lPnt.IsEqual(std::get<0>(*itPs), std::max(Precision::Confusion(), std::get<2>(*itPs))))
+      {
+        isSecondFound = true;
+        sEdges = std::get<1>(*itPs);
+      }
+
+      if (isFirstFound && isSecondFound)
+      {
+        break;
+      }
+    }
+
+    if (!isFirstFound && !isSecondFound)
+    {
+      continue;
+    }
+
+    TColStd_PackedMapOfInteger edgeIds;
+    edgeIds.Intersection(fEdges, sEdges);
+
+    if (edgeIds.Extent() != 1)
+    {
+      continue;
+    }
+
+    const int edgeId = edgeIds.GetMinimalMapped();
+
+    if (!edgesMap.count(edgeId))
+    {
+      continue;
+    }
+
+    const TopoDS_Edge& initialEdge = edgesMap[edgeId];
+    history->AddModified(initialEdge, pwEdge);
+  }
 }
 
 //-----------------------------------------------------------------------------
 
 void asiAlgo_ConvertCurve::Convert2Polyline(TopoDS_Shape& shape)
 {
+  Handle(BRepTools_History) history;
+  Convert2Polyline(shape, history);
+}
+
+//-----------------------------------------------------------------------------
+
+void asiAlgo_ConvertCurve::Convert2Polyline(TopoDS_Shape&              shape,
+                                            Handle(BRepTools_History)& history)
+{
+  history = new BRepTools_History();
+
   Handle(ShapeBuild_ReShape) ctx = new ShapeBuild_ReShape;
 
   for ( TopExp_Explorer exp(shape.Oriented(TopAbs_FORWARD), TopAbs_WIRE); exp.More(); exp.Next() )
@@ -1261,14 +1459,24 @@ void asiAlgo_ConvertCurve::Convert2Polyline(TopoDS_Shape& shape)
     const TopoDS_Wire& W = TopoDS::Wire( exp.Current() );
 
     TopoDS_Wire polyWire;
-
-    Convert2Polyline(W, polyWire);
+    Handle(BRepTools_History) locHistory;
+    Convert2Polyline(W, polyWire, locHistory);
     //
-    if ( !polyWire.IsNull() )
+    if (!polyWire.IsNull())
+    {
       ctx->Replace(W, polyWire);
+      if (!locHistory.IsNull())
+      {
+        history->Merge(locHistory);
+      }
+    }
   }
 
   TopoDS_Shape newShape = ctx->Apply(shape);
+  if (!ctx->History().IsNull())
+  {
+    history->Merge(ctx->History());
+  }
   shape = newShape;
 }
 
