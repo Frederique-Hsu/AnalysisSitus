@@ -60,12 +60,35 @@ a:visited:hover {
   background-color: rgb(250, 200, 200);
 }
 .open-source {
-  background-color: rgb(150, 250, 150);
+  background-color: rgb(166, 227, 100);
+  color: black;
+  font-size: 14px;
+  font-family: Menlo, Monaco, "Courier New", Courier, monospace;
+  margin-bottom: 5px;
+  padding: 5px;
+  font-weight: normal;
+  border-radius: 4px;
   padding: 5px;
 }
 .commercial {
-  background-color: rgb(150, 250, 250);
+  background-color: rgb(126, 218, 243);
+  color: black;
+  font-size: 14px;
+  font-family: Menlo, Monaco, "Courier New", Courier, monospace;
+  margin-bottom: 5px;
   padding: 5px;
+  font-weight: normal;
+  border-radius: 4px;
+  padding: 5px;
+}
+.marginated {
+  padding: 10px;
+  margin: 10px;
+}
+.marginated-foss {
+  padding: 10px;
+  margin: 10px;
+  background-color: rgb(166, 227, 100);
 }
 .faq {
   padding-left: 15px;

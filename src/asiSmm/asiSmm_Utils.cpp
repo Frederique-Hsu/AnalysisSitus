@@ -93,5 +93,8 @@ TopoDS_Solid
   Utils::BuildExtrudedBlock(const TopoDS_Face& base,
                             const gp_Vec&      V)
 {
+  if ( V.Magnitude() < Precision::Confusion() )
+    return TopoDS_Solid();
+
   return TopoDS::Solid( BRepPrimAPI_MakePrism(base, V) );
 }

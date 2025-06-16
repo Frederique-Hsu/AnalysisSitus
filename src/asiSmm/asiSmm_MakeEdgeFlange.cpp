@@ -187,7 +187,8 @@ bool MakeEdgeFlange::BuildFeatureSolids(const int     eid,
     wallSolid = Utils::BuildExtrudedBlock(F_l, offset);
   }
 
-  m_plotter.REDRAW_SHAPE( t_asciiString("wallSolid_eid_") + eid, wallSolid, Color_Green, 1. );
+  if ( !wallSolid.IsNull() )
+    m_plotter.REDRAW_SHAPE( t_asciiString("wallSolid_eid_") + eid, wallSolid, Color_Green, 1. );
 
   // Set the output argument.
   wall = wallSolid;
@@ -396,21 +397,21 @@ bool MakeEdgeFlange::probeThickness(const int          fid,
   if ( ipts.empty() )
     return false;
 
-  // Choose the minimal distance as a probed thickness to return.
-  double minThickness = DBL_MAX;
+  // Choose the max distance as a probed thickness to return.
+  double maxThickness = -DBL_MAX;
   //
   for ( const auto& ipt : ipts )
   {
     const double d = ( ipt - E_Pm.XY() ).Modulus();
     //
-    if ( d < minThickness )
+    if ( d > maxThickness )
     {
-      minThickness = d;
+      maxThickness = d;
     }
   }
 
   // Set the thickness to return.
-  t = minThickness;
+  t = maxThickness;
 
   return true;
 }

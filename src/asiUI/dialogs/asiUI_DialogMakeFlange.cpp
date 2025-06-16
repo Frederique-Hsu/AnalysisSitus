@@ -566,8 +566,11 @@ void asiUI_DialogMakeFlange::onPreview()
     t_asciiString bendPreviewName = t_asciiString("bendSolid_eid_") + eid;
     t_asciiString wallPreviewName = t_asciiString("wallSolid_eid_") + eid;
     //
-    m_plotter.REDRAW_SHAPE( bendPreviewName, bendSolid, Color_Red, 1. );
-    m_plotter.REDRAW_SHAPE( wallPreviewName, wallSolid, Color_Green, 1. );
+    if ( !bendSolid.IsNull() )
+      m_plotter.REDRAW_SHAPE( bendPreviewName, bendSolid, Color_Red, 1. );
+    //
+    if ( !wallSolid.IsNull() )
+      m_plotter.REDRAW_SHAPE( wallPreviewName, wallSolid, Color_Green, 1. );
     //
     m_previewNames.push_back(bendPreviewName);
     m_previewNames.push_back(wallPreviewName);
