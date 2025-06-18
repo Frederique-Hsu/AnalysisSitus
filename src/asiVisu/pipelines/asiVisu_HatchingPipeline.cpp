@@ -43,7 +43,6 @@
 #include <Geom2d_Line.hxx>
 #include <Geom2d_TrimmedCurve.hxx>
 #include <Geom2dHatch_Hatcher.hxx>
-#include <Draw_Color.hxx>
 #include <TopExp_Explorer.hxx>
 
 // VTK includes
