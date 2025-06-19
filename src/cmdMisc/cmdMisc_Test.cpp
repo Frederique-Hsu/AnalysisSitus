@@ -80,15 +80,19 @@ int MISC_Test(const Handle(asiTcl_Interp)& interp,
   int iter = 1;
   interp->GetKeyValue(argc, argv, "iter", iter);
 
+  const double angleStep = 360. / (double)(iter);
+
   for ( int i = 1; i <= iter; ++i )
   {
+    const double angleRad = i*angleStep*M_PI / 180.;
+
     // Prepare geometric objects.
     Point p1;
     p1.x = new double(0);
     p1.y = new double(0);
     Point p2;
-    p2.x = new double(1);
-    p2.y = new double(1);
+    p2.x = new double( Cos(angleRad) );
+    p2.y = new double( Sin(angleRad) );
 
     // Draw calls.
     interp->GetPlotter().REDRAW_POINT("p1",
