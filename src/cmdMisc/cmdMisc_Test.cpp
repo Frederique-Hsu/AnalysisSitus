@@ -64,23 +64,89 @@
 
 #include <GC_MakeArcOfCircle.hxx>
 
+#include <Geo.h>
+#include <GCS.h>
+
+  using namespace GCS;
+
 //-----------------------------------------------------------------------------
 
 int MISC_Test(const Handle(asiTcl_Interp)& interp,
-              int                          /*argc*/,
-              const char**                 /*argv*/)
+              int                          argc,
+              const char**                 argv)
 {
-  gp_Pnt p1 (0, 0, 0);
-  gp_Pnt p2(2, 2, 0);
-  gp_Pnt center(2, 0, 0);
-  gp_Circ circ(gp_Ax2(center, gp_Dir(0, 0, 1)), 2);
-  gp_Circ circ2(gp_Ax2(center, gp_Dir(0, 0, 1)), 3);
+  Handle(Geom_Plane) XOY = new Geom_Plane( gp::XOY() );
 
-  Handle(Geom_TrimmedCurve) anArcOfCircle =  GC_MakeArcOfCircle(circ, p2, p1, true);
-  Handle(Geom_TrimmedCurve) anArcOfCircle2 = GC_MakeArcOfCircle(circ2, p2, p1, false);
+  int iter = 1;
+  interp->GetKeyValue(argc, argv, "iter", iter);
 
-  interp->GetPlotter().REDRAW_CURVE("c1", anArcOfCircle,  Color_Red, true);
-  interp->GetPlotter().REDRAW_CURVE("c2", anArcOfCircle2, Color_Red, true);
+  for ( int i = 1; i <= iter; ++i )
+  {
+    // Prepare geometric objects.
+    Point p1;
+    p1.x = new double(0);
+    p1.y = new double(0);
+    Point p2;
+    p2.x = new double(1);
+    p2.y = new double(1);
+
+    // Draw calls.
+    interp->GetPlotter().REDRAW_POINT("p1",
+                                       XOY->Value(*p1.x, *p1.y),
+                                       Color_Red);
+    //
+    interp->GetPlotter().REDRAW_POINT("p2",
+                                       XOY->Value(*p2.x, *p2.y),
+                                       Color_Red);
+
+    // Prepare constraints.
+    double* distance = new double(5);
+    double* posX     = new double(0);
+    double* posY     = new double(0);
+
+    // Construct and populate the system of constraints.
+    System* sys = new System();
+    //
+    sys->addConstraintCoordinateX(p1, posX);
+    sys->addConstraintCoordinateX(p1, posY);
+    sys->addConstraintDifference(p1.x, p2.x, distance);
+    //
+    std::vector<double*> p_parameters;
+    p_parameters.push_back(p1.x);
+    p_parameters.push_back(p1.y);
+    p_parameters.push_back(p2.x);
+    p_parameters.push_back(p2.y);
+
+    // Solve and apply.
+    sys->solve(p_parameters);
+    sys->applySolution();
+
+    // Draw calls.
+    interp->GetPlotter().REDRAW_POINT("p1_sol",
+                                       XOY->Value(*p1.x, *p1.y),
+                                       Color_Green);
+    //
+    interp->GetPlotter().REDRAW_POINT("p2_sol",
+                                       XOY->Value(*p2.x, *p2.y),
+                                       Color_Green);
+    //
+    interp->GetPlotter().REDRAW_LINK("p1_p2",
+                                      XOY->Value(*p1.x, *p1.y),
+                                      XOY->Value(*p2.x, *p2.y),
+                                      Color_Green);
+
+    t_asciiString itername = "Iteration ";
+    itername += i;
+    //
+    interp->GetPlotter().REDRAW_TEXT("caption", itername);
+
+    delete sys;
+    delete p1.x;
+    delete p1.y;
+    delete p2.x;
+    delete p2.y;
+    delete distance;
+  }
 
   return TCL_OK;
 }

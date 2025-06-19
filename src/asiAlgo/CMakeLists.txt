@@ -721,6 +721,26 @@ set (discr_CPP_FILES
 )
 
 #------------------------------------------------------------------------------
+# Geometric constraint solver
+#------------------------------------------------------------------------------
+
+set (gcs_H_FILES
+  gcs/Constraints.h
+  gcs/GCS.h
+  gcs/Geo.h
+  gcs/qp_eq.h
+  gcs/SubSystem.h
+  gcs/Util.h
+)
+set (gcs_CPP_FILES
+  gcs/Constraints.cpp
+  gcs/GCS.cpp
+  gcs/Geo.cpp
+  gcs/qp_eq.cpp
+  gcs/SubSystem.cpp
+)
+
+#------------------------------------------------------------------------------
 set (OCCT_LIB_FILES
   TKernel
   TKMath
@@ -950,6 +970,14 @@ foreach (FILE ${discr_CPP_FILES})
   source_group ("Source Files\\Discrete" FILES "${FILE}")
 endforeach (FILE)
 
+foreach (FILE ${gcs_H_FILES})
+  source_group ("Header Files\\GCS" FILES "${FILE}")
+endforeach (FILE)
+
+foreach (FILE ${gcs_CPP_FILES})
+  source_group ("Source Files\\GCS" FILES "${FILE}")
+endforeach (FILE)
+
 #------------------------------------------------------------------------------
 # Configure includes
 #------------------------------------------------------------------------------
@@ -972,6 +1000,7 @@ set (asiAlgo_include_dir_loc "${CMAKE_CURRENT_SOURCE_DIR};\
   ${CMAKE_CURRENT_SOURCE_DIR}/opt;\
   ${CMAKE_CURRENT_SOURCE_DIR}/points;\
   ${CMAKE_CURRENT_SOURCE_DIR}/re;\
+  ${CMAKE_CURRENT_SOURCE_DIR}/gcs;\
   ${CMAKE_CURRENT_SOURCE_DIR}/utils;")
 #
 set (asiAlgo_include_dir ${asiAlgo_include_dir_loc} PARENT_SCOPE)
@@ -1037,6 +1066,7 @@ add_library (asiAlgo SHARED
   ${re_H_FILES}          ${re_CPP_FILES}
   ${utils_H_FILES}       ${utils_CPP_FILES}
   ${discr_H_FILES}       ${discr_CPP_FILES}
+  ${gcs_H_FILES}         ${gcs_CPP_FILES}
 )
 
 target_link_libraries(asiAlgo asiActiveData)
@@ -1165,3 +1195,4 @@ install (FILES ${points_H_FILES}      DESTINATION ${SDK_INSTALL_SUBDIR}include)
 install (FILES ${re_H_FILES}          DESTINATION ${SDK_INSTALL_SUBDIR}include)
 install (FILES ${utils_H_FILES}       DESTINATION ${SDK_INSTALL_SUBDIR}include)
 install (FILES ${discr_H_FILES}       DESTINATION ${SDK_INSTALL_SUBDIR}include)
+install (FILES ${gcs_H_FILES}         DESTINATION ${SDK_INSTALL_SUBDIR}include)
