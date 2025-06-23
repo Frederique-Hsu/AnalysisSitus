@@ -70,11 +70,11 @@ bool asiAlgo_SuppressFeatures::operator()(const TopoDS_Shape&        shape,
   // Try to suppress soft faces.
   asiAlgo_SuppressSoft softEraser(shape, nullptr, m_progress, m_plotter);
   //
-  const bool isSoftOk = softEraser.Perform(feature);
+  bool isSuppressOk = softEraser.Perform(feature);
 
   // Check the result of the efficient algorithm to decide whether to launch
   // more tricky one.
-  if ( !isSoftOk || softEraser.HasStatusFlag(asiAlgo_SuppressSoft::StatusCode_WarnNoFaces2Suppress) )
+  if ( !isSuppressOk || softEraser.HasStatusFlag(asiAlgo_SuppressSoft::StatusCode_WarnNoFaces2Suppress) )
   {
     if ( tryHard )
     {
@@ -84,8 +84,9 @@ bool asiAlgo_SuppressFeatures::operator()(const TopoDS_Shape&        shape,
       // the fact that if the soft eraser returns false, it means that the
       // model was not affected, so its AAG is still valid.
       asiAlgo_SuppressHard hardEraser(shape, softEraser.GetAAG(), m_progress, m_plotter);
+      isSuppressOk = hardEraser.Perform(feature);
       //
-      if ( !hardEraser.Perform(feature) || hardEraser.GetResult().IsNull() )
+      if ( !isSuppressOk || hardEraser.GetResult().IsNull() )
       {
         stillThere = feature;
       }
@@ -120,6 +121,9 @@ bool asiAlgo_SuppressFeatures::operator()(const TopoDS_Shape&        shape,
   {
     unsuppressed.Unite(stillThere);
   }
+  //
+  if ( !isSuppressOk )
+    return false;
 
   return true;
 }
