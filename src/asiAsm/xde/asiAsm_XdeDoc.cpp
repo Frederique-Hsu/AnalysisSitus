@@ -2723,7 +2723,7 @@ void Doc::UpdatePMI(const TDF_LabelDataMap map)
 //-----------------------------------------------------------------------------
 
 void Doc::ExtractAttributes(const TDF_Label oldLabel,
-                            TDF_Label&      newLabel)
+                            TDF_Label&      newLabel) const
 {
 
   if ( oldLabel.IsNull() || newLabel.IsNull() || oldLabel.IsEqual(newLabel) )
@@ -2878,6 +2878,72 @@ Handle(asiAlgo_Naming) Doc::GetNaming(const PartId& pid) const
   }
 
   return naming;
+}
+
+//-----------------------------------------------------------------------------
+
+void Doc::ExtractPart(const PartId& part,
+                      Handle(Doc)&  newDoc) const
+{
+  // Extract part.
+  AssemblyItemIds items;
+  AssemblyItemId item(part);
+  items.Append(item);
+
+  newDoc = this->ExtractSubAssembly(items);
+}
+
+//-----------------------------------------------------------------------------
+
+Handle(Doc) Doc::ExtractSubAssembly(const AssemblyItemIds& items) const
+{
+  Handle(Doc) D = new Doc();
+  //
+  D->NewDocument();
+  //
+  Handle(TDocStd_Document) ocafDoc = D->GetDocument();
+
+  // Protect against extraction of a parent and its child
+  // at the same time.
+  AssemblyItemIds items2Extract;
+  int i = 0;
+  //
+  for ( AssemblyItemIds::Iterator it1(items); it1.More(); it1.Next(), ++i )
+  {
+    bool isToAdd = true;
+    const AssemblyItemId& item = it1.Value();
+    int j = 0;
+    for ( AssemblyItemIds::Iterator it2(items); it2.More(); it2.Next(), ++j )
+    {
+      if ( i == j )
+        continue;
+
+      const AssemblyItemId& item2 = it2.Value();
+
+      if ( item.IsChild(item2) )
+      {
+        isToAdd = false;
+        break;
+      }
+    }
+
+    if ( isToAdd )
+      items2Extract.Append(item);
+  }
+
+  for ( AssemblyItemIds::Iterator iter(items2Extract); iter.More(); iter.Next() )
+  {
+    const AssemblyItemId& aiid = iter.Value();
+
+    TDF_Label       L         = this->GetOriginal(aiid);
+    TopLoc_Location parentLoc = this->GetParentLocation(aiid);
+    TopLoc_Location ownLoc    = this->GetOwnLocation(aiid);
+    TopLoc_Location location = parentLoc * ownLoc;
+    //
+    this->copyLabel(L, ocafDoc, location);
+  }
+
+  return D;
 }
 
 //-----------------------------------------------------------------------------
@@ -3599,6 +3665,128 @@ void Doc::copyAttributes(const TDF_Label from,
     Handle(TDF_RelocationTable) rt = new TDF_RelocationTable();
     sAtt->Paste(tAtt, rt);
   }
+}
+
+//-----------------------------------------------------------------------------
+
+TDF_Label Doc::copyLabel(const TDF_Label&                oldLabel,
+                         const Handle(TDocStd_Document)& doc,
+                         const TopLoc_Location&          parentLoc) const
+{
+  Handle(XCAFDoc_ShapeTool)
+    shapeTool = XCAFDoc_DocumentTool::ShapeTool(oldLabel);
+  //
+  Handle(XCAFDoc_ShapeTool)
+    newShapeTool = XCAFDoc_DocumentTool::ShapeTool(doc->Main());
+
+  TDF_LabelDataMap map;
+
+  // Copy shape structure.
+  TDF_Label
+    newLabel = this->copyShape(oldLabel, shapeTool, newShapeTool, map, parentLoc);
+  //
+  newShapeTool->UpdateAssemblies();
+
+  // Copy attributes.
+  TDF_LabelDataMap::Iterator labelIt(map);
+  for (; labelIt.More(); labelIt.Next())
+  {
+    this->ExtractAttributes( labelIt.Key(), labelIt.ChangeValue() );
+  }
+
+  return newLabel;
+}
+
+//-----------------------------------------------------------------------------
+
+TDF_Label Doc::copyShape(const TDF_Label&                 oldL,
+                         const Handle(XCAFDoc_ShapeTool)& shapeTool,
+                         const Handle(XCAFDoc_ShapeTool)& newShapeTool,
+                         TDF_LabelDataMap&                map,
+                         const TopLoc_Location&           parentLoc) const
+{
+  // Check if the given label has been already copied.
+  if ( map.IsBound(oldL) )
+    return map.Find(oldL);
+
+  // A corner case with a located free shape.
+  if ( shapeTool->IsFree(oldL) && shapeTool->IsReference(oldL) )
+  {
+    TDF_Label freeShapeL;
+    shapeTool->GetReferredShape(oldL, freeShapeL);
+
+    TDF_Label newOriginalL = this->copyShape(freeShapeL, shapeTool, newShapeTool, map, TopLoc_Location());
+    TDF_Label newFreeL     = newShapeTool->AddShape(GetShape(newOriginalL).Located(shapeTool->GetLocation(oldL)));
+    //
+    map.Bind(oldL, newFreeL);
+    return newFreeL;
+  }
+
+  bool isTransformedRoot = !parentLoc.IsIdentity();
+
+  // Location for the main assembly.
+  BRep_Builder builder;
+  //
+  if ( shapeTool->IsAssembly(oldL) )
+  {
+    // Add assembly and iterate all its components.
+    TopoDS_Compound comp;
+    builder.MakeCompound(comp);
+    //
+    if ( isTransformedRoot )
+      comp.Location(parentLoc);
+
+    TDF_Label newAssemblyL = newShapeTool->AddShape(comp);
+
+    // Get the original instead of auxiliary instance.
+    if ( isTransformedRoot )
+      newShapeTool->GetReferredShape(newAssemblyL, newAssemblyL);
+    //
+    map.Bind(oldL, newAssemblyL);
+
+    TDF_LabelSequence components;
+    shapeTool->GetComponents(oldL, components);
+    //
+    for ( int compIt = 1; compIt <= components.Length(); compIt++ )
+    {
+      TDF_Label refL, compL;
+      compL = components.Value(compIt);
+      shapeTool->GetReferredShape(compL, refL);
+      TDF_Label compOriginalL = copyShape(refL, shapeTool, newShapeTool, map, TopLoc_Location());
+      Handle(XCAFDoc_Location) locationAttr;
+      compL.FindAttribute(XCAFDoc_Location::GetID(), locationAttr);
+      TDF_Label newCompL = newShapeTool->AddComponent(newAssemblyL, compOriginalL, locationAttr->Get());
+      map.Bind(components.Value(compIt), newCompL);
+    }
+    return newAssemblyL;
+  }
+
+  // add part
+  TopoDS_Shape shape = shapeTool->GetShape(oldL);
+  if ( isTransformedRoot )
+    shape.Location(parentLoc * shape.Location());
+  //
+  TDF_Label newL = newShapeTool->AddShape(shape, false);
+  map.Bind(oldL, newL);
+
+  // get original instead of auxiliary instance
+  TDF_Label oldOriginalL = oldL;
+  if ( isTransformedRoot || shapeTool->IsReference(oldL) )
+  {
+    shapeTool->GetReferredShape(oldL, oldOriginalL);
+    newShapeTool->GetReferredShape(newL, newL);
+    map.Bind(oldOriginalL, newL);
+  }
+  // copy subshapes
+  TDF_LabelSequence oldSubShapes;
+  shapeTool->GetSubShapes(oldOriginalL, oldSubShapes);
+  for ( int subIt = 1; subIt <= oldSubShapes.Length(); subIt++ )
+  {
+    TopoDS_Shape subShape = shapeTool->GetShape(oldSubShapes.Value(subIt));
+    TDF_Label newSubShapeL = newShapeTool->AddSubShape(newL, subShape);
+    map.Bind(oldSubShapes.Value(subIt), newSubShapeL);
+  }
+  return newL;
 }
 
 //-----------------------------------------------------------------------------

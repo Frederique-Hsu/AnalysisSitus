@@ -1034,7 +1034,7 @@ public:
   //! \param[out] newLabel the label to copy information to.
   asiAsm_EXPORT void
     ExtractAttributes(const TDF_Label oldLabel,
-                      TDF_Label&      newLabel);
+                      TDF_Label&      newLabel) const;
 
   //! Check if the given original label has users.
   //! \param[in] original the label to check.
@@ -1049,6 +1049,27 @@ public:
   //! \return the collected naming information.
   asiAsm_EXPORT Handle(asiAlgo_Naming)
     GetNaming(const PartId& pid) const;
+
+  //! \brief Extracts the passed part into a separate XDE document.
+  //!
+  //! This function accepts the target part ID and a null handle to the
+  //! new document which will contain the extraction results.
+  //!
+  //! \attention You do not need to construct this new document in your code. However,
+  //!            you are still responsible for releasing the new document.
+  //!
+  //! \param[in]  part   the selected part to extract.
+  //! \param[out] newDoc the newly created target document.
+  asiAsm_EXPORT void
+    ExtractPart(const PartId& part,
+                Handle(Doc)&  newDoc) const;
+
+  //! Extracts the given items from this document and copies them to the
+  //! new model with all metadata.
+  //! \param[in] items the assembly items to extract.
+  //! \return the newly constructed model.
+  asiAsm_EXPORT Handle(Doc)
+    ExtractSubAssembly(const AssemblyItemIds& items) const;
 
 public:
 
@@ -1213,6 +1234,31 @@ protected:
   asiAsm_EXPORT void
     copyAttributes(const TDF_Label from,
                    TDF_Label&      to);
+
+  //! Copies the given label to the target document with saving of shape structure
+  //! and metadata.
+  //! \param[in] oldLabel  the source label from the model to copy.
+  //! \param[in] doc       the target document to copy into.
+  //! \param[in] parentLoc the parent location.
+  //! \return the created label in the target document.
+  asiAsm_EXPORT TDF_Label
+    copyLabel(const TDF_Label&                oldLabel,
+              const Handle(TDocStd_Document)& doc,
+              const TopLoc_Location&          parentLoc = TopLoc_Location()) const;
+
+  //! Copies the shape from one XDE document to another while preserving
+  //! the shape structure.
+  //! \param[in] oldL         the shape to copy.
+  //! \param[in] shapeTool    the "Shape Tool" from the source document.
+  //! \param[in] newShapeTool the "Shape Tool" from the target document.
+  //! \param[in] map          the auxiliary map of copied labels.
+  //! \param[in] parentLoc    the parent location.
+  asiAsm_EXPORT TDF_Label
+    copyShape(const TDF_Label&                 oldL,
+              const Handle(XCAFDoc_ShapeTool)& shapeTool,
+              const Handle(XCAFDoc_ShapeTool)& newShapeTool,
+              TDF_LabelDataMap&                map,
+              const TopLoc_Location&           parentLoc = TopLoc_Location()) const;
 
   //! Finds assembly items targeting a persistent label with the specified
   //! name. This is a recursive DFS method.

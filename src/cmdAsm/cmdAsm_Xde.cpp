@@ -1958,6 +1958,79 @@ int ASMXDE_FindDirtyParts(const Handle(asiTcl_Interp)& interp,
   return TCL_OK;
 }
 
+
+//-----------------------------------------------------------------------------
+
+int ASMXDE_Extract(const Handle(asiTcl_Interp)& interp,
+                   int                          argc,
+                   const char**                 argv)
+{
+  // Get the source model name.
+  std::string name;
+  //
+  if ( !interp->GetKeyValue(argc, argv, "model", name) )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Source model name is not specified.");
+    return TCL_ERROR;
+  }
+
+  // Get the target model name.
+  std::string targetName;
+  //
+  if ( !interp->GetKeyValue(argc, argv, "result", targetName) )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Target model name is not specified.");
+    return TCL_ERROR;
+  }
+
+  // Get the XDE document.
+  Handle(asiTcl_Variable) var = interp->GetVar(name);
+  //
+  if ( var.IsNull() || !var->IsKind( STANDARD_TYPE(cmdAsm_XdeModel) ) )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "There is no XDE model named '%1'."
+                                                        << name);
+    return TCL_ERROR;
+  }
+  //
+  Handle(Doc) xdeDoc = Handle(cmdAsm_XdeModel)::DownCast(var)->GetDocument();
+
+  // Get items to extracr.
+  AssemblyItemIds items;
+  int             elementIdx = -1;
+  //
+  if ( !interp->HasKeyword(argc, argv, "items", elementIdx) )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Please, specify the assembly items to extract."
+                                                        << name);
+    return TCL_ERROR;
+  }
+  //
+  for ( int ii = elementIdx + 1; ii < argc; ++ii )
+  {
+    if ( interp->IsKeyword(argv[ii]) )
+      break;
+
+    items.Append( AssemblyItemId(argv[ii]) );
+  }
+
+  TIMER_NEW
+  TIMER_GO
+
+  interp->GetProgress().SendLogMessage( LogInfo(Normal) << "Num. items to extract: %1."
+                                                        << items.Length() );
+
+  Handle(Doc) newDoc = xdeDoc->ExtractSubAssembly(items);
+
+  TIMER_FINISH
+  TIMER_COUT_RESULT_NOTIFIER(interp->GetProgress(), "asm-xde-extract")
+
+  // Set the result as a variable.
+  interp->SetVar( targetName, new cmdAsm_XdeModel(newDoc) );
+
+  return TCL_OK;
+}
+
 //-----------------------------------------------------------------------------
 
 void cmdAsm::Commands_XDE(const Handle(asiTcl_Interp)&      interp,
@@ -2233,4 +2306,19 @@ void cmdAsm::Commands_XDE(const Handle(asiTcl_Interp)&      interp,
     "\t construction lines.",
     //
     __FILE__, group, ASMXDE_FindDirtyParts);
+
+  //-------------------------------------------------------------------------//
+  interp->AddCommand("asm-xde-extract",
+    //
+    "asm-xde-extract"
+    " -model <M>"
+    " -items <item_1> [<item_2> ... <item_k>]"
+    " -result <R>"
+    "\n"
+    "\t Extracts the passed items from the provided model <M> to a\n"
+    "\t newly constructed model named <R>. It should be noted that the\n"
+    "\t model <R> is created by the algorithm, so you do not need to\n"
+    "\t construct and initialize it explicitly.",
+    //
+    __FILE__, group, ASMXDE_Extract);
 }
