@@ -250,6 +250,24 @@ asm-xde-combine -model M
 
 <!-- ========================================================================== -->
 
+<h2 id="toc-asm-xde-extract">asm-xde-extract</h2>
+
+<p>
+The <span class="code-inline"><a href='../commands.html#asm-xde-extract'>asm-xde-extract</a></span> function extracts a subassembly from one XDE document into another one.
+</p>
+
+<div align="center"><a href="../imgs/asm/asm-xde-extract.gif"><img src="../imgs/asm/asm-xde-extract.gif" width="70%"/></a></div>
+
+<pre class="code">
+asm-xde-extract -model M -items 0:1:1:1/0:1:1:1:1 -result R
+</pre>
+
+<p>
+  The desination model <san class="code-inline">R</san> is created automatically, so you do not have to allocate and initialize it before running the <span class="code-inline"><a href='../commands.html#asm-xde-extract'>asm-xde-extract</a></span> function. The resulting model is a self-contained XDE document that does not keep any link to the original one.
+</p>
+
+<!-- ========================================================================== -->
+
 <h2 id="toc-asm-xde-print-structure">asm-xde-print-structure</h2>
 
 <p>
