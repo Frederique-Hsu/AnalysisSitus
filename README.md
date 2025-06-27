@@ -1,0 +1,51 @@
+Overview
+=========
+
+Homepage: https://analysissitus.org
+Follow our blog: https://quaoar.su/blog/
+
+Analysis Situs is an open-source, extendable software that aids in the development
+of CAD geometric algorithms using Boundary Representation (B-Rep) data structures.
+The software is integrated with the OpenCascade library, an open-source geometric
+modeling kernel that provides a diverse set of modeling operators enabling the creation
+of multipurpose CAD systems and utilities. Analysis Situs provides a foundation for
+developing geometric modeling algorithms. Furthermore, Analysis Situs offers advanced
+features for inspecting the geometric and topological structures of existing CAD parts
+(hence the name "Analysis Situs") that can be imported from any major CAD system.
+
+Main features
+=============
+
+- Feature recognition and shape interrogation algorithms (drilled holes, fillets, base faces, isolated features and more).
+- Attributed Adjacency Graph (https://analysissitus.org/features/features_aag.html).
+- Assembly API (https://analysissitus.org/features.html#core-assemblies).
+- Advanced modeling algorithms.
+- Shape healing.
+- Important stability fixes over OpenCascade geometric modeling kernel.
+
+Continue reading at https://analysissitus.org, which is the main volume of documentation for
+Analysis Situs app and SDK.
+
+What's in a name?
+=================
+
+Analysis Situs was the previous name for Topology. Henri Poincare published an original
+work on the subject in 1895, introducing the core notions of this new discipline of mathematics.
+The topological language has shown to be very helpful in computer-aided design. Many of the
+academic articles published on the subject used topological formalism to create mathematical
+models of shapes.
+
+We think Analysis Situs is a hilarious name for software that delves into the complexity
+of geometric modeling. You load a model to find out what is inside. It can be studied face
+after face in a CAD-neutral environment. You can think of your model as a collection of
+surface patches trimmed by contours. You can also modify the software with your own tools
+because the architecture is quite general (the primary developer uses Analysis Situs on
+a daily basis).
+
+In the early days of CAD, there existed a system called PADL that helped to transmit digital
+design technologies from academics to industry. Pioneer scholars such as A. Requicha, who
+participated in the PADL project, introduced several new seminal concepts to the area (for
+which Requicha and Voelcker received the Pierre Bezier Award). Analysis Situs has nothing to
+do with PADL or these excellent researchers. However, there is still a desire for a quick
+prototyping tool that is freely available to anyone. The ultimate goal is to create an open-source
+CAD platform that can be customized to solve a wide range of geometric design issues. So there we go.
