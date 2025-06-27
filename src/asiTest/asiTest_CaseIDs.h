@@ -46,6 +46,7 @@ enum asiTest_CaseID
   CaseID_RecognizeBlends,
   CaseID_SuppressBlends,
   CaseID_SuppressFeatures,
+  CaseID_UnifySameDomain,
   CaseID_ConvertCanonical,
   CaseID_ConcatPCurves,
   CaseID_ConvertToC2,

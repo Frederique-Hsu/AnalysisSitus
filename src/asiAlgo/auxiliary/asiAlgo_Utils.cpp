@@ -3508,7 +3508,10 @@ bool asiAlgo_Utils::MaximizeFaces(TopoDS_Shape&              shape,
     Unify.SetLinearTolerance  (linToler);
     Unify.SetAngularTolerance (angToler);
     //
-    Unify.Build();
+    if (!Unify.Build())
+    {
+      return false;
+    }
   }
   catch ( ... )
   {

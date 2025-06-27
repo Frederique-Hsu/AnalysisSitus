@@ -64,6 +64,7 @@
 #include <asiTest_RecognizeShafts.h>
 #include <asiTest_SuppressBlends.h>
 #include <asiTest_SuppressFeatures.h>
+#include <asiTest_UnifySameDomain.h>
 #include <asiTest_UntrimSurf.h>
 #include <asiTest_Utils.h>
 #include <asiTest_VertexVexity.h>
@@ -172,6 +173,7 @@ int main(int argc, char* argv[])
   CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<asiTest_RecognizeShafts>       );
   CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<asiTest_SuppressBlends>        );
   CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<asiTest_SuppressFeatures>      );
+  CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<asiTest_UnifySameDomain>       );
   CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<asiTest_AAG>                   );
   CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<asiTest_EdgeVexity>            );
   CaseLaunchers.push_back( new asiTestEngine_CaseLauncher<asiTest_VertexVexity>          );

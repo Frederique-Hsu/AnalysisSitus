@@ -125,6 +125,7 @@ set (cases_editing_H_FILES
   cases/editing/asiTest_RebuildEdge.h
   cases/editing/asiTest_SuppressBlends.h
   cases/editing/asiTest_SuppressFeatures.h
+  cases/editing/asiTest_UnifySameDomain.h
 )
 set (cases_editing_CPP_FILES
   cases/editing/asiTest_ConcatPCurves.cpp
@@ -136,6 +137,7 @@ set (cases_editing_CPP_FILES
   cases/editing/asiTest_RebuildEdge.cpp
   cases/editing/asiTest_SuppressBlends.cpp
   cases/editing/asiTest_SuppressFeatures.cpp
+  cases/editing/asiTest_UnifySameDomain.cpp
 )
 
 set (cases_exchange_H_FILES
