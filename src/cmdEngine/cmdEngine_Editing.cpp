@@ -3883,14 +3883,6 @@ int ENGINE_ConcatCurves(const Handle(asiTcl_Interp)& interp,
     while ( (k + 1 < argc) && !interp->IsKeyword(argv[++k]) )
     {
       const int eid = atoi(argv[k]);
-
-      /*if ( eid < 1 || eid > 2 )
-      {
-        interp->GetProgress().SendLogMessage(LogErr(Normal) << "The passed edge ID %1 is out of range [1, %2]."
-                                                            << eid);
-        return TCL_ERROR;
-      }*/
-
       eids.push_back(eid);
     }
   }
@@ -3979,14 +3971,6 @@ int ENGINE_ConcatAndCheck(const Handle(asiTcl_Interp)& interp,
     while ( (k + 1 < argc) && !interp->IsKeyword(argv[++k]) )
     {
       const int eid = atoi(argv[k]);
-
-      /*if ( eid < 1 || eid > 2 )
-      {
-      interp->GetProgress().SendLogMessage(LogErr(Normal) << "The passed edge ID %1 is out of range [1, %2]."
-      << eid);
-      return TCL_ERROR;
-      }*/
-
       eids.push_back(eid);
     }
   }
@@ -4026,7 +4010,7 @@ int ENGINE_ConcatAndCheck(const Handle(asiTcl_Interp)& interp,
   * ============= */
 
   Handle(asiAlgo_AAG) newAag = new asiAlgo_AAG(result);
-  if (aag->RequestMapOfEdges().Size() - 1 != newAag->RequestMapOfEdges().Size()) {
+  if (aag->RequestMapOfEdges().Size() - selectedEdges.Extent() + 1 != newAag->RequestMapOfEdges().Size()) {
     interp->GetProgress().SendLogMessage(LogErr(Normal) << "Wrong number of edges.");
     return TCL_ERROR;
   }
