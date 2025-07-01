@@ -1,11 +1,11 @@
-ASITUS_THIRDPARTY_PRODUCT("vtk" "" "vtkAlgorithm.h" "vtkCommonCore-8.2")
+ASITUS_THIRDPARTY_PRODUCT("vtk" "" "vtkAlgorithm.h" "vtkCommonCore-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}")
 
 add_definitions (-DUSE_VTK)
 
 if (3RDPARTY_vtk_INCLUDE_DIR STREQUAL "")
   message (STATUS "... VTK Include dir is not conventional")
   list (REMOVE_ITEM 3RDPARTY_NOT_INCLUDED 3RDPARTY_vtk_INCLUDE_DIR)
-  set (3RDPARTY_vtk_INCLUDE_DIR ${3RDPARTY_vtk_DIR}/include/vtk-8.2 CACHE FILEPATH "Non-conventional inc dir" FORCE)
+  set (3RDPARTY_vtk_INCLUDE_DIR ${3RDPARTY_vtk_DIR}/include/vtk-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION} CACHE FILEPATH "Non-conventional inc dir" FORCE)
 endif()
 
 message (STATUS "... VTK Include dirs: ${3RDPARTY_vtk_INCLUDE_DIR}")
@@ -15,11 +15,11 @@ message (STATUS "... VTK Binary  dirs: ${3RDPARTY_vtk_DLL_DIR}")
 string (REPLACE lib libd 3RDPARTY_vtk_LIBRARY_DIR_DEBUG ${3RDPARTY_vtk_LIBRARY_DIR})
 if (3RDPARTY_vtk_LIBRARY_DIR_DEBUG AND EXISTS "${3RDPARTY_vtk_LIBRARY_DIR_DEBUG}")
   if (WIN32)
-    if (NOT EXISTS "${3RDPARTY_vtk_LIBRARY_DIR_DEBUG}/vtkCommonCore-8.2.lib")
+    if (NOT EXISTS "${3RDPARTY_vtk_LIBRARY_DIR_DEBUG}/vtkCommonCore-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}.lib")
       set (3RDPARTY_vtk_LIBRARY_DIR_DEBUG "" CACHE INTERNAL "" FORCE)
     endif()
   else()
-    if (NOT EXISTS "${3RDPARTY_vtk_LIBRARY_DIR_DEBUG}/libvtkCommonCore-8.2.so")
+    if (NOT EXISTS "${3RDPARTY_vtk_LIBRARY_DIR_DEBUG}/libvtkCommonCore-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}.so")
       set (3RDPARTY_vtk_LIBRARY_DIR_DEBUG "" CACHE INTERNAL "" FORCE)
     endif()
   endif()
@@ -28,7 +28,7 @@ endif()
 if (WIN32)
   string (REPLACE bin bind 3RDPARTY_vtk_DLL_DIR_DEBUG ${3RDPARTY_vtk_DLL_DIR})
   if (3RDPARTY_vtk_DLL_DIR_DEBUG AND EXISTS "${3RDPARTY_vtk_DLL_DIR_DEBUG}")
-    if (NOT EXISTS "${3RDPARTY_vtk_DLL_DIR_DEBUG}/vtkCommonCore-8.2.dll")
+    if (NOT EXISTS "${3RDPARTY_vtk_DLL_DIR_DEBUG}/vtkCommonCore-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}.dll")
       set (3RDPARTY_vtk_DLL_DIR_DEBUG "" CACHE INTERNAL "" FORCE)
     endif()
   endif()
@@ -42,72 +42,72 @@ message (STATUS "... VTK Debug Binary  dirs: ${3RDPARTY_vtk_DLL_DIR_DEBUG}")
 #--------------------------------------------------------------------------
 
 set (LIBS
-  vtkChartsCore-8.2
-  vtkCommonComputationalGeometry-8.2
-  vtkCommonColor-8.2
-  vtkCommonCore-8.2
-  vtkCommonDataModel-8.2
-  vtkCommonExecutionModel-8.2
-  vtkCommonMath-8.2
-  vtkCommonMisc-8.2
-  vtkCommonSystem-8.2
-  vtkCommonTransforms-8.2
-  vtkFiltersCore-8.2
-  vtkFiltersExtraction-8.2
-  vtkFiltersGeneral-8.2
-  vtkFiltersGeometry-8.2
-  vtkFiltersHybrid-8.2
-  vtkFiltersImaging-8.2
-  vtkFiltersModeling-8.2
-  vtkFiltersParallel-8.2
-  vtkFiltersSources-8.2
-  vtkFiltersStatistics-8.2
-  vtkfreetype-8.2
-  vtkGUISupportQt-8.2
-  vtkglew-8.2
-  vtkImagingColor-8.2
-  vtkImagingCore-8.2
-  vtkImagingFourier-8.2
-  vtkImagingGeneral-8.2
-  vtkImagingHybrid-8.2
-  vtkImagingSources-8.2
-  vtkInteractionWidgets-8.2
-  vtkInteractionStyle-8.2
-  vtkInfovisCore-8.2
-  vtkInfovisLayout-8.2
-  vtkIOCore-8.2
-  vtkIOImage-8.2
-  vtkIOLegacy-8.2
-  vtkIOExport-8.2
-  vtkIOXML-8.2
-  vtkIOXMLParser-8.2
-  vtkexpat-8.2
-  vtkIOExportOpenGL2-8.2
-  vtkParallelCore-8.2
-  vtkRenderingAnnotation-8.2
-  vtkRenderingContext2D-8.2
-  vtkRenderingContextOpenGL2-8.2
-  vtkRenderingCore-8.2
-  vtkRenderingGL2PSOpenGL2-8.2
-  vtkRenderingFreeType-8.2
-  vtkRenderingLabel-8.2
-  vtkRenderingOpenGL2-8.2
-  vtkRenderingVolume-8.2
-  vtksys-8.2
-  vtkViewsContext2D-8.2
-  vtkViewsCore-8.2
-  vtkViewsInfovis-8.2
-  vtkzlib-8.2
-  vtklz4-8.2
-  vtkgl2ps-8.2
-  vtkpng-8.2
-  vtklibharu-8.2
-  vtkDICOMParser-8.2
-  vtkmetaio-8.2
-  vtktiff-8.2
-  vtkjpeg-8.2
-  vtklzma-8.2
-  vtkdoubleconversion-8.2
+  vtkChartsCore-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkCommonComputationalGeometry-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkCommonColor-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkCommonCore-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkCommonDataModel-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkCommonExecutionModel-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkCommonMath-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkCommonMisc-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkCommonSystem-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkCommonTransforms-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkFiltersCore-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkFiltersExtraction-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkFiltersGeneral-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkFiltersGeometry-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkFiltersHybrid-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkFiltersImaging-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkFiltersModeling-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkFiltersParallel-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkFiltersSources-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkFiltersStatistics-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkfreetype-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkGUISupportQt-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkglew-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkImagingColor-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkImagingCore-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkImagingFourier-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkImagingGeneral-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkImagingHybrid-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkImagingSources-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkInteractionWidgets-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkInteractionStyle-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkInfovisCore-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkInfovisLayout-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkIOCore-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkIOImage-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkIOLegacy-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkIOExport-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkIOXML-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkIOXMLParser-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkexpat-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkIOExportOpenGL2-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkParallelCore-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkRenderingAnnotation-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkRenderingContext2D-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkRenderingContextOpenGL2-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkRenderingCore-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkRenderingGL2PSOpenGL2-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkRenderingFreeType-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkRenderingLabel-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkRenderingOpenGL2-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkRenderingVolume-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtksys-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkViewsContext2D-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkViewsCore-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkViewsInfovis-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkzlib-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtklz4-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkgl2ps-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkpng-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtklibharu-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkDICOMParser-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkmetaio-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtktiff-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkjpeg-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtklzma-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkdoubleconversion-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
 )
 
 ASITUS_INSTALL_3RDPARTY (LIBS "vtk" "" "1")

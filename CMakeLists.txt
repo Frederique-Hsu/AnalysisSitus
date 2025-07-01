@@ -58,6 +58,9 @@ endif()
 # Set a directory containing all 3-rd parties
 set (3RDPARTY_DIR "" CACHE PATH "The root directory for all 3-rd parties.")
 
+set(VTK_MAJOR_VERSION 8 CACHE STRING "Specify the major version of VTK library, this major version must match with VTK real version. Default major version number is 8")
+set(VTK_MINOR_VERSION 2 CACHE STRING "Specify the minor version of VTK library, this minor version must match with VTK real version. Default minor version number is 2")
+
 if (NOT DEFINED ${3RDPARTY_DIR} AND ${3RDPARTY_DIR} STREQUAL "")
   message (FATAL_ERROR "... root 3rdparty directory was not found.\nPlease, set 3RDPARTY_DIR variable.")
 endif()

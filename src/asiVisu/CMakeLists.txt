@@ -510,30 +510,30 @@ set (TBB_LIB_FILES
 )
 #------------------------------------------------------------------------------
 set (VTK_LIB_FILES
-  vtkCommonCore-8.2
-  vtkCommonColor-8.2
-  vtkCommonDataModel-8.2
-  vtkCommonExecutionModel-8.2
-  vtkCommonMath-8.2
-  vtkCommonTransforms-8.2
-  vtkCommonMisc-8.2
-  vtkFiltersCore-8.2
-  vtkFiltersGeneral-8.2
-  vtkFiltersSources-8.2
-  vtkFiltersGeometry-8.2
-  vtkFiltersParallel-8.2
-  vtkFiltersExtraction-8.2
-  vtkFiltersModeling-8.2
-  vtkGUISupportQt-8.2
-  vtkIOCore-8.2
-  vtkIOImage-8.2
-  vtkImagingCore-8.2
-  vtkInteractionStyle-8.2
-  vtkInteractionWidgets-8.2
-  vtkRenderingAnnotation-8.2
-  vtkRenderingCore-8.2
-  vtkRenderingOpenGL2-8.2
-  vtkRenderingLabel-8.2
+  vtkCommonCore-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkCommonColor-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkCommonDataModel-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkCommonExecutionModel-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkCommonMath-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkCommonTransforms-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkCommonMisc-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkFiltersCore-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkFiltersGeneral-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkFiltersSources-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkFiltersGeometry-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkFiltersParallel-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkFiltersExtraction-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkFiltersModeling-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkGUISupportQt-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkIOCore-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkIOImage-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkImagingCore-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkInteractionStyle-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkInteractionWidgets-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkRenderingAnnotation-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkRenderingCore-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkRenderingOpenGL2-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
+  vtkRenderingLabel-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}
 )
 
 #------------------------------------------------------------------------------
