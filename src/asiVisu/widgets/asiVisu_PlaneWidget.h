@@ -39,6 +39,7 @@
 // VTK includes
 #include <vtkInteractionWidgetsModule.h> // For export macro
 #include <vtkPolyDataSourceWidget.h>
+#include <vtkConfigure.h>
 
 class vtkActor;
 class vtkCellPicker;
